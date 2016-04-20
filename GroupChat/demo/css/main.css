@@ -1,0 +1,155 @@
+
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+body {
+    padding-top: 70px;
+    padding-bottom: 20px;
+}
+
+/* ==========================================================================
+   Chat Box
+   ========================================================================== */
+
+.chat
+{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.chat li
+{
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px dotted #B3A9A9;
+}
+
+.chat li.left .chat-body
+{
+    margin-left: 60px;
+}
+
+.chat li.right .chat-body
+{
+    margin-right: 60px;
+}
+
+
+.chat li .chat-body p
+{
+    margin: 0;
+    color: #777777;
+}
+
+.panel .slidedown .glyphicon, .chat .glyphicon
+{
+    margin-right: 5px;
+}
+
+.panel-body
+{
+    overflow-y: scroll;
+}
+
+::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar
+{
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: #555;
+}
+
+/* ==========================================================================
+   New Chat Button
+   ========================================================================== */
+.fab {
+  cursor: pointer;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  font-size: 40px;
+  
+}
+.fab-backdrop {
+  color: #db4437;
+}
+
+/* ==========================================================================
+   Sidebar
+   ========================================================================== */
+.sidebar-panel{
+  width: 22.5%;
+  position: fixed;
+}
+
+@media screen and (max-width: 991px) {
+    .sidebar-panel{
+        width: 30%;
+    }
+}
+
+/*
+ * Off Canvas
+ * --------------------------------------------------
+ */
+@media screen and (max-width: 767px) {
+  .row-offcanvas {
+    overflow:visible;
+    position: relative;
+    -webkit-transition: all .25s ease-out;
+         -o-transition: all .25s ease-out;
+            transition: all .25s ease-out;
+  }
+
+  .row-offcanvas-right {
+    right: 0;
+  }
+
+  .row-offcanvas-left {
+    left: 0;
+  }
+
+  .row-offcanvas-right
+  .sidebar-offcanvas {
+    right: -80%; /* 6 columns */
+  }
+
+  .row-offcanvas-left
+  .sidebar-offcanvas {
+    left: -80%; /* 6 columns */
+  }
+
+  .row-offcanvas-right.active {
+    right: 80%; /* 6 columns */
+  }
+
+  .row-offcanvas-left.active {
+    left: 80%; /* 6 columns */
+  }
+
+  .sidebar-offcanvas {
+    position: absolute;
+    top: 0;
+    width: 80%; /* 6 columns */
+  }
+  
+  .sidebar-panel{
+      width:70%;
+  }
+
+  .row-offcanvas-left.active .sidebar-panel{
+    left: 0px; /* 6 columns */
+  }
+}
