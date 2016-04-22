@@ -1,24 +1,19 @@
 {
-  "name": "group-chat-hyperty",
+  "name": "dev-hyperty",
   "version": "1.0.0",
-  "description": "A group chat hyperty",
-  "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
-    "test": "",
-    "test-browser": "karma start",
-    "test-node": "mocha --compilers js:babel-core/register"
+    "start": "nodemon --ignore demos/js/bundle.js --exec 'npm run bundle && http-server --cors -S -p 6443 -C rethink-certificate.cert -K rethink-certificate.key' ./demos ",
+    "bundle":"browserify -t [ babelify ] demos/app/main.js -o demos/js/bundle.js"
   },
   "keywords": [
     "hyperty",
     "group",
     "chat"
   ],
-  "author": "David Vílchez",
-  "license": "ISC",
   "dependencies": {
+    "react": "^15.0.1",
+    "react-dom": "^15.0.1",
+    "react-router": "^2.3.0",
     "runtime-browser": "git+https://github.com/reTHINK-project/dev-runtime-browser.git#master",
     "runtime-core": "git+https://github.com/reTHINK-project/dev-runtime-core.git#dev-0.4",
     "service-framework": "git+https://github.com/reTHINK-project/dev-service-framework.git#develop",
