@@ -38,5 +38,25 @@
     "messageSchemas": "",
     "dataObjects": [],
     "accessControlPolicy": "somePolicy"
+  },
+  "CommunicationDataSchema": {
+    "sourcePackage": {
+      "sourceCode": "ewoJIiRzY2hlbWEiOiAiaHR0cDovL2pzb24tc2NoZW1hLm9yZy9kcmFmdC0wNC9zY2hlbWEjIiwKCgkiaWQiOiAiQ29tbXVuaWNhdGlvbiIsCgkidHlwZSI6ICJvYmplY3QiLAoJInJlcXVpcmVkIjogWyJzdGFydGluZ1RpbWUiLCAibGFzdE1vZGlmaWVkIiwgInN0YXR1cyIsICJyZXNvdXJjZXMiLCAiY2hpbGRyZW4iXSwKCSJwcm9wZXJ0aWVzIjogewoJCSJzdGFydGluZ1RpbWUiOiB7CgkJCSJ0eXBlIjogInN0cmluZyIsCgkJCSJmb3JtYXQiOiAiZGF0ZS10aW1lIgoJCX0sCgkJImxhc3RNb2RpZmllZCI6IHsKCQkJInR5cGUiOiAic3RyaW5nIiwKCQkJImZvcm1hdCI6ICJkYXRlLXRpbWUiCgkJfSwKCQkiZHVyYXRpb24iOiB7CgkJCSJ0eXBlIjogInN0cmluZyIsCgkJCSJmb3JtYXQiOiAiZGF0ZS10aW1lIgoJCX0sCgkJInN0YXR1cyI6IHsKCQkJImVudW0iOiBbCgkJCQkib3BlbiIsCgkJCQkicGVuZGluZyIsCgkJCQkiY2xvc2VkIiwKCQkJCSJwYXVzZWQiLAoJCQkJImZhaWxlZCIKCQkJXQoJCX0sCgkJInBhcnRpY2lwYW50cyI6IHsKCQkJInR5cGUiOiAiYXJyYXkiLAoJCQkiaXRlbXMiOiB7CgkJCQkiJHJlZiI6ICIjL1BhcnRpY2lwYW50IgoJCQl9CgkJfSwKCQkicW9zIjogewoJCQkiJHJlZiI6ICIjL0NvbW11bmljYXRpb25RdWFsaXR5IgoJCX0sCgkJInJlc291cmNlcyI6IHsKCQkJInR5cGUiOiAiYXJyYXkiLAoJCQkiaXRlbXMiOiB7CgkJCQkiJHJlZiI6ICJIeXBlcnR5UmVzb3VyY2UuanNvbiMvSHlwZXJ0eVJlc291cmNlIgoJCQl9CgkJfSwKCQkiY2hpbGRyZW4iOiB7CgkJCSJjb25zdGFudCI6IFsiY2hhdG1lc3NhZ2VzIl0KCQl9Cgl9LCAKCSJDaGF0TWVzc2FnZXMiOiB7CgkJInR5cGUiOiAib2JqZWN0IiwKCQkicmVxdWlyZWQiOiBbInBhcmVudCIsICJsaXN0ZW5lciIsICJ0eXBlIl0sCgkJInByb3BlcnRpZXMiOiB7CgkJCSJwYXJlbnQiOiB7CgkJCQkiY29uc3RhbnQiOiAiY29tbXVuaWNhdGlvbiIKCQkJfSwKCQkJImxpc3RlbmVyIjogewoJCQkJImNvbnN0YW50IjogImNoYXRtZXNzYWdlcyIKCQkJfSwKCQkJInR5cGUiOiB7CgkJCQkidHlwZSI6ICJzdHJpbmciCgkJCX0KCQl9Cgl9LCAKCSJQYXJ0aWNpcGFudCI6IHsKCQkidHlwZSI6ICJvYmplY3QiLAoJCSJwcm9wZXJ0aWVzIjogewoJCQkic3RhdHVzIjogewoJCQkJImVudW0iOiBbCgkJCQldCgkJCX0KCQl9Cgl9LCAKCSJDb21tdW5pY2F0aW9uUXVhbGl0eSI6IHsKCQkidHlwZSI6ICJvYmplY3QiLAoJCSJwcm9wZXJ0aWVzIjogewoJCX0KCX0KfQo=",
+      "sourceCodeClassname": "CommunicationDataSchema",
+      "encoding": "base64",
+      "signature": ""
+    },
+    "cguid": 1,
+    "type": "DataSchemas",
+    "version": "0.1",
+    "description": "Description of CommunicationDataSchema",
+    "objectName": "CommunicationDataSchema",
+    "sourcePackageURL": "/sourcePackage",
+    "language": "JSON-Schema",
+    "signature": "",
+    "messageSchemas": "",
+    "dataObjects": [],
+    "accessControlPolicy": "somePolicy",
+    "configuration": {}
   }
 }

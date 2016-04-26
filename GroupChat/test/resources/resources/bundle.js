@@ -1,45 +1,43 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.activate = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-/**
-* Copyright 2016 PT Inovação e Sistemas SA
-* Copyright 2016 INESC-ID
-* Copyright 2016 QUOBIS NETWORKS SL
-* Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
-* Copyright 2016 ORANGE SA
-* Copyright 2016 Deutsche Telekom AG
-* Copyright 2016 Apizee
-* Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*   http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-**/
-
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.activate = f().default}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 PT Inovação e Sistemas SA
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 INESC-ID
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 QUOBIS NETWORKS SL
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 ORANGE SA
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 Deutsche Telekom AG
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 Apizee
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Licensed under the Apache License, Version 2.0 (the "License");
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * you may not use this file except in compliance with the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * You may obtain a copy of the License at
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *   http://www.apache.org/licenses/LICENSE-2.0
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Unless required by applicable law or agreed to in writing, software
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * distributed under the License is distributed on an "AS IS" BASIS,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * See the License for the specific language governing permissions and
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * limitations under the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     **/
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+var _utils = require('../utils/utils');
 
-var _utilsUtils = require('../utils/utils');
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
 * Core HypertyDiscovery interface
 * Class to allow applications to search for hyperties using the message bus
 */
 
-var HypertyDiscovery = (function () {
+var HypertyDiscovery = function () {
 
   /**
   * To initialise the HypertyDiscover, which will provide the support for hyperties to
@@ -54,7 +52,7 @@ var HypertyDiscovery = (function () {
     var _this = this;
     _this.messageBus = msgBus;
 
-    _this.domain = (0, _utilsUtils.divideURL)(hypertyURL).domain;
+    _this.domain = (0, _utils.divideURL)(hypertyURL).domain;
     _this.discoveryURL = hypertyURL;
   }
 
@@ -66,11 +64,12 @@ var HypertyDiscovery = (function () {
   * @return {Promise}          Promise
   */
 
+
   _createClass(HypertyDiscovery, [{
     key: 'discoverDataObjectPerName',
     value: function discoverDataObjectPerName(name, domain) {
       var _this = this;
-      var activeDomain = undefined;
+      var activeDomain = void 0;
 
       if (!domain) {
         activeDomain = _this.domain;
@@ -104,11 +103,12 @@ var HypertyDiscovery = (function () {
     * @param  {domain}            domain (Optional)
     * @return {Promise}          Promise
     */
+
   }, {
     key: 'discoverHypertyPerUser',
     value: function discoverHypertyPerUser(email, domain) {
       var _this = this;
-      var activeDomain = undefined;
+      var activeDomain = void 0;
 
       if (!domain) {
         activeDomain = _this.domain;
@@ -131,9 +131,9 @@ var HypertyDiscovery = (function () {
         _this.messageBus.postMessage(message, function (reply) {
           console.log('message reply', reply);
 
-          var hyperty = undefined;
-          var mostRecent = undefined;
-          var lastHyperty = undefined;
+          var hyperty = void 0;
+          var mostRecent = void 0;
+          var lastHyperty = void 0;
           var value = reply.body.value;
 
           for (hyperty in value) {
@@ -173,46 +173,39 @@ var HypertyDiscovery = (function () {
   }]);
 
   return HypertyDiscovery;
-})();
+}();
 
-exports['default'] = HypertyDiscovery;
-module.exports = exports['default'];
+exports.default = HypertyDiscovery;
 
 },{"../utils/utils":9}],2:[function(require,module,exports){
-/**
-* Copyright 2016 PT Inovação e Sistemas SA
-* Copyright 2016 INESC-ID
-* Copyright 2016 QUOBIS NETWORKS SL
-* Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
-* Copyright 2016 ORANGE SA
-* Copyright 2016 Deutsche Telekom AG
-* Copyright 2016 Apizee
-* Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*   http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-**/
-
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 PT Inovação e Sistemas SA
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 INESC-ID
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 QUOBIS NETWORKS SL
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 ORANGE SA
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 Deutsche Telekom AG
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 Apizee
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Licensed under the Apache License, Version 2.0 (the "License");
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * you may not use this file except in compliance with the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * You may obtain a copy of the License at
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *   http://www.apache.org/licenses/LICENSE-2.0
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Unless required by applicable law or agreed to in writing, software
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * distributed under the License is distributed on an "AS IS" BASIS,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * See the License for the specific language governing permissions and
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * limitations under the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     **/
 
 var _SyncObject = require('./SyncObject');
 
@@ -222,14 +215,18 @@ var _DataObjectChild = require('./DataObjectChild');
 
 var _DataObjectChild2 = _interopRequireDefault(_DataObjectChild);
 
-var _utilsUtilsJs = require('../utils/utils.js');
+var _utils = require('../utils/utils.js');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
  * Main extension class for observers and reporters, with common properties and methods.
  * Children management is common for observers and reporters.
  */
 
-var DataObject = (function () {
+var DataObject = function () {
   /* private
   _version: number
    _owner: HypertyURL
@@ -258,7 +255,7 @@ var DataObject = (function () {
     _this._url = url;
     _this._schema = schema;
     _this._status = initialStatus;
-    _this._syncObj = new _SyncObject2['default'](initialData);
+    _this._syncObj = new _SyncObject2.default(initialData);
     _this._childrens = childrens;
 
     _this._version = 0;
@@ -318,8 +315,10 @@ var DataObject = (function () {
      * Object URL of reporter or observer
      * @type {ObjectURL}
      */
+
   }, {
     key: 'pause',
+
 
     /**
      * @ignore
@@ -332,6 +331,7 @@ var DataObject = (function () {
     /**
      * @ignore
      */
+
   }, {
     key: 'resume',
     value: function resume() {
@@ -342,6 +342,7 @@ var DataObject = (function () {
     /**
      * @ignore
      */
+
   }, {
     key: 'stop',
     value: function stop() {
@@ -355,6 +356,7 @@ var DataObject = (function () {
      * @param {JSON} initialData - Initial data of the child
      * @return {Promise<DataObjectChild>} - Return Promise to a new Children.
      */
+
   }, {
     key: 'addChildren',
     value: function addChildren(resource, initialData) {
@@ -375,7 +377,7 @@ var DataObject = (function () {
         var msgId = _this._bus.postMessage(requestMsg);
 
         console.log('create-reporter-child( ' + _this._owner + ' ): ', requestMsg);
-        var newChild = new _DataObjectChild2['default'](_this, msgChildId, initialData, _this._owner, msgId);
+        var newChild = new _DataObjectChild2.default(_this, msgChildId, initialData, _this._owner, msgId);
         newChild.onChange(function (event) {
           _this._onChange(event, { path: msgChildPath, childId: msgChildId });
         });
@@ -390,6 +392,7 @@ var DataObject = (function () {
      * Setup the callback to process create and delete childrens
      * @param {function(event: MsgEvent)} callback
      */
+
   }, {
     key: 'onAddChildren',
     value: function onAddChildren(callback) {
@@ -402,7 +405,7 @@ var DataObject = (function () {
       var msgChildId = msg.body.resource;
 
       console.log('create-observer-child( ' + _this._owner + ' ): ', msg);
-      var newChild = new _DataObjectChild2['default'](_this, msgChildId, msg.body.value);
+      var newChild = new _DataObjectChild2.default(_this, msgChildId, msg.body.value);
       _this._childrenObjects[msgChildId] = newChild;
 
       setTimeout(function () {
@@ -427,6 +430,7 @@ var DataObject = (function () {
     }
 
     //send delta messages to subscriptions
+
   }, {
     key: '_onChange',
     value: function _onChange(event, childInfo) {
@@ -463,6 +467,7 @@ var DataObject = (function () {
     }
 
     //receive and process delta messages
+
   }, {
     key: '_changeObject',
     value: function _changeObject(syncObj, msg) {
@@ -474,7 +479,7 @@ var DataObject = (function () {
       if (_this._version + 1 === msg.body.version) {
         _this._version++;
         var path = msg.body.attribute;
-        var value = (0, _utilsUtilsJs.deepClone)(msg.body.value);
+        var value = (0, _utils.deepClone)(msg.body.value);
         var findResult = syncObj.findBefore(path);
 
         if (msg.body.attributeType === _SyncObject.ObjectType.ARRAY) {
@@ -483,9 +488,9 @@ var DataObject = (function () {
             var index = findResult.last;
             Array.prototype.splice.apply(arr, [index, 0].concat(value));
           } else if (msg.body.operation === _SyncObject.ChangeType.REMOVE) {
-            var arr = findResult.obj;
-            var index = findResult.last;
-            arr.splice(index, value);
+            var _arr = findResult.obj;
+            var _index = findResult.last;
+            _arr.splice(_index, value);
           } else {
             findResult.obj[findResult.last] = value; // UPDATE
           }
@@ -526,6 +531,7 @@ var DataObject = (function () {
      * Object schema URL (this field is not yet stable, and is subsject to change)
      * @type {SchemaURL}
      */
+
   }, {
     key: 'schema',
     get: function get() {
@@ -536,6 +542,7 @@ var DataObject = (function () {
      * Status of the reporter or observer connection (this field is not yet stable, and is subsject to change)
      * @type {Status} - Enum of: on | paused
      */
+
   }, {
     key: 'status',
     get: function get() {
@@ -546,6 +553,7 @@ var DataObject = (function () {
      * Data structure to be synchronized.
      * @type {JSON} - JSON structure that should follow the defined schema, if any.
      */
+
   }, {
     key: 'data',
     get: function get() {
@@ -556,6 +564,7 @@ var DataObject = (function () {
      * All created children's since the subscription, doesn't contain all children's since reporter creation.
      * @type {Object<ChildId, DataObjectChild>}
      */
+
   }, {
     key: 'childrens',
     get: function get() {
@@ -564,57 +573,54 @@ var DataObject = (function () {
   }]);
 
   return DataObject;
-})();
+}();
 
-exports['default'] = DataObject;
-module.exports = exports['default'];
+exports.default = DataObject;
 
 },{"../utils/utils.js":9,"./DataObjectChild":3,"./SyncObject":7}],3:[function(require,module,exports){
-/**
-* Copyright 2016 PT Inovação e Sistemas SA
-* Copyright 2016 INESC-ID
-* Copyright 2016 QUOBIS NETWORKS SL
-* Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
-* Copyright 2016 ORANGE SA
-* Copyright 2016 Deutsche Telekom AG
-* Copyright 2016 Apizee
-* Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*   http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-**/
-
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 PT Inovação e Sistemas SA
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 INESC-ID
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 QUOBIS NETWORKS SL
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 ORANGE SA
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 Deutsche Telekom AG
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 Apizee
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Licensed under the Apache License, Version 2.0 (the "License");
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * you may not use this file except in compliance with the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * You may obtain a copy of the License at
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *   http://www.apache.org/licenses/LICENSE-2.0
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Unless required by applicable law or agreed to in writing, software
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * distributed under the License is distributed on an "AS IS" BASIS,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * See the License for the specific language governing permissions and
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * limitations under the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     **/
 
 var _SyncObject = require('./SyncObject');
 
 var _SyncObject2 = _interopRequireDefault(_SyncObject);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
  * The class returned from the DataObject addChildren call or from onAddChildren if remotely created.
  * Children object synchronization is a a fast forward mechanism, no need for direct subscriptions, it uses the already authorized subscription from the parent DataObject.
  */
 
-var DataObjectChild /* implements SyncStatus */ = (function () {
+var DataObjectChild /* implements SyncStatus */ = function () {
   /* private
    ----event handlers----
   _onResponseHandler: (event) => void
@@ -635,7 +641,7 @@ var DataObjectChild /* implements SyncStatus */ = (function () {
     _this._owner = owner;
     _this._msgId = msgId;
 
-    _this._syncObj = new _SyncObject2['default'](initialData);
+    _this._syncObj = new _SyncObject2.default(initialData);
 
     _this._bus = parent._bus;
     _this._allocateListeners();
@@ -669,6 +675,7 @@ var DataObjectChild /* implements SyncStatus */ = (function () {
     /**
      * Release and delete object data
      */
+
   }, {
     key: 'delete',
     value: function _delete() {
@@ -685,8 +692,10 @@ var DataObjectChild /* implements SyncStatus */ = (function () {
      * Children ID generated on addChildren. Unique identifier
      * @type {URL} - URL of the format <HypertyURL>#<numeric-sequence>
      */
+
   }, {
     key: 'onChange',
+
 
     /**
      * Register the change listeners sent by the reporter child
@@ -702,6 +711,7 @@ var DataObjectChild /* implements SyncStatus */ = (function () {
      * Setup the callback to process response notifications of the creates
      * @param {function(event: MsgEvent)} callback
      */
+
   }, {
     key: 'onResponse',
     value: function onResponse(callback) {
@@ -732,6 +742,7 @@ var DataObjectChild /* implements SyncStatus */ = (function () {
      * Data Structure to be synchronized.
      * @type {JSON} - JSON structure that should follow the defined schema, if any.
      */
+
   }, {
     key: 'data',
     get: function get() {
@@ -740,50 +751,20 @@ var DataObjectChild /* implements SyncStatus */ = (function () {
   }]);
 
   return DataObjectChild;
-})();
+}();
 
-exports['default'] = DataObjectChild;
-module.exports = exports['default'];
+exports.default = DataObjectChild;
 
 },{"./SyncObject":7}],4:[function(require,module,exports){
-/**
-* Copyright 2016 PT Inovação e Sistemas SA
-* Copyright 2016 INESC-ID
-* Copyright 2016 QUOBIS NETWORKS SL
-* Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
-* Copyright 2016 ORANGE SA
-* Copyright 2016 Deutsche Telekom AG
-* Copyright 2016 Apizee
-* Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*   http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-**/
-
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 var _DataObject2 = require('./DataObject');
 
@@ -793,6 +774,35 @@ var _DataObjectChild = require('./DataObjectChild');
 
 var _DataObjectChild2 = _interopRequireDefault(_DataObjectChild);
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 PT Inovação e Sistemas SA
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 INESC-ID
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 QUOBIS NETWORKS SL
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 ORANGE SA
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 Deutsche Telekom AG
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 Apizee
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Licensed under the Apache License, Version 2.0 (the "License");
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * you may not use this file except in compliance with the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * You may obtain a copy of the License at
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *   http://www.apache.org/licenses/LICENSE-2.0
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Unless required by applicable law or agreed to in writing, software
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * distributed under the License is distributed on an "AS IS" BASIS,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * See the License for the specific language governing permissions and
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * limitations under the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               **/
+
 var FilterType = { ANY: 'any', START: 'start', EXACT: 'exact' };
 
 /**
@@ -800,7 +810,7 @@ var FilterType = { ANY: 'any', START: 'start', EXACT: 'exact' };
  * To be used as an observation point from a DataObjectReporter change.
  */
 
-var DataObjectObserver = (function (_DataObject) {
+var DataObjectObserver = function (_DataObject) {
   _inherits(DataObjectObserver, _DataObject);
 
   /* private
@@ -817,8 +827,9 @@ var DataObjectObserver = (function (_DataObject) {
   function DataObjectObserver(syncher, url, schema, initialStatus, initialData, childrens, initialVersion) {
     _classCallCheck(this, DataObjectObserver);
 
-    _get(Object.getPrototypeOf(DataObjectObserver.prototype), 'constructor', this).call(this, syncher, url, schema, initialStatus, initialData.data, childrens);
-    var _this = this;
+    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(DataObjectObserver).call(this, syncher, url, schema, initialStatus, initialData.data, childrens));
+
+    var _this = _this2;
 
     _this._version = initialVersion;
     _this._filters = {};
@@ -830,10 +841,11 @@ var DataObjectObserver = (function (_DataObject) {
     //setup childrens data from subscription
     Object.keys(initialData.childrens).forEach(function (childId) {
       var childData = initialData.childrens[childId];
-      _this._childrenObjects[childId] = new _DataObjectChild2['default'](_this, childId, childData);
+      _this._childrenObjects[childId] = new _DataObjectChild2.default(_this, childId, childData);
     });
 
     _this._allocateListeners();
+    return _this2;
   }
 
   _createClass(DataObjectObserver, [{
@@ -861,6 +873,7 @@ var DataObjectObserver = (function (_DataObject) {
     /**
      * Release and delete object data
      */
+
   }, {
     key: 'delete',
     value: function _delete() {
@@ -873,6 +886,7 @@ var DataObjectObserver = (function (_DataObject) {
     /**
      * Release and delete object data
      */
+
   }, {
     key: 'unsubscribe',
     value: function unsubscribe() {
@@ -897,6 +911,7 @@ var DataObjectObserver = (function (_DataObject) {
      * @param {string} filter - Filter that identifies the field (separeted dot path). Accepts * at the end for a more unrestricted filtering.
      * @param {function(event: MsgEvent)} callback
      */
+
   }, {
     key: 'onChange',
     value: function onChange(filter, callback) {
@@ -944,63 +959,62 @@ var DataObjectObserver = (function (_DataObject) {
   }]);
 
   return DataObjectObserver;
-})(_DataObject3['default'] /* implements SyncStatus */);
+}(_DataObject3.default /* implements SyncStatus */);
 
-exports['default'] = DataObjectObserver;
-module.exports = exports['default'];
+exports.default = DataObjectObserver;
 
 },{"./DataObject":2,"./DataObjectChild":3}],5:[function(require,module,exports){
-/**
-* Copyright 2016 PT Inovação e Sistemas SA
-* Copyright 2016 INESC-ID
-* Copyright 2016 QUOBIS NETWORKS SL
-* Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
-* Copyright 2016 ORANGE SA
-* Copyright 2016 Deutsche Telekom AG
-* Copyright 2016 Apizee
-* Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*   http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-**/
-
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 var _DataObject2 = require('./DataObject');
 
 var _DataObject3 = _interopRequireDefault(_DataObject2);
 
-var _utilsUtilsJs = require('../utils/utils.js');
+var _utils = require('../utils/utils.js');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 PT Inovação e Sistemas SA
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 INESC-ID
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 QUOBIS NETWORKS SL
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 ORANGE SA
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 Deutsche Telekom AG
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 Apizee
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Licensed under the Apache License, Version 2.0 (the "License");
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * you may not use this file except in compliance with the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * You may obtain a copy of the License at
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *   http://www.apache.org/licenses/LICENSE-2.0
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Unless required by applicable law or agreed to in writing, software
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * distributed under the License is distributed on an "AS IS" BASIS,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * See the License for the specific language governing permissions and
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * limitations under the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               **/
 
 /**
  * The class returned from the Syncher create call.
  * To be used as a reporter point, changes will be submited to DataObjectObserver instances.
  */
 
-var DataObjectReporter = (function (_DataObject) {
+var DataObjectReporter = function (_DataObject) {
   _inherits(DataObjectReporter, _DataObject);
 
   /* private
@@ -1018,8 +1032,9 @@ var DataObjectReporter = (function (_DataObject) {
   function DataObjectReporter(syncher, url, schema, initialStatus, initialData, childrens) {
     _classCallCheck(this, DataObjectReporter);
 
-    _get(Object.getPrototypeOf(DataObjectReporter.prototype), 'constructor', this).call(this, syncher, url, schema, initialStatus, initialData, childrens);
-    var _this = this;
+    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(DataObjectReporter).call(this, syncher, url, schema, initialStatus, initialData, childrens));
+
+    var _this = _this2;
 
     _this._subscriptions = {};
 
@@ -1029,6 +1044,7 @@ var DataObjectReporter = (function (_DataObject) {
     });
 
     _this._allocateListeners();
+    return _this2;
   }
 
   _createClass(DataObjectReporter, [{
@@ -1055,6 +1071,7 @@ var DataObjectReporter = (function (_DataObject) {
     /**
      * Release and delete object data
      */
+
   }, {
     key: 'delete',
     value: function _delete() {
@@ -1078,8 +1095,10 @@ var DataObjectReporter = (function (_DataObject) {
      * Subscriptions requested and accepted to this reporter
      * @type {Object<HypertyURL, SyncSubscription>}
      */
+
   }, {
     key: 'onSubscription',
+
 
     /**
      * Setup the callback to process subscribe and unsubscribe notifications
@@ -1093,6 +1112,7 @@ var DataObjectReporter = (function (_DataObject) {
      * Setup the callback to process response notifications of the create's
      * @param {function(event: MsgEvent)} callback
      */
+
   }, {
     key: 'onResponse',
     value: function onResponse(callback) {
@@ -1130,13 +1150,13 @@ var DataObjectReporter = (function (_DataObject) {
           var childrenValues = {};
           Object.keys(_this._childrenObjects).forEach(function (childId) {
             var childData = _this._childrenObjects[childId].data;
-            childrenValues[childId] = (0, _utilsUtilsJs.deepClone)(childData);
+            childrenValues[childId] = (0, _utils.deepClone)(childData);
           });
 
           //send ok response message
           _this._bus.postMessage({
             id: msg.id, type: 'response', from: msg.to, to: msg.from,
-            body: { code: 200, schema: _this._schema, version: _this._version, value: { data: (0, _utilsUtilsJs.deepClone)(_this.data), childrens: childrenValues } }
+            body: { code: 200, schema: _this._schema, version: _this._version, value: { data: (0, _utils.deepClone)(_this.data), childrens: childrenValues } }
           });
 
           return sub;
@@ -1200,12 +1220,21 @@ var DataObjectReporter = (function (_DataObject) {
   }]);
 
   return DataObjectReporter;
-})(_DataObject3['default'] /* implements SyncStatus */);
+}(_DataObject3.default /* implements SyncStatus */);
 
-exports['default'] = DataObjectReporter;
-module.exports = exports['default'];
+exports.default = DataObjectReporter;
 
 },{"../utils/utils.js":9,"./DataObject":2}],6:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 /**
 * Copyright 2016 PT Inovação e Sistemas SA
 * Copyright 2016 INESC-ID
@@ -1232,17 +1261,8 @@ module.exports = exports['default'];
 /**
  * @access private
  */
-'use strict';
 
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-var DataProvisional = (function () {
+var DataProvisional = function () {
   /* private
   _childrenListeners: [MsgListener]
   _listener: MsgListener
@@ -1316,52 +1336,50 @@ var DataProvisional = (function () {
   }]);
 
   return DataProvisional;
-})();
+}();
 
-exports['default'] = DataProvisional;
-module.exports = exports['default'];
+exports.default = DataProvisional;
 
 },{}],7:[function(require,module,exports){
-/**
-* Copyright 2016 PT Inovação e Sistemas SA
-* Copyright 2016 INESC-ID
-* Copyright 2016 QUOBIS NETWORKS SL
-* Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
-* Copyright 2016 ORANGE SA
-* Copyright 2016 Deutsche Telekom AG
-* Copyright 2016 Apizee
-* Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*   http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-**/
-
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.ObjectType = exports.ChangeType = undefined;
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 PT Inovação e Sistemas SA
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 INESC-ID
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 QUOBIS NETWORKS SL
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 ORANGE SA
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 Deutsche Telekom AG
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 Apizee
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Licensed under the Apache License, Version 2.0 (the "License");
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * you may not use this file except in compliance with the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * You may obtain a copy of the License at
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *   http://www.apache.org/licenses/LICENSE-2.0
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Unless required by applicable law or agreed to in writing, software
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * distributed under the License is distributed on an "AS IS" BASIS,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * See the License for the specific language governing permissions and
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * limitations under the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     **/
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+var _utils = require('../utils/utils.js');
 
-var _utilsUtilsJs = require('../utils/utils.js');
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
  * @access private
  */
 
-var SyncObject = (function () {
+var SyncObject = function () {
   /* private
     _data: any;
     _observers: ((event: ChangeEvent) => void)[]
@@ -1376,15 +1394,13 @@ var SyncObject = (function () {
     _this._filters = {};
 
     if (initialData) {
-      _this._data = (0, _utilsUtilsJs.deepClone)(initialData);
+      _this._data = (0, _utils.deepClone)(initialData);
     } else {
       _this._data = {};
     }
 
     _this._internalObserve(new Path(), _this._data);
   }
-
-  //dynamic path for Array index...
 
   _createClass(SyncObject, [{
     key: 'observe',
@@ -1448,15 +1464,15 @@ var SyncObject = (function () {
           Object.observe(obj, handler);
           for (var prop in obj) {
             if (_this._isObservable(obj[prop])) {
-              _this._internalObserve(path['new'](prop), obj[prop]);
+              _this._internalObserve(path.new(prop), obj[prop]);
             }
           }
         } else if (obj.constructor === Array) {
           Array.observe(obj, handler);
-          for (var prop in obj) {
-            if (_this._isObservable(obj[prop])) {
-              var np = path['new'](new ArrayIndex(obj[prop], prop));
-              _this._internalObserve(np, obj[prop]);
+          for (var _prop in obj) {
+            if (_this._isObservable(obj[_prop])) {
+              var np = path.new(new ArrayIndex(obj[_prop], _prop));
+              _this._internalObserve(np, obj[_prop]);
             }
           }
         }
@@ -1469,7 +1485,7 @@ var SyncObject = (function () {
 
       for (var i in changes) {
         var obj = changes[i].object;
-        var objType = undefined;
+        var objType = void 0;
 
         if (obj.constructor === Object) {
           objType = ObjectType.OBJECT;
@@ -1482,7 +1498,7 @@ var SyncObject = (function () {
         if (changes[i].type === 'splice') {
           (function () {
             var idx = changes[i].index;
-            var field = path['new']('' + idx);
+            var field = path.new('' + idx);
             var fieldString = field.toString();
 
             var removeSize = changes[i].removed.length;
@@ -1507,7 +1523,7 @@ var SyncObject = (function () {
               var addValues = obj.slice(idx, idx + addSize);
               addValues.forEach(function (value, index) {
                 if (_this2._isObservable(value)) {
-                  var np = path['new'](new ArrayIndex(value, idx + index));
+                  var np = path.new(new ArrayIndex(value, idx + index));
                   _this2._internalObserve(np, value);
                 }
               });
@@ -1516,7 +1532,7 @@ var SyncObject = (function () {
                 cType: ChangeType.ADD,
                 oType: objType,
                 field: fieldString,
-                data: (0, _utilsUtilsJs.deepClone)(addValues)
+                data: (0, _utils.deepClone)(addValues)
               });
             }
 
@@ -1526,10 +1542,10 @@ var SyncObject = (function () {
             }
           })();
         } else {
-          var field = path['new'](changes[i].name);
-          var fieldString = field.toString();
+          var _field = path.new(changes[i].name);
+          var _fieldString = _field.toString();
 
-          if (fieldString.indexOf('Symbol') !== -1) {
+          if (_fieldString.indexOf('Symbol') !== -1) {
             //hack for PhantomJS2
             //console.log('SYMBOL: ', changes[i]);
             continue;
@@ -1541,18 +1557,18 @@ var SyncObject = (function () {
             this._fireEvent({
               cType: ChangeType.UPDATE,
               oType: objType,
-              field: fieldString,
-              data: (0, _utilsUtilsJs.deepClone)(newValue)
+              field: _fieldString,
+              data: (0, _utils.deepClone)(newValue)
             });
           }
 
           if (changes[i].type === 'add') {
-            this._internalObserve(field, newValue);
+            this._internalObserve(_field, newValue);
             this._fireEvent({
               cType: ChangeType.ADD,
               oType: objType,
-              field: fieldString,
-              data: (0, _utilsUtilsJs.deepClone)(newValue)
+              field: _fieldString,
+              data: (0, _utils.deepClone)(newValue)
             });
           }
 
@@ -1560,7 +1576,7 @@ var SyncObject = (function () {
             this._fireEvent({
               cType: ChangeType.REMOVE,
               oType: objType,
-              field: fieldString
+              field: _fieldString
             });
           }
         }
@@ -1574,9 +1590,12 @@ var SyncObject = (function () {
   }]);
 
   return SyncObject;
-})();
+}();
 
-var Path = (function () {
+//dynamic path for Array index...
+
+
+var Path = function () {
   function Path() {
     _classCallCheck(this, Path);
 
@@ -1647,9 +1666,9 @@ var Path = (function () {
   }]);
 
   return Path;
-})();
+}();
 
-var ArrayIndex = (function () {
+var ArrayIndex = function () {
   function ArrayIndex(obj, idx) {
     _classCallCheck(this, ArrayIndex);
 
@@ -1665,49 +1684,41 @@ var ArrayIndex = (function () {
   }]);
 
   return ArrayIndex;
-})();
+}();
 
-var ChangeType = { UPDATE: 'update', ADD: 'add', REMOVE: 'remove' };
-exports.ChangeType = ChangeType;
-var ObjectType = { OBJECT: 'object', ARRAY: 'array' };
-exports.ObjectType = ObjectType;
-exports['default'] = SyncObject;
+var ChangeType = exports.ChangeType = { UPDATE: 'update', ADD: 'add', REMOVE: 'remove' };
+var ObjectType = exports.ObjectType = { OBJECT: 'object', ARRAY: 'array' };
+exports.default = SyncObject;
 
 },{"../utils/utils.js":9}],8:[function(require,module,exports){
-/**
-* Copyright 2016 PT Inovação e Sistemas SA
-* Copyright 2016 INESC-ID
-* Copyright 2016 QUOBIS NETWORKS SL
-* Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
-* Copyright 2016 ORANGE SA
-* Copyright 2016 Deutsche Telekom AG
-* Copyright 2016 Apizee
-* Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*   http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-**/
-
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 PT Inovação e Sistemas SA
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 INESC-ID
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 QUOBIS NETWORKS SL
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 ORANGE SA
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 Deutsche Telekom AG
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 Apizee
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Licensed under the Apache License, Version 2.0 (the "License");
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * you may not use this file except in compliance with the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * You may obtain a copy of the License at
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *   http://www.apache.org/licenses/LICENSE-2.0
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * Unless required by applicable law or agreed to in writing, software
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * distributed under the License is distributed on an "AS IS" BASIS,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * See the License for the specific language governing permissions and
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     * limitations under the License.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     **/
 
 var _DataObjectReporter = require('./DataObjectReporter');
 
@@ -1721,13 +1732,17 @@ var _DataProvisional = require('./DataProvisional');
 
 var _DataProvisional2 = _interopRequireDefault(_DataProvisional);
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 /**
  * The main class for the syncher package.
  * The Syncher is a singleton class per Hyperty/URL and it is the owner of all created Data Sync Objects according to the Reporter - Observer pattern.
  * Main functionality is to create reporters and to subscribe to existing ones.
  */
 
-var Syncher = (function () {
+var Syncher = function () {
   /* private
   _owner: URL
   _bus: MiniBus
@@ -1781,8 +1796,10 @@ var Syncher = (function () {
    * @type {HypertyURL}
    */
 
+
   _createClass(Syncher, [{
     key: 'create',
+
 
     /**
      * Request a DataObjectReporter creation. The URL will be be requested by the allocation mechanism.
@@ -1807,7 +1824,7 @@ var Syncher = (function () {
             var objURL = reply.body.resource;
 
             //reporter creation accepted
-            var newObj = new _DataObjectReporter2['default'](_this, objURL, schema, 'on', initialData, reply.body.childrenResources);
+            var newObj = new _DataObjectReporter2.default(_this, objURL, schema, 'on', initialData, reply.body.childrenResources);
             _this._reporters[objURL] = newObj;
 
             resolve(newObj);
@@ -1825,6 +1842,7 @@ var Syncher = (function () {
      * @param {ObjectURL} objURL - Address of the existent reporter object
      * @return {Promise<DataObjectObserver>} Return Promise to a new observer.
      */
+
   }, {
     key: 'subscribe',
     value: function subscribe(schema, objURL) {
@@ -1845,10 +1863,10 @@ var Syncher = (function () {
           if (newProvisional) newProvisional._releaseListeners();
 
           if (reply.body.code < 200) {
-            newProvisional = new _DataProvisional2['default'](_this._owner, objURL, _this._bus, reply.body.childrenResources);
+            newProvisional = new _DataProvisional2.default(_this._owner, objURL, _this._bus, reply.body.childrenResources);
             _this._provisionals[objURL] = newProvisional;
           } else if (reply.body.code === 200) {
-            var newObj = new _DataObjectObserver2['default'](_this, objURL, schema, 'on', reply.body.value, newProvisional.children, reply.body.version);
+            var newObj = new _DataObjectObserver2.default(_this, objURL, schema, 'on', reply.body.value, newProvisional.children, reply.body.version);
             _this._observers[objURL] = newObj;
 
             resolve(newObj);
@@ -1865,6 +1883,7 @@ var Syncher = (function () {
      * This is releated to the messagens sent by create to the observers Hyperty array.
      * @param {function(event: MsgEvent)} callback
      */
+
   }, {
     key: 'onNotification',
     value: function onNotification(callback) {
@@ -1923,7 +1942,7 @@ var Syncher = (function () {
 
       var object = _this._observers[resource];
       if (object) {
-        var _event = {
+        var event = {
           type: msg.type,
           url: resource,
           identity: msg.body.idToken,
@@ -1936,7 +1955,7 @@ var Syncher = (function () {
 
             //TODO: any other different options for the release process, like accept but nor release local?
             if (lType === 200) {
-              object['delete']();
+              object.delete();
             }
 
             //send ack response message
@@ -1948,8 +1967,8 @@ var Syncher = (function () {
         };
 
         if (_this._onNotificationHandler) {
-          console.log('NOTIFICATION-EVENT: ', _event);
-          _this._onNotificationHandler(_event);
+          console.log('NOTIFICATION-EVENT: ', event);
+          _this._onNotificationHandler(event);
         }
       } else {
         _this._bus.postMessage({
@@ -1968,6 +1987,7 @@ var Syncher = (function () {
      * All owned reporters, the ones that were created by a create
      * @type {Object<URL, DataObjectReporter>}
      */
+
   }, {
     key: 'reporters',
     get: function get() {
@@ -1978,6 +1998,7 @@ var Syncher = (function () {
      * All owned observers, the ones that were created by a local subscription
      * @type {Object<URL, DataObjectObserver>}
      */
+
   }, {
     key: 'observers',
     get: function get() {
@@ -1986,12 +2007,18 @@ var Syncher = (function () {
   }]);
 
   return Syncher;
-})();
+}();
 
-exports['default'] = Syncher;
-module.exports = exports['default'];
+exports.default = Syncher;
 
 },{"./DataObjectObserver":4,"./DataObjectReporter":5,"./DataProvisional":6}],9:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.divideURL = divideURL;
+exports.deepClone = deepClone;
 /**
 * Copyright 2016 PT Inovação e Sistemas SA
 * Copyright 2016 INESC-ID
@@ -2033,14 +2060,6 @@ module.exports = exports['default'];
  * @param  {URL.URL} url - url address
  * @return {divideURL} the result of divideURL
  */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.divideURL = divideURL;
-exports.deepClone = deepClone;
-
 function divideURL(url) {
 
   // let re = /([a-zA-Z-]*)?:\/\/(?:\.)?([-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b)*(\/[\/\d\w\.-]*)*(?:[\?])*(.+)*/gi;
@@ -2068,13 +2087,16 @@ function divideURL(url) {
  * @param  {Object}  obj - object to be cloned
  * @return {Object}
  */
-
 function deepClone(obj) {
   //TODO: simple but inefficient JSON deep clone...
   if (obj) return JSON.parse(JSON.stringify(obj));
 }
 
 },{}],10:[function(require,module,exports){
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 /*!
  * URI.js - Mutating URLs
  * IPv6 Support
@@ -2089,12 +2111,11 @@ function deepClone(obj) {
  *
  */
 
-'use strict';
-
 (function (root, factory) {
   'use strict';
   // https://github.com/umdjs/umd/blob/master/returnExports.js
-  if (typeof exports === 'object') {
+
+  if ((typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) === 'object') {
     // Node
     module.exports = factory();
   } else if (typeof define === 'function' && define.amd) {
@@ -2115,6 +2136,7 @@ function deepClone(obj) {
   */
 
   // save current IPv6 variable, if any
+
   var _IPv6 = root && root.IPv6;
 
   function bestPresentation(address) {
@@ -2265,6 +2287,10 @@ function deepClone(obj) {
 });
 
 },{}],11:[function(require,module,exports){
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 /*!
  * URI.js - Mutating URLs
  * Second Level Domain (SLD) Support
@@ -2279,12 +2305,11 @@ function deepClone(obj) {
  *
  */
 
-'use strict';
-
 (function (root, factory) {
   'use strict';
   // https://github.com/umdjs/umd/blob/master/returnExports.js
-  if (typeof exports === 'object') {
+
+  if ((typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) === 'object') {
     // Node
     module.exports = factory();
   } else if (typeof define === 'function' && define.amd) {
@@ -2298,6 +2323,7 @@ function deepClone(obj) {
   'use strict';
 
   // save current SecondLevelDomains variable, if any
+
   var _SecondLevelDomains = root && root.SecondLevelDomains;
 
   var SLD = {
@@ -2509,6 +2535,10 @@ function deepClone(obj) {
 });
 
 },{}],12:[function(require,module,exports){
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 /*!
  * URI.js - Mutating URLs
  *
@@ -2521,12 +2551,11 @@ function deepClone(obj) {
  *   MIT License http://www.opensource.org/licenses/mit-license
  *
  */
-'use strict';
-
 (function (root, factory) {
   'use strict';
   // https://github.com/umdjs/umd/blob/master/returnExports.js
-  if (typeof exports === 'object') {
+
+  if ((typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) === 'object') {
     // Node
     module.exports = factory(require('./punycode'), require('./IPv6'), require('./SecondLevelDomains'));
   } else if (typeof define === 'function' && define.amd) {
@@ -2543,6 +2572,7 @@ function deepClone(obj) {
   /*jshint camelcase: false */
 
   // save current URI variable, if any
+
   var _URI = root && root.URI;
 
   function URI(url, base) {
@@ -2951,7 +2981,7 @@ function deepClone(obj) {
       if (!_innerCodingFuncName) {
         actualCodingFunc = URI[_codingFuncName];
       } else {
-        actualCodingFunc = function (string) {
+        actualCodingFunc = function actualCodingFunc(string) {
           return URI[_codingFuncName](URI[_innerCodingFuncName](string));
         };
       }
@@ -3241,7 +3271,7 @@ function deepClone(obj) {
   };
 
   URI.addQuery = function (data, name, value) {
-    if (typeof name === 'object') {
+    if ((typeof name === 'undefined' ? 'undefined' : _typeof(name)) === 'object') {
       for (var key in name) {
         if (hasOwn.call(name, key)) {
           URI.addQuery(data, key, name[key]);
@@ -3277,7 +3307,7 @@ function deepClone(obj) {
           data[key] = undefined;
         }
       }
-    } else if (typeof name === 'object') {
+    } else if ((typeof name === 'undefined' ? 'undefined' : _typeof(name)) === 'object') {
       for (key in name) {
         if (hasOwn.call(name, key)) {
           URI.removeQuery(data, key, name[key]);
@@ -3586,7 +3616,7 @@ function deepClone(obj) {
     this._parts = URI._parts();
 
     var _URI = href instanceof URI;
-    var _object = typeof href === 'object' && (href.hostname || href.path || href.pathname);
+    var _object = (typeof href === 'undefined' ? 'undefined' : _typeof(href)) === 'object' && (href.hostname || href.path || href.pathname);
     if (href.nodeName) {
       var attribute = URI.getDomAttribute(href);
       href = href[attribute] || '';
@@ -4220,7 +4250,7 @@ function deepClone(obj) {
 
     if (typeof name === 'string' || name instanceof String) {
       data[name] = value !== undefined ? value : null;
-    } else if (typeof name === 'object') {
+    } else if ((typeof name === 'undefined' ? 'undefined' : _typeof(name)) === 'object') {
       for (var key in name) {
         if (hasOwn.call(name, key)) {
           data[key] = name[key];
@@ -4663,15 +4693,17 @@ function deepClone(obj) {
 
 },{"./IPv6":10,"./SecondLevelDomains":11,"./punycode":13}],13:[function(require,module,exports){
 (function (global){
-/*! https://mths.be/punycode v1.4.0 by @mathias */
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+/*! https://mths.be/punycode v1.4.0 by @mathias */
 ;(function (root) {
 
 	/** Detect free variables */
-	var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
-	var freeModule = typeof module == 'object' && module && !module.nodeType && module;
-	var freeGlobal = typeof global == 'object' && global;
+	var freeExports = (typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) == 'object' && exports && !exports.nodeType && exports;
+	var freeModule = (typeof module === 'undefined' ? 'undefined' : _typeof(module)) == 'object' && module && !module.nodeType && module;
+	var freeGlobal = (typeof global === 'undefined' ? 'undefined' : _typeof(global)) == 'object' && global;
 	if (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal || freeGlobal.self === freeGlobal) {
 		root = freeGlobal;
 	}
@@ -4682,7 +4714,7 @@ function deepClone(obj) {
   * @type Object
   */
 	var punycode,
-	   
+
 
 	/** Highest positive signed 32-bit float value */
 	maxInt = 2147483647,
@@ -4713,13 +4745,13 @@ function deepClone(obj) {
 		'not-basic': 'Illegal input >= 0x80 (not a basic code point)',
 		'invalid-input': 'Invalid input'
 	},
-	   
+
 
 	/** Convenience shortcuts */
 	baseMinusTMin = base - tMin,
 	    floor = Math.floor,
 	    stringFromCharCode = String.fromCharCode,
-	   
+
 
 	/** Temporary variable */
 	key;
@@ -4917,7 +4949,7 @@ function deepClone(obj) {
 		    k,
 		    digit,
 		    t,
-		   
+
 		/** Cached calculation results */
 		baseMinusT;
 
@@ -5014,10 +5046,10 @@ function deepClone(obj) {
 		    t,
 		    currentValue,
 		    output = [],
-		   
+
 		/** `inputLength` will hold the number of code points in `input`. */
 		inputLength,
-		   
+
 		/** Cached calculation results */
 		handledCPCountPlusOne,
 		    baseMinusT,
@@ -5171,7 +5203,7 @@ function deepClone(obj) {
 	/** Expose `punycode` */
 	// Some AMD build optimizers, like r.js, check for specific condition patterns
 	// like the following:
-	if (typeof define == 'function' && typeof define.amd == 'object' && define.amd) {
+	if (typeof define == 'function' && _typeof(define.amd) == 'object' && define.amd) {
 		define('punycode', function () {
 			return punycode;
 		});
@@ -5195,68 +5227,96 @@ function deepClone(obj) {
 },{}],14:[function(require,module,exports){
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports['default'] = activate;
+exports.default = activate;
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+var _HypertyDiscovery = require('service-framework/src/hyperty-discovery/HypertyDiscovery');
 
-var _serviceFrameworkSrcHypertyDiscoveryHypertyDiscovery = require('service-framework/src/hyperty-discovery/HypertyDiscovery');
-
-var _serviceFrameworkSrcHypertyDiscoveryHypertyDiscovery2 = _interopRequireDefault(_serviceFrameworkSrcHypertyDiscoveryHypertyDiscovery);
+var _HypertyDiscovery2 = _interopRequireDefault(_HypertyDiscovery);
 
 var _urijs = require('urijs');
 
 var _urijs2 = _interopRequireDefault(_urijs);
 
-var _serviceFrameworkSrcSyncherSyncher = require('service-framework/src/syncher/Syncher');
+var _Syncher = require('service-framework/src/syncher/Syncher');
 
-var _serviceFrameworkSrcSyncherSyncher2 = _interopRequireDefault(_serviceFrameworkSrcSyncherSyncher);
+var _Syncher2 = _interopRequireDefault(_Syncher);
+
+var _SyncObject2 = require('service-framework/src/syncher/SyncObject');
+
+var _SyncObject3 = _interopRequireDefault(_SyncObject2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Communication = function (_SyncObject) {
+    _inherits(Communication, _SyncObject);
+
+    function Communication() {
+        _classCallCheck(this, Communication);
+
+        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Communication).call(this));
+
+        _this.startingTime = Date.now();
+        _this.lastModified = Date.now();
+        _this.status = "pending";
+        _this.resources = [];
+        _this.children = [];
+        return _this;
+    }
+
+    return Communication;
+}(_SyncObject3.default);
 
 var GroupChat = {
     _getHyFor: function _getHyFor(participants) {
-        var _this = this;
+        var _this2 = this;
 
         return Promise.all(participants.map(function (p) {
-            return _this.hypertyDiscoveryService.discoverHypertyPerUser(p.email, p.domain).then(function (user) {
+            return _this2.hypertyDiscoveryService.discoverHypertyPerUser(p.email, p.domain).then(function (user) {
                 return user.hypertyURL;
             });
         }));
     },
-
     _createSyncher: function _createSyncher(hyperties) {
-        return this.syncher.create(this.objectDescURL, hyperties);
+        return this.syncher.create(this.objectDescURL, hyperties, new Communication());
     },
-
     create: function create(name, participants) {
-        var _this2 = this;
-
-        return this._getHyFor(participants).then(function (hyperties) {
-            return _this2._createSyncher(hyperties);
-        });
-    },
-
-    onAdd: function onAdd(callback) {
         var _this3 = this;
 
-        this.syncher.onNotification(function (event) {
-            _this3.syncher.subscribe(objDescription, event.url).then(function (dataObject) {
-                return dataObject;
+        return this._getHyFor(participants).then(function (hyperties) {
+            return _this3._createSyncher(hyperties);
+        });
+    },
+    onInvite: function onInvite(callback) {
+        var _this4 = this;
+
+        console.log("juas");
+        return this.syncher.onNotification(function (event) {
+            _this4.syncher.subscribe(_this4.objectDescURL, event.url).then(function (dataObject) {
+                return callback(dataObject);
             });
         });
     }
 };
 
 var groupChatFactory = function groupChatFactory(hypertyURL, bus, config) {
-    var syncher = new _serviceFrameworkSrcSyncherSyncher2['default'](hypertyURL, bus, config);
-    var hypertyDiscovery = new _serviceFrameworkSrcHypertyDiscoveryHypertyDiscovery2['default'](hypertyURL, bus);
-    var uri = new _urijs2['default'](hypertyURL);
+    var syncher = new _Syncher2.default(hypertyURL, bus, config);
+    var hypertyDiscovery = new _HypertyDiscovery2.default(hypertyURL, bus);
+    var uri = new _urijs2.default(hypertyURL);
 
     return Object.assign(Object.create(GroupChat), {
+
         'syncher': syncher,
         'hypertyDiscoveryService': hypertyDiscovery,
-        'objectDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/FakeDataSchema'
+        'objectDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/CommunicationDataSchema'
     });
 };
 
@@ -5267,7 +5327,5 @@ function activate(hypertyURL, bus, config) {
     };
 }
 
-module.exports = exports['default'];
-
-},{"service-framework/src/hyperty-discovery/HypertyDiscovery":1,"service-framework/src/syncher/Syncher":8,"urijs":12}]},{},[14])(14)
+},{"service-framework/src/hyperty-discovery/HypertyDiscovery":1,"service-framework/src/syncher/SyncObject":7,"service-framework/src/syncher/Syncher":8,"urijs":12}]},{},[14])(14)
 });

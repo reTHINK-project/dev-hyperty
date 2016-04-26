@@ -16,7 +16,8 @@ const Participants = (props) => {
                         <Participant />
                     </li>
                 </ul>
-                <Link to={`chat/${props.chat_name}`} className="btn btn-default">Create</Link>
+                <Link to={{pathname:'chat', state:{name:props.location.state.name, 
+                    participants:[{domain:props.domain, email:'openidtest20@gmail.com'}]}}} className="btn btn-default">Create</Link>
             </div>
     )
 }

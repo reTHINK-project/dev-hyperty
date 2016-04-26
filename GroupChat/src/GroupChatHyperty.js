@@ -1,6 +1,19 @@
 import HypertyDiscovery from 'service-framework/src/hyperty-discovery/HypertyDiscovery'
 import URI from 'urijs'
 import Syncher from 'service-framework/src/syncher/Syncher'
+import SyncObject from 'service-framework/src/syncher/SyncObject'
+
+class Communication extends SyncObject{
+    constructor(){
+        super()
+
+        this.startingTime = Date.now()
+        this.lastModified = Date.now()
+        this.status = "pending"
+        this.resources = []
+        this.children = []
+    }
+}
 
 let GroupChat = {
     _getHyFor (participants){
@@ -11,7 +24,7 @@ let GroupChat = {
     },
 
     _createSyncher (hyperties){
-        return this.syncher.create(this.objectDescURL, hyperties)
+        return this.syncher.create(this.objectDescURL, hyperties, new Communication())
     },
 
     create (name, participants) {
@@ -19,11 +32,12 @@ let GroupChat = {
             .then((hyperties)=>this._createSyncher(hyperties))
     },
 
-    onAdd (callback) {
-        this.syncher.onNotification((event) =>{
-            this.syncher.subscribe(objDescription, event.url)
+    onInvite (callback) {
+        console.log("juas")
+        return this.syncher.onNotification((event) =>{
+            this.syncher.subscribe(this.objectDescURL, event.url)
                 .then((dataObject) => {
-                    return dataObject
+                    return callback(dataObject)
                 })
         })
     }
@@ -35,9 +49,10 @@ let groupChatFactory = function(hypertyURL, bus, config){
     let uri = new URI(hypertyURL)
 
     return Object.assign(Object.create(GroupChat), {
+
             'syncher': syncher,
             'hypertyDiscoveryService': hypertyDiscovery,
-            'objectDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/FakeDataSchema'
+            'objectDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/CommunicationDataSchema'
         })
 }
 

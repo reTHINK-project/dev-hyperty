@@ -1,9 +1,10 @@
 import React from 'react'
+import { Link } from 'react-router'
 
 const Sidebar = (props) => {
     return(
             <ul className="nav nav-pills nav-stacked">
-                <li role="presentation" className="active"><a href="/">Chats</a></li>
+                <li role="presentation" className="active"><Link to="/">Chats</Link></li>
             </ul>
     )
 }

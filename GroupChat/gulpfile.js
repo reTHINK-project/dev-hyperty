@@ -153,6 +153,7 @@ function resource(file, configuration, isDefault) {
     .transform(babel,{ global:true, compact: false})
     .bundle()
     .pipe(source('bundle.js'))
+    .pipe(replace('g.activate = f()', 'g.activate = f().default'))
     .pipe(gulp.dest( resources_path + '/'))
     .pipe(buffer())
     .pipe(encode(filename, descriptorName, configuration, isDefault))

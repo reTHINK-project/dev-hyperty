@@ -19,8 +19,6 @@
   "author": "David Vílchez",
   "license": "ISC",
   "dependencies": {
-    "runtime-browser": "git+https://github.com/reTHINK-project/dev-runtime-browser.git#master",
-    "runtime-core": "git+https://github.com/reTHINK-project/dev-runtime-core.git#dev-0.4",
     "service-framework": "git+https://github.com/reTHINK-project/dev-service-framework.git#develop",
     "urijs": "^1.17.1"
   },

@@ -13,7 +13,7 @@ const ChatForm = React.createClass({
                         <label for="chatName">Name</label>
                         <input type="text" className="form-control" id="chatName" placeholder="Name" onChange={this.handleName}/>
                     </div>
-                    <Link to={`add_participants/${this.state.chat_name}`} className="btn btn-default">Next</Link>
+                    <Link to={{pathname: 'add_participants', state:{name:this.state.chat_name}}} className="btn btn-default">Next</Link>
                 </form>
         )
     },
