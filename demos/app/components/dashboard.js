@@ -24,7 +24,7 @@ const Dashboard = React.createClass({
                     </div>
                 </header>
                 <div className="container-fluid">
-                    <div className='row row-offcanvas row-offcanvas-left'>
+                    <div className='row row-offcanvas row-offcanvas-left expando'>
                         <div className="col-sm-4 col-md-3 sidebar-offcanvas">
                             <div className="sidebar-panel">
                                 <Sidebar />
