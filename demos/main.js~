@@ -119,16 +119,6 @@ function hypertyDeployed(hyperty) {
       template = 'hello-world/helloWorld';
       script =  'hello-world/helloReporter.js';
       break;
-
-    case 'BraceletSensorReporter':
-      template = 'BraceletSensor/braceletSensor';
-      script =  'BraceletSensor/BraceletSensorReporter.js';
-      break;
-
-    case 'BraceletSensorObserver':
-      template = 'BraceletSensor/braceletSensor';
-      script =  'BraceletSensor/BraceletSensorObserver.js';
-      break;
   }
 
   if (!template) {

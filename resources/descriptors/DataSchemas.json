@@ -58,5 +58,25 @@
     "messageSchemas": "",
     "dataObjects": [],
     "accessControlPolicy": "somePolicy"
+  },
+  "BraceletSensorDataSchema": {
+    "sourcePackage": {
+      "sourceCode": "ewoiJHNjaGVtYSI6ICJodHRwOi8vanNvbi1zY2hlbWEub3JnL2RyYWZ0LTA0L3NjaGVtYSMiLAoiaWQiOiAiQnJhY2VsZXRTZW5zb3IiLAoidHlwZSI6ICJvYmplY3QiLAoidmFsdWUiOiJzdHJpbmciLAoicHJvcGVydGllcyI6IHsKICAic2NoZW1lIjogewogICAgImNvbnN0YW50IjogImJyYWNlbGV0IgogIH0sCiAgIkJ0QWRkcmVzcyI6IHsKICAgICJ0eXBlIjogInN0cmluZyIKICB9LAogICJOU3RlcHMiOiB7CiAgICAidHlwZSI6ICJpbnRlZ2VyIgogIH0sCiAgIk5hbWUiOiB7CiAgICAidHlwZSI6ICJzdHJpbmciCiAgfSwKICAiQmF0dGVyeSI6IHsKICAgICJ0eXBlIjogImludGVnZXIiCiAgfSwKICAiTGVQYXJhbXMiOiB7CiAgICAidHlwZSI6ICJvYmplY3QiLAogICAgInByb3BlcnRpZXMiOiB7CiAgICAgICJjb25uSW50TWluIjogewogICAgICAgICJ0eXBlIjogIm51bWJlciIKICAgICAgfSwKICAgICAgImNvbm5JbnRNYXgiOiB7CiAgICAgICAgInR5cGUiOiAibnVtYmVyIgogICAgICB9LAogICAgICAibGF0ZW5jeSI6IHsKICAgICAgICAidHlwZSI6ICJudW1iZXIiCiAgICAgIH0sCiAgICAgICJ0aW1lb3V0IjogewogICAgICAgICJ0eXBlIjogIm51bWJlciIKICAgICAgfSwKICAgICAgImNvbm5JbnQiOiB7CiAgICAgICAgInR5cGUiOiAibnVtYmVyIgogICAgICB9LAogICAgICAiYWR2SW50IjogewogICAgICAgICJ0eXBlIjogIm51bWJlciIKICAgICAgfQogICAgfQogIH0KfQp9Cg==",
+      "sourceCodeClassname": "BraceletSensorDataSchema",
+      "encoding": "base64",
+      "signature": ""
+    },
+    "cguid": 20004,
+    "type": "DataSchemas",
+    "version": "0.1",
+    "description": "Description of BraceletSensorDataSchema",
+    "objectName": "BraceletSensorDataSchema",
+    "configuration": {},
+    "sourcePackageURL": "/sourcePackage",
+    "language": "JSON-Schema",
+    "signature": "",
+    "messageSchemas": "",
+    "dataObjects": [],
+    "accessControlPolicy": "somePolicy"
   }
 }
