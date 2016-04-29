@@ -5293,12 +5293,16 @@ var GroupChat = {
 
         return this._getHyFor(participants).then(function (hyperties) {
             return _this3._createSyncher(hyperties);
+        }).then(function (dataObjectReporter) {
+            dataObjectReporter.onSubscription(function (event) {
+                return event.accept();
+            });
+            return dataObjectReporter;
         });
     },
     onInvite: function onInvite(callback) {
         var _this4 = this;
 
-        console.log("juas");
         return this.syncher.onNotification(function (event) {
             _this4.syncher.subscribe(_this4.objectDescURL, event.url).then(function (dataObject) {
                 return callback(dataObject);

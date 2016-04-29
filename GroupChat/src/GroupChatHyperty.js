@@ -3,6 +3,18 @@ import URI from 'urijs'
 import Syncher from 'service-framework/src/syncher/Syncher'
 import SyncObject from 'service-framework/src/syncher/SyncObject'
 
+class Communication extends SyncObject{
+    constructor(){
+        super()
+
+        this.startingTime = Date.now()
+        this.lastModified = Date.now()
+        this.status = "pending"
+        this.resources = []
+        this.children = []
+    }
+}
+
 let GroupChat = {
     _getHyFor (participants){
         return Promise.all(participants.map((p) => {
@@ -12,16 +24,19 @@ let GroupChat = {
     },
 
     _createSyncher (hyperties){
-        return this.syncher.create(this.objectDescURL, hyperties, {})
+        return this.syncher.create(this.objectDescURL, hyperties, new Communication())
     },
 
     create (name, participants) {
         return this._getHyFor(participants)
             .then((hyperties)=>this._createSyncher(hyperties))
+            .then((dataObjectReporter) => {
+                dataObjectReporter.onSubscription((event)=>event.accept())
+                return dataObjectReporter
+            })
     },
 
     onInvite (callback) {
-        console.log("juas")
         return this.syncher.onNotification((event) =>{
             this.syncher.subscribe(this.objectDescURL, event.url)
                 .then((dataObject) => {
