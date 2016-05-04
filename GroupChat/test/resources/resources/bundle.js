@@ -5230,6 +5230,46 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+exports.default = function (dataObject) {
+    return Object.assign(Object.create(GroupChat), {
+        _dataObject: dataObject,
+        startingTime: dataObject.data.startingTime,
+        messages: []
+    });
+};
+
+var _GroupChatMessage = require('./GroupChatMessage');
+
+var _GroupChatMessage2 = _interopRequireDefault(_GroupChatMessage);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var GroupChat = {
+    sendMessage: function sendMessage(message) {
+        var _this = this;
+
+        return this._dataObject.addChildren('chatmessages', { chatMessage: message }).then(function (child) {
+            _this.messages.push((0, _GroupChatMessage2.default)(child, true));
+            return _this.messages[_this.messages.length - 1];
+        });
+    },
+    onMessage: function onMessage(callback) {
+        var _this2 = this;
+
+        this._dataObject.onAddChildren(function (child) {
+            _this2.messages.push((0, _GroupChatMessage2.default)(child, false));
+            callback(_this2.messages[_this2.messages.length - 1]);
+        });
+    }
+};
+
+},{"./GroupChatMessage":16}],15:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 exports.default = activate;
 
 var _HypertyDiscovery = require('service-framework/src/hyperty-discovery/HypertyDiscovery');
@@ -5247,6 +5287,10 @@ var _Syncher2 = _interopRequireDefault(_Syncher);
 var _SyncObject2 = require('service-framework/src/syncher/SyncObject');
 
 var _SyncObject3 = _interopRequireDefault(_SyncObject2);
+
+var _GroupChat = require('./GroupChat');
+
+var _GroupChat2 = _interopRequireDefault(_GroupChat);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5275,7 +5319,7 @@ var Communication = function (_SyncObject) {
     return Communication;
 }(_SyncObject3.default);
 
-var GroupChat = {
+var GroupChatHyperty = {
     _getHyFor: function _getHyFor(participants) {
         var _this2 = this;
 
@@ -5297,7 +5341,7 @@ var GroupChat = {
             dataObjectReporter.onSubscription(function (event) {
                 return event.accept();
             });
-            return dataObjectReporter;
+            return (0, _GroupChat2.default)(dataObjectReporter);
         });
     },
     onInvite: function onInvite(callback) {
@@ -5305,7 +5349,7 @@ var GroupChat = {
 
         return this.syncher.onNotification(function (event) {
             _this4.syncher.subscribe(_this4.objectDescURL, event.url).then(function (dataObject) {
-                return callback(dataObject);
+                return callback((0, _GroupChat2.default)(dataObject));
             });
         });
     }
@@ -5316,7 +5360,7 @@ var groupChatFactory = function groupChatFactory(hypertyURL, bus, config) {
     var hypertyDiscovery = new _HypertyDiscovery2.default(hypertyURL, bus);
     var uri = new _urijs2.default(hypertyURL);
 
-    return Object.assign(Object.create(GroupChat), {
+    return Object.assign(Object.create(GroupChatHyperty), {
 
         'syncher': syncher,
         'hypertyDiscoveryService': hypertyDiscovery,
@@ -5331,5 +5375,22 @@ function activate(hypertyURL, bus, config) {
     };
 }
 
-},{"service-framework/src/hyperty-discovery/HypertyDiscovery":1,"service-framework/src/syncher/SyncObject":7,"service-framework/src/syncher/Syncher":8,"urijs":12}]},{},[14])(14)
+},{"./GroupChat":14,"service-framework/src/hyperty-discovery/HypertyDiscovery":1,"service-framework/src/syncher/SyncObject":7,"service-framework/src/syncher/Syncher":8,"urijs":12}],16:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function (dataObjectChild, isMe) {
+    return Object.assign(Object.create(GroupChatMessage), {
+        _dataObjectChild: dataObjectChild,
+        isMe: isMe,
+        text: dataObjectChild.data ? dataObjectChild.data.chatMessage : dataObjectChild.value.chatMessage
+    });
+};
+
+var GroupChatMessage = {};
+
+},{}]},{},[15])(15)
 });

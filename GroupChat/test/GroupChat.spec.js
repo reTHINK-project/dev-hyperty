@@ -1,9 +1,12 @@
 import { assert } from 'chai'
 
 describe('GroupChat', () =>{
-    describe('add participant', () => {
-        xit('should notify invited participant and add it to the list of participants', () => {
+    describe('send message', () => {
+        xit('should send a message', () => {
 
+        })
+
+        xit('should notify all participants with the message', ()=>{
         })
     })
 })

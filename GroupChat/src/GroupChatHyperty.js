@@ -2,6 +2,7 @@ import HypertyDiscovery from 'service-framework/src/hyperty-discovery/HypertyDis
 import URI from 'urijs'
 import Syncher from 'service-framework/src/syncher/Syncher'
 import SyncObject from 'service-framework/src/syncher/SyncObject'
+import GroupChat from './GroupChat' 
 
 class Communication extends SyncObject{
     constructor(){
@@ -15,7 +16,7 @@ class Communication extends SyncObject{
     }
 }
 
-let GroupChat = {
+let GroupChatHyperty = {
     _getHyFor (participants){
         return Promise.all(participants.map((p) => {
             return this.hypertyDiscoveryService.discoverHypertyPerUser(p.email, p.domain)
@@ -32,7 +33,7 @@ let GroupChat = {
             .then((hyperties)=>this._createSyncher(hyperties))
             .then((dataObjectReporter) => {
                 dataObjectReporter.onSubscription((event)=>event.accept())
-                return dataObjectReporter
+                return GroupChat(dataObjectReporter)
             })
     },
 
@@ -40,7 +41,7 @@ let GroupChat = {
         return this.syncher.onNotification((event) =>{
             this.syncher.subscribe(this.objectDescURL, event.url)
                 .then((dataObject) => {
-                    return callback(dataObject)
+                    return callback(GroupChat(dataObject))
                 })
         })
     }
@@ -51,7 +52,7 @@ let groupChatFactory = function(hypertyURL, bus, config){
     let hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus)
     let uri = new URI(hypertyURL)
 
-    return Object.assign(Object.create(GroupChat), {
+    return Object.assign(Object.create(GroupChatHyperty), {
 
             'syncher': syncher,
             'hypertyDiscoveryService': hypertyDiscovery,
