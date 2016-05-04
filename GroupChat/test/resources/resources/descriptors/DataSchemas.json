@@ -38,5 +38,25 @@
     "messageSchemas": "",
     "dataObjects": [],
     "accessControlPolicy": "somePolicy"
+  },
+  "CommunicationDataSchema": {
+    "sourcePackage": {
+      "sourceCode": "ew0KCSIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDQvc2NoZW1hIyIsDQoNCgkiaWQiOiAiQ29tbXVuaWNhdGlvbiIsDQoJInR5cGUiOiAib2JqZWN0IiwNCiAgICAic2NoZW1lIiA6ICJyZXNvdXJjZXMiLA0KCSJyZXF1aXJlZCI6IFsic3RhcnRpbmdUaW1lIiwgImxhc3RNb2RpZmllZCIsICJzdGF0dXMiLCAicmVzb3VyY2VzIiwgImNoaWxkcmVuIl0sDQoJInByb3BlcnRpZXMiOiB7DQoJCSJzdGFydGluZ1RpbWUiOiB7DQoJCQkidHlwZSI6ICJzdHJpbmciLA0KCQkJImZvcm1hdCI6ICJkYXRlLXRpbWUiDQoJCX0sDQoJCSJsYXN0TW9kaWZpZWQiOiB7DQoJCQkidHlwZSI6ICJzdHJpbmciLA0KCQkJImZvcm1hdCI6ICJkYXRlLXRpbWUiDQoJCX0sDQoJCSJkdXJhdGlvbiI6IHsNCgkJCSJ0eXBlIjogInN0cmluZyIsDQoJCQkiZm9ybWF0IjogImRhdGUtdGltZSINCgkJfSwNCgkJInN0YXR1cyI6IHsNCgkJCSJlbnVtIjogWw0KCQkJCSJvcGVuIiwNCgkJCQkicGVuZGluZyIsDQoJCQkJImNsb3NlZCIsDQoJCQkJInBhdXNlZCIsDQoJCQkJImZhaWxlZCINCgkJCV0NCgkJfSwNCgkJInBhcnRpY2lwYW50cyI6IHsNCgkJCSJ0eXBlIjogImFycmF5IiwNCgkJCSJpdGVtcyI6IHsNCgkJCQkiJHJlZiI6ICIjL1BhcnRpY2lwYW50Ig0KCQkJfQ0KCQl9LA0KCQkicW9zIjogew0KCQkJIiRyZWYiOiAiIy9Db21tdW5pY2F0aW9uUXVhbGl0eSINCgkJfSwNCgkJInJlc291cmNlcyI6IHsNCgkJCSJ0eXBlIjogImFycmF5IiwNCgkJCSJpdGVtcyI6IHsNCgkJCQkiJHJlZiI6ICJIeXBlcnR5UmVzb3VyY2UuanNvbiMvSHlwZXJ0eVJlc291cmNlIg0KCQkJfQ0KCQl9LA0KCQkiY2hpbGRyZW4iOiB7DQoJCQkiY29uc3RhbnQiOiBbImNoYXRtZXNzYWdlcyJdDQoJCX0NCgl9LCANCgkiQ2hhdE1lc3NhZ2VzIjogew0KCQkidHlwZSI6ICJvYmplY3QiLA0KCQkicmVxdWlyZWQiOiBbInBhcmVudCIsICJsaXN0ZW5lciIsICJ0eXBlIl0sDQoJCSJwcm9wZXJ0aWVzIjogew0KCQkJInBhcmVudCI6IHsNCgkJCQkiY29uc3RhbnQiOiAiY29tbXVuaWNhdGlvbiINCgkJCX0sDQoJCQkibGlzdGVuZXIiOiB7DQoJCQkJImNvbnN0YW50IjogImNoYXRtZXNzYWdlcyINCgkJCX0sDQoJCQkidHlwZSI6IHsNCgkJCQkidHlwZSI6ICJzdHJpbmciDQoJCQl9DQoJCX0NCgl9LCANCgkiUGFydGljaXBhbnQiOiB7DQoJCSJ0eXBlIjogIm9iamVjdCIsDQoJCSJwcm9wZXJ0aWVzIjogew0KCQkJInN0YXR1cyI6IHsNCgkJCQkiZW51bSI6IFsNCgkJCQldDQoJCQl9DQoJCX0NCgl9LCANCgkiQ29tbXVuaWNhdGlvblF1YWxpdHkiOiB7DQoJCSJ0eXBlIjogIm9iamVjdCIsDQoJCSJwcm9wZXJ0aWVzIjogew0KCQl9DQoJfQ0KfQ==",
+      "sourceCodeClassname": "CommunicationDataSchema",
+      "encoding": "base64",
+      "signature": ""
+    },
+    "cguid": 1,
+    "type": "DataSchemas",
+    "version": "0.1",
+    "description": "Description of CommunicationDataSchema",
+    "objectName": "CommunicationDataSchema",
+    "sourcePackageURL": "/sourcePackage",
+    "language": "JSON-Schema",
+    "signature": "",
+    "messageSchemas": "",
+    "dataObjects": [],
+    "accessControlPolicy": "somePolicy",
+    "configuration": {}
   }
 }

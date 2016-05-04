@@ -15,6 +15,12 @@ module.exports = function (config) {
             }
         },
 
+        client:{
+            mocha: {
+                timeout: 0
+            }
+        },
+
         files: [
             'test/*.spec.js'
         ],
