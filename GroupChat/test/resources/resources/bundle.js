@@ -5234,6 +5234,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = function (dataObject) {
     return Object.assign(Object.create(GroupChat), {
         _dataObject: dataObject,
+        name: dataObject.data.name,
         startingTime: dataObject.data.startingTime,
         messages: []
     });
@@ -5303,7 +5304,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Communication = function (_SyncObject) {
     _inherits(Communication, _SyncObject);
 
-    function Communication() {
+    function Communication(name) {
         _classCallCheck(this, Communication);
 
         var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Communication).call(this));
@@ -5313,6 +5314,7 @@ var Communication = function (_SyncObject) {
         _this.status = "pending";
         _this.resources = [];
         _this.children = [];
+        _this.name = name;
         return _this;
     }
 
@@ -5329,14 +5331,14 @@ var GroupChatHyperty = {
             });
         }));
     },
-    _createSyncher: function _createSyncher(hyperties) {
-        return this.syncher.create(this.objectDescURL, hyperties, new Communication());
+    _createSyncher: function _createSyncher(name, hyperties) {
+        return this.syncher.create(this.objectDescURL, hyperties, new Communication(name));
     },
     create: function create(name, participants) {
         var _this3 = this;
 
         return this._getHyFor(participants).then(function (hyperties) {
-            return _this3._createSyncher(hyperties);
+            return _this3._createSyncher(name, hyperties);
         }).then(function (dataObjectReporter) {
             dataObjectReporter.onSubscription(function (event) {
                 return event.accept();

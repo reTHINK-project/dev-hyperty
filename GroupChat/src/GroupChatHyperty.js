@@ -5,7 +5,7 @@ import SyncObject from 'service-framework/src/syncher/SyncObject'
 import GroupChat from './GroupChat' 
 
 class Communication extends SyncObject{
-    constructor(){
+    constructor(name){
         super()
 
         this.startingTime = Date.now()
@@ -13,6 +13,7 @@ class Communication extends SyncObject{
         this.status = "pending"
         this.resources = []
         this.children = []
+        this.name = name
     }
 }
 
@@ -24,13 +25,13 @@ let GroupChatHyperty = {
         }))
     },
 
-    _createSyncher (hyperties){
-        return this.syncher.create(this.objectDescURL, hyperties, new Communication())
+    _createSyncher (name, hyperties){
+        return this.syncher.create(this.objectDescURL, hyperties, new Communication(name))
     },
 
     create (name, participants) {
         return this._getHyFor(participants)
-            .then((hyperties)=>this._createSyncher(hyperties))
+            .then((hyperties)=>this._createSyncher(name, hyperties))
             .then((dataObjectReporter) => {
                 dataObjectReporter.onSubscription((event)=>event.accept())
                 return GroupChat(dataObjectReporter)

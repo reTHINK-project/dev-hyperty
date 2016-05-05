@@ -20,6 +20,7 @@ const GroupChat = {
 export default function(dataObject){
     return Object.assign(Object.create(GroupChat), {
         _dataObject: dataObject,
+        name: dataObject.data.name,
         startingTime: dataObject.data.startingTime,
         messages:[]
     })
