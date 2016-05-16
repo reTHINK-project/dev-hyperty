@@ -12,8 +12,8 @@ const LocationHyperty = {
             .then((reporter)=>{
                 reporter.onSubscription((event)=>event.accept())
                 navigator.geolocation.watchPosition((position)=>{
-                    reporter.data.coords=position.coords
-                    reporter.data.timestamp = position.timestamp
+                    reporter.data.value.coords=position.coords
+                    reporter.data.value.timestamp = position.timestamp
                 })
             })
     }
@@ -21,7 +21,7 @@ const LocationHyperty = {
 
 const LocationHypertyFactory = function(hypertyURL, bus, config){
     let uri = new URI(hypertyURL)
-    LocationHyperty._objectDescURL = `hyperty-catalogue://${uri.hostname()}/.well-known/dataschemas/LocationDataSchema`
+    LocationHyperty._objectDescURL = `hyperty-catalogue://${uri.hostname()}/.well-known/dataschemas/ContextDataSchema`
     LocationHyperty._syncher = new Syncher(hypertyURL, bus, config)
 
     return LocationHyperty

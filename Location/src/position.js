@@ -1,5 +1,7 @@
 export default  {
-   geoposition: {
+    id: "LocationObject",
+    type: "object",
+    value: {
        coords: {
            latitude:0,
            longitude:0,
@@ -10,5 +12,5 @@ export default  {
            speed:0
        },
        timestamp:0
-   }
+    }
 }
