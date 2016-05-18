@@ -1,13 +1,10 @@
-import HypertyDiscovery from 'service-framework/src/hyperty-discovery/HypertyDiscovery'
+import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery'
 import URI from 'urijs'
-import Syncher from 'service-framework/src/syncher/Syncher'
-import SyncObject from 'service-framework/src/syncher/SyncObject'
+import { Syncher } from 'service-framework/dist/Syncher'
 import GroupChat from './GroupChat' 
 
-class Communication extends SyncObject{
+class Communication {
     constructor(name){
-        super()
-
         this.startingTime = Date.now()
         this.lastModified = Date.now()
         this.status = "pending"
@@ -20,8 +17,14 @@ class Communication extends SyncObject{
 let GroupChatHyperty = {
     _getHyFor (participants){
         return Promise.all(participants.map((p) => {
-            return this.hypertyDiscoveryService.discoverHypertyPerUser(p.email, p.domain)
-                .then((user)=>user.hypertyURL)
+            return this.hypertyDiscoveryService.discoverHypertiesPerUser(p.email, p.domain)
+                .then((hyperties)=>{
+                    return Object.keys(hyperties)
+                        .map((key)=>{return {key:key, descriptor:hyperties[key].descriptor, lastModified:hyperties[key].lastModified}})
+                        .filter((desc)=>desc.descriptor.endsWith('GroupChatHyperty'))
+                        .sort((a,b)=>(new Date(a.lastModified)<new Date(b.lastModified))?1:-1)
+                        .shift().key
+                })
         }))
     },
 
@@ -52,12 +55,11 @@ let groupChatFactory = function(hypertyURL, bus, config){
     let syncher = new Syncher(hypertyURL, bus, config);
     let hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus)
     let uri = new URI(hypertyURL)
-
+    
     return Object.assign(Object.create(GroupChatHyperty), {
-
             'syncher': syncher,
             'hypertyDiscoveryService': hypertyDiscovery,
-            'objectDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/CommunicationDataSchema'
+            'objectDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/CommunicationDataSchema',
         })
 }
 
