@@ -37,16 +37,23 @@ let GroupChatHyperty = {
             .then((hyperties)=>this._createSyncher(name, hyperties))
             .then((dataObjectReporter) => {
                 dataObjectReporter.onSubscription((event)=>event.accept())
-                return GroupChat(dataObjectReporter)
+                return GroupChat(dataObjectReporter, this._position.data)
             })
     },
 
     onInvite (callback) {
         return this.syncher.onNotification((event) =>{
-            this.syncher.subscribe(this.objectDescURL, event.url)
-                .then((dataObject) => {
-                    return callback(GroupChat(dataObject))
-                })
+            if(event.schema === this.locationDescURL){
+                this.syncher.subscribe(this.locationDescURL, event.url)
+                    .then((dataObject) => {
+                        this._position = dataObject
+                    })
+            }else if(event.schema === this.objectDescURL){
+                this.syncher.subscribe(this.objectDescURL, event.url)
+                    .then((dataObject) => {
+                        return callback(GroupChat(dataObject, this._position.data))
+                    })
+            }
         })
     }
 }
@@ -57,9 +64,11 @@ let groupChatFactory = function(hypertyURL, bus, config){
     let uri = new URI(hypertyURL)
     
     return Object.assign(Object.create(GroupChatHyperty), {
+            '_position': undefined,
             'syncher': syncher,
             'hypertyDiscoveryService': hypertyDiscovery,
             'objectDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/CommunicationDataSchema',
+            'locationDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/ContextDataSchema'
         })
 }
 
