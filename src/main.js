@@ -120,6 +120,11 @@ function hypertyDeployed(hyperty) {
       template = 'group-chat/groupChat'
       script = 'group-chat/groupChat.js'
       break
+
+    case 'Location':
+      template = 'location/location'
+      script = 'location/location.js'
+      break
   }
 
   if (!template) {

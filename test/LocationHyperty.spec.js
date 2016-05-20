@@ -1,10 +1,17 @@
 import { expect } from 'chai'
-import rethink from './resources/.well-known/runtime/rethink'
+//import rethink from './resources/.well-known/runtime/rethink'
+import RuntimeLoader from 'service-framework/dist/RuntimeLoader';
+import InstallerFactory from '../resources/factories/InstallerFactory';
 
 describe('Location Hyperty', () => {
+    let domain = 'hybroker.rethink.ptinovacao.pt'
+    let hypertyName = 'Location'
+    let locationHyURL = 'hyperty-catalogue://' + domain + '/.well-known/hyperties/' + hypertyName;
     describe('getCurrentPosition', () => {
         xit('should return your current location', (done) => {
-            let locationHyURL = 'hyperty-catalogue://localhost/.well-known/hyperty/LocationHyperty'    
+            let runtime = 'https://catalogue.' + domain + '/.well-known/runtime/Runtime';
+            let installerFactory = new InstallerFactory();
+            let runtimeLoader = new RuntimeLoader(installerFactory, runtime);
 
             rethink.install({domain: 'localhost', development: true})
                 .then((runtime) =>{
@@ -21,11 +28,13 @@ describe('Location Hyperty', () => {
 
     describe('startPositionBroadcast', ()=>{
         it('should notify current position to any subscribed hyperty', (done)=>{
-            let locationHyURL = 'hyperty-catalogue://localhost/.well-known/hyperty/LocationHyperty'    
-            let locationObserverURL = 'hyperty-catalogue://localhost/.well-known/hyperty/FakeLocationObserverHyperty'    
+            let domain = 'hybroker.rethink.ptinovacao.pt'
+            let hypertyName = 'Location'
+            let locationHyURL = 'hyperty-catalogue://' + domain + '/.well-known/hyperties/' + hypertyName;
+            let locationObserverURL = 'hyperty-catalogue://' + domain + '/.well-known/hyperties/FakeLocationObserver'    
 
-            rethink.install({domain: 'localhost', development: true})
-                .then((runtime) =>{
+            runtimeLoader.install()//{domain: 'localhost', development: true})
+                .then(()=> { //(runtime) =>{
                     runtime.requireHyperty(locationObserverURL).then((result) => {
                         let observer = result
                         runtime.requireHyperty(locationHyURL).then((result) => {

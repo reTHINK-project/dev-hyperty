@@ -1,4 +1,4 @@
-import Syncher from 'service-framework/src/syncher/Syncher'
+import { Syncher } from 'service-framework/dist/Syncher'
 
 const FakeLocationObserverHyperty = {
     receivedPosition: false,
@@ -26,7 +26,7 @@ const FakeLoacationFactory = function(hypertyURL, bus, configuration){
 
 export default function activate(hypertyURL, bus, configuration){
     return {
-        name:'Fake location observer',
+        name:'FakeLocationObserver',
         instance: FakeLoacationFactory(hypertyURL, bus, configuration)
     }
 }

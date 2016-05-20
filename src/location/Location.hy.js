@@ -1,4 +1,4 @@
-import Syncher from 'service-framework/src/syncher/Syncher'
+import { Syncher } from 'service-framework/dist/Syncher'
 import URI from 'urijs'
 import position from './position'
 
@@ -29,7 +29,7 @@ const LocationHypertyFactory = function(hypertyURL, bus, config){
 
 export default function activate(hypertyURL, bus, config){
     return {
-        name: 'Location Hyperty',
+        name: 'Location',
         instance: LocationHypertyFactory(hypertyURL, bus, config)
     }
 }
