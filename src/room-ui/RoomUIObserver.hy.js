@@ -1,6 +1,6 @@
 /* jshint undef: true */
 
-import {Syncher} from 'service-framework/Syncher';
+import {Syncher} from 'service-framework/dist/Syncher';
 import {divideURL} from '../utils/utils';
 import EventEmitter from '../utils/EventEmitter';
 
