@@ -32,6 +32,12 @@
     },
     "tag": {
       "type": "string"
+    },
+    "children": {
+      "constant": [
+        "actions",
+        "contexts"
+      ]
     }
   },
   "ContextUnit": {

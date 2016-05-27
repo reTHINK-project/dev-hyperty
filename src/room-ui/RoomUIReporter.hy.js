@@ -43,7 +43,7 @@ class RoomUIReporter extends EventEmitter {
         // test identity gathering
         let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
         identityManager.discoverUserRegistered(hypertyURL).then((userURL) => {
-            l.d("ROOMUI got user URL:", userURL);
+            l.d("got user URL:", userURL);
         });
 
         // make arguments available
@@ -81,6 +81,7 @@ class RoomUIReporter extends EventEmitter {
                     l.d("onAddChild:", child);
                     let childData = child.data ? child.data : child.value;
                     l.d("child data:", childData);
+                    _this.trigger('onAddChild', childData);
                 });
 
                 // react to subscription requests
@@ -121,7 +122,7 @@ class RoomUIReporter extends EventEmitter {
 
         // For now we use the example room
         var room = this.room.data;
-        l.d("ROOMUI got room:", room);
+        l.d("got room:", room);
 
         return room.devices;
     }
@@ -175,7 +176,7 @@ class RoomUIReporter extends EventEmitter {
 
         // For now we use the device of the example room
         var device = this.room.data.devices[0];
-        l.d("ROOMUI got device:", device);
+        l.d("got device:", device);
 
         return device;
     }

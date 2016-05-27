@@ -3,6 +3,8 @@
 import {Syncher} from 'service-framework/dist/Syncher';
 import Discovery from 'service-framework/dist/Discovery';
 import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery';
+import IdentityManager from 'service-framework/dist/IdentityManager';
+
 import {divideURL} from '../utils/utils';
 import EventEmitter from '../utils/EventEmitter';
 import Logger from './Logger';
@@ -46,10 +48,10 @@ class RoomUIObserver extends EventEmitter {
         this.discovery = discovery;
 
         // identity manager to get user identity for this hyperty
-        let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
-        identityManager.discoverUserRegistered(hypertyURL).then((userURL) => {
-            l.d("got user URL:", userURL);
-        });
+        //let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
+        //identityManager.discoverUserRegistered(hypertyURL).then((userURL) => {
+        //    l.d("got user URL:", userURL);
+        //});
 
         let _this = this;
 
@@ -76,9 +78,9 @@ class RoomUIObserver extends EventEmitter {
      */
     subscribe(objectURL) {
         let _this = this;
-        this._syncher.subscribe(_this._objectDescURL, objectURL).then(function (roomObjtObserver) {
+        this._syncher.subscribe(_this._objectDescURL, objectURL).then(function (obj) {
 
-            console.info("subscribed roomObjtObserver:", roomObjtObserver);
+            console.info("subscribed to object:", obj);
 
 
             //roomObjtReporter.onAddChild((child) => {
@@ -87,8 +89,8 @@ class RoomUIObserver extends EventEmitter {
             //    l.d("child data:", childData);
             //});
 
-            _this.observer = roomObjtObserver;
-            roomObjtObserver.onChange('*', function (event) {
+            _this.observer = obj;
+            obj.onChange('*', function (event) {
 
                 // Hello World Object was changed
                 console.info('message received:', event);
@@ -111,7 +113,19 @@ class RoomUIObserver extends EventEmitter {
      */
     addChild() {
         l.d("adding child");
-        this.observer.addChild('toggleLight', {"status": "off"});
+        let action = {
+            "id": "someID",
+            "type": "someType",
+            "values": [{
+                "name": "setBrightness",
+                "unit": "someUnit",
+                "value": {
+                    "brightness": 75
+                },
+                "sum": "whatever"
+            }]
+        };
+        this.observer.addChild('actions', action);
     }
 }
 
