@@ -1,11 +1,16 @@
 /* jshint undef: true */
 
 import {Syncher} from 'service-framework/dist/Syncher';
+import Discovery from 'service-framework/dist/Discovery';
+import IdentityManager from 'service-framework/dist/IdentityManager';
+import Logger from './Logger';
+
 import {divideURL} from '../utils/utils';
 import roomJson from './roomJson';
 import EventEmitter from '../utils/EventEmitter';
 
 var url = "https://localhost:8000";
+var l = new Logger("ROOMUI");
 
 class RoomUIReporter extends EventEmitter {
 
@@ -21,37 +26,50 @@ class RoomUIReporter extends EventEmitter {
         if (!bus) throw new Error('The MiniBus is a needed parameter');
         if (!configuration) throw new Error('The configuration is a needed parameter');
 
+        l.d("hypertyURL:", hypertyURL);
+        l.d("bus:", bus);
+        l.d("configuration:", configuration);
+
         super();
 
-        let _this = this;
-        _this._domain = divideURL(hypertyURL).domain;
+        this._domain = divideURL(hypertyURL).domain;
 
         // create Object Schema URL
-        _this._objectDescURL = 'hyperty-catalogue://' + _this._domain + '/.well-known/dataschemas/RoomUIDataSchema';
+        this._objectDescURL = 'hyperty-catalogue://' + this._domain + '/.well-known/dataschemas/RoomUIDataSchema';
+
+        // make hyperty discoverable
+        let discovery = new Discovery(hypertyURL, bus);
+
+        // test identity gathering
+        let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
+        identityManager.discoverUserRegistered(hypertyURL).then((userURL) => {
+            l.d("ROOMUI got user URL:", userURL);
+        });
 
         // make arguments available
-        _this.hypertyURL = hypertyURL;
-        _this.bus = bus;
-        _this.configuration = configuration;
+        this.hypertyURL = hypertyURL;
+        this.bus = bus;
+        this.configuration = configuration;
 
         // make example room available
-        _this.room = roomJson;
+        this.room = roomJson;
 
         // list of deviceReporter objects
-        _this.devices = [];
+        this.devices = [];
 
+        // syncher
         let syncher = new Syncher(hypertyURL, bus, configuration);
-        _this._syncher = syncher;
+        this._syncher = syncher;
 
         // get contexts
-        let deviceContexts = _this.getDeviceContexts("room1");
+        let deviceContexts = this.getDeviceContexts("room1");
 
         // create deviceReporter object for each context and add it to the 'devices' list
         deviceContexts.forEach((context, i) => {
-            console.warn("ROOOMUI building syncher based on context:", context);
-
+            l.d("building syncher based on context:", context);
+            let _this = this;
             syncher.create(_this._objectDescURL, [hypertyURL], context).then(function (deviceReporter) {
-                console.warn('ROOMUI device reporter created:', deviceReporter);
+                l.d('device reporter created:', deviceReporter);
 
                 _this.devices[i] = deviceReporter;
 
@@ -60,14 +78,14 @@ class RoomUIReporter extends EventEmitter {
 
                 // react to added children
                 deviceReporter.onAddChild((child) => {
-                    console.warn("ROOMUI onAddChild:", child);
+                    l.d("onAddChild:", child);
                     let childData = child.data ? child.data : child.value;
-                    console.warn("ROOMUI child data:", childData);
+                    l.d("child data:", childData);
                 });
 
                 // react to subscription requests
                 deviceReporter.onSubscription((event) => {
-                    console.warn('ROOMUI onSubscription:', event);
+                    l.d('onSubscription:', event);
 
                     // accept and trigger
                     event.accept();
@@ -80,13 +98,12 @@ class RoomUIReporter extends EventEmitter {
     }
 
     /**
-     * Modify the ID field of all device repoter objects (to test if subscription works)
+     * Modify the ID field of all device reporter objects (to test if subscription works)
      */
     modifyRoom() {
-        let _this = this;
         let rString = Math.random().toString(36).substr(2, 5);
-        _this.devices.forEach((device, i) => {
-            console.warn("ROOMUI: Setting ID to '" + rString + "' of device:", device);
+        this.devices.forEach((device, i) => {
+            l.d("Setting ID to '" + rString + "' of device:", device);
             device.data.id = rString;
         });
     }
@@ -97,15 +114,14 @@ class RoomUIReporter extends EventEmitter {
      * @returns {Array} devices
      */
     getRawDevices(roomId) {
-        console.warn("ROOMUI getRawDevices:", roomId);
-        let _this = this;
+        l.d("getRawDevices:", roomId);
 
         //var json = {'room': roomId};
-        //var room = _this.makeRequest(json).data;
+        //var room = this.makeRequest(json).data;
 
         // For now we use the example room
-        var room = _this.room.data;
-        console.warn("ROOMUI got room:", room);
+        var room = this.room.data;
+        l.d("ROOMUI got room:", room);
 
         return room.devices;
     }
@@ -138,11 +154,10 @@ class RoomUIReporter extends EventEmitter {
      * @returns {Array} contexts
      */
     getDeviceContexts(roomId) {
-        let _this = this;
-        var devices = _this.getRawDevices(roomId);
+        var devices = this.getRawDevices(roomId);
         var deviceContexts = [];
         devices.forEach((device, i) => {
-            deviceContexts[i] = _this.createDeviceContext(device);
+            deviceContexts[i] = this.createDeviceContext(device);
         });
         return deviceContexts;
     }
@@ -153,15 +168,14 @@ class RoomUIReporter extends EventEmitter {
      * @returns {JSON} device
      */
     getRawDevice(deviceId) {
-        console.warn("ROOMUI getRawDevice:", deviceId);
-        let _this = this;
+        l.d("getRawDevice:", deviceId);
 
         //var json = {'device': deviceId};
-        //var device = _this.makeRequest(json).data;
+        //var device = this.makeRequest(json).data;
 
         // For now we use the device of the example room
-        var device = _this.room.data.devices[0];
-        console.warn("ROOMUI got device:", device);
+        var device = this.room.data.devices[0];
+        l.d("ROOMUI got device:", device);
 
         return device;
     }
@@ -178,7 +192,7 @@ class RoomUIReporter extends EventEmitter {
             xmlHttp.send(JSON.stringify(json));
         } catch (e) {
             console.error('request failed: ', e);
-            return;
+            throw e;
         }
 
         console.log('got response: ' + xmlHttp.responseText);
@@ -189,7 +203,7 @@ class RoomUIReporter extends EventEmitter {
         } catch (e) {
             //console.log('json parsing failed, probably not json:', resp);
         }
-        console.warn("ROOMUI makeRequest returns:", resp);
+        l.d("makeRequest returns:", resp);
 
         // TODO error handling
         return resp;
