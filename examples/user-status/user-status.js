@@ -16,8 +16,7 @@ function hypertyLoaded(result) {
   hyperty = result.instance;
   let userDirectory = [
       ['openidtest10@gmail.com', 'testOpenID10', 'localhost'],
-      ['openidtest20@gmail.com', 'testOpenID20', 'localhost'],
-      ['openid1.apizee@gmail.com', 'Apizee22', 'localhost']
+      ['openidtest20@gmail.com', 'testOpenID20', 'localhost']
   ];
   let participants = [];
   Handlebars.getTemplate('user-status/user-card').then(function(template) {
