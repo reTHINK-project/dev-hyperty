@@ -135,6 +135,11 @@ function hypertyDeployed(hyperty) {
             template = 'room-ui/room';
             script = 'room-ui/roomReporter.js';
             break;
+
+	case 'UserStatus':
+	    template = 'user-status/UserStatus';
+	    script = 'user-status/user-status.js';
+	    break;
     }
 
     if (!template) {
