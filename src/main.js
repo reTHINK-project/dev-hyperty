@@ -115,7 +115,7 @@ function hypertyDeployed(hyperty) {
       template = 'hello-world/helloWorld';
       script =  'hello-world/helloReporter.js';
       break;
-    
+
     case 'GroupChat':
       template = 'group-chat/groupChat'
       script = 'group-chat/groupChat.js'
@@ -124,6 +124,11 @@ function hypertyDeployed(hyperty) {
     case 'Location':
       template = 'location/location'
       script = 'location/location.js'
+      break
+
+    case 'UserStatus':
+      template = 'user-status/UserStatus'
+      script = 'user-status/user-status.js'
       break
   }
 
