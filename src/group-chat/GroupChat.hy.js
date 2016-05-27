@@ -64,7 +64,7 @@ let groupChatFactory = function(hypertyURL, bus, config){
     let uri = new URI(hypertyURL)
     
     return Object.assign(Object.create(GroupChatHyperty), {
-            '_position': {data:{value:{coords:{}}}},
+            '_position': {data:{value:{}}},
             'syncher': syncher,
             'hypertyDiscoveryService': hypertyDiscovery,
             'objectDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/Communication',
