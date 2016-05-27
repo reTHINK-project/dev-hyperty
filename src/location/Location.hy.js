@@ -12,7 +12,13 @@ const LocationHyperty = {
             .then((reporter)=>{
                 reporter.onSubscription((event)=>event.accept())
                 navigator.geolocation.watchPosition((position)=>{
-                    reporter.data.value.coords=position.coords
+                    //reporter.data.value.accuaricy = position.coords.accuaricy
+                    //reporter.data.value.altitude = position.coords.altitude
+                    //reporter.data.value.altitudeAccuracy = position.coords.altitudeAccuracy
+                    //reporter.data.value.heading = position.coords.heading
+                    reporter.data.value.latitude = position.coords.latitude
+                    reporter.data.value.longitude = position.coords.longitude
+                    //reporter.data.value.speed = position.coords.speed
                     reporter.data.value.timestamp = position.timestamp
                 })
             })
