@@ -18,134 +18,144 @@ let runtime = 'https://catalogue.' + domain + '/.well-known/runtime/Runtime';
 
 let runtimeLoader = new RuntimeLoader(installerFactory, runtime);
 
-runtimeLoader.install().then(function() {
+runtimeLoader.install().then(function () {
 
-  return getListOfHyperties(domain);
+    return getListOfHyperties(domain);
 
-}).then(function(hyperties) {
+}).then(function (hyperties) {
 
-  let $dropDown = $('#hyperties-dropdown');
+    let $dropDown = $('#hyperties-dropdown');
 
-  hyperties.forEach(function(key) {
-    let $item = $(document.createElement('li'));
-    let $link = $(document.createElement('a'));
+    hyperties.forEach(function (key) {
+        let $item = $(document.createElement('li'));
+        let $link = $(document.createElement('a'));
 
-    // create the link features
-    $link.html(key);
-    $link.css('text-transform', 'none');
-    $link.attr('data-name', key);
-    $link.on('click', loadHyperty);
+        // create the link features
+        $link.html(key);
+        $link.css('text-transform', 'none');
+        $link.attr('data-name', key);
+        $link.on('click', loadHyperty);
 
-    $item.append($link);
+        $item.append($link);
 
-    $dropDown.append($item);
-  });
+        $dropDown.append($item);
+    });
 
-}).catch(function(reason) {
-  console.error(reason);
+}).catch(function (reason) {
+    console.error(reason);
 });
 
 function getListOfHyperties(domain) {
 
-  let hypertiesURL = 'https://' + domain + '/.well-known/hyperty/Hyperties.json';
-  if (config.env === 'production') {
-    hypertiesURL = 'https://' + domain + '/.well-known/hyperty/';
-  }
+    let hypertiesURL = 'https://' + domain + '/.well-known/hyperty/Hyperties.json';
+    if (config.env === 'production') {
+        hypertiesURL = 'https://' + domain + '/.well-known/hyperty/';
+    }
 
-  return new Promise(function(resolve, reject) {
-    $.ajax({
-      url: hypertiesURL,
-      success: function(result) {
-        let response = [];
-        if (typeof result === 'object') {
-          Object.keys(result).forEach(function(key) {
-            response.push(key);
-          });
-        } else if (typeof result === 'string') {
-          response = JSON.parse(result);
-        }
-        resolve(response);
-      },
-      fail: function(reason) {
-        reject(reason);
-      }
+    return new Promise(function (resolve, reject) {
+        $.ajax({
+            url: hypertiesURL,
+            success: function (result) {
+                let response = [];
+                if (typeof result === 'object') {
+                    Object.keys(result).forEach(function (key) {
+                        response.push(key);
+                    });
+                } else if (typeof result === 'string') {
+                    response = JSON.parse(result);
+                }
+                resolve(response);
+            },
+            fail: function (reason) {
+                reject(reason);
+            }
 
+        });
     });
-  });
 
 }
 
 function loadHyperty(event) {
-  event.preventDefault();
+    event.preventDefault();
 
-  let hypertyName = $(event.currentTarget).attr('data-name');
-  let hypertyPath = 'hyperty-catalogue://' + domain + '/.well-known/hyperties/' + hypertyName;
+    let hypertyName = $(event.currentTarget).attr('data-name');
+    let hypertyPath = 'hyperty-catalogue://' + domain + '/.well-known/hyperties/' + hypertyName;
 
-  runtimeLoader.requireHyperty(hypertyPath).then(hypertyDeployed).catch(hypertyFail);
+    runtimeLoader.requireHyperty(hypertyPath).then(hypertyDeployed).catch(hypertyFail);
 
 }
 
 function hypertyDeployed(hyperty) {
 
-  // Add some utils
-  serialize();
+    // Add some utils
+    serialize();
 
-  let $mainContent = $('.main-content').find('.row');
+    let $mainContent = $('.main-content').find('.row');
 
-  let template = '';
-  let script = '';
+    let template = '';
+    let script = '';
 
-  switch (hyperty.name) {
-    case 'HypertyConnector':
-      template = 'hyperty-connector/HypertyConnector';
-      script =  'hyperty-connector/demo.js';
-      break;
+    switch (hyperty.name) {
+        case 'HypertyConnector':
+            template = 'hyperty-connector/HypertyConnector';
+            script = 'hyperty-connector/demo.js';
+            break;
 
-    case 'HypertyChat':
-      template = 'hyperty-chat/HypertyChat';
-      script =  'hyperty-chat/demo.js';
-      break;
+        case 'HypertyChat':
+            template = 'hyperty-chat/HypertyChat';
+            script = 'hyperty-chat/demo.js';
+            break;
 
-    case 'HelloWorldObserver':
-      template = 'hello-world/helloWorld';
-      script =  'hello-world/helloObserver.js';
-      break;
+        case 'HelloWorldObserver':
+            template = 'hello-world/helloWorld';
+            script = 'hello-world/helloObserver.js';
+            break;
 
-    case 'HelloWorldReporter':
-      template = 'hello-world/helloWorld';
-      script =  'hello-world/helloReporter.js';
-      break;
-    
-    case 'GroupChat':
-      template = 'group-chat/groupChat'
-      script = 'group-chat/groupChat.js'
-      break
+        case 'HelloWorldReporter':
+            template = 'hello-world/helloWorld';
+            script = 'hello-world/helloReporter.js';
+            break;
 
-    case 'Location':
-      template = 'location/location'
-      script = 'location/location.js'
-      break
-  }
+        case 'GroupChat':
+            template = 'group-chat/groupChat';
+            script = 'group-chat/groupChat.js';
+            break;
 
-  if (!template) {
-    throw Error('You must need specify the template for your example');
-  }
+        case 'Location':
+            template = 'location/location';
+            script = 'location/location.js';
+            break;
 
-  getTemplate(template, script).then(function(template) {
-    let html = template();
-    $mainContent.html(html);
+        case 'RoomUIObserver':
+            template = 'room-ui/room';
+            script = 'room-ui/roomObserver.js';
+            break;
 
-    if (typeof hypertyLoaded === 'function') {
-      hypertyLoaded(hyperty);
-    } else {
-      console.info('If you need pass the hyperty to your template, create a function called hypertyLoaded');
+        case 'RoomUIReporter':
+            template = 'room-ui/room';
+            script = 'room-ui/roomReporter.js';
+            break;
     }
-  });
+
+    if (!template) {
+        throw Error('You must need specify the template for your example');
+    }
+
+    getTemplate(template, script).then(function (template) {
+        let html = template();
+        $mainContent.html(html);
+
+        if (typeof hypertyLoaded === 'function') {
+            hypertyLoaded(hyperty);
+        } else {
+            console.info('If you need pass the hyperty to your template, create a function called hypertyLoaded');
+        }
+    });
 
 }
 
 function hypertyFail(reason) {
-  console.error(reason);
+    console.error(reason);
 }
 
 // runtimeCatalogue.getHypertyDescriptor(hyperty).then(function(descriptor) {
