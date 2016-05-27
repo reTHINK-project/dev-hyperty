@@ -26,8 +26,8 @@ import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
-import EventEmitter from './utils/EventEmitter.js';
-import {divideURL} from './utils/utils.js';
+import EventEmitter from '../utils/EventEmitter.js';
+import {divideURL} from '../utils/utils.js';
 
 let status = {
   name: 'status',
