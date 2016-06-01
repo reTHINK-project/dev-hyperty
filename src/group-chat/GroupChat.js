@@ -4,6 +4,7 @@ const GroupChat = {
     sendMessage(message, distance){
         return this._dataObject.addChild('chatmessages', {chatMessage: message, distance: distance, position: this.position.value})
             .then((child)=>{
+                console.log('message sended', child)
                 this.messages.push(GroupChatMessage(child, true))
                 return this.messages[this.messages.length-1]
             })
@@ -11,6 +12,7 @@ const GroupChat = {
 
     onMessage(callback){
         this._dataObject.onAddChild((child)=>{
+            console.log('message received',child)
             let childData = child.data?child.data:child.value
             if(childData.distance && this._distance(this.position.value.latitude,
                         this.position.value.longitude, childData.position.latitude,
