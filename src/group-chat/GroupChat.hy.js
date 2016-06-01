@@ -4,13 +4,14 @@ import { Syncher } from 'service-framework/dist/Syncher'
 import GroupChat from './GroupChat' 
 
 class Communication {
-    constructor(name){
+    constructor(name, participants){
         this.startingTime = Date.now()
         this.lastModified = Date.now()
         this.status = "pending"
         this.resources = []
         this.children = []
         this.name = name
+        this.participants = participants
     }
 }
 
@@ -29,13 +30,14 @@ let GroupChatHyperty = {
     },
 
     _createSyncher (name, hyperties){
-        return this.syncher.create(this.objectDescURL, hyperties, new Communication(name))
+        return this.syncher.create(this.objectDescURL, hyperties, new Communication(name, hyperties.concat([this.hypertyURL])))
     },
 
     create (name, participants) {
         return this._getHyFor(participants)
             .then((hyperties)=>this._createSyncher(name, hyperties))
             .then((dataObjectReporter) => {
+                console.log('creating group chat', dataObjectReporter)
                 dataObjectReporter.onSubscription((event)=>event.accept())
                 return GroupChat(dataObjectReporter, this._position.data)
             })
@@ -51,6 +53,7 @@ let GroupChatHyperty = {
             }else if(event.schema === this.objectDescURL){
                 this.syncher.subscribe(this.objectDescURL, event.url)
                     .then((dataObject) => {
+                        console.log('creating group chat on invite', dataObject)
                         return callback(GroupChat(dataObject, this._position.data))
                     })
             }
@@ -68,7 +71,8 @@ let groupChatFactory = function(hypertyURL, bus, config){
             'syncher': syncher,
             'hypertyDiscoveryService': hypertyDiscovery,
             'objectDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/Communication',
-            'locationDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/ContextDataSchema'
+            'locationDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/ContextDataSchema',
+            'hypertyURL': hypertyURL
         })
 }
 
