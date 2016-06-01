@@ -5,7 +5,7 @@ const GroupChat = {
         return this._dataObject.addChild('chatmessages', {chatMessage: message, distance: distance, position: this.position.value, startingTime:Date.now()})
             .then((child)=>{
                 console.log('message sended', child)
-                this.messages.push(GroupChatMessage(child, true))
+                this.messages.push(GroupChatMessage(child, true, this.identity))
                 return this.messages[this.messages.length-1]
             })
     },
@@ -18,7 +18,7 @@ const GroupChat = {
                         this.position.value.longitude, childData.position.latitude,
                         childData.position.longitude, 'K')> childData.distance)
                 return
-            this.messages.push(GroupChatMessage(child, false))
+            this.messages.push(GroupChatMessage(child, false, child.identity.userProfile))
             callback(this.messages[this.messages.length-1])
         })
     },
@@ -38,13 +38,14 @@ const GroupChat = {
     }
 }
 
-export default function(dataObject, position){
+export default function(dataObject, position, identity){
     return Object.assign(Object.create(GroupChat), {
         _dataObject: dataObject,
         name: dataObject.data.name,
         startingTime: dataObject.data.startingTime,
         messages:[],
         position: position,
-        participants: dataObject.data.participants
+        participants: dataObject.data.participants,
+        identity: identity
     })
 }
