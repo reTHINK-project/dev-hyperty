@@ -44,6 +44,7 @@ export default function(dataObject, position){
         name: dataObject.data.name,
         startingTime: dataObject.data.startingTime,
         messages:[],
-        position: position
+        position: position,
+        participants: dataObject.data.participants
     })
 }
