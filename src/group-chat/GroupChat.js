@@ -23,6 +23,10 @@ const GroupChat = {
         })
     },
 
+    getContext(){
+        return this.messages[this.messages.length-1]?this.messages[this.messages.length-1].text:'' 
+    },
+
     _distance(lat1, lon1, lat2, lon2, unit) {
         var radlat1 = Math.PI * lat1/180
         var radlat2 = Math.PI * lat2/180
