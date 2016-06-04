@@ -1,0 +1,51 @@
+@startuml "location.png"
+
+Package Location {
+
+class Location {
+  id: string
+  type = "location"
+  description ?: string
+  time?: date
+  values: LocationValue[]
+  tag?: string
+  address ?: URL.HypertyRuntimeURL
+}
+
+class LocationValue {
+ latitude : LatitudeValue
+ longitude : LongitudeValue
+ }
+
+class LatitudeValue {
+  name = "latitude"
+  unit = "lat"
+  value : float
+  time ?: date
+  updateTime ?: date
+  expires ?: date
+}
+
+class LongitudeValue {
+  name = "longitude"
+  unit = "lon"
+  value : float
+  time ?: date
+  updateTime ?: date
+  expires ?: date
+}
+
+
+}
+
+Location *-- "1..*" LocationValue
+LocationValue *-- "1" LongitudeValue
+LocationValue *-- "1" LatitudeValue
+
+Location -up-|> Context.Context
+LatitudeValue -up-|> Context.ContextValue
+LongitudeValue -up-|> Context.ContextValue
+Location --> HypertyResource.HypertyResourceType
+
+
+@enduml
