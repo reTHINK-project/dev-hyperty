@@ -12,17 +12,10 @@ class Wellbeing {
   type = "activity"
   description ?: string
   time?: date
-  values: BraceletValue[]
+  values: ContextValue[]
   tag?: string
   address ?: URL.HypertyRuntimeURL
 }
-
-class WellbeingValue {
- steps ?: StepsValue
- battery ?: BatteryValue
- heartrate ?: HeartRateValue
- sleep ?: SleepValue
- }
 
 class StepsValue {
   name = "cumulative steps"
@@ -61,12 +54,6 @@ class SleepValue {
 }
 
 }
-
-Wellbeing *-- "1..*" WellbeingValue
-WellbeingValue *-- "1" SleepValue
-WellbeingValue *-- "1" HeartRateValue
-WellbeingValue *-- "1" BatteryValue
-WellbeingValue *-- "1" StepsValue
 
 
 Wellbeing --|> Context.Context
