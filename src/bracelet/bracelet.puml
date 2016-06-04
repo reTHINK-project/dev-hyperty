@@ -3,6 +3,11 @@
 Package Wellbeing {
 
 class Wellbeing {
+  url : URL.URL
+  reporter : URL.HypertyURL
+  schema : URL.HypertyCatalogueURL
+  name : string
+  scheme = "context"
   id: string
   type = "activity"
   description ?: string

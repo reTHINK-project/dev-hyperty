@@ -3,6 +3,11 @@
 Package Location {
 
 class Location {
+  url : URL.URL
+  reporter : URL.HypertyURL
+  schema : URL.HypertyCatalogueURL
+  name : string
+  scheme = "context"
   id: string
   type = "location"
   description ?: string

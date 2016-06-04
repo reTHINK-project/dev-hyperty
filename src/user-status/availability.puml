@@ -3,6 +3,11 @@
 Package Availability {
 
 class Availability {
+  url : URL.URL
+  reporter : URL.HypertyURL
+  schema : URL.HypertyCatalogueURL
+  name : string
+  scheme = "context"
   id: string
   type = "availability"
   description ?: string
