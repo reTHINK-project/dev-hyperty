@@ -90,5 +90,9 @@ Receive a new message
     })
     
 ##3. Framework improvement proposals derived from Hyperty Group-Chat development.
-When the Registry is checked to obtain the hyperties registered by a user only the last one was provided. So it was necessary to ask for to get the full list of hyperties registered for a user. (Maybe this may be moved to the Dev-Participate My City part).
+* Add more filters to HypertyDiscoveryService. Right now too many code is needed to get the right URL filtering by user and descriptor. In addition in order to implement other advanced scenarios some other filters such as position are required. https://github.com/reTHINK-project/dev-hyperty/issues/25
+* Add support for Unit Tests https://github.com/reTHINK-project/dev-hyperty/issues/23
+* Allow use cases with two or more hyperties in demo app. I need test teh interaction between GroupChat Hyperty and Location Hyperty https://github.com/reTHINK-project/dev-hyperty/issues/24
+* Update selected observers only. To send a message only to selected participant in a group chat https://github.com/reTHINK-project/dev-hyperty/issues/26
+* Add or remove observers once reporter is created. In order to add participants in a started group chat https://github.com/reTHINK-project/dev-hyperty/issues/27
 
