@@ -1,115 +1,123 @@
 // jshint browser:true, jquery: true
 // jshint varstmt: true
-import RuntimeLoader from 'service-framework/dist/RuntimeLoader';
-import InstallerFactory from '../resources/factories/InstallerFactory';
-import config from '../config.json';
+
+import rethink from 'runtime-browser/bin/rethink';
 
 import {getTemplate, serialize} from './utils/utils';
 
-// import hyperties from '../resources/descriptors/Hyperties';
-
-let installerFactory = new InstallerFactory();
+import config from '../config.json';
 
 window.KJUR = {};
 
 let domain = config.domain;
+let runtimeLoader;
 
-let runtime = 'https://catalogue.' + domain + '/.well-known/runtime/Runtime';
+rethink.install(config).then(function(result) {
 
-let runtimeLoader = new RuntimeLoader(installerFactory, runtime);
+  runtimeLoader = result;
+  console.log(result);
 
-runtimeLoader.install().then(function () {
+  return getListOfHyperties(domain);
 
-    return getListOfHyperties(domain);
+}).then(function(hyperties) {
 
-}).then(function (hyperties) {
+  let $dropDown = $('#hyperties-dropdown');
 
-    let $dropDown = $('#hyperties-dropdown');
+  hyperties.forEach(function(key) {
+    let $item = $(document.createElement('li'));
+    let $link = $(document.createElement('a'));
 
-    hyperties.forEach(function (key) {
-        let $item = $(document.createElement('li'));
-        let $link = $(document.createElement('a'));
+    // create the link features
+    $link.html(key);
+    $link.css('text-transform', 'none');
+    $link.attr('data-name', key);
+    $link.on('click', loadHyperty);
 
-        // create the link features
-        $link.html(key);
-        $link.css('text-transform', 'none');
-        $link.attr('data-name', key);
-        $link.on('click', loadHyperty);
+    $item.append($link);
 
-        $item.append($link);
+    $dropDown.append($item);
+  });
 
-        $dropDown.append($item);
-    });
+  $('.preloader-wrapper').remove();
+  $('.card .card-action').removeClass('center');
+  $('.hyperties-list-holder').removeClass('hide');
 
-}).catch(function (reason) {
-    console.error(reason);
+}).catch(function(reason) {
+  console.error(reason);
 });
 
 function getListOfHyperties(domain) {
 
-    let hypertiesURL = 'https://' + domain + '/.well-known/hyperty/Hyperties.json';
-    if (config.env === 'production') {
-        hypertiesURL = 'https://' + domain + '/.well-known/hyperty/';
-    }
+  let hypertiesURL = 'https://catalogue.' + domain + '/.well-known/hyperty/';
+  if (config.development) {
+    hypertiesURL = 'https://' + domain + '/.well-known/hyperty/Hyperties.json';
+  }
 
-    return new Promise(function (resolve, reject) {
-        $.ajax({
-            url: hypertiesURL,
-            success: function (result) {
-                let response = [];
-                if (typeof result === 'object') {
-                    Object.keys(result).forEach(function (key) {
-                        response.push(key);
-                    });
-                } else if (typeof result === 'string') {
-                    response = JSON.parse(result);
-                }
-                resolve(response);
-            },
-            fail: function (reason) {
-                reject(reason);
-            }
+  return new Promise(function(resolve, reject) {
+    $.ajax({
+      url: hypertiesURL,
+      success: function(result) {
+        let response = [];
+        if (typeof result === 'object') {
+          Object.keys(result).forEach(function(key) {
+            response.push(key);
+          });
+        } else if (typeof result === 'string') {
+          response = JSON.parse(result);
+        }
+        resolve(response);
+      },
+      fail: function(reason) {
+        reject(reason);
+        notification(reason, 'warn');
+      }
 
-        });
     });
+  });
 
 }
 
 function loadHyperty(event) {
-    event.preventDefault();
+  event.preventDefault();
 
-    let hypertyName = $(event.currentTarget).attr('data-name');
-    let hypertyPath = 'hyperty-catalogue://' + domain + '/.well-known/hyperties/' + hypertyName;
+  let hypertyName = $(event.currentTarget).attr('data-name');
+  let hypertyPath = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/hyperty/' + hypertyName;
 
-    runtimeLoader.requireHyperty(hypertyPath).then(hypertyDeployed).catch(hypertyFail);
+  let $el = $('.main-content .notification');
+  addLoader($el);
+
+  runtimeLoader.requireHyperty(hypertyPath).then(hypertyDeployed).catch(hypertyFail);
 
 }
 
 function hypertyDeployed(hyperty) {
 
-    // Add some utils
-    serialize();
+  let $el = $('.main-content .notification');
+  removeLoader($el);
 
-    let $mainContent = $('.main-content').find('.row');
+  // Add some utils
+  serialize();
 
-    let template = '';
-    let script = '';
+  let $mainContent = $('.main-content').find('.row');
 
-    switch (hyperty.name) {
-        case 'HypertyConnector':
-            template = 'hyperty-connector/HypertyConnector';
-            script = 'hyperty-connector/demo.js';
-            break;
+  let template = '';
+  let script = '';
 
-        case 'HypertyChat':
-            template = 'hyperty-chat/HypertyChat';
-            script = 'hyperty-chat/demo.js';
-            break;
+  switch (hyperty.name) {
+    case 'HypertyConnector':
+      template = 'hyperty-connector/HypertyConnector';
+      script =  'hyperty-connector/demo.js';
+      break;
 
-        case 'HelloWorldObserver':
-            template = 'hello-world/helloWorld';
-            script = 'hello-world/helloObserver.js';
-            break;
+    case 'HypertyChat':
+      template = 'hyperty-chat/HypertyChat';
+      script =  'hyperty-chat/demo.js';
+      break;
+
+    case 'HelloWorldObserver':
+      template = 'hello-world/helloWorld';
+      script =  'hello-world/helloObserver.js';
+      break;
 
         case 'HelloWorldReporter':
             template = 'hello-world/helloWorld';
@@ -142,25 +150,55 @@ function hypertyDeployed(hyperty) {
 	    break;
     }
 
-    if (!template) {
-        throw Error('You must need specify the template for your example');
+  if (!template) {
+    throw Error('You must need specify the template for your example');
+  }
+
+  getTemplate(template, script).then(function(template) {
+    let html = template();
+    $mainContent.html(html);
+
+    if (typeof hypertyLoaded === 'function') {
+      hypertyLoaded(hyperty);
+    } else {
+      let msg = 'If you need pass the hyperty to your template, create a function called hypertyLoaded';
+      console.info(msg);
+      notification(msg, 'warn');
     }
-
-    getTemplate(template, script).then(function (template) {
-        let html = template();
-        $mainContent.html(html);
-
-        if (typeof hypertyLoaded === 'function') {
-            hypertyLoaded(hyperty);
-        } else {
-            console.info('If you need pass the hyperty to your template, create a function called hypertyLoaded');
-        }
-    });
+  });
 
 }
 
 function hypertyFail(reason) {
-    console.error(reason);
+  console.error(reason);
+  notification(reason, 'error');
+}
+
+function addLoader(el) {
+
+  let html = '<div class="preloader preloader-wrapper small active">' +
+  '<div class="spinner-layer spinner-blue-only">' +
+  '<div class="circle-clipper left">' +
+  '<div class="circle"></div></div><div class="gap-patch"><div class="circle"></div>' +
+  '</div><div class="circle-clipper right">' +
+  '<div class="circle"></div></div></div></div>';
+
+  el.addClass('center');
+  el.append(html);
+}
+
+function removeLoader(el) {
+  el.find('.preloader').remove();
+  el.removeClass('center');
+}
+
+function notification(msg, type) {
+
+  let $el = $('.main-content .notification');
+  let color = type === 'error' ? 'red' : 'black';
+
+  removeLoader($el);
+  $el.append('<span class="' + color + '-text">' + msg  + '</span>');
 }
 
 // runtimeCatalogue.getHypertyDescriptor(hyperty).then(function(descriptor) {
