@@ -147,7 +147,8 @@ function chatManagerReady(chatGroup) {
 
     let object = $(this).serializeObject();
     let message = object.message;
-    chatGroup.sendMessage(message).then(function(result) {
+    let distance= object.nearest?20:undefined
+    chatGroup.sendMessage(message, distance).then(function(result) {
       console.log('message sent', result);
       messageForm[0].reset();
     }).catch(function(reason) {

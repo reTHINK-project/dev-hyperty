@@ -3401,7 +3401,7 @@ var groupChatFactory = function groupChatFactory(hypertyURL, bus, config) {
     var uri = new _urijs2.default(hypertyURL);
 
     return Object.assign(Object.create(GroupChatHyperty), {
-        '_position': { data: { value: {} } },
+        '_position': { data: { values: {} } },
         'syncher': syncher,
         'hypertyDiscoveryService': hypertyDiscovery,
         'identityManagerService': identityManager,
@@ -3448,7 +3448,7 @@ var GroupChat = {
     sendMessage: function sendMessage(message, distance) {
         var _this = this;
 
-        return this._dataObject.addChild('chatmessages', { chatMessage: message, distance: distance, position: this.position.value, startingTime: Date.now() }).then(function (child) {
+        return this._dataObject.addChild('chatmessages', { chatMessage: message, distance: distance, position: this.position, startingTime: Date.now() }).then(function (child) {
             console.log('message sended', child);
             _this.messages.push((0, _GroupChatMessage2.default)(child, true, _this.identity));
             return _this.messages[_this.messages.length - 1];
@@ -3460,7 +3460,8 @@ var GroupChat = {
         this._dataObject.onAddChild(function (child) {
             console.log('message received', child);
             var childData = child.data ? child.data : child.value;
-            if (childData.distance && _this2._distance(_this2.position.value.latitude, _this2.position.value.longitude, childData.position.latitude, childData.position.longitude, 'K') > childData.distance) return;
+
+            if (childData.distance && _this2._distance(_this2._mapPosition(_this2.position.values), _this2._mapPosition(childData.position.values), 'K') > childData.distance) return;
             _this2.messages.push((0, _GroupChatMessage2.default)(child, false, child.identity.userProfile));
             callback(_this2.messages[_this2.messages.length - 1]);
         });
@@ -3468,10 +3469,18 @@ var GroupChat = {
     getContext: function getContext() {
         return this.messages[this.messages.length - 1] ? this.messages[this.messages.length - 1].text : '';
     },
-    _distance: function _distance(lat1, lon1, lat2, lon2, unit) {
-        var radlat1 = Math.PI * lat1 / 180;
-        var radlat2 = Math.PI * lat2 / 180;
-        var theta = lon1 - lon2;
+    _mapPosition: function _mapPosition(values) {
+        var position = {};
+
+        values.forEach(function (value) {
+            return position[value.name] = value.value;
+        });
+        return position;
+    },
+    _distance: function _distance(origin, destination, unit) {
+        var radlat1 = Math.PI * origin.latitude / 180;
+        var radlat2 = Math.PI * destination.latitude / 180;
+        var theta = origin.longitude - destination.longitude;
         var radtheta = Math.PI * theta / 180;
         var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
         dist = Math.acos(dist);

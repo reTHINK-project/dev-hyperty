@@ -3239,19 +3239,13 @@ var LocationHyperty = {
         });
     },
     startPositionBroadcast: function startPositionBroadcast(subscribers) {
-        this._syncher.create(this._objectDescURL, subscribers, _position2.default).then(function (reporter) {
+        this._syncher.create(this._objectDescURL, subscribers, (0, _position2.default)()).then(function (reporter) {
             reporter.onSubscription(function (event) {
                 return event.accept();
             });
             navigator.geolocation.watchPosition(function (position) {
-                //reporter.data.value.accuaricy = position.coords.accuaricy
-                //reporter.data.value.altitude = position.coords.altitude
-                //reporter.data.value.altitudeAccuracy = position.coords.altitudeAccuracy
-                //reporter.data.value.heading = position.coords.heading
-                reporter.data.value.latitude = position.coords.latitude;
-                reporter.data.value.longitude = position.coords.longitude;
-                //reporter.data.value.speed = position.coords.speed
-                reporter.data.value.timestamp = position.timestamp;
+                reporter.data.values = [{ name: 'latitude', unit: 'lat', value: position.coords.latitude }, { name: 'longitude', unit: 'lon', value: position.coords.longitude }];
+                reporter.data.time = position.timestamp;
             });
         });
     }
@@ -3277,22 +3271,32 @@ module.exports = exports['default'];
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
-exports.default = {
-  id: "LocationObject",
-  type: "object",
-  value: {
-    latitude: 0,
-    longitude: 0,
-    altitude: 0,
-    accuracy: 0,
-    altitudeAccuracy: 0,
-    heading: 0,
-    speed: 0,
-    timestamp: 0
-  }
-};
+exports.default = PositionFactory;
+var LocationObject = {};
+
+function getId() {
+    return '_' + Math.random().toString(36).substr(2, 9);
+}
+
+function PositionFactory() {
+    return Object.assign({}, {
+        schema: "context",
+        id: getId(),
+        type: "location",
+        time: "0",
+        values: [{
+            name: "latitude",
+            unit: "lat",
+            value: 0
+        }, {
+            name: "longitude",
+            unit: "lat",
+            value: 0
+        }]
+    });
+}
 module.exports = exports['default'];
 
 },{}]},{},[6])(6)

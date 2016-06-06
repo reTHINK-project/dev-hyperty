@@ -8,18 +8,15 @@ const LocationHyperty = {
     },
 
     startPositionBroadcast(subscribers){
-        this._syncher.create(this._objectDescURL, subscribers, position)
+        this._syncher.create(this._objectDescURL, subscribers, position())
             .then((reporter)=>{
                 reporter.onSubscription((event)=>event.accept())
                 navigator.geolocation.watchPosition((position)=>{
-                    //reporter.data.value.accuaricy = position.coords.accuaricy
-                    //reporter.data.value.altitude = position.coords.altitude
-                    //reporter.data.value.altitudeAccuracy = position.coords.altitudeAccuracy
-                    //reporter.data.value.heading = position.coords.heading
-                    reporter.data.value.latitude = position.coords.latitude
-                    reporter.data.value.longitude = position.coords.longitude
-                    //reporter.data.value.speed = position.coords.speed
-                    reporter.data.value.timestamp = position.timestamp
+                    reporter.data.values = [
+                        { name: 'latitude', unit: 'lat', value: position.coords.latitude},
+                        { name: 'longitude', unit: 'lon', value: position.coords.longitude }
+                    ]
+                    reporter.data.time = position.timestamp
                 })
             })
     }

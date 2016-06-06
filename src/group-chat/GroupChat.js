@@ -2,7 +2,7 @@ import GroupChatMessage from './GroupChatMessage'
 
 const GroupChat = {
     sendMessage(message, distance){
-        return this._dataObject.addChild('chatmessages', {chatMessage: message, distance: distance, position: this.position.value, startingTime:Date.now()})
+        return this._dataObject.addChild('chatmessages', {chatMessage: message, distance: distance, position: this.position, startingTime:Date.now()})
             .then((child)=>{
                 console.log('message sended', child)
                 this.messages.push(GroupChatMessage(child, true, this.identity))
@@ -14,9 +14,9 @@ const GroupChat = {
         this._dataObject.onAddChild((child)=>{
             console.log('message received',child)
             let childData = child.data?child.data:child.value
-            if(childData.distance && this._distance(this.position.value.latitude,
-                        this.position.value.longitude, childData.position.latitude,
-                        childData.position.longitude, 'K')> childData.distance)
+
+            if(childData.distance && this._distance(this._mapPosition(this.position.values), 
+                        this._mapPosition(childData.position.values), 'K')> childData.distance)
                 return
             this.messages.push(GroupChatMessage(child, false, child.identity.userProfile))
             callback(this.messages[this.messages.length-1])
@@ -27,10 +27,17 @@ const GroupChat = {
         return this.messages[this.messages.length-1]?this.messages[this.messages.length-1].text:'' 
     },
 
-    _distance(lat1, lon1, lat2, lon2, unit) {
-        var radlat1 = Math.PI * lat1/180
-        var radlat2 = Math.PI * lat2/180
-        var theta = lon1-lon2
+    _mapPosition(values){
+        let position = {}
+        
+        values.forEach((value)=>position[value.name]=value.value)
+        return position
+    },
+
+    _distance(origin, destination, unit) {
+        var radlat1 = Math.PI * origin.latitude/180
+        var radlat2 = Math.PI * destination.latitude/180
+        var theta = origin.longitude-destination.longitude
         var radtheta = Math.PI * theta/180
         var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
         dist = Math.acos(dist)
