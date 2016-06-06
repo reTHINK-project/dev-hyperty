@@ -1,78 +1,155 @@
 Group Chat Hyperty
 ------------------
 
-### Architecture
+##1. Functionality description
 
-*Describe main Hyperty functionalities, Hyperty type and scenarios where the Hyperty will be used. Describe main internal Hyperty component architecture with a class diagram.*
+The Group Chat main functionality is to handle Text conversations among groups, including:
 
-The Group Chat main functionality is to handle Text conversations among groups.
+* creation of a new Group Chat with possibility to invite users to join it
+* notification about invitation to join a Group Chat with options to accept or reject
+* send message to group
+* receive message from group with identity from sender
 
-### Hyperty Data Objects schemas
 
-*Identify reTHINK standardised data object schemas or Specify new Data Object schemas handled by the Hyperty*
+##1.1 Hyperty Data Objects schemas
 
-This Hyperty handles standard [Communication Data Objects](https://github.com/reTHINK-project/dev-service-framework/blob/develop/docs/datamodel/data-objects/communication/readme.md) extended for Chat Communications:
+This Hyperty handles standard [Communication Data Objects](https://github.com/reTHINK-project/dev-service-framework/blob/develop/docs/datamodel/data-objects/communication/readme.md) constrained for Chat Communications i.e. the hypertyResource type is `chat`.
 
-![Group Chat Data Model](https://github.com/reTHINK-project/dev-service-framework/blob/develop/docs/datamodel/data-objects/communication/Communication-Data-Object-Model.png)
+##1.2 Descriptor
 
-Each Chat Message is a SyncDataChild object.
+The Group Chat Hyperty descriptor is:
 
-The Hyperty author is the Reporter of the Chat Message and all other Group Chat Hyperty participants are observers.
+```
+"HypertyChat": {
+  "sourcePackage": {
+    "sourceCode": ""
+    "sourceCodeClassname": "HypertyChat",
+    "encoding": "base64",
+    "signature": ""
+  },
+  "hypertyType": [
+    "chat"
+  ],
+  "cguid": 10004,
+  "version": "0.1",
+  "description": "Description of HypertyChat",
+  "objectName": "HypertyChat",
+  "configuration": {},
+  "sourcePackageURL": "/sourcePackage",
+  "language": "javascript",
+  "signature": "",
+  "messageSchemas": "",
+  "dataObjects": [
+    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Communication"
+  ],
+  "accessControlPolicy": "somePolicy"
+}
+```
 
-### Hyperty API
+Since the Hyperty supports the standard communication data schema, any Catalog URL for that schema can be used.
 
-*Specify Hyperty API to be consumed by the Application*
+##2. Exposed API
 
-The Group Chat Hyperty implements two Hyperty APIs:
+The Group Chat Hyperty implements two APIs to be consumed by Applications.
 
-#### Hyperty Group Chat Manager API
+#### Hyperty Group Chat Manager API (HypertyChat)
 
 The Hyperty Group Chat Manager API is used to manage new Chat Group conversations.
 
-**addListener**
+##### create
 
-This function is used to handle notifications about incoming invitations to create a new Group Chat.
+This function is used to create a new Group Chat providing the name and the identifiers of users to be invited.
 
-**create**
+**parameters**
 
-This function is used to create a new Group Chat providing the identifier of the Group to be notified.
+**How to use it**
+
+##### onInvitation
+
+This function is used to handle notifications about incoming invitations to join a Group Chat.
+
+**parameters**
+
+**How to use it**
+
+
+##### join
+
+This function is used to join a Group Chat.
+
+**parameters**
+
+**How to use it**
+
 
 #### Hyperty Group Chat API
 
 The Hyperty ConnectionController API is used to control a connection instance.
 
-**send**
+**parameters**
+
+**How to use it**
+
+
+##### send
 
 This function is used to send a chat message.
 
-**close**
+**parameters**
+
+**How to use it**
+
+
+##### onMessage
+
+This function is used to receive new messages.
+
+**parameters**
+
+**How to use it**
+
+
+##### onClose
+
+This function is used to receive requests to close the Group Chat instance.
+
+**parameters**
+
+**How to use it**
+
+
+##### close
 
 This function is used to close an existing Group Chat instance.
 
-**addParticipant**
+**parameters**
+
+**How to use it**
+
+
+##### addParticipant
 
 This function is used to add / invite new participant on an existing Group Chat instance.
 
-**removeParticipant**
+**parameters**
+
+**How to use it**
+
+
+##### removeParticipant
 
 This function is used to remove a participant from an existing Group Chat instance.
 
-**open**
 
-This function is used to open a Group Chat instance that was previously closed.
+**parameters**
 
-### Main data flows
+**How to use it**
 
-*Use MSCs to describe how the Application can use the Hyperty API for the main use cases supported by the Hyperty. Mapping between the Hyperty API functions and the Hyperty Framework functions including the Data Object handling should be depicted in separated in Diagrams*
+##### onParticipant
 
-The following main use cases are supported by the Group Chat Hyperty:
+This function is used to receive events about new added  participants or removed participants.
 
-#### Hyperty initialisation
 
-#### Send Chat Message
+**parameters**
 
-![Send Message](group-chat-send.png)
-
-#### Receive Chat Message
-
-![Send Message](group-chat-receive.png)
+**How to use it**
