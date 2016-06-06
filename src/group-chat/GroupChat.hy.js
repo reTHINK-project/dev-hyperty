@@ -92,7 +92,7 @@ let groupChatFactory = function(hypertyURL, bus, config){
     let uri = new URI(hypertyURL)
     
     return Object.assign(Object.create(GroupChatHyperty), {
-            '_position': {data:{value:{}}},
+            '_position': {data:{values:{}}},
             'syncher': syncher,
             'hypertyDiscoveryService': hypertyDiscovery,
             'identityManagerService': identityManager,
