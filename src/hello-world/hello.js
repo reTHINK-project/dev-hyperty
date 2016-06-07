@@ -2,7 +2,7 @@
 
 let hello = {
   name: "hello",
-  hello: "Hello World!!"
+  hello: "Hello buddy!!"
 };
 
 export default hello;
