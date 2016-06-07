@@ -22,6 +22,7 @@
 **/
 
 // Service Framework
+import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery';
 import IdentityManager from 'service-framework/dist/IdentityManager';
 import Discovery from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
@@ -53,6 +54,7 @@ class HypertyChat extends EventEmitter {
     let syncher = new Syncher(hypertyURL, bus, configuration);
 
     let domain = divideURL(hypertyURL).domain;
+    let hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus);
     let discovery = new Discovery(hypertyURL, bus);
     let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
 
@@ -62,11 +64,13 @@ class HypertyChat extends EventEmitter {
     _this._syncher = syncher;
     _this._domain = domain;
 
+    _this.hypertyDiscovery = hypertyDiscovery;
     _this.discovery = discovery;
     _this.identityManager = identityManager;
 
+    console.log('Discover: ', discovery);
     console.log('Identity Manager: ', identityManager);
-    console.log('Discovery: ', discovery);
+    console.log('Hyperty Discovery: ', hypertyDiscovery);
 
     syncher.onNotification(function(event) {
       console.log('Notification: ', event);

@@ -119,30 +119,30 @@ function hypertyDeployed(hyperty) {
       script =  'hello-world/helloObserver.js';
       break;
 
-        case 'HelloWorldReporter':
-            template = 'hello-world/helloWorld';
-            script = 'hello-world/helloReporter.js';
-            break;
+    case 'HelloWorldReporter':
+        template = 'hello-world/helloWorld';
+        script = 'hello-world/helloReporter.js';
+        break;
 
-        case 'GroupChat':
-            template = 'group-chat/groupChat';
-            script = 'group-chat/groupChat.js';
-            break;
+    case 'GroupChat':
+        template = 'group-chat/groupChat';
+        script = 'group-chat/groupChat.js';
+        break;
 
-        case 'Location':
-            template = 'location/location';
-            script = 'location/location.js';
-            break;
+    case 'Location':
+        template = 'location/location';
+        script = 'location/location.js';
+        break;
 
-        case 'RoomUIObserver':
-            template = 'room-ui/room';
-            script = 'room-ui/roomObserver.js';
-            break;
+    case 'RoomUIObserver':
+        template = 'room-ui/room';
+        script = 'room-ui/roomObserver.js';
+        break;
 
-        case 'RoomUIReporter':
-            template = 'room-ui/room';
-            script = 'room-ui/roomReporter.js';
-            break;
+    case 'RoomUIReporter':
+        template = 'room-ui/room';
+        script = 'room-ui/roomReporter.js';
+        break;
 
 	case 'UserStatus':
 	    template = 'user-status/UserStatus';

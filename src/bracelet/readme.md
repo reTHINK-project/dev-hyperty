@@ -1,25 +1,22 @@
-Dummy Header for Section per ToC
-================================
-
-Hyperties Specification
-=======================
 
 My Bracelet Hyperty
 -------------------
 
-### Architecture
+##1. Functionality description
 
-The My Bracelet Hyperty main functionality is to collect data from an individual bracelet, publish it to a certain Context Resource URL allocated by the Hyperty Runtime and notifying the App about context changes.
+The My Bracelet Hyperty main functionality is to collect data from an individual bracelet, publish it to a certain Context Resource URL allocated by the Hyperty Runtime.
 
-### Hyperty Data Objects schemas
+##1.1 Hyperty Data Objects schemas
 
-This Hyperty handles a standard [Context Data Object](https://github.com/reTHINK-project/dev-service-framework/blob/develop/docs/datamodel/data-objects/context/readme.md) with:
+This Hyperty handles a standard [Context Data Object](https://github.com/reTHINK-project/dev-service-framework/tree/master/docs/datamodel/data-objects/context) with:
 
-**ContextType**
+**Hyperty Resource Type**
 
-HeartRate
+* HEART_RATE
+* USER_STEPS
+* SLEEP
+* BATTERY
 
-StepsCounter
 
 **ContextUnit**
 
@@ -27,31 +24,63 @@ StepsCounter
 -	beats: Cumulative number of heart beats
 -	steps/m: number of steps per minute
 -	steps: Cumulative number of steps
+- s: amount of sleep in seconds
 
-### Hyperty API
-
-Bracelet API is aligned with [W3C Generic Sensor API](http://www.w3.org/TR/2015/WD-generic-sensor-20151015/)
-
-**Discover Available Health Context from the Bracelet**
+**example**
 
 ```
-Promise<ContextDataObjectList> discoverHealthContext( )
+{
+	"scheme": "context",
+     "id": "1276020076",
+     "time": 1465070579,
+     "values": [
+      {
+				"type": "user_steps",
+				"name": "Cumulative number of steps",
+         "unit": "steps",
+         "value": 340 },
+			 {
+ 				"type": "battery",
+				"name": "remaining battery energy level in percents",
+        "unit": "%EL",
+        "value": 0.8 }
+     ]
+}
 ```
 
-**Start Data Reading from Sensors**
+##1.2 Descriptor
 
-options parameter is of type SensorOptions defined in [W3C Generic Sensor API](http://www.w3.org/TR/2015/WD-generic-sensor-20151015/#the-sensor-interface)
+The My Bracelet Hyperty descriptor is:
 
 ```
-startReading( SensorOptions options )
+"Bracelet": {
+  "sourcePackage": {
+    "sourceCode": ""
+    "sourceCodeClassname": "HypertyBracelet",
+    "encoding": "base64",
+    "signature": ""
+  },
+  "hypertyType": [
+    "heart_rate". "sleep", "steps", "battery"
+  ],
+  "cguid": 10004,
+  "version": "0.1",
+  "description": "Descriptor of Bracelet Hyperty",
+  "objectName": "HypertyBracelet",
+  "configuration": {},
+  "sourcePackageURL": "/sourcePackage",
+  "language": "javascript",
+  "signature": "",
+  "messageSchemas": "",
+  "dataObjects": [
+    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Context"
+  ],
+  "accessControlPolicy": "somePolicy"
+}
 ```
 
-### Main data flows
+Since the Hyperty supports the standard context data schema, any Catalog URL for that schema can be used.
 
-My Bracelet Setup:
+##2. Exposed API
 
-![My Bracelet Setup](my-bracelet-setup.png)
-
-Monitoring data collected from My Bracelete:
-
-![Monitoring My Bracelet](my-bracelet-reading.png)
+The Bracelet Hyperty does not expose any API to the Application.
