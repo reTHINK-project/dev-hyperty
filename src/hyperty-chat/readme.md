@@ -50,7 +50,11 @@ Since the Hyperty supports the standard communication data schema, any Catalog U
 
 ##2. Exposed API
 
-The Group Chat Hyperty implements two APIs to be consumed by Applications.
+The Group Chat Hyperty implements two APIs to be consumed by Applications:
+
+* the Group Chat Manager API manages the creation of new Group Chats;
+* the Hyperty Group Chat API manages a certain Group CHat instance.
+
 
 #### Hyperty Group Chat Manager API (HypertyChat)
 
@@ -84,7 +88,7 @@ This function is used to join a Group Chat.
 
 #### Hyperty Group Chat API
 
-The Hyperty ConnectionController API is used to control a connection instance.
+The Group Chat API is used to control a Group Chat  instance.
 
 **parameters**
 

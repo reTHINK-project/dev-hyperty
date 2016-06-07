@@ -1,69 +1,171 @@
-Dummy Header for Section per ToC
-================================
-
-Hyperties Specification
-=======================
 
 Connector Hyperty
 -----------------
 
-### Architecture
+##1. Functionality description
 
-The Connector main functionality is to handle two party audio and voice conversations.
+The Connector Huperty main functionality is to handle two party audio and voice conversations.
 
 ![Architecture](connector-arch.png)
 
 As depicted above, the Connector Hyperty comprises the Connector class that handles the creation of new outgoing or incoming connections. Each Connection instance is controlled by the ConnectionController class that uses the the native WebRTC API.
 
-The Connection signalling is handled by the Syncher class from the Hyperty Service Framework library according to the Reporter-Observer data synchronisation mechanism, by using the standard [Connection Data Objects](https://github.com/reTHINK-project/architecture/tree/master/docs/datamodel/connection).
+The Connection signalling is handled by the Reporter-Observer data synchronisation mechanism, by using the standard [Connection Data schema](https://github.com/reTHINK-project/architecture/tree/master/docs/datamodel/connection).
 
-### Hyperty Data Objects schemas
+##1.1 Hyperty Data Objects schemas
 
-This Hyperty handles standard [Connection Data Objects](https://github.com/reTHINK-project/architecture/tree/master/docs/datamodel/connection).
+This Hyperty handles standard [Connection Data Objects](https://github.com/reTHINK-project/dev-service-framework/tree/master/docs/datamodel/data-objects/connection).
 
-### Hyperty API
+##1.2 Descriptor
 
-The Connector Hyperty implements two Hyperty APIs:
+The Hyperty Connector descriptor is:
+
+```
+"HypertyConnector": {
+  "sourcePackage": {
+    "sourceCode": ""
+    "sourceCodeClassname": "HypertyConnector",
+    "encoding": "base64",
+    "signature": ""
+    },
+    "cguid": 10001,
+    "hypertyType": [
+    "audio",
+    "video"
+    ],
+    "version": "0.1",
+    "description": "Description of HypertyConnector",
+    "objectName": "HypertyConnector",
+    "configuration": {
+    "webrtc": {
+      "iceServers": [
+        {
+          "url": "stun:stun.l.google.com:19302"
+        },
+        {
+          "url": "turn:194.65.138.95:3478",
+          "credential": "luis123",
+          "username": "luis"
+        }
+      ]
+    }
+    },
+    "constraints": {},
+    "sourcePackageURL": "/sourcePackage",
+    "language": "javascript",
+    "signature": "",
+    "messageSchemas": "",
+    "dataObjects": [
+    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Connection"
+    ],
+    "accessControlPolicy": "somePolicy"
+    }
+```
+
+The Hyperty Connector descriptor includes the required WebRTC ICE servers configuration:
+
+```
+"configuration": {
+"webrtc": {
+  "iceServers": [
+    {
+      "url": "stun:stun.l.google.com:19302"
+    },
+    {
+      "url": "turn:194.65.138.95:3478",
+      "credential": "luis123",
+      "username": "luis"
+    }
+  ]
+}
+}
+```
+
+Since the Hyperty supports the standard connection data schema, any Catalog URL for that schema can be used.
+
+##2. Exposed API
+
+The Connector Hyperty implements two Hyperty APIs to be consumed by Applications:
+
+* the Hyperty Connector API manages the creation of new WebRTC connections;
+* the Hyperty ConnectionController API manages a certain WebRTC connection instance.
 
 #### Hyperty Connector API
 
 The Hyperty Connector API is used to create new connections.
 
-**addListener**
+##### onInvitation**
 
 This function is used to handle notifications about incoming requests to create a new connection.
 
-**connect**
+**parameters**
 
-This function is used to create a new connection providing the identifier of users to be notified.
+**How to use it**
+
+##### connect
+
+This function is used to create a new connection providing the identifier of the user to be notified.
+
+**parameters**
+
+**How to use it**
+
 
 #### Hyperty ConnectionController API
 
 The Hyperty ConnectionController API is used to control a connection instance.
 
-**accept**
+##### accept
 
 This function is used to accept an incoming connection request.
 
-**decline**
+**parameters**
+
+**How to use it**
+
+##### decline
 
 This function is used to decline an incoming connection request.
 
-**disconnect**
+**parameters**
+
+**How to use it**
+
+##### disconnect
 
 This function is used to close an existing connection instance.
 
-**addPeer**
+**parameters**
 
-This function is used to add / invite new peers on an existing connection instance (for multiparty connections).
+**How to use it**
 
-**removePeer**
+##### onDisconnect
 
-This function is used to remove a peer from an existing connection instance.
+This function is used to receive requests to close an existing connection instance.
+
+**parameters**
+
+**How to use it**
+
+##### onLocalStream
+
+This function is used to receive events about local streams (added or removed).
+
+**parameters**
+
+**How to use it**
+
+##### onRemoteStream
+
+This function is used to receive events about remote streams (added or removed).
+
+**parameters**
+
+**How to use it**
 
 ### Main data flows
 
-The following main use cases are supported by the Connector Hyperty:
+This section provides some details about how the WebRTC API is used by the Hyperty by using some Message Sequence CHart diagrams.
 
 #### Hyperty initialisation
 
@@ -109,16 +211,9 @@ Alice is aknowledge that Bob accepts Connection Request:
 
 Similar to Alice sends ICE Candidates to Bob
 
-#### Connection is established
-
-*to be provided*
 
 #### Connection is closed by local peer
 
 Connection is disconnected:
 
 ![Connection is closed](connector-disconnect.png)
-
-#### Connection is closed by remote peer
-
-*to be provided*
