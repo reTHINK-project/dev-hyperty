@@ -32,13 +32,18 @@ This Hyperty handles a standard [Context Data Object](https://github.com/reTHINK
 {
 	"scheme": "context",
      "id": "1276020076",
-     "type": "user_steps",
      "time": 1465070579,
      "values": [
       {
-        "name": "user steps",
+				"type": "user_steps",
+				"name": "Cumulative number of steps",
          "unit": "steps",
-         "value": 340 }
+         "value": 340 },
+			 {
+ 				"type": "battery",
+				"name": "remaining battery energy level in percents",
+        "unit": "%EL",
+        "value": 0.8 }
      ]
 }
 ```
