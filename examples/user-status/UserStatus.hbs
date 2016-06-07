@@ -1,0 +1,16 @@
+<div class="card-panel teal lighten-2 white-text"></div>
+<button id="setAsConnected" class="waves-effect waves-light btn btn-change-state" rel="connected">Set as available</button>
+<button id="setAsBusy" class="waves-effect waves-light btn btn-change-state" rel="busy">Set as busy</button>
+<button id="disconnect" class="waves-effect waves-light btn btn-change-state" rel="disconnected">Disconnect</button>
+<style>
+#user-list .state-disconnected {
+    background: rgba(0, 0, 0, 0.2);
+}
+#user-list .state-connected {
+    background: rgba(77, 182, 148, 0.3);
+}
+#user-list .state-busy {
+    background: rgba(255, 0, 0, 0.3);
+}
+</style>
+<ul id="user-list" class="user-list collection"></ul>

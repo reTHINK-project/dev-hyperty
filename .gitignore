@@ -35,6 +35,4 @@ jspm_packages
 
 # OSX
 .DS_Store
-
-resources/tmp
-resources/*.hy.js
+/.idea/
