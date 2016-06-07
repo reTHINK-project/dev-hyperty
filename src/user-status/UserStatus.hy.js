@@ -27,12 +27,10 @@ import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
 import EventEmitter from '../utils/EventEmitter.js';
-import {divideURL} from '../utils/utils.js';
+// import {divideURL} from '../utils/utils.js';
+import URI from 'urijs';
 
-let status = {
-  name: 'status',
-  status: 'disconnected'
-};
+import availability from './availability.js';
 
 /**
 * Hyperty Presence;
@@ -48,58 +46,53 @@ class UserStatus extends EventEmitter {
 
     super(hypertyURL, bus, configuration);
 
-    let domain = divideURL(hypertyURL).domain;
-
     this._syncher = new Syncher(hypertyURL, bus, configuration);
 
     this._hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus);
 
-    this._objectDescURL = 'hyperty-catalogue://' + domain + '/.well-known/dataschemas/UserStatusDataSchema';
-
-    this._hypertyURL = hypertyURL;
-    this._domain = domain;
+    this._userStatusDescURL = 'hyperty-catalogue://' + (new URI(hypertyURL)).hostname() + '/.well-known/dataschemas/Context';
 
     this._heartbeat = [];
 
     this._syncher.onNotification((event) => {
       this._onNotification(event);
     });
-
   }
 
   _onNotification(event) {
-    console.info('Event Received: ', event);
-
-    this.trigger('invitation', event.identity);
+    console.info('UserStatus Event Received: ', event);
+    console.log('from hyperty', event.from);
 
     event.ack();
 
-    // Subscribe Hello World Object
-    this._syncher.subscribe(this._objectDescURL, event.url).then((statusObjectObserver) => {
-      console.info('-------- Status Observer received ---------', statusObjectObserver);
-
-      this.trigger('statusChange', {
-        identity: event.identity,
-        status: statusObjectObserver.data.status
-      });
-
-      this._managePresenceHeartbeat(event.identity);
-
-      statusObjectObserver.onChange('*', () => {
-        console.info('status event received:', event);
+    if (event.schema === this._userStatusDescURL) {
+      // Subscribe to user status presence
+      this._syncher.subscribe(this._userStatusDescURL, event.url).then((statusObjectObserver) => {
+        console.info('-------- Status Observer received ---------', statusObjectObserver);
+        console.log('trigger statusChange for', event.identity);
         this.trigger('statusChange', {
           identity: event.identity,
-          status: statusObjectObserver.data.status
+          status: this.getStatus(statusObjectObserver)
         });
+
         this._managePresenceHeartbeat(event.identity);
+
+        statusObjectObserver.onChange('*', () => {
+          console.info('status event received:', event);
+          this.trigger('statusChange', {
+            identity: event.identity,
+            status: this.getStatus(statusObjectObserver)
+          });
+          this._managePresenceHeartbeat(event.identity);
+        });
+
+        console.log(event.identity.email, 'has subscribe to my status data object, send invite to listen mine');
+        this._statusObjectReporter.inviteObservers([event.from]);
+
+      }).catch(function(reason) {
+        console.error(reason);
       });
-
-      console.log(event.identity.email, 'has subscribe to my status data object, send invite to listen mine');
-      this._statusObjectReporter.inviteObservers([event.from]);
-
-    }).catch(function(reason) {
-      console.error(reason);
-    });
+    }
   }
 
   /**
@@ -110,20 +103,22 @@ class UserStatus extends EventEmitter {
   create(participants) {
 
     return new Promise((resolve, reject) => {
-
-      status.status = 'connected';
-      status.owner = this._hypertyURL;
-      status.name = 'presence';
-
       console.info('----------------------- Mapping Particpants --------------------');
       this._mappingUser(participants)
-      .then((hyperties) => this.createSyncher(hyperties, status))
+      .then((hyperties) => this.createSyncher(hyperties, availability()))
       .then((statusObjectReporter) => {
         this._statusObjectReporter = statusObjectReporter;
-        this._statusObjectReporter.onSubscription(function(event) {
+
+        this._statusObjectReporter.onSubscription((event) => {
           console.info('-------- Status Reporter received subscription request ---------', event);
           event.accept();
+          if (event.url === this._statusObjectReporter._owner) {
+              console.log('define my own presence state to available');
+            this.setStatus('available');
+          }
         });
+
+        // set interval for heartbeat
         setInterval(() => {
           this._sendHeartbeat();
         }, 50000);
@@ -137,7 +132,7 @@ class UserStatus extends EventEmitter {
 
   createSyncher(hyperties, status) {
     console.info('------------------------ Syncher Create ----------------------', hyperties, status);
-    return this._syncher.create(this._objectDescURL, hyperties, status);
+    return this._syncher.create(this._userStatusDescURL, hyperties, status);
   }
 
   join(resource) {
@@ -145,19 +140,32 @@ class UserStatus extends EventEmitter {
 
       console.info('------------------------ Syncher subscribe ----------------------');
 
-      this._syncher.subscribe(this._objectDescURL, resource).then(function(dataObjectObserver) {
+      this._syncher.subscribe(this._userStatusDescURL, resource).then(function(dataObjectObserver) {
         console.info('Data Object Observer: ', dataObjectObserver);
 
       }).catch(function(reason) {
         reject(reason);
       });
     });
+  }
+
+  getStatus(statusObserver) {
+      let state = false;
+      if (typeof statusObserver !== 'undefined') {
+        console.log('getStatus from observer:', statusObserver.data.values[0].value);
+        return statusObserver.data.values[0].value;
+      } else {
+        console.log('getStatus from reporter:', this._statusObjectReporter.data.values[0].value);
+        return this._statusObjectReporter.data.values[0].value;
+      }
+      return state;
 
   }
 
   setStatus(newStatus) {
-    console.log('change status to', newStatus);
-    this._statusObjectReporter.data.status = newStatus;
+    console.log('setStatus', newStatus, 'in reporter', this._statusObjectReporter.data);
+    this._statusObjectReporter.data.values[0].value = newStatus;
+    this._statusObjectReporter.data.time = (new Date()).getTime();
   }
 
   /**
@@ -165,7 +173,7 @@ class UserStatus extends EventEmitter {
    */
   _sendHeartbeat() {
     console.log('send heartbeat');
-    this._statusObjectReporter.data.date = (new Date()).getTime();
+    this._statusObjectReporter.data.time = (new Date()).getTime();
   }
 
   /**
@@ -182,7 +190,7 @@ class UserStatus extends EventEmitter {
       clearTimeout(this._heartbeat[email]);
       this.trigger('statusChange', {
         identity: identity,
-        status: 'disconnected'
+        status: 'unavailable'
       });
     }, 60000);
   }
