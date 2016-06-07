@@ -148,12 +148,3 @@ This function is used to remove a participant from an existing Group Chat instan
 **parameters**
 
 **How to use it**
-
-##### onParticipant
-
-This function is used to receive events about new added  participants or removed participants.
-
-
-**parameters**
-
-**How to use it**

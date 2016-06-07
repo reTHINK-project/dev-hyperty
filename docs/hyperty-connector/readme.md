@@ -94,7 +94,7 @@ The Connector Hyperty implements two Hyperty APIs to be consumed by Applications
 
 The Hyperty Connector API is used to create new connections.
 
-##### onInvitation**
+##### onInvitation
 
 This function is used to handle notifications about incoming requests to create a new connection.
 
@@ -142,22 +142,6 @@ This function is used to close an existing connection instance.
 ##### onDisconnect
 
 This function is used to receive requests to close an existing connection instance.
-
-**parameters**
-
-**How to use it**
-
-##### onLocalStream
-
-This function is used to receive events about local streams (added or removed).
-
-**parameters**
-
-**How to use it**
-
-##### onRemoteStream
-
-This function is used to receive events about remote streams (added or removed).
 
 **parameters**
 
