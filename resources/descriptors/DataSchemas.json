@@ -158,25 +158,5 @@
     "messageSchemas": "",
     "dataObjects": [],
     "accessControlPolicy": "somePolicy"
-  },
-  "UserStatusDataSchema": {
-    "sourcePackage": {
-      "sourceCode": "ewoJIiRzY2hlbWEiOiAiaHR0cDovL2pzb24tc2NoZW1hLm9yZy9kcmFmdC0wNC9zY2hlbWEjIiwKCSJpZCI6ICJTdGF0dXNPYmplY3QiLAoJInR5cGUiOiAib2JqZWN0IiwKCSJyZXF1aXJlZCI6IFsic3RhdHVzIl0sCgkiYWRkaXRpb25hbFByb3BlcnRpZXMiOiBmYWxzZSwKICAJInByb3BlcnRpZXMiOiB7CgkJInNjaGVtZSI6IHsKCQkJImNvbnN0YW50IjogInN0YXR1cyIKCQl9LAoJCSJzdGF0dXMiOiB7CgkJCSJ0eXBlIjogInN0cmluZyIKCQl9Cgl9Cn0K",
-      "sourceCodeClassname": "UserStatusDataSchema",
-      "encoding": "base64",
-      "signature": ""
-    },
-    "cguid": 20009,
-    "type": "DataSchemas",
-    "version": "0.1",
-    "description": "Description of UserStatusDataSchema",
-    "objectName": "UserStatusDataSchema",
-    "configuration": {},
-    "sourcePackageURL": "/sourcePackage",
-    "language": "JSON-Schema",
-    "signature": "",
-    "messageSchemas": "",
-    "dataObjects": [],
-    "accessControlPolicy": "somePolicy"
   }
 }
