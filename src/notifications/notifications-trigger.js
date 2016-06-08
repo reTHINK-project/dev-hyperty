@@ -1,0 +1,36 @@
+const NotificationsTriggerObject = {
+    _getHyFor(identities){
+        return Promise.all(identities.map((p) => {
+            return this._discoveryService.discoverHypertiesPerUser(p.email, p.domain)
+                .then((hyperties)=>{
+                    return Object.keys(hyperties)
+                        .map((key)=>{return {key:key, descriptor:hyperties[key].descriptor, lastModified:hyperties[key].lastModified}})
+                        .filter((desc)=>desc.descriptor.endsWith('Notifications'))
+                        .sort((a,b)=>(new Date(a.lastModified)<new Date(b.lastModified))?1:-1)
+                        .shift().key
+                })
+        }))
+    },
+
+    trigger(recipients, notification){
+        return this._getHyFor(recipients)
+            .then((hypertyURLs)=>{
+                return this._syncher.create(this._objectDescURL, hypertyURLs, {})
+                    .then((reporter)=>{
+                        return reporter.addChild(notification)
+                    })
+            })
+    }
+}
+
+const NotificationsTrigger = (domain, syncher, discoveryService)=>{
+    return Object.assign({
+            _syncher: syncher,
+
+            _discoveryService: discoveryService,
+
+            _objectDescURL:`hyperty-catalogue://${domain}/.well-known/dataschemas/Communication`,
+        }, NotificationsTriggerObject)
+}
+
+export default NotificationsTrigger
