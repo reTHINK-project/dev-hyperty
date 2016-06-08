@@ -103,9 +103,11 @@ This function is used to create a new connection providing the identifier of the
 
 **parameters**
 
-*name* - is a string to identify the Group Chat
+*user* - user to be invited that is identified with reTHINK User URL.
 
-*user* - array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL.
+*stream* - WebRTC local MediaStream retrieved by the Application
+
+*name* - is a string to identify the connection.
 
 **returns**
 
@@ -114,7 +116,7 @@ A ConnectionController object as a Promise.
 **How to use it**
 
 ```javascript
-chatGroupManager.create(name, users).then(function(chatController){
+connector.connect(user, stream, name).then(function(controller){
 
 // your source code
 
@@ -130,24 +132,15 @@ This function is used to handle notifications about incoming requests to create 
 
 `onInvitation(ConnectionController connection)`
 
-(`addEventListener(string event, callback)`)
-
 **parameters**
 
-*invitation* - the CreateEvent fired by the Syncher when an invitaion is received
+*connection* - the ConnectionController to handle the incoming connection invitation.
 
 **How to use it**
 
 ```javascript
-connector.addEventListener('connector:connected', function(controller) {
-
-   connector.addEventListener('have:notification', function(event) {
-     notificationHandler(controller, event);
-   });
-
- });
+connector.onInvitation(function(connection){...});
  ```
-
 
 #### Hyperty ConnectionController API
 
@@ -155,23 +148,56 @@ The Hyperty ConnectionController API is used to control a connection instance.
 
 ##### accept
 
-This function is used to accept an incoming connection request.
+This function is used to accept an incoming connection request received by `connection.onInvitation()`.
 
 `<Promise> boolean accept( MediaStream stream)`
 
 **parameters**
 
+*stream* - WebRTC local MediaStream retrieved by the Application
+
+**returns**
+
+It returns, as a Promise, `true` in case the connection is successfully accepted, `false` otherwise.
+
 **How to use it**
+
+```javascript
+connection.accept(stream).then(function(accepted){
+
+// your source code
+
+}).catch(function(reason) {
+    console.error(reason);
+});
+```
+
 
 ##### decline
 
-This function is used to decline an incoming connection request.
+This function is used to decline an incoming connection request received by `connection.onInvitation()`.
 
-`<Promise> boolean decline()`
+`<Promise> boolean decline(int ?reason)`
 
 **parameters**
 
+*reason* - Integer decline reason that is compliant with RFC7231. If not present `400` is used. (optional)
+
+**returns**
+
+It returns, as a Promise, `true` in case the connection is successfully declined, `false` otherwise.
+
 **How to use it**
+
+```javascript
+connection.decline(reason).then(function(declined){
+
+// your source code
+
+}).catch(function(reason) {
+    console.error(reason);
+});
+```
 
 ##### disconnect
 
@@ -179,69 +205,34 @@ This function is used to close an existing connection instance.
 
 `<Promise> boolean disconnect()`
 
-**parameters**
+**returns**
+
+It returns as a Promise `true` if successfully disconnected or `false` otherwise.
 
 **How to use it**
+
+```javascript
+connection.close().then(function(closed){
+
+// your source code
+
+}).catch(function(reason) {
+    console.error(reason);
+});
+```
 
 ##### onDisconnect
 
 This function is used to receive requests to close an existing connection instance.
 
+`onDisconect(DeleteEvent event)`
+
 **parameters**
+
+*event* - the DeleteEvent fired by the Syncher when the Connection is closed.
 
 **How to use it**
 
-### Main data flows
-
-This section provides some details about how the WebRTC API is used by the Hyperty by using some Message Sequence CHart diagrams.
-
-#### Hyperty initialisation
-
-Application adds a listener to receive incoming connection requests events.
-
-![Initialisation](connector-invite.png)
-
-#### Create new Connection
-
-Invite Bob for a new communication:
-
-![Invite Bob](connector-invite_001.png)
-
-#### Notification about incoming connection request
-
-Bob receives Connection Request notification:
-
-![Bob receives Invite](connector-bob-accepts.png)
-
-#### Alice sends ICE Candidates to Bob
-
-Alice is notified Bob has subscribed the Connection and can start receiving ICE Candidates:
-
-![Notification about Bob's subscription](connector-ice-candidates-update.png)
-
-Alice updates Connection with her Ice Candidates:
-
-![Alice’s peer is Updated with ICE Candidates](connector-ice-candidates-update_001.png)
-
-#### Accept incoming connection request
-
-Bob accepts Connection Request:
-
-![Bob accepts Invite](connector-bob-accepts_001.png)
-
-#### Aknowledgment that requested Connection was accepted by remote peer
-
-Alice is aknowledge that Bob accepts Connection Request:
-
-![Alice Aked Bob accepts Invite](connector-alice-acked-bob-accepted-invitation.png)
-
-#### Bob sends ICE Candidates to Alice
-
-Similar to Alice sends ICE Candidates to Bob
-
-
-#### Connection is closed by local peer
-
-Connection is disconnected:
-
-![Connection is closed](connector-disconnect.png)
+```javascript
+connection.onClose(function(event){...});
+```

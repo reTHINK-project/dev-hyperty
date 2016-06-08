@@ -203,7 +203,7 @@ This function is used to close an existing Group Chat instance. Only available t
 
 **returns**
 
-It returns as a Promise `true` if successfully closed or `false`.
+It returns as a Promise `true` if successfully closed or `false` otherwise.
 
 **How to use it**
 
@@ -219,18 +219,52 @@ chatController.close().then(function(closed){
 
 ##### addUser
 
-This function is used to add / invite new user on an existing Group Chat instance.
+This function is used to add / invite new user on an existing Group Chat instance. Only the Reporter, i.e. the Hyperty that has created the Group Chat, is allowed to use this function.
+
+`<Promise> boolean addUser(URL.UserURL user)`
 
 **parameters**
 
+*user* - user to be invited to join the Group Chat that is identified with reTHINK User URL.
+
+**returns**
+
+It returns as a Promise `true` if successfully invited or `false` otherwise.
+
 **How to use it**
 
+```javascript
+chatController.addUser(user).then(function(added){
+
+// your source code
+
+}).catch(function(reason) {
+    console.error(reason);
+});
+```
 
 ##### removeUser
 
-This function is used to remove a user from an existing Group Chat instance.
+This function is used to remove a user from an existing Group Chat instance. Only the Reporter, i.e. the Hyperty that has created the Group Chat, is allowed to use this function.
 
+`<Promise> boolean removeUser(URL.UserURL user)`
 
 **parameters**
 
+*user* - user to be removed from the Group Chat that is identified with reTHINK User URL.
+
+**returns**
+
+It returns as a Promise `true` if successfully removed or `false` otherwise.
+
 **How to use it**
+
+```javascript
+chatController.removeUser(user).then(function(removed){
+
+// your source code
+
+}).catch(function(reason) {
+    console.error(reason);
+});
+```

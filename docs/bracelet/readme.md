@@ -99,7 +99,7 @@ No input parameter.
 
 **returns**
 
-A list of Context objects with:
+A list of Context objects is returned as a Promise. Each Context object contains:
 
 context.id : MAC Address of the device
 
