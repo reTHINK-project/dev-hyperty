@@ -35,3 +35,5 @@ Notify every position change to subcribed hyperties
     locationHy.startPositionBroadcast(['<hyperty-runtime-url>', ...])
 
 ##3. Framework improvement proposals derived from Hyperty Location development.
+
+The same described by group-chat hyperty [here](../group-chat/readme.md)
