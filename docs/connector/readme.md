@@ -94,21 +94,59 @@ The Connector Hyperty implements two Hyperty APIs to be consumed by Applications
 
 The Hyperty Connector API is used to create new connections.
 
-##### onInvitation
-
-This function is used to handle notifications about incoming requests to create a new connection.
-
-**parameters**
-
-**How to use it**
-
 ##### connect
 
 This function is used to create a new connection providing the identifier of the user to be notified.
 
+`<Promise> ConnectionController connect( URL.UserURL user, MediaStream stream, string ?name)`
+
+
 **parameters**
 
+*name* - is a string to identify the Group Chat
+
+*user* - array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL.
+
+**returns**
+
+A ConnectionController object as a Promise.
+
 **How to use it**
+
+```javascript
+chatGroupManager.create(name, users).then(function(chatController){
+
+// your source code
+
+}).catch(function(reason) {
+    console.error(reason);
+});
+```
+
+
+##### onInvitation (addEventListener)
+
+This function is used to handle notifications about incoming requests to create a new connection.
+
+`onInvitation(ConnectionController connection)`
+
+(`addEventListener(string event, callback)`)
+
+**parameters**
+
+*invitation* - the CreateEvent fired by the Syncher when an invitaion is received
+
+**How to use it**
+
+```javascript
+connector.addEventListener('connector:connected', function(controller) {
+
+   connector.addEventListener('have:notification', function(event) {
+     notificationHandler(controller, event);
+   });
+
+ });
+ ```
 
 
 #### Hyperty ConnectionController API
@@ -119,6 +157,8 @@ The Hyperty ConnectionController API is used to control a connection instance.
 
 This function is used to accept an incoming connection request.
 
+`<Promise> boolean accept( MediaStream stream)`
+
 **parameters**
 
 **How to use it**
@@ -127,6 +167,8 @@ This function is used to accept an incoming connection request.
 
 This function is used to decline an incoming connection request.
 
+`<Promise> boolean decline()`
+
 **parameters**
 
 **How to use it**
@@ -134,6 +176,8 @@ This function is used to decline an incoming connection request.
 ##### disconnect
 
 This function is used to close an existing connection instance.
+
+`<Promise> boolean disconnect()`
 
 **parameters**
 

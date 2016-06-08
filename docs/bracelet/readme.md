@@ -90,22 +90,37 @@ The Bracelet Hyperty an API to the Application to discover and connect to the br
 This function discovers available bracelets.
 
 ```
-Promise<ContextDataObject[]]> discover( )
+Promise <Context.Context[]]> discover()
 ```
 
 **parameters**
 
 No input parameter.
 
+**returns**
+
+A list of Context objects with:
+
+context.id : MAC Address of the device
+
+context.name : name of the device eg "Mi Band"
+
+context.description : additional information about the device (optional)
 
 ### connect
 
-This function connects to a certain previsouly discovered bracelet and starts reading its sensors.
+This function connects to a certain previously discovered bracelet and starts reading its sensors.
 
 ```
-connect( SensorOptions options )
+<Promise> Context connect( string id, SensorOptions ?options )
 ```
 
 **parameters**
 
-*options* is of type SensorOptions defined in [W3C Generic Sensor API](http://www.w3.org/TR/2015/WD-generic-sensor-20151015/#the-sensor-interface)
+*id* device identity returned by the discover function ie context.id
+
+*options* is of type SensorOptions defined in [W3C Generic Sensor API](https://www.w3.org/TR/generic-sensor/#api) where measurement frequency is defined.
+
+**returns**
+
+It returns the Context Data Object created by the Syncher allowing the Application to also observe the bracelet with `bracelet.onChange().then(function(){})`.

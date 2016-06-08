@@ -56,7 +56,7 @@ The Group Chat Hyperty implements two APIs to be consumed by Applications:
 * the Hyperty Group Chat API manages a certain Group CHat instance.
 
 
-#### Hyperty Group Chat Manager API (HypertyChat)
+#### Hyperty Group Chat Manager API
 
 The Hyperty Group Chat Manager API is used to manage new Chat Group conversations.
 
@@ -64,85 +64,171 @@ The Hyperty Group Chat Manager API is used to manage new Chat Group conversation
 
 This function is used to create a new Group Chat providing the name and the identifiers of users to be invited.
 
+`<Promise> ChatController create(string name, URL.UserURL users[]?)`
+
+
 **parameters**
 
+*name* - is a string to identify the Group Chat
+
+*users* - array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL.
+
+**returns**
+
+A ChatController object as a Promise.
+
 **How to use it**
+
+```javascript
+chatGroupManager.create(name, users).then(function(chatController){
+
+// your source code
+
+}).catch(function(reason) {
+    console.error(reason);
+});
+```
 
 ##### onInvitation
 
 This function is used to handle notifications about incoming invitations to join a Group Chat.
 
+`onInvitation(CreateEvent invitation)`
+
+
 **parameters**
+
+*invitation* - the CreateEvent fired by the Syncher when an invitaion is received
 
 **How to use it**
 
+```javascript
+chatGroupManager.onInvitation(function(event){...});
+```
 
 ##### join
 
 This function is used to join a Group Chat.
 
-**parameters**
-
-**How to use it**
-
-
-#### Hyperty Group Chat API
-
-The Group Chat API is used to control a Group Chat  instance.
+`<Promise> ChatController join(URL.CommunicationURL invitation.url)`
 
 **parameters**
 
+*invitation.url* - the Communication URL of the Group Chat to join that is provided in the invitation event
+
+**returns**
+
+It returns the ChatController object as a Promise
+
 **How to use it**
 
+```javascript
+chatGroupManager.join(invitation.url).then(function(chatController){
+
+// your source code
+
+}).catch(function(reason) {
+    console.error(reason);
+});
+```
+
+#### Chat Controller API
+
+The Chat Controller API is used to control a Group Chat  instance.
 
 ##### send
 
 This function is used to send a chat message.
 
+`<Promise> Communication.ChatMessage send(Communication.ChatMessage message)`
+
 **parameters**
 
+*message* is the ChatMessage to be sent.
+
+**returns**
+
+It returns the ChatMessage child object created by the Syncher as a Promise.
+
 **How to use it**
+
+```javascript
+chatController.send(message).then(function(sentMessage){
+
+// your source code
+
+}).catch(function(reason) {
+    console.error(reason);
+});
+```
 
 
 ##### onMessage
 
 This function is used to receive new messages.
 
+`onMessage(Communication.ChatMessage message)`
+
 **parameters**
+
+*message* - the received message compliant with Communication.ChatMessage.
 
 **How to use it**
 
+```javascript
+chatController.onMessage(function(message){...});
+```
 
 ##### onClose
 
 This function is used to receive requests to close the Group Chat instance.
 
+`onClose(DeleteEvent event)`
+
 **parameters**
+
+*event* - the DeleteEvent fired by the Syncher when the Chat is closed.
 
 **How to use it**
 
+```javascript
+chatController.onClose(function(event){...});
+```
 
 ##### close
 
-This function is used to close an existing Group Chat instance.
+This function is used to close an existing Group Chat instance. Only available to Chat Group Reporters i.e. the Hyperty instance that created the Group Chat.
+
+`<Promise> boolean close()`
+
+**returns**
+
+It returns as a Promise `true` if successfully closed or `false`.
+
+**How to use it**
+
+```javascript
+chatController.close().then(function(closed){
+
+// your source code
+
+}).catch(function(reason) {
+    console.error(reason);
+});
+```
+
+##### addUser
+
+This function is used to add / invite new user on an existing Group Chat instance.
 
 **parameters**
 
 **How to use it**
 
 
-##### addParticipant
+##### removeUser
 
-This function is used to add / invite new participant on an existing Group Chat instance.
-
-**parameters**
-
-**How to use it**
-
-
-##### removeParticipant
-
-This function is used to remove a participant from an existing Group Chat instance.
+This function is used to remove a user from an existing Group Chat instance.
 
 
 **parameters**
