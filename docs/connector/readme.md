@@ -4,13 +4,8 @@ Connector Hyperty
 
 ##1. Functionality description
 
-The Connector Huperty main functionality is to handle two party audio and voice conversations.
+The Connector Hyperty main functionality is to handle two party audio and voice conversations by using WebRTC technology.
 
-![Architecture](connector-arch.png)
-
-As depicted above, the Connector Hyperty comprises the Connector class that handles the creation of new outgoing or incoming connections. Each Connection instance is controlled by the ConnectionController class that uses the the native WebRTC API.
-
-The Connection signalling is handled by the Reporter-Observer data synchronisation mechanism, by using the standard [Connection Data schema](https://github.com/reTHINK-project/architecture/tree/master/docs/datamodel/connection).
 
 ##1.1 Hyperty Data Objects schemas
 

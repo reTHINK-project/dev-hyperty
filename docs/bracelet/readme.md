@@ -90,7 +90,7 @@ The Bracelet Hyperty an API to the Application to discover and connect to the br
 This function discovers available bracelets.
 
 ```
-Promise <Context.Context[]]> discover()
+<Promise> Context.Context[] discover()
 ```
 
 **parameters**
