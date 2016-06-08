@@ -64,18 +64,20 @@ Retrieve current user state.
 ## 3. Framework improvement proposals derived from Hyperty Location development.
 
 - Ability to retrieve a user's data object linked to an hyperty
-
 As described before, a user can't know someone's status before having sent it's own status.
 
 It would be more efficient if user's status data object could be permanent and could be retrieved with a search in the registry.
-=> https://github.com/reTHINK-project/dev-runtime-core/issues/85
 
 Ideally, it would be not necessary to retrieve any data objet url and user presence should have predictible data object url.
+=> https://github.com/reTHINK-project/dev-runtime-core/issues/85
 
 - Being notified when reporter of a data object is disconnected
 
 To better managed the disconnexion status, we would need to be notified when a remote user is disconnected and its data object is not up to date and will not be updated.
 
 Even if it's not the main rethink idea, the most efficient way is to handle user disconnection from msg-node because it's the first component notified of user change : websocket give true connection state in contrary to long polling or heartbeat system who's based on the absence of network activity packet.
+=> https://github.com/reTHINK-project/dev-hyperty/issues/28
 
 - guideline for unit/end-to-end test would be fine
+=> https://github.com/reTHINK-project/dev-hyperty/issues/11
+=> https://github.com/reTHINK-project/dev-hyperty/issues/23
