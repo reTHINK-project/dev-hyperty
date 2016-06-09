@@ -21,10 +21,23 @@
 * limitations under the License.
 **/
 
-let participant = {
-  status: '',
-  hypertyResource: '',
-  identity: ''
+export const CommunicationStatus = {
+  OPEN: 'open',
+  PENDING: 'pending',
+  CLOSED: 'closed',
+  PAUSED: 'paused',
+  FAILED: 'failed'
 };
 
-export default participant;
+export let communicationObject = {
+  id: '',
+  name: '',
+  owner: '',
+  scheme: 'comm',
+  startingTime: '',
+  lastModified: '',
+  duration: '',
+  status: '',
+  qos: '',
+  participants: []
+};

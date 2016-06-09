@@ -109,9 +109,9 @@ function hypertyDeployed(hyperty) {
       script =  'hyperty-connector/demo.js';
       break;
 
-    case 'HypertyChat':
-      template = 'hyperty-chat/HypertyChat';
-      script =  'hyperty-chat/demo.js';
+    case 'GroupChatManager':
+      template = 'group-chat-manager/ChatManager';
+      script =  'group-chat-manager/demo.js';
       break;
 
     case 'HelloWorldObserver':
@@ -120,35 +120,36 @@ function hypertyDeployed(hyperty) {
       break;
 
     case 'HelloWorldReporter':
-        template = 'hello-world/helloWorld';
-        script = 'hello-world/helloReporter.js';
-        break;
+      template = 'hello-world/helloWorld';
+      script = 'hello-world/helloReporter.js';
+      break;
 
     case 'GroupChat':
-        template = 'group-chat/groupChat';
-        script = 'group-chat/groupChat.js';
-        break;
+      template = 'group-chat/groupChat';
+      script = 'group-chat/groupChat.js';
+      break;
 
     case 'Location':
-        template = 'location/location';
-        script = 'location/location.js';
-        break;
+      template = 'location/location';
+      script = 'location/location.js';
+      break;
 
     case 'RoomUIObserver':
-        template = 'room-ui/room';
-        script = 'room-ui/roomObserver.js';
-        break;
+      template = 'room-ui/room';
+      script = 'room-ui/roomObserver.js';
+      break;
 
     case 'RoomUIReporter':
-        template = 'room-ui/room';
-        script = 'room-ui/roomReporter.js';
-        break;
+      template = 'room-ui/room';
+      script = 'room-ui/roomReporter.js';
+      break;
 
-	case 'UserStatus':
-	    template = 'user-status/UserStatus';
-	    script = 'user-status/user-status.js';
-	    break;
-    }
+    case 'UserStatus':
+      template = 'user-status/UserStatus';
+      script = 'user-status/user-status.js';
+      break;
+
+  }
 
   if (!template) {
     throw Error('You must need specify the template for your example');
