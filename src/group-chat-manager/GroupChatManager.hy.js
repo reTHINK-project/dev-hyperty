@@ -64,16 +64,33 @@ class GroupChatManager {
 
     _this.search = new Search(discovery, identityManager);
 
+    _this.communicationObject = communicationObject;
+
     console.log('Discover: ', discovery);
     console.log('Identity Manager: ', identityManager);
 
     syncher.onNotification(function(event) {
 
-      // TODO: replace the 100 for Message.Response
-      event.ack(100);
+      if (event.type === 'create') {
 
-      if (_this._onInvitation) {
-        _this._onInvitation(event);
+        // TODO: replace the 100 for Message.Response
+        event.ack(100);
+
+        if (_this._onInvitation) { _this._onInvitation(event); }
+      }
+
+      if (event.type === 'delete') {
+        // TODO: replace the 200 for Message.Response
+        event.ack(200);
+
+        //Reset all the parameters
+        _this.communicationObject.owner = '';
+        _this.communicationObject.name = '';
+        _this.communicationObject.id = '';
+        _this.communicationObject.status = '';
+        _this.communicationObject.startingTime = '';
+        _this.communicationObject.lastModifed = '';
+        _this.communicationObject.participants = [];
       }
 
     });
@@ -95,17 +112,17 @@ class GroupChatManager {
 
       // Create owner participant
       // TODO: create all information to communication;
-      communicationObject.owner = _this._hypertyURL;
-      communicationObject.name = name;
-      communicationObject.id = name;
-      communicationObject.status = CommunicationStatus.OPEN;
-      communicationObject.startingTime = new Date().toJSON();
-      communicationObject.lastModifed = communicationObject.startingTime;
+      _this.communicationObject.owner = _this._hypertyURL;
+      _this.communicationObject.name = name;
+      _this.communicationObject.id = name;
+      _this.communicationObject.status = CommunicationStatus.OPEN;
+      _this.communicationObject.startingTime = new Date().toJSON();
+      _this.communicationObject.lastModifed = _this.communicationObject.startingTime;
 
       _this.search.myIdentity().then((identity) => {
 
         // Add my identity
-        communicationObject.participants.push(identity);
+        _this.communicationObject.participants.push(identity);
 
         return _this.search.users(users);
       }).then((hypertiesIDs) => {
@@ -113,7 +130,7 @@ class GroupChatManager {
         console.info(`Have ${hypertiesIDs.length} users;`);
         console.info('------------------------ Syncher Create ---------------------- \n');
 
-        return syncher.create(_this._objectDescURL, hypertiesIDs, communicationObject);
+        return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject);
       }).catch((reason) => {
         console.log('Error:', reason);
       }).then(function(dataObjectReporter) {

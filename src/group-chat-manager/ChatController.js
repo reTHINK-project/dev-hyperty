@@ -43,6 +43,14 @@ class ChatController {
     _this.myIdentity = null;
 
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
+
+    syncher.onNotification(function(event) {
+
+      if (event.type === 'delete') {
+        if (_this._onClose) _this._onClose(event);
+      }
+
+    });
   }
 
   set dataObjectReporter(dataObjectReporter) {
@@ -274,8 +282,21 @@ class ChatController {
    * @return {<Promise>Boolean} It returns as a Promise true if successfully closed or false otherwise.
    */
   close() {
-    // TODO: implement the close chat;
-    console.log('Not yet implemented: ');
+    // TODO: the dataObjectReporter.delete should be an Promise;
+
+    let _this = this;
+
+    return new Promise(function(resolve, reject) {
+
+      try {
+        _this.dataObjectReporter.delete();
+        resolve(true);
+      } catch (e) {
+        reject(false);
+      }
+
+    });
+
   }
 
 }

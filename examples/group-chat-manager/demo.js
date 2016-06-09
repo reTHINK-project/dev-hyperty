@@ -28,7 +28,6 @@ function hypertyLoaded(result) {
 
   createBtn.on('click', createRoom);
   joinBtn.on('click', joinRoom);
-
 }
 
 function onInvitation(event) {
@@ -54,7 +53,6 @@ function createRoom(event) {
 
   addParticipantBtn.on('click', addParticipantEvent);
   createRoomBtn.on('click', createRoomEvent);
-
   createRoomModal.openModal();
 }
 
@@ -98,7 +96,9 @@ function createRoomEvent(event) {
 
   chatGroupManager.create(name, users).then(function(chatController) {
 
-    prepareChat(chatController);
+    let isOwner = true;
+    prepareChat(chatController, isOwner);
+    participantsForm[0].reset();
 
   }).catch(function(reason) {
     console.error(reason);
@@ -131,7 +131,7 @@ function joinRoom(event) {
 
 }
 
-function prepareChat(chatController) {
+function prepareChat(chatController, isOwner) {
 
   console.log('Chat Group Controller: ', chatController);
 
@@ -153,12 +153,17 @@ function prepareChat(chatController) {
     console.log('App - onUserRemoved Event:', event);
   });
 
+  chatController.onClose(function(event) {
+    console.log('App - onClose Event:', event);
+
+    $('.chat-section').remove();
+  });
+
   Handlebars.getTemplate('group-chat-manager/chat-section').then(function(html) {
 
     $('.chat-section').append(html);
 
     // Process Existent participants
-    console.log('Participants: ', chatController.dataObject.data);
     if (chatController.dataObject.data && chatController.dataObject.data.participants) {
 
       let users = chatController.dataObject.data.participants || [];
@@ -178,7 +183,7 @@ function prepareChat(chatController) {
 
     }
 
-    chatManagerReady(chatController);
+    chatManagerReady(chatController, isOwner);
 
     let inviteBtn = $('.invite-btn');
     inviteBtn.on('click', function(event) {
@@ -221,7 +226,7 @@ function inviteParticipants(chatController) {
 
 }
 
-function chatManagerReady(chatController) {
+function chatManagerReady(chatController, isOwner) {
 
   let chatSection = $('.chat-section');
   let addParticipantModal = $('.add-participant');
@@ -237,6 +242,19 @@ function chatManagerReady(chatController) {
 
     let html = template({name: name, resource: resource});
     $('.chat-header').append(html);
+
+    if (isOwner) {
+
+      let closeBtn = $('.close-btn');
+      closeBtn.removeClass('hide');
+      closeBtn.on('click', function(event) {
+
+        event.preventDefault();
+
+        closeChat(chatController);
+      });
+    }
+
   });
 
   textArea.on('keyup', function(event) {
@@ -348,6 +366,25 @@ function removeParticipant(item) {
   let collection = section.find('.participant-list');
   let element = collection.find('li[data-name="' + item + '"]');
   element.remove();
+}
+
+function closeChat(chatController) {
+
+  chatController.close().then(function(result) {
+    console.log('Chat closed: ', result);
+
+    let createRoomModal = $('.create-chat');
+    let createRoomBtn = createRoomModal.find('.btn-create');
+    let addParticipantBtn = createRoomModal.find('.btn-add');
+
+    addParticipantBtn.off('click', addParticipantEvent);
+    createRoomBtn.off('click', createRoomEvent);
+
+    $('.chat-section').remove();
+  }).catch(function(reason) {
+    console.log('An error occured:', reason);
+  });
+
 }
 
 Handlebars.getTemplate = function(name) {
