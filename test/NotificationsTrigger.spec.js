@@ -2,7 +2,7 @@ import sinon from 'sinon'
 import { expect } from 'chai'
 import NotificationsTrigger from '../src/notifications/notifications-trigger'
 
-describe('Notification Trigger', ()=>{
+describe('Notifications Trigger', ()=>{
     describe('trigger notification', ()=>{
         it('should trigger a new chat notification to recipients', ()=>{
             let reporter = {}
