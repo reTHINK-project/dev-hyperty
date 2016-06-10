@@ -10,7 +10,8 @@ module.exports = function (config) {
             debug: true,
             configure: function(bundle) {
             bundle.once('prebundle', function() {
-                  bundle.transform('babelify').plugin('proxyquire-universal');
+                  bundle.transform('babelify')
+                      .plugin('proxyquireify/plugin');
                 });
             }
         },

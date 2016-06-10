@@ -3,6 +3,7 @@ import IdentityManager from 'service-framework/dist/IdentityManager'
 import URI from 'urijs'
 import { Syncher } from 'service-framework/dist/Syncher'
 import GroupChat from './GroupChat' 
+import NotificationsTrigger from '../notifications/notifications-trigger'
 
 class Communication {
     constructor(name, participants){
@@ -78,6 +79,7 @@ let GroupChatHyperty = {
                     .then(()=>this.syncher.subscribe(this.objectDescURL, event.url))
                     .then((dataObject) => {
                         console.log('creating group chat on invite', dataObject)
+                        this.notifications.trigger([{email: identity.username, domain: this.domain}], {type: 'NEW_CHAT', payload:{name: dataObject.data.name}})
                         return callback(GroupChat(dataObject, this._position.data, identity))
                     })
             }
@@ -90,6 +92,7 @@ let groupChatFactory = function(hypertyURL, bus, config){
     let hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus)
     let identityManager = new IdentityManager(hypertyURL, config.runtimeURL, bus)
     let uri = new URI(hypertyURL)
+    let notifications = NotificationsTrigger(uri.hostname(), syncher, hypertyDiscovery)
     
     return Object.assign(Object.create(GroupChatHyperty), {
             '_position': {data:{values:{}}},
@@ -98,7 +101,9 @@ let groupChatFactory = function(hypertyURL, bus, config){
             'identityManagerService': identityManager,
             'objectDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/Communication',
             'locationDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/ContextDataSchema',
-            'hypertyURL': hypertyURL
+            'hypertyURL': hypertyURL,
+            'notifications': notifications,
+            domain: uri.hostname()
         })
 }
 

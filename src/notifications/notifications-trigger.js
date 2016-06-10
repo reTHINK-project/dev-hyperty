@@ -5,7 +5,7 @@ const NotificationsTriggerObject = {
                 .then((hyperties)=>{
                     return Object.keys(hyperties)
                         .map((key)=>{return {key:key, descriptor:hyperties[key].descriptor, lastModified:hyperties[key].lastModified}})
-                        .filter((desc)=>desc.descriptor.endsWith('Notifications'))
+                        .filter((desc)=>desc.descriptor.endsWith('NotificationObserver'))
                         .sort((a,b)=>(new Date(a.lastModified)<new Date(b.lastModified))?1:-1)
                         .shift().key
                 })
@@ -17,7 +17,14 @@ const NotificationsTriggerObject = {
             .then((hypertyURLs)=>{
                 return this._syncher.create(this._objectDescURL, hypertyURLs, {})
                     .then((reporter)=>{
-                        return reporter.addChild(notification)
+                        reporter.onSubscription((event)=>event.accept())
+                        setTimeout(()=>{
+                        return reporter.addChild('chatmessages', notification)
+                            .then((child)=>{
+                                console.log('notification sended', notification)
+                                return child
+                            })
+                        }, 2000)
                     })
             })
     }
