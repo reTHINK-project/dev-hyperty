@@ -148,12 +148,12 @@ function hypertyDeployed(hyperty) {
       script = 'group-chat/groupChat.js';
       break;
 
-    case 'NotificationReporter':
+    case 'NotificationsReporter':
       template = 'notifications/notificationsReporter';
       script = 'notifications/notificationsReporter.js';
       break;
 
-    case 'NotificationObserver':
+    case 'NotificationsObserver':
       template = 'notifications/notificationsObserver';
       script = 'notifications/notificationsObserver.js';
       break;

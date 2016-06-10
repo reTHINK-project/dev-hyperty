@@ -10,7 +10,7 @@ describe('Notification Observer', ()=>{
     describe('onNotification', ()=>{
         //TODO: proxyquire doesn't work with Syncher, I'll check this later.
         xit('should receive notifications', ()=>{
-let activate = proxyquire('../src/notifications/NotificationObserver.hy.js',
+let activate = proxyquire('../src/notifications/NotificationsObserver.hy.js',
         {'service-framework/dist/Syncher': syncher}).default
             let observer =  activate({},{},{})
             

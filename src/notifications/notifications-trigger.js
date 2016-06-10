@@ -5,7 +5,7 @@ const NotificationsTriggerObject = {
                 .then((hyperties)=>{
                     return Object.keys(hyperties)
                         .map((key)=>{return {key:key, descriptor:hyperties[key].descriptor, lastModified:hyperties[key].lastModified}})
-                        .filter((desc)=>desc.descriptor.endsWith('NotificationObserver'))
+                        .filter((desc)=>desc.descriptor.endsWith('NotificationsObserver'))
                         .sort((a,b)=>(new Date(a.lastModified)<new Date(b.lastModified))?1:-1)
                         .shift().key
                 })

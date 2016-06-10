@@ -1,7 +1,7 @@
 import URI from 'urijs'
 import { Syncher} from 'service-framework/dist/Syncher'
 
-let NotificationObserver = {
+let NotificationsObserver = {
     onNotification (callback) {
         this.syncher.onNotification((event) =>{
             if(event.schema === this.objectDescURL){
@@ -21,10 +21,10 @@ let NotificationObserver = {
     }
 }
 
-let NotificationObserverFactory = function(hypertyURL, bus, config){
+let NotificationsObserverFactory = function(hypertyURL, bus, config){
     let uri = new URI(hypertyURL)
     let syncher = new Syncher(hypertyURL, bus, config);
-    return Object.assign(Object.create(NotificationObserver), {
+    return Object.assign(Object.create(NotificationsObserver), {
             'syncher': syncher,
             'objectDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/Communication',
             'hypertyURL': hypertyURL,
@@ -34,7 +34,7 @@ let NotificationObserverFactory = function(hypertyURL, bus, config){
 
 export default function activate(hypertyURL, bus, config){
     return {
-        name: 'NotificationObserver',
-        instance: NotificationObserverFactory(hypertyURL, bus, config)
+        name: 'NotificationsObserver',
+        instance: NotificationsObserverFactory(hypertyURL, bus, config)
     }
 }
