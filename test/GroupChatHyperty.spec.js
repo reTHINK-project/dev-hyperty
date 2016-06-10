@@ -8,7 +8,7 @@ describe('Group Chat Hyperty', () => {
     let hypertyName = 'GroupChat'
     let groupChat = 'hyperty-catalogue://' + domain + '/.well-known/hyperties/' + hypertyName;
     describe('create chat', () => {
-        it('should return a new chat instance', (done) => {
+        xit('should return a new chat instance', (done) => {
             let runtime = 'https://catalogue.' + domain + '/.well-known/runtime/Runtime';
             let installerFactory = new InstallerFactory();
             let runtimeLoader = new RuntimeLoader(installerFactory, runtime);
@@ -25,7 +25,7 @@ describe('Group Chat Hyperty', () => {
     })
 
     describe('create chat with a list of participants', () => {
-        it('should return a new chat instance', (done) => {
+        xit('should return a new chat instance', (done) => {
             let runtime = 'https://catalogue.' + domain + '/.well-known/runtime/Runtime';
 
             let installerFactory = new InstallerFactory();

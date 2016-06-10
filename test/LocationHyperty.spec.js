@@ -27,7 +27,7 @@ describe('Location Hyperty', () => {
     })
 
     describe('startPositionBroadcast', ()=>{
-        it('should notify current position to any subscribed hyperty', (done)=>{
+        xit('should notify current position to any subscribed hyperty', (done)=>{
             let domain = 'hybroker.rethink.ptinovacao.pt'
             let hypertyName = 'Location'
             let locationHyURL = 'hyperty-catalogue://' + domain + '/.well-known/hyperties/' + hypertyName;
