@@ -139,7 +139,7 @@ class ChatController {
 
       let _dataObjectChild;
 
-      dataObject.addChild('chatmessages', {chatMessage: message})
+      dataObject.addChild('chatmessages', {message: message})
       .then(function(dataObjectChild) {
 
         console.log('[addChild - Chat Message]: ', dataObjectChild);

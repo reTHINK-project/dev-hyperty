@@ -315,7 +315,7 @@ function processMessage(message) {
   let list = `<li class="collection-item avatar">
     <img src="` + avatar + `" alt="" class="circle">
     <span class="title">` + from + `</span>
-    <p>` + message.value.chatMessage.replace(/\n/g, '<br>') + `</p>
+    <p>` + message.value.message.replace(/\n/g, '<br>') + `</p>
   </li>`;
 
   messagesList.append(list);
