@@ -30,140 +30,21 @@ function hypertyLoaded(result) {
   $('.card-panel').html(hypertyInfo);
 
   // Prepare to discover email:
-  var hypertyDiscovery = result.instance.hypertyDiscovery;
-  discoverEmail(hypertyDiscovery);
+  var search = result.instance.search;
+  discoverEmail(search);
 
   connector = result.instance;
 
-  connector.addEventListener('connector:connected', function(controller) {
-
-    connector.addEventListener('have:notification', function(event) {
-      notificationHandler(controller, event);
-    });
-
-  });
-}
-
-function discoverEmail(hypertyDiscovery) {
-
-  var section = $('.discover');
-  var searchForm = section.find('.form');
-  var inputField = searchForm.find('.friend-email');
-  var inputDomain = searchForm.find('.friend-domain');
-
-  section.removeClass('hide');
-
-  searchForm.on('submit', function(event) {
-    event.preventDefault();
-
-    var collection = section.find('.collection');
-    var collectionItem = '<li class="collection-item item-loader"><div class="preloader-wrapper small active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div></li>';
-
-    collection.removeClass('hide');
-    collection.addClass('center-align');
-    collection.prepend(collectionItem);
-
-    var email = inputField.val();
-    var domain = inputDomain.val();
-
-    hypertyDiscovery.discoverHypertyPerUser(email, domain).then(emailDiscovered).catch(emailDiscoveredError);
-
-  });
-}
-
-function emailDiscovered(result) {
-  console.log('Email Discovered: ', result);
-
-  var section = $('.discover');
-  var avatar = 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg';
-  var collection = section.find('.collection');
-  var collectionItem = '<li data-url="' + result.id + '" class="collection-item avatar">' +
-  '<img src="' + avatar + '" alt="" class="circle" />' +
-  '<span class="title"><b>Email: </b>' + result.id + '</span><p>&nbsp;</p>' +
-  '<p>' + result.descriptor + '<br>' + result.hypertyURL + '</p>' +
-  '<a title="Call to ' + result.id + '" class="waves-effect waves-light btn call-btn secondary-content"><i class="material-icons">call</i></a>' +
-  '</li>';
-
-  collection.removeClass('center-align');
-  var loader = collection.find('li.item-loader');
-  loader.remove();
-
-  var itemsFound = collection.find('li[data-url="' + result.id + '"]');
-  if (itemsFound.length) {
-    itemsFound[0].remove();
-  }
-
-  collection.append(collectionItem);
-
-  var callBtn = collection.find('.call-btn');
-  callBtn.on('click', function(event) {
-    event.preventDefault();
-    openVideo(result);
+  connector.onInvitation(function(controller, identity) {
+    console.log('On Invitation: ', controller, identity);
+    notificationHandler(controller, identity);
   });
 
 }
 
-function emailDiscoveredError(result) {
+function notificationHandler(controller, identity) {
 
-  console.error('Email Discovered Error: ', result);
-
-  var section = $('.discover');
-  var collection = section.find('.collection');
-
-  var collectionItem = '<li class="collection-item orange lighten-3"><i class="material-icons left circle">error_outline</i>' + result + '</li>';
-
-  collection.empty();
-  collection.removeClass('center-align');
-  collection.removeClass('hide');
-  collection.append(collectionItem);
-}
-
-function openVideo(result) {
-
-  var toUser = result.id;
-
-  var options = options || {video: true, audio: true};
-  getUserMedia(options).then(function(mediaStream) {
-    console.info('recived media stream: ', mediaStream);
-    console.log(toUser);
-
-    return connector.connect(toUser, mediaStream);
-  })
-  .then(function(controller) {
-
-    showVideo(controller);
-
-    controller.addEventListener('on:notification', notification);
-    controller.addEventListener('on:subscribe', function(controller) {
-      console.info('on:subscribe:event ', controller);
-    });
-
-    controller.addEventListener('connector:notification', notification);
-
-    controller.addEventListener('stream:added', processVideo);
-
-  }).catch(function(reason) {
-    console.error(reason);
-  });
-}
-
-function processVideo(event) {
-
-  console.log('Process Video: ', event);
-
-  var messageChat = $('.video-holder');
-  var video = messageChat.find('.video');
-  video[0].src = URL.createObjectURL(event.stream);
-
-}
-
-function notification(event) {
-  console.log('Event: ', event);
-}
-
-function notificationHandler(controller, event) {
-
-  var calleeInfo = event.identity;
+  var calleeInfo = identity;
   var incoming = $('.modal-call');
   var acceptBtn = incoming.find('.btn-accept');
   var rejectBtn = incoming.find('.btn-reject');
@@ -171,15 +52,13 @@ function notificationHandler(controller, event) {
 
   showVideo(controller);
 
-  controller.addEventListener('stream:added', processVideo);
-
   acceptBtn.on('click', function(e) {
 
     e.preventDefault();
 
     var options = options || {video: true, audio: true};
     getUserMedia(options).then(function(mediaStream) {
-      console.info('recived media stream: ', mediaStream);
+      processLocalVideo(mediaStream);
       return controller.accept(mediaStream);
     })
     .then(function(result) {
@@ -227,14 +106,116 @@ function notificationHandler(controller, event) {
 
 }
 
-// function processLocalVideo(controller) {
-//
-//   var localStreams = controller.getLocalStreams;
-//   for (var stream of localStreams) {
-//     console.log('Local stream: ' + stream.id);
-//   }
-//
-// }
+function discoverEmail(search) {
+
+  var section = $('.discover');
+  var searchForm = section.find('.form');
+  var inputField = searchForm.find('.friend-email');
+
+  section.removeClass('hide');
+
+  searchForm.on('submit', function(event) {
+    event.preventDefault();
+
+    var collection = section.find('.collection');
+    var collectionItem = '<li class="collection-item item-loader"><div class="preloader-wrapper small active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div></li>';
+
+    collection.removeClass('hide');
+    collection.addClass('center-align');
+    collection.prepend(collectionItem);
+
+    var email = inputField.val();
+
+    search.users([email]).then(emailDiscovered).catch(emailDiscoveredError);
+
+  });
+}
+
+function emailDiscovered(result) {
+  console.log('Email Discovered: ', result[0]);
+
+  var section = $('.discover');
+  var avatar = 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg';
+  var collection = section.find('.collection');
+  var collectionItem = '<li data-url="' + result[0].userID + '" class="collection-item avatar">' +
+  '<img src="' + avatar + '" alt="" class="circle" />' +
+  '<span class="title"><b>UserURL: </b>' + result[0].userID + '</span><p>&nbsp;</p>' +
+  '<p>' + result[0].descriptor + '<br>' + result[0].hypertyID + '</p>' +
+  '<a title="Call to ' + result[0].userID + '" class="waves-effect waves-light btn call-btn secondary-content"><i class="material-icons">call</i></a>' +
+  '</li>';
+
+  collection.removeClass('center-align');
+  var loader = collection.find('li.item-loader');
+  loader.remove();
+
+  var itemsFound = collection.find('li[data-url="' + result[0].userID + '"]');
+  if (itemsFound.length) {
+    itemsFound[0].remove();
+  }
+
+  collection.append(collectionItem);
+
+  var callBtn = collection.find('.call-btn');
+  callBtn.on('click', function(event) {
+    event.preventDefault();
+    openVideo(result);
+  });
+
+}
+
+function emailDiscoveredError(result) {
+
+  console.error('Email Discovered Error: ', result);
+
+  var section = $('.discover');
+  var collection = section.find('.collection');
+
+  var collectionItem = '<li class="collection-item orange lighten-3"><i class="material-icons left circle">error_outline</i>' + result + '</li>';
+
+  collection.empty();
+  collection.removeClass('center-align');
+  collection.removeClass('hide');
+  collection.append(collectionItem);
+}
+
+function openVideo(result) {
+
+  var toUser = result[0].userID;
+  var localMediaStream;
+
+  var options = options || {video: true, audio: true};
+  getUserMedia(options).then(function(mediaStream) {
+    console.info('recived media stream: ', mediaStream);
+    localMediaStream = mediaStream;
+    return connector.connect(toUser, mediaStream);
+  })
+  .then(function(controller) {
+    showVideo(controller);
+
+    processLocalVideo(localMediaStream);
+
+  }).catch(function(reason) {
+    console.error(reason);
+  });
+}
+
+function processVideo(event) {
+
+  console.log('Process Video: ', event);
+
+  var videoHolder = $('.video-holder');
+  var video = videoHolder.find('.video');
+  video[0].src = URL.createObjectURL(event.stream);
+
+}
+
+function processLocalVideo(mediaStream) {
+  console.log('Process Local Video: ', mediaStream);
+
+  var videoHolder = $('.video-holder');
+  var video = videoHolder.find('.my-video');
+  video[0].src = URL.createObjectURL(mediaStream);
+}
 
 function showVideo(controller) {
   var videoHolder = $('.video-holder');
@@ -246,6 +227,10 @@ function showVideo(controller) {
   var btnHangout = videoHolder.find('.hangout');
 
   console.log(controller);
+
+  controller.onAddStream(function(event) {
+    processVideo(event);
+  });
 
   btnCamera.on('click', function(event) {
 
@@ -315,6 +300,13 @@ function showVideo(controller) {
   btnHangout.on('click', function(event) {
 
     event.preventDefault();
+
+    controller.disconnect().then(function(status) {
+      console.log('Status of Handout:', status);
+
+    }).catch(function(e) {
+      console.error(e);
+    });
 
     console.log('hangout');
   });

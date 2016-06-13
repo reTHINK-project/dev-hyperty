@@ -47,7 +47,7 @@
 //      }
 //  }
 
-let connection = {
+export let connection = {
   name: '',
   status: '',
   owner: '',
@@ -57,5 +57,3 @@ let connection = {
     iceCandidates: []
   }
 };
-
-export default connection;

@@ -28,11 +28,9 @@
 
 import 'webrtc-adapter-test';
 
-import EventEmitter from '../utils/EventEmitter';
-import connection from './connection';
 import peer from './peer';
 
-class ConnectionController extends EventEmitter {
+class ConnectionController {
 
   constructor(syncher, domain, configuration) {
 
@@ -40,48 +38,46 @@ class ConnectionController extends EventEmitter {
     if (!domain) throw new Error('The domain is a needed parameter');
     if (!configuration) throw new Error('The configuration is a needed parameter');
 
-    super();
-
     let _this = this;
 
-    _this.syncher = syncher;
     _this.mode = 'offer';
-    _this._domain = domain;
+    _this.peer = peer;
 
+    // Private
+    _this._syncher = syncher;
+    _this._configuration = configuration.webrtc;
+    _this._domain = domain;
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Connection';
 
-    console.info(configuration);
-
-    _this.mediaConstraints = configuration.mediaConstraints;
-    _this.configuration = configuration.webrtc;
-
     // Prepare the PeerConnection
-    let peerConnection = new RTCPeerConnection(_this.configuration);
+    let peerConnection = new RTCPeerConnection(_this._configuration);
 
     peerConnection.addEventListener('signalingstatechange', function(event) {
 
       console.info('signalingstatechange', event.currentTarget.signalingState);
 
       if (event.currentTarget.signalingState === 'have-local-offer') {
-        _this.trigger('controller:state:change', _this.mode);
+        console.info('signalingstatechange - have-local-offer: ', event.currentTarget.signalingState);
       }
 
       if (event.currentTarget.signalingState === 'have-remote-offer') {
+        console.info('signalingstatechange - have-remote-offer: ', event.currentTarget.signalingState);
         _this.mode = 'answer';
-        _this.trigger('controller:state:change', _this.mode);
       }
 
     });
 
     peerConnection.addEventListener('iceconnectionstatechange', function(event) {
-      console.info('iceconnectionstatechange', event.currentTarget.iceConnectionState);
-      let data = _this._dataObjectReporter.data;
-      if (data.hasOwnProperty('connection')) {
-        data.connection.status = event.currentTarget.iceConnectionState;
+      console.info('iceconnectionstatechange', event.currentTarget.iceConnectionState, _this.dataObjectReporter);
+      let data = _this.dataObjectReporter.data;
+      if (data.hasOwnProperty('status')) {
+        data.status = event.currentTarget.iceConnectionState;
       }
     });
 
     peerConnection.addEventListener('icecandidate', function(event) {
+
+      console.info('icecandidate changes', event.candidate, _this.dataObjectReporter);
 
       if (!event.candidate) return;
 
@@ -92,10 +88,10 @@ class ConnectionController extends EventEmitter {
         sdpMLineIndex: event.candidate.sdpMLineIndex
       };
 
-      let data = _this._dataObjectReporter.data;
+      let data = _this.dataObjectReporter.data;
 
       if (_this.mode === 'offer') {
-        data.connection.ownerPeer.iceCandidates.push(icecandidate);
+        data.ownerPeer.iceCandidates.push(icecandidate);
       } else {
         data.peer.iceCandidates.push(icecandidate);
       }
@@ -105,47 +101,26 @@ class ConnectionController extends EventEmitter {
     // Add stream to PeerConnection
     peerConnection.addEventListener('addstream', function(event) {
       console.info('Add Stream: ', event);
-      _this.trigger('stream:added', event);
+
+      if (_this._onAddStream) _this._onAddStream(event);
     });
 
     _this.peerConnection = peerConnection;
 
   }
 
-  set stream(mediaStream) {
+  set mediaStream(mediaStream) {
     if (!mediaStream) throw new Error('The mediaStream is a needed parameter');
 
     let _this = this;
     console.info('set stream: ', mediaStream);
+    _this._mediaStream = mediaStream;
     _this.peerConnection.addStream(mediaStream);
   }
 
-  get getLocalStreams() {
+  get mediaStream() {
     let _this = this;
-    return _this.peerConnection.getLocalStreams();
-  }
-
-  get getRemoteStreams() {
-    let _this = this;
-    return _this.peerConnection.getRemoteStreams();
-  }
-
-  /**
-   * Set Remote peer information, like Hyperty.
-   * @param  {Object} remotePeerInformation information about the peer;
-   */
-  set remotePeerInformation(remotePeerInformation) {
-    let _this = this;
-    _this._remotePeerInformation = remotePeerInformation;
-  }
-
-  /**
-   * Get information relative to the Remote Peer;
-   * @return {Object} remotePeerInformation;
-   */
-  get remotePeerInformation() {
-    let _this = this;
-    return _this._remotePeerInformation;
+    return _this._mediaStream;
   }
 
   /**
@@ -156,25 +131,22 @@ class ConnectionController extends EventEmitter {
     if (!dataObjectReporter) throw new Error('The Data Object Reporter is a needed parameter');
 
     let _this = this;
+    console.info('set data object reporter: ', dataObjectReporter);
     _this._dataObjectReporter = dataObjectReporter;
-
-    let data = _this._dataObjectReporter.data;
 
     dataObjectReporter.onSubscription(function(event) {
       event.accept();
     });
 
     if (_this.mode === 'offer') {
-      data.connection = connection;
 
-      _this.createOffer();
+      _this._createOffer();
     } else {
+      let data = dataObjectReporter.data;
       data.peer = peer;
 
-      _this.createAnswer();
+      _this._createAnswer();
     }
-
-    console.debug(_this._dataObjectReporter);
 
   }
 
@@ -195,8 +167,10 @@ class ConnectionController extends EventEmitter {
     if (!dataObjectObserver) throw new Error('The Data Object Observer is a needed parameter');
 
     let _this = this;
+
+    console.info('set data object observer: ', dataObjectObserver);
     _this._dataObjectObserver = dataObjectObserver;
-    _this.changePeerInformation(dataObjectObserver);
+    _this._changePeerInformation(dataObjectObserver);
 
   }
 
@@ -209,128 +183,178 @@ class ConnectionController extends EventEmitter {
     return _this._dataObjectObserver;
   }
 
-  changePeerInformation(dataObjectObserver) {
+  /**
+   * Set the connection event to accept or reject
+   * @param  {CreateEvent} event Event with actions to accept or reject the connection
+   */
+  set connectionEvent(event) {
+    let _this = this;
+    _this._connectionEvent = event;
+  }
+
+  /**
+   * Get the connection event to accept or reject
+   * @return {CreateEvent}
+   */
+  get connectionEvent() {
+    let _this = this;
+    return _this._connectionEvent;
+  }
+
+  _changePeerInformation(dataObjectObserver) {
     let _this = this;
     let data = dataObjectObserver.data;
-    let isOwner = data.hasOwnProperty('connection');
+    let isOwner = data.hasOwnProperty('ownerPeer');
 
-    let peerData = isOwner ? data.connection.ownerPeer : data.peer;
+    let peerData = isOwner ? data.ownerPeer : data.peer;
 
     console.info('Peer Data:', JSON.stringify(peerData));
 
     if (peerData.hasOwnProperty('connectionDescription')) {
-      _this.processPeerInformation(peerData.connectionDescription);
+      _this._processPeerInformation(peerData.connectionDescription);
     }
 
     if (peerData.hasOwnProperty('iceCandidates')) {
+
+      console.log('Process Peer data: ', peerData);
+
       peerData.iceCandidates.forEach(function(ice) {
-        _this.processPeerInformation(ice);
+        _this._processPeerInformation(ice);
       });
     }
 
     dataObjectObserver.onChange('*', function(event) {
       console.info('Observer on change message: ', event);
-      _this.processPeerInformation(event.data);
+      _this._processPeerInformation(event.data);
     });
 
   }
 
-  processPeerInformation(data) {
+  _processPeerInformation(data) {
     let _this = this;
 
     console.info(JSON.stringify(data));
 
     if (data.type === 'offer' || data.type === 'answer') {
       console.info('Process Connection Description: ', data.sdp);
-      _this.peerConnection.setRemoteDescription(new RTCSessionDescription(data), _this.remoteDescriptionSuccess, _this.remoteDescriptionError);
+      _this.peerConnection.setRemoteDescription(new RTCSessionDescription(data), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
     }
 
     if (data.type === 'candidate') {
       console.info('Process Ice Candidate: ', data);
-      _this.peerConnection.addIceCandidate(new RTCIceCandidate({candidate: data.candidate}), _this.remoteDescriptionSuccess, _this.remoteDescriptionError);
+      _this.peerConnection.addIceCandidate(new RTCIceCandidate({candidate: data.candidate}), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
     }
   }
 
-  remoteDescriptionSuccess() {
+  _remoteDescriptionSuccess() {
     console.info('remote success');
   }
 
-  remoteDescriptionError(error) {
+  _remoteDescriptionError(error) {
     console.error('error: ', error);
   }
 
-  createOffer() {
+  _createOffer() {
     let _this = this;
 
     _this.peerConnection.createOffer(function(description) {
-      _this.onLocalSessionCreated(description);
-    }, _this.infoError);
+      _this._onLocalSessionCreated(description);
+    }, _this._infoError);
 
   }
 
-  createAnswer() {
+  _createAnswer() {
     let _this = this;
 
     _this.peerConnection.createAnswer(function(description) {
-      _this.onLocalSessionCreated(description);
-    }, _this.infoError);
+      _this._onLocalSessionCreated(description);
+    }, _this._infoError);
   }
 
-  onLocalSessionCreated(description) {
+  _onLocalSessionCreated(description) {
 
     let _this = this;
 
     _this.peerConnection.setLocalDescription(description, function() {
 
-      let data = _this._dataObjectReporter.data;
+      let data = _this.dataObjectReporter.data;
       let sdpConnection = {
         sdp: description.sdp,
         type: description.type
       };
 
       if (_this.mode === 'offer') {
-        data.connection.ownerPeer.connectionDescription = sdpConnection;
+        data.ownerPeer.connectionDescription = sdpConnection;
       } else {
         data.peer.connectionDescription = sdpConnection;
       }
 
-    }, _this.infoError);
+    }, _this._infoError);
 
   }
 
-  infoError(err) {
+  _infoError(err) {
     console.error(err.toString(), err);
   }
 
   /**
-   * Used to accept an incoming connection request.
-   * @method accept
-   * @return {Promise}
+   * This function is used to receive all changes did to dataObjectObjserver.
+   * @param  {Function} callback callback function
+   * @return {ChangeEvent}       properties and type of changes;
+   */
+
+  // onChange(callback) {
+  //   let _this = this;
+  //   _this._onChange = callback;
+  // }
+
+  /**
+   * This function is used to handle the peer stream
+   * @return {MediaStream}           WebRTC remote MediaStream retrieved by the Application
+   */
+  onAddStream(callback) {
+    let _this = this;
+    _this._onAddStream = callback;
+  }
+
+  /**
+   * This function is used to receive requests to close an existing connection instance.
+   * @param  {Function} callback callback function to handle with the disconnect
+   * @return {DeleteEvent}       the DeleteEvent fired by the Syncher when the Connection is closed.
+   */
+  onDisconnect(callback) {
+    let _this = this;
+    _this._onDisconnect = callback;
+  }
+
+  /**
+   * This function is used to accept an incoming connection request received by connection.onInvitation().
+   * @param  {MediaStream}         stream     WebRTC local MediaStream retrieved by the Application
+   * @return {<Promise> boolean}              It returns, as a Promise, true in case the connection is successfully accepted, false otherwise.
    */
   accept(stream) {
-    // TODO: Pass argument options as a stream, because is specific of implementation;
 
     let _this = this;
-    let syncher = _this.syncher;
+    let syncher = _this._syncher;
 
-    console.log('Remote Peer Information: ', _this._remotePeerInformation);
-    let remotePeer = _this._remotePeerInformation.from;
+    console.log('Remote Peer Information: ', _this.dataObjectObserver.data);
+    let remotePeer = _this.dataObjectObserver.data.reporter;
 
     return new Promise(function(resolve, reject) {
 
       try {
-
         console.info('------------------------ Syncher Create ---------------------- \n');
-        syncher.create(_this._objectDescURL, [remotePeer], {})
+        syncher.create(_this._objectDescURL, [remotePeer], _this.peer)
         .then(function(dataObjectReporter) {
           console.info('2. Return the Data Object Reporter ', dataObjectReporter);
 
-          _this.stream = stream;
+          _this.mediaStream = stream;
           _this.dataObjectReporter = dataObjectReporter;
-          resolve('accepted');
+          resolve(true);
         })
         .catch(function(reason) {
-          reject(reason);
+          console.error(reason);
+          reject(false);
         });
 
       } catch (e) {
@@ -341,35 +365,38 @@ class ConnectionController extends EventEmitter {
   }
 
   /**
-  * Used to decline an incoming connection request.
-  * @method decline
-  * @return {Promise}
-  */
-  decline() {
+   * This function is used to decline an incoming connection request received by connection.onInvitation().
+   * @param  {int} reason               Integer decline reason that is compliant with RFC7231. If not present 400 is used. (optional)
+   * @return {<Promise> boolean}        It returns, as a Promise, true in case the connection is successfully declined, false otherwise.
+   */
+  decline(reason) {
+
+    // TODO: Optimize this process
 
     let _this = this;
-    let syncher = _this.syncher;
+    let declineReason = 400;
+    if (reason) declineReason = reason;
 
     return new Promise(function(resolve, reject) {
 
       try {
-        console.log('syncher: ', syncher);
-        resolve('Declined');
+        _this.connectionEvent.ack(declineReason);
+        _this.disconnect();
+        resolve(true);
       } catch (e) {
-        reject(e);
+        console.error(e);
+        reject(false);
       }
     });
 
   }
 
   /**
-   * Used to close an existing connection instance.
-   * @method disconnect
-   * @return {Promise}
+   * This function is used to close an existing connection instance.
+   * @return {<Promise> boolean} It returns as a Promise true if successfully disconnected or false otherwise.
    */
   disconnect() {
-
-    // TODO: optimize the disconnect function
+    // TODO: Optimize this process
 
     let _this = this;
 
@@ -378,6 +405,16 @@ class ConnectionController extends EventEmitter {
       try {
 
         _this.peerConnection.close();
+        let data;
+        if (_this.dataObjectReporter) {
+          data = _this.dataObjectReporter;
+          data.delete();
+        }
+
+        if (_this.dataObjectObserver) {
+          data = _this.dataObjectReporter;
+          data.unsubscribe();
+        }
 
         resolve(true);
       } catch (e) {

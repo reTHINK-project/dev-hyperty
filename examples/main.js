@@ -104,9 +104,9 @@ function hypertyDeployed(hyperty) {
   let script = '';
 
   switch (hyperty.name) {
-    case 'HypertyConnector':
-      template = 'hyperty-connector/HypertyConnector';
-      script =  'hyperty-connector/demo.js';
+    case 'Connector':
+      template = 'connector/Connector';
+      script =  'connector/demo.js';
       break;
 
     case 'GroupChatManager':

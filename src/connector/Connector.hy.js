@@ -24,24 +24,24 @@
 /* jshint undef: true */
 
 // Service Framework
-import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery';
 import IdentityManager from 'service-framework/dist/IdentityManager';
 import Discovery from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
-import EventEmitter from '../utils/EventEmitter';
 import {divideURL} from '../utils/utils';
 
 // Internals
 import ConnectionController from './ConnectionController';
+import { connection } from './connection';
+import Search from './Search';
 
 /**
 * Hyperty Connector;
 * @author Vitor Silva [vitor-t-silva@telecom.pt]
 * @version 0.1.0
 */
-class HypertyConnector extends EventEmitter {
+class Connector {
 
   /**
   * Create a new Hyperty Connector
@@ -53,8 +53,6 @@ class HypertyConnector extends EventEmitter {
     if (!bus) throw new Error('The MiniBus is a needed parameter');
     if (!configuration) throw new Error('The configuration is a needed parameter');
 
-    super(hypertyURL, bus, configuration);
-
     let _this = this;
     _this._hypertyURL = hypertyURL;
     _this._bus = bus;
@@ -64,54 +62,61 @@ class HypertyConnector extends EventEmitter {
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Connection';
 
     _this._controllers = {};
+    _this.connectionObject = connection;
 
-    let hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus);
     let discovery = new Discovery(hypertyURL, bus);
     let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
 
-    _this.hypertyDiscovery = hypertyDiscovery;
     _this.discovery = discovery;
     _this.identityManager = identityManager;
 
+    _this.search = new Search(discovery, identityManager);
+
     console.log('Discover: ', discovery);
     console.log('Identity Manager: ', identityManager);
-    console.log('Hyperty Discovery: ', hypertyDiscovery);
 
     let syncher = new Syncher(hypertyURL, bus, configuration);
-    syncher.onNotification(function(event) {
-      _this._onNotification(event);
+
+    syncher.onNotification((event) => {
+
+      let _this = this;
+
+      console.log('On Notification: ', event);
+
+      if (event.type === 'create') {
+        console.info('------------ Acknowledges the Reporter - Create ------------ \n');
+        event.ack();
+
+        if (_this._controllers[event.from]) {
+          _this._autoSubscribe(event);
+        } else {
+          _this._autoAccept(event);
+        }
+
+        console.info('------------------------ End Create ---------------------- \n');
+
+      }
+
+      if (event.type === 'delete') {
+        console.info('------------ Acknowledges the Reporter - Delte ------------ \n');
+        event.ack(200);
+        console.info('------------------------ End Create ---------------------- \n');
+      }
+
     });
 
     _this._syncher = syncher;
-  }
-
-  _onNotification(event) {
-
-    let _this = this;
-
-    console.info('------------ Acknowledges the Reporter ------------ \n');
-    event.ack();
-    console.info('------------------------ END ---------------------- \n');
-
-    if (_this._controllers[event.from]) {
-      _this._autoSubscribe(event);
-    } else {
-      _this._autoAccept(event);
-    }
-
   }
 
   _autoSubscribe(event) {
     let _this = this;
     let syncher = _this._syncher;
 
-    console.info('---------------- Syncher Auto Subscribe ---------------- \n');
-    console.info('Subscribe URL Object ', event, syncher);
+    console.info('---------------- Syncher Subscribe (Auto Subscribe) ---------------- \n');
+    console.info('Subscribe URL Object ', event);
     syncher.subscribe(_this._objectDescURL, event.url).then(function(dataObjectObserver) {
       console.info('1. Return Subscribe Data Object Observer', dataObjectObserver);
-      console.log(_this._controllers);
       _this._controllers[event.from].dataObjectObserver = dataObjectObserver;
-
     }).catch(function(reason) {
       console.error(reason);
     });
@@ -121,17 +126,16 @@ class HypertyConnector extends EventEmitter {
     let _this = this;
     let syncher = _this._syncher;
 
-    console.info('----------- Syncher Subscribe (Auto Accept) ------------- \n');
-    console.info('Subscribe URL Object ', event, syncher);
+    console.info('---------------- Syncher Subscribe (Auto Accept) ---------------- \n');
+    console.info('Subscribe URL Object ', event);
     syncher.subscribe(_this._objectDescURL, event.url).then(function(dataObjectObserver) {
       console.info('1. Return Subscribe Data Object Observer', dataObjectObserver);
 
       let connectionController = new ConnectionController(syncher, _this._domain, _this._configuration);
-      connectionController.remotePeerInformation = event;
+      connectionController.connectionEvent = event;
       connectionController.dataObjectObserver = dataObjectObserver;
 
-      _this.trigger('connector:connected', connectionController);
-      _this.trigger('have:notification', event);
+      if (_this._onInvitation) _this._onInvitation(connectionController, event.identity);
 
       console.info('------------------------ END ---------------------- \n');
     }).catch(function(reason) {
@@ -140,33 +144,52 @@ class HypertyConnector extends EventEmitter {
   }
 
   /**
-  * Establish connection with other client identifier
-  * @param  {HypertyURL} HypertyURL - Define the identifier of the other component
-  * @param  {Object} options - Object with options to improve the connect
-  */
-  connect(email, stream, domain) {
+   * This function is used to create a new connection providing the identifier of the user to be notified.
+   * @param  {URL.UserURL}        userURL      user to be invited that is identified with reTHINK User URL.
+   * @param  {MediaStream}        stream       WebRTC local MediaStream retrieved by the Application
+   * @param  {string}             name         is a string to identify the connection.
+   * @return {<Promise>ConnectionController}   A ConnectionController object as a Promise.
+   */
+  connect(userURL, stream, name) {
     // TODO: Pass argument options as a stream, because is specific of implementation;
     // TODO: CHange the hypertyURL for a list of URLS
     let _this = this;
     let syncher = _this._syncher;
-    let hypertyURL;
 
     return new Promise(function(resolve, reject) {
 
       let connectionController;
+      let selectedHyperty;
       console.info('------------------------ Syncher Create ---------------------- \n');
 
-      console.info('email: ', email, ' stream: ', stream, ' domain:', domain);
+      let connectionName = 'Connection';
+      if (name) {
+        connectionName = name;
+      }
 
-      // user, scheme, resources, domain
-      // scheme: ['COMM', 'CONNECTION', 'CTXT', 'IDENTITY']
-      _this.discovery.discoverHypertyPerUser(email, domain).then(function(user) {
+      _this.search.myIdentity().then(function(identity) {
 
-        hypertyURL = user.hypertyURL;
+        console.log('identity: ', identity, _this.connectionObject);
 
-        console.log('Hyperty: ', user);
+        // Initial data
+        _this.connectionObject.name = connectionName;
+        _this.connectionObject.scheme = 'connection';
+        _this.connectionObject.status = '';
+        _this.connectionObject.owner = identity.userURL;
+        _this.connectionObject.peer = '';
 
-        return syncher.create(_this._objectDescURL, [hypertyURL], {});
+        return _this.search.users([userURL]);
+      })
+      .then(function(hyperties) {
+
+        let hypertiesURLs = hyperties.map(function(hyperty) {
+          return hyperty.hypertyID;
+        });
+
+        // Only support one to one connection;
+        selectedHyperty = hypertiesURLs[0];
+        console.info('Only support communication one to one, selected hyperty: ', selectedHyperty);
+        return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject);
       })
       .catch(function(reason) {
         console.error(reason);
@@ -176,10 +199,10 @@ class HypertyConnector extends EventEmitter {
         console.info('1. Return Create Data Object Reporter', dataObjectReporter);
 
         connectionController = new ConnectionController(syncher, _this._domain, _this._configuration);
-        connectionController.stream = stream;
+        connectionController.mediaStream = stream;
         connectionController.dataObjectReporter = dataObjectReporter;
 
-        _this._controllers[hypertyURL] = connectionController;
+        _this._controllers[selectedHyperty] = connectionController;
 
         resolve(connectionController);
         console.info('--------------------------- END --------------------------- \n');
@@ -192,13 +215,23 @@ class HypertyConnector extends EventEmitter {
     });
   }
 
+  /**
+   * This function is used to handle notifications about incoming requests to create a new connection.
+   * @param  {Function} callback [description]
+   * @return {[type]}            [description]
+   */
+  onInvitation(callback) {
+    let _this = this;
+    _this._onInvitation = callback;
+  }
+
 }
 
 export default function activate(hypertyURL, bus, configuration) {
 
   return {
-    name: 'HypertyConnector',
-    instance: new HypertyConnector(hypertyURL, bus, configuration)
+    name: 'Connector',
+    instance: new Connector(hypertyURL, bus, configuration)
   };
 
 }
