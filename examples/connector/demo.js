@@ -217,6 +217,17 @@ function processLocalVideo(mediaStream) {
   video[0].src = URL.createObjectURL(mediaStream);
 }
 
+function disconnecting() {
+
+  var videoHolder = $('.video-holder');
+  var myVideo = videoHolder.find('.my-video');
+  var video = videoHolder.find('.video');
+  myVideo[0].src = '';
+  video[0].src = '';
+
+  videoHolder.addClass('hide');
+}
+
 function showVideo(controller) {
   var videoHolder = $('.video-holder');
   videoHolder.removeClass('hide');
@@ -230,6 +241,10 @@ function showVideo(controller) {
 
   controller.onAddStream(function(event) {
     processVideo(event);
+  });
+
+  controller.onDisconnect(function(identity) {
+    disconnecting();
   });
 
   btnCamera.on('click', function(event) {
@@ -303,7 +318,7 @@ function showVideo(controller) {
 
     controller.disconnect().then(function(status) {
       console.log('Status of Handout:', status);
-
+      disconnecting();
     }).catch(function(e) {
       console.error(e);
     });

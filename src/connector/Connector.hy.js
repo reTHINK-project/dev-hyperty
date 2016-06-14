@@ -98,8 +98,19 @@ class Connector {
       }
 
       if (event.type === 'delete') {
-        console.info('------------ Acknowledges the Reporter - Delte ------------ \n');
+        console.info('------------ Acknowledges the Reporter - Delete ------------ \n');
         event.ack(200);
+
+        console.log(_this._controllers);
+        if (_this._controllers) {
+          Object.keys(_this._controllers).forEach((controller) => {
+            _this._controllers[controller].deleteEvent = event;
+            delete _this._controllers[controller];
+
+            console.log('Controllers:', _this._controllers);
+          });
+        }
+
         console.info('------------------------ End Create ---------------------- \n');
       }
 
@@ -134,6 +145,7 @@ class Connector {
       let connectionController = new ConnectionController(syncher, _this._domain, _this._configuration);
       connectionController.connectionEvent = event;
       connectionController.dataObjectObserver = dataObjectObserver;
+      _this._controllers[event.from] = connectionController;
 
       if (_this._onInvitation) _this._onInvitation(connectionController, event.identity);
 

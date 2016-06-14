@@ -105,6 +105,10 @@ class ConnectionController {
       if (_this._onAddStream) _this._onAddStream(event);
     });
 
+    peerConnection.onremovestream = function(event) {
+      console.info('Stream removed: ', event);
+    };
+
     _this.peerConnection = peerConnection;
 
   }
@@ -199,6 +203,36 @@ class ConnectionController {
   get connectionEvent() {
     let _this = this;
     return _this._connectionEvent;
+  }
+
+  set deleteEvent(event) {
+    let _this = this;
+    _this._deleteEvent = event;
+
+    _this._removeMediaStream();
+    if (_this._onDisconnect) _this._onDisconnect(event.identity);
+  }
+
+  get deleteEvent() {
+    let _this = this;
+    return _this._deleteEvent;
+  }
+
+  _removeMediaStream() {
+    let _this = this;
+    console.log(_this.mediaStream, _this.peerConnection);
+
+    if (_this.mediaStream) {
+
+      let tracks = _this.mediaStream.getTracks();
+
+      tracks.forEach((track) => {
+        track.stop();
+      });
+    }
+
+    _this.peerConnection.removeStream(_this.mediaStream);
+    _this.peerConnection.close();
   }
 
   _changePeerInformation(dataObjectObserver) {
@@ -404,7 +438,6 @@ class ConnectionController {
 
       try {
 
-        _this.peerConnection.close();
         let data;
         if (_this.dataObjectReporter) {
           data = _this.dataObjectReporter;
@@ -412,34 +445,18 @@ class ConnectionController {
         }
 
         if (_this.dataObjectObserver) {
-          data = _this.dataObjectReporter;
-          data.unsubscribe();
+          data = _this.dataObjectObserver;
+          data.delete();
         }
+
+        _this._removeMediaStream();
 
         resolve(true);
       } catch (e) {
-        reject('error disconnecting connection');
+        reject(e);
       }
 
     });
-
-  }
-
-  /**
-   * Used to add/invite new peers on an existing connection instance (for multiparty connections).
-   * @method addPeer
-   * @return {Promise}
-   */
-   addPeer() {
-
-   }
-
-  /**
-   * Used to remove a peer from an existing connection instance.
-   * @method removePeer
-   * @return {Promise}
-   */
-  removePeer() {
 
   }
 
