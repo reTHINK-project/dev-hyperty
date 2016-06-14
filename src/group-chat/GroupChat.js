@@ -2,7 +2,7 @@ import GroupChatMessage from './GroupChatMessage'
 
 const GroupChat = {
     sendMessage(message, distance){
-        return this._dataObject.addChild('chatmessages', {chatMessage: message, distance: distance, position: this.position, startingTime:Date.now()})
+        return this._dataObject.addChild('chatmessages', {message: message, distance: distance, position: this.position, startingTime:Date.now()})
             .then((child)=>{
                 console.log('message sended', child)
                 this.messages.push(GroupChatMessage(child, true, this.identity))

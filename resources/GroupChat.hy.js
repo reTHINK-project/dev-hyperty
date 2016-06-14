@@ -3456,7 +3456,7 @@ var GroupChat = {
     sendMessage: function sendMessage(message, distance) {
         var _this = this;
 
-        return this._dataObject.addChild('chatmessages', { chatMessage: message, distance: distance, position: this.position, startingTime: Date.now() }).then(function (child) {
+        return this._dataObject.addChild('chatmessages', { message: message, distance: distance, position: this.position, startingTime: Date.now() }).then(function (child) {
             console.log('message sended', child);
             _this.messages.push((0, _GroupChatMessage2.default)(child, true, _this.identity));
             return _this.messages[_this.messages.length - 1];
@@ -3517,7 +3517,7 @@ exports.default = function (dataObjectChild, isMe, identity) {
     return Object.assign(Object.create(GroupChatMessage), {
         _dataObjectChild: dataObjectChild,
         isMe: isMe,
-        text: dataObjectChild.data ? dataObjectChild.data.chatMessage : dataObjectChild.value.chatMessage,
+        text: dataObjectChild.data ? dataObjectChild.data.message : dataObjectChild.value.message,
         startingTime: dataObjectChild.data ? dataObjectChild.data.startingTime : dataObjectChild.value.startingTime,
         identity: identity
     });
