@@ -1,0 +1,27 @@
+{
+  "name": "dev-hyperty",
+  "version": "1.0.0",
+  "description": "Source code of hyperties",
+  "main": ".eslintrc.js",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reTHINK-project/dev-hyperty.git"
+  },
+  "author": "Rethink Project",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/reTHINK-project/dev-hyperty/issues"
+  },
+  "homepage": "https://github.com/reTHINK-project/dev-hyperty#readme",
+  "devDependencies": {
+    "esdoc": "^0.4.7",
+    "esdoc-es7-plugin": "0.0.3"
+  }
+}

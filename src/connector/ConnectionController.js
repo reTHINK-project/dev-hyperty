@@ -460,8 +460,12 @@ class ConnectionController {
 
   }
 
-  // Peer Actions
-  disableMic() {
+  /**
+   * Disable Microfone
+   * @param  {boolean} value status of microfone
+   * @return {boolean}
+   */
+  disableAudio(value) {
     let _this = this;
 
     return new Promise(function(resolve, reject) {
@@ -470,7 +474,12 @@ class ConnectionController {
         let localStream = _this.peerConnection.getLocalStreams()[0];
         let audioTrack = localStream.getAudioTracks()[0];
 
-        audioTrack.enabled = audioTrack.enabled ? false : true;
+        if (!value) {
+          audioTrack.enabled = audioTrack.enabled ? false : true;
+        } else {
+          audioTrack.enabled = value;
+        }
+
         resolve(audioTrack.enabled);
       } catch (e) {
         reject(e);
@@ -480,7 +489,12 @@ class ConnectionController {
 
   }
 
-  disableCam() {
+  /**
+   * Disable video
+   * @param  {boolean} value status of video
+   * @return {boolean}
+   */
+  disableVideo(value) {
     let _this = this;
 
     return new Promise(function(resolve, reject) {
@@ -489,7 +503,11 @@ class ConnectionController {
         let localStream = _this.peerConnection.getLocalStreams()[0];
         let videoTrack = localStream.getVideoTracks()[0];
 
-        videoTrack.enabled = videoTrack.enabled ? false : true;
+        if (!value) {
+          videoTrack.enabled = videoTrack.enabled ? false : true;
+        } else {
+          videoTrack.enabled = value;
+        }
 
         resolve(videoTrack.enabled);
       } catch (e) {
@@ -499,7 +517,7 @@ class ConnectionController {
 
   }
 
-  mute() {
+  mute(value) {
 
     let _this = this;
 
@@ -509,7 +527,11 @@ class ConnectionController {
         let remoteStream = _this.peerConnection.getRemoteStreams()[0];
         let audioTrack = remoteStream.getAudioTracks()[0];
 
-        audioTrack.enabled = audioTrack.enabled ? false : true;
+        if (!value) {
+          audioTrack.enabled = audioTrack.enabled ? false : true;
+        } else {
+          audioTrack.enabled = value;
+        }
 
         resolve(audioTrack.enabled);
       } catch (e) {

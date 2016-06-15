@@ -37,10 +37,8 @@ import { connection } from './connection';
 import Search from './Search';
 
 /**
-* Hyperty Connector;
-* @author Vitor Silva [vitor-t-silva@telecom.pt]
-* @version 0.1.0
-*/
+ *
+ */
 class Connector {
 
   /**
@@ -229,8 +227,8 @@ class Connector {
 
   /**
    * This function is used to handle notifications about incoming requests to create a new connection.
-   * @param  {Function} callback [description]
-   * @return {[type]}            [description]
+   * @param  {Function} callback
+   * @return {event}
    */
   onInvitation(callback) {
     let _this = this;
@@ -239,6 +237,12 @@ class Connector {
 
 }
 
+/**
+ * Function will activate the hyperty on the runtime
+ * @param  {URL.URL} hypertyURL   url which identifies the hyperty
+ * @param  {MiniBus} bus          Minibus used to make the communication between hyperty and runtime;
+ * @param  {object} configuration configuration
+ */
 export default function activate(hypertyURL, bus, configuration) {
 
   return {

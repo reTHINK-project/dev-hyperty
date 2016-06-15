@@ -1,4 +1,5 @@
-const DOMAINS = ['hybroker.rethink.ptinovacao.pt'];
+// TODO: optimize this process
+const DOMAINS = ['hybroker.rethink.ptinovacao.pt', 'rethink.quobis.com'];
 
 class Search {
 
@@ -57,6 +58,7 @@ class Search {
           });
         });
 
+        console.info('Requests promises: ', getUsers);
         Promise.all(getUsers).then((hyperties) => {
 
           console.log('Hyperties: ', hyperties);
@@ -74,7 +76,12 @@ class Search {
             return hyperty[recent];
           });
 
-          resolve(result);
+          let clean = result.filter((hyperty) => {
+            return hyperty;
+          });
+
+          console.info('Requests result: ', clean);
+          resolve(clean);
 
         }).catch((reason) => {
           console.error(reason);
