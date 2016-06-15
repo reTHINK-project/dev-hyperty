@@ -12,6 +12,8 @@ window.KJUR = {};
 let domain = config.domain;
 let runtimeLoader;
 
+console.log('Configuration file:', config);
+
 rethink.install(config).then(function(result) {
 
   runtimeLoader = result;
@@ -81,7 +83,11 @@ function loadHyperty(event) {
   event.preventDefault();
 
   let hypertyName = $(event.currentTarget).attr('data-name');
+
   let hypertyPath = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/hyperty/' + hypertyName;
+  if (config.development) {
+    hypertyPath = 'hyperty-catalogue://' + domain + '/.well-known/hyperty/' + hypertyName;
+  }  
 
   let $el = $('.main-content .notification');
   addLoader($el);
