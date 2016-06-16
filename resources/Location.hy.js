@@ -3211,93 +3211,10 @@ return e[t]=!0,e})),i.push({m:e,l:o(e,n)}),this.f||r(this)},takeRecords:function
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],6:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.default = activate;
-
-var _Syncher = require('service-framework/dist/Syncher');
-
-var _urijs = require('urijs');
-
-var _urijs2 = _interopRequireDefault(_urijs);
-
-var _position = require('./position');
-
-var _position2 = _interopRequireDefault(_position);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var LocationHyperty = {
-    getCurrentPosition: function getCurrentPosition() {
-        return new Promise(function (resolve, reject) {
-            return navigator.geolocation.getCurrentPosition(function (position) {
-                return resolve(position);
-            });
-        });
-    },
-    startPositionBroadcast: function startPositionBroadcast(subscribers) {
-        this._syncher.create(this._objectDescURL, subscribers, (0, _position2.default)()).then(function (reporter) {
-            reporter.onSubscription(function (event) {
-                return event.accept();
-            });
-            navigator.geolocation.watchPosition(function (position) {
-                reporter.data.values = [{ name: 'latitude', unit: 'lat', value: position.coords.latitude }, { name: 'longitude', unit: 'lon', value: position.coords.longitude }];
-                reporter.data.time = position.timestamp;
-            });
-        });
-    }
-};
-
-var LocationHypertyFactory = function LocationHypertyFactory(hypertyURL, bus, config) {
-    var uri = new _urijs2.default(hypertyURL);
-    LocationHyperty._objectDescURL = 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/ContextDataSchema';
-    LocationHyperty._syncher = new _Syncher.Syncher(hypertyURL, bus, config);
-
-    return LocationHyperty;
-};
-
-function activate(hypertyURL, bus, config) {
-    return {
-        name: 'Location',
-        instance: LocationHypertyFactory(hypertyURL, bus, config)
-    };
-}
-module.exports = exports['default'];
+'use strict';Object.defineProperty(exports,"__esModule",{value:true});exports.default=activate;var _Syncher=require('service-framework/dist/Syncher');var _urijs=require('urijs');var _urijs2=_interopRequireDefault(_urijs);var _position=require('./position');var _position2=_interopRequireDefault(_position);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}var LocationHyperty={getCurrentPosition:function getCurrentPosition(){return new Promise(function(resolve,reject){return navigator.geolocation.getCurrentPosition(function(position){return resolve(position);});});},startPositionBroadcast:function startPositionBroadcast(subscribers){this._syncher.create(this._objectDescURL,subscribers,(0,_position2.default)()).then(function(reporter){reporter.onSubscription(function(event){return event.accept();});navigator.geolocation.watchPosition(function(position){reporter.data.values=[{name:'latitude',unit:'lat',value:position.coords.latitude},{name:'longitude',unit:'lon',value:position.coords.longitude}];reporter.data.time=position.timestamp;});});}};var LocationHypertyFactory=function LocationHypertyFactory(hypertyURL,bus,config){var uri=new _urijs2.default(hypertyURL);LocationHyperty._objectDescURL='hyperty-catalogue://'+uri.hostname()+'/.well-known/dataschemas/ContextDataSchema';LocationHyperty._syncher=new _Syncher.Syncher(hypertyURL,bus,config);return LocationHyperty;};function activate(hypertyURL,bus,config){return {name:'Location',instance:LocationHypertyFactory(hypertyURL,bus,config)};}module.exports=exports['default'];
 
 },{"./position":7,"service-framework/dist/Syncher":1,"urijs":4}],7:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.default = PositionFactory;
-var LocationObject = {};
-
-function getId() {
-    return '_' + Math.random().toString(36).substr(2, 9);
-}
-
-function PositionFactory() {
-    return Object.assign({}, {
-        schema: "context",
-        id: getId(),
-        type: "location",
-        time: "0",
-        values: [{
-            name: "latitude",
-            unit: "lat",
-            value: 0
-        }, {
-            name: "longitude",
-            unit: "lat",
-            value: 0
-        }]
-    });
-}
-module.exports = exports['default'];
+"use strict";Object.defineProperty(exports,"__esModule",{value:true});exports.default=PositionFactory;var LocationObject={};function getId(){return '_'+Math.random().toString(36).substr(2,9);}function PositionFactory(){return Object.assign({},{schema:"context",id:getId(),type:"location",time:"0",values:[{name:"latitude",unit:"lat",value:0},{name:"longitude",unit:"lat",value:0}]});}module.exports=exports['default'];
 
 },{}]},{},[6])(6)
 });

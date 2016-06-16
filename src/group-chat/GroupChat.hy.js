@@ -79,7 +79,8 @@ let GroupChatHyperty = {
                     .then(()=>this.syncher.subscribe(this.objectDescURL, event.url))
                     .then((dataObject) => {
                         console.log('creating group chat on invite', dataObject)
-                        this.notifications.trigger([{email: identity.username, domain: this.domain}], {type: 'NEW_CHAT', payload:{name: dataObject.data.name}})
+                        this.notifications.trigger([{email: identity.username, domain: this.domain}], 
+                                {type: 'NEW_CHAT', payload:{id: dataObject.url, name: dataObject.data.name}})
                         return callback(GroupChat(dataObject, this._position.data, identity))
                     })
             }

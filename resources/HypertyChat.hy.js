@@ -132,615 +132,89 @@ return e[t]=!0,e})),i.push({m:e,l:o(e,n)}),this.f||r(this)},takeRecords:function
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],5:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _EventEmitter2 = require('../utils/EventEmitter');
-
-var _EventEmitter3 = _interopRequireDefault(_EventEmitter2);
-
-var _participant = require('./participant');
-
-var _participant2 = _interopRequireDefault(_participant);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 PT Inovação e Sistemas SA
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 INESC-ID
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 QUOBIS NETWORKS SL
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 ORANGE SA
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 Deutsche Telekom AG
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 Apizee
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Licensed under the Apache License, Version 2.0 (the "License");
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * you may not use this file except in compliance with the License.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * You may obtain a copy of the License at
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *   http://www.apache.org/licenses/LICENSE-2.0
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Unless required by applicable law or agreed to in writing, software
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * distributed under the License is distributed on an "AS IS" BASIS,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * See the License for the specific language governing permissions and
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * limitations under the License.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               **/
-
-var ChatGroup = function (_EventEmitter) {
-  _inherits(ChatGroup, _EventEmitter);
-
-  function ChatGroup(syncher, discovery, domain) {
-    _classCallCheck(this, ChatGroup);
-
-    if (!syncher) throw Error('Syncher is a necessary dependecy');
-    if (!discovery) throw Error('Hyperty discover is a necessary dependecy');
-
-    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(ChatGroup).call(this, syncher, discovery));
-
-    var _this = _this2;
-    _this._syncher = syncher;
-    _this.discovery = discovery;
-
-    _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
-    return _this2;
-  }
-
-  _createClass(ChatGroup, [{
-    key: 'processPartipants',
-    value: function processPartipants(participants) {
-      var _this = this;
-
-      participants.forEach(function (participant) {
-        if (_this._dataObjectObserver._owner !== participant.hypertyResource) {
-          _this.processParticipant(participant);
-        }
-      });
-    }
-  }, {
-    key: 'processParticipant',
-    value: function processParticipant(participant) {
-      var _this = this;
-      console.log('Each Participant will be trigger: ', participant);
-      _this.trigger('participant:added', participant);
-    }
-
-    /**
-     * Process child messages
-     * @param  {[type]} child [description]
-     * @return {[type]}          [description]
-     */
-
-  }, {
-    key: '_processChild',
-    value: function _processChild(child) {
-      var _this = this;
-
-      console.info('Process Message:', child);
-
-      _this.trigger('new:message:recived', child);
-    }
-
-    /**
-     * This function is used to send a chat message.
-     * @param  {Message} message text to be send
-     */
-
-  }, {
-    key: 'send',
-    value: function send(message) {
-
-      console.info('Send Message:', message, this);
-
-      var _this = this;
-      var dataObject = _this.dataObjectReporter ? _this.dataObjectReporter : _this.dataObjectObserver;
-
-      return new Promise(function (resolve, reject) {
-
-        dataObject.addChild('chatmessages', { chatMessage: message }).then(function (dataObjectChild) {
-          console.info('Data Object Child: ', dataObjectChild);
-          var msg = {
-            childId: dataObjectChild._childId,
-            from: dataObjectChild._owner,
-            value: dataObjectChild.data
-          };
-
-          _this._processChild(msg);
-          resolve(dataObjectChild);
-        }).catch(function (reason) {
-          console.error('Reason:', reason);
-          reject(reason);
-        });
-      });
-    }
-  }, {
-    key: 'join',
-    value: function join(resource) {
-
-      var _this = this;
-
-      return new Promise(function (resolve, reject) {
-
-        _this.addParticipant(resource).then(function (result) {
-          resolve('joined: ', result);
-        }).catch(function (reason) {
-          reject(reason);
-        });
-      });
-    }
-
-    // TODO: improve this with an invite;
-    /**
-     * This function is used to add / invite new participant on an existing Group Chat instance.
-     * @return {Promise} Promise with the status
-     */
-
-  }, {
-    key: 'invite',
-    value: function invite(userList) {
-
-      var _this = this;
-
-      return new Promise(function (resolve, reject) {
-
-        console.info('----------------------- Mapping Particpants -------------------- \n');
-        _this._mappingUser(userList).then(function (hyperties) {
-          return _this.dataObject.inviteObservers(hyperties);
-        }).then(function () {
-          console.info('2. Result of invition');
-          resolve();
-        }).catch(function (reason) {
-          reject(reason);
-        });
-      });
-    }
-
-    /**
-     * This function is used to remove a participant from an existing Group Chat instance.
-     * @return {Promise} Promise with the status
-     */
-
-  }, {
-    key: 'removeParticipant',
-    value: function removeParticipant() {
-      return new Promise(function (resolve, reject) {
-
-        try {
-          resolve('participant removed');
-        } catch (e) {
-          reject('remove participant fail');
-        }
-      });
-    }
-  }, {
-    key: '_mappingUser',
-    value: function _mappingUser(userList) {
-
-      var _this = this;
-
-      return new Promise(function (resolve, reject) {
-
-        var hyperties = [];
-        var count = 0;
-
-        console.log('User List:', userList, userList.length);
-
-        if (userList.length === 0) reject(hyperties);
-
-        var resultUsers = function resultUsers() {
-          if (count === userList.length) {
-            console.info('Have ' + hyperties.length + 'users found;');
-            resolve(hyperties);
-          }
-        };
-
-        var activeUsers = function activeUsers(user) {
-          count++;
-          hyperties.push(user.hypertyURL);
-          resultUsers();
-        };
-
-        var inactiveUsers = function inactiveUsers() {
-          count++;
-          resultUsers();
-        };
-
-        userList.forEach(function (user) {
-          console.log(user);
-          if (user.email.length) {
-            return _this.discovery.discoverHypertyPerUser(user.email, user.domain).then(activeUsers).catch(inactiveUsers);
-          }
-        });
-      });
-    }
-  }, {
-    key: 'dataObjectReporter',
-    set: function set(dataObjectReporter) {
-
-      if (!dataObjectReporter) throw new Error('The data object reporter is necessary parameter');
-
-      var _this = this;
-
-      console.info('Set data object reporter: ', dataObjectReporter);
-
-      dataObjectReporter.onSubscription(function (event) {
-
-        event.accept();
-
-        // Set the other subscription like a participant
-        _participant2.default.hypertyResource = event.url;
-
-        console.info('On Subscription add Participant: ', _participant2.default, event);
-
-        dataObjectReporter.data.participants.push(_participant2.default);
-
-        _this.processParticipant(_participant2.default);
-      });
-
-      dataObjectReporter.onAddChild(function (child) {
-        console.info('Reporter - Add Child: ', child);
-        dataObjectReporter.data.lastModified = new Date().toJSON();
-        _this._processChild(child);
-      });
-
-      _this._dataObjectReporter = dataObjectReporter;
-    },
-    get: function get() {
-      var _this = this;
-      return _this._dataObjectReporter;
-    }
-  }, {
-    key: 'dataObjectObserver',
-    set: function set(dataObjectObserver) {
-      var _this = this;
-
-      _this._dataObjectObserver = dataObjectObserver;
-
-      dataObjectObserver.onChange('participants.*', function (event) {
-        console.info('Change Event: ', event);
-        _this.processPartipants(event.data);
-      });
-
-      dataObjectObserver.onAddChild(function (child) {
-        console.info('Observer - Add Child: ', child);
-        _this._processChild(child);
-      });
-    },
-    get: function get() {
-      var _this = this;
-      return _this._dataObjectObserver;
-    }
-  }, {
-    key: 'dataObject',
-    get: function get() {
-      var _this = this;
-      return _this._dataObjectReporter ? _this.dataObjectReporter : _this.dataObjectObserver;
-    }
-  }]);
-
-  return ChatGroup;
-}(_EventEmitter3.default);
-
-exports.default = ChatGroup;
-module.exports = exports['default'];
+'use strict';Object.defineProperty(exports,"__esModule",{value:true});var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value" in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();var _EventEmitter2=require('../utils/EventEmitter');var _EventEmitter3=_interopRequireDefault(_EventEmitter2);var _participant=require('./participant');var _participant2=_interopRequireDefault(_participant);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _possibleConstructorReturn(self,call){if(!self){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return call&&(typeof call==="object"||typeof call==="function")?call:self;}function _inherits(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function, not "+typeof superClass);}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,enumerable:false,writable:true,configurable:true}});if(superClass)Object.setPrototypeOf?Object.setPrototypeOf(subClass,superClass):subClass.__proto__=superClass;} /**
+* Copyright 2016 PT Inovação e Sistemas SA
+* Copyright 2016 INESC-ID
+* Copyright 2016 QUOBIS NETWORKS SL
+* Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
+* Copyright 2016 ORANGE SA
+* Copyright 2016 Deutsche Telekom AG
+* Copyright 2016 Apizee
+* Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*   http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+**/var ChatGroup=function(_EventEmitter){_inherits(ChatGroup,_EventEmitter);function ChatGroup(syncher,discovery,domain){_classCallCheck(this,ChatGroup);if(!syncher)throw Error('Syncher is a necessary dependecy');if(!discovery)throw Error('Hyperty discover is a necessary dependecy');var _this2=_possibleConstructorReturn(this,Object.getPrototypeOf(ChatGroup).call(this,syncher,discovery));var _this=_this2;_this._syncher=syncher;_this.discovery=discovery;_this._objectDescURL='hyperty-catalogue://catalogue.'+domain+'/.well-known/dataschema/Communication';return _this2;}_createClass(ChatGroup,[{key:'processPartipants',value:function processPartipants(participants){var _this=this;participants.forEach(function(participant){if(_this._dataObjectObserver._owner!==participant.hypertyResource){_this.processParticipant(participant);}});}},{key:'processParticipant',value:function processParticipant(participant){var _this=this;console.log('Each Participant will be trigger: ',participant);_this.trigger('participant:added',participant);} /**
+   * Process child messages
+   * @param  {[type]} child [description]
+   * @return {[type]}          [description]
+   */},{key:'_processChild',value:function _processChild(child){var _this=this;console.info('Process Message:',child);_this.trigger('new:message:recived',child);} /**
+   * This function is used to send a chat message.
+   * @param  {Message} message text to be send
+   */},{key:'send',value:function send(message){console.info('Send Message:',message,this);var _this=this;var dataObject=_this.dataObjectReporter?_this.dataObjectReporter:_this.dataObjectObserver;return new Promise(function(resolve,reject){dataObject.addChild('chatmessages',{chatMessage:message}).then(function(dataObjectChild){console.info('Data Object Child: ',dataObjectChild);var msg={childId:dataObjectChild._childId,from:dataObjectChild._owner,value:dataObjectChild.data};_this._processChild(msg);resolve(dataObjectChild);}).catch(function(reason){console.error('Reason:',reason);reject(reason);});});}},{key:'join',value:function join(resource){var _this=this;return new Promise(function(resolve,reject){_this.addParticipant(resource).then(function(result){resolve('joined: ',result);}).catch(function(reason){reject(reason);});});} // TODO: improve this with an invite;
+/**
+   * This function is used to add / invite new participant on an existing Group Chat instance.
+   * @return {Promise} Promise with the status
+   */},{key:'invite',value:function invite(userList){var _this=this;return new Promise(function(resolve,reject){console.info('----------------------- Mapping Particpants -------------------- \n');_this._mappingUser(userList).then(function(hyperties){return _this.dataObject.inviteObservers(hyperties);}).then(function(){console.info('2. Result of invition');resolve();}).catch(function(reason){reject(reason);});});} /**
+   * This function is used to remove a participant from an existing Group Chat instance.
+   * @return {Promise} Promise with the status
+   */},{key:'removeParticipant',value:function removeParticipant(){return new Promise(function(resolve,reject){try{resolve('participant removed');}catch(e){reject('remove participant fail');}});}},{key:'_mappingUser',value:function _mappingUser(userList){var _this=this;return new Promise(function(resolve,reject){var hyperties=[];var count=0;console.log('User List:',userList,userList.length);if(userList.length===0)reject(hyperties);var resultUsers=function resultUsers(){if(count===userList.length){console.info('Have '+hyperties.length+'users found;');resolve(hyperties);}};var activeUsers=function activeUsers(user){count++;hyperties.push(user.hypertyURL);resultUsers();};var inactiveUsers=function inactiveUsers(){count++;resultUsers();};userList.forEach(function(user){console.log(user);if(user.email.length){return _this.discovery.discoverHypertyPerUser(user.email,user.domain).then(activeUsers).catch(inactiveUsers);}});});}},{key:'dataObjectReporter',set:function set(dataObjectReporter){if(!dataObjectReporter)throw new Error('The data object reporter is necessary parameter');var _this=this;console.info('Set data object reporter: ',dataObjectReporter);dataObjectReporter.onSubscription(function(event){event.accept(); // Set the other subscription like a participant
+_participant2.default.hypertyResource=event.url;console.info('On Subscription add Participant: ',_participant2.default,event);dataObjectReporter.data.participants.push(_participant2.default);_this.processParticipant(_participant2.default);});dataObjectReporter.onAddChild(function(child){console.info('Reporter - Add Child: ',child);dataObjectReporter.data.lastModified=new Date().toJSON();_this._processChild(child);});_this._dataObjectReporter=dataObjectReporter;},get:function get(){var _this=this;return _this._dataObjectReporter;}},{key:'dataObjectObserver',set:function set(dataObjectObserver){var _this=this;_this._dataObjectObserver=dataObjectObserver;dataObjectObserver.onChange('participants.*',function(event){console.info('Change Event: ',event);_this.processPartipants(event.data);});dataObjectObserver.onAddChild(function(child){console.info('Observer - Add Child: ',child);_this._processChild(child);});},get:function get(){var _this=this;return _this._dataObjectObserver;}},{key:'dataObject',get:function get(){var _this=this;return _this._dataObjectReporter?_this.dataObjectReporter:_this.dataObjectObserver;}}]);return ChatGroup;}(_EventEmitter3.default);exports.default=ChatGroup;module.exports=exports['default'];
 
 },{"../utils/EventEmitter":9,"./participant":8}],6:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-exports.default = activate;
-
-var _HypertyDiscovery = require('service-framework/dist/HypertyDiscovery');
-
-var _HypertyDiscovery2 = _interopRequireDefault(_HypertyDiscovery);
-
-var _IdentityManager = require('service-framework/dist/IdentityManager');
-
-var _IdentityManager2 = _interopRequireDefault(_IdentityManager);
-
-var _Discovery = require('service-framework/dist/Discovery');
-
-var _Discovery2 = _interopRequireDefault(_Discovery);
-
-var _Syncher = require('service-framework/dist/Syncher');
-
-var _EventEmitter2 = require('../utils/EventEmitter');
-
-var _EventEmitter3 = _interopRequireDefault(_EventEmitter2);
-
-var _utils = require('../utils/utils');
-
-var _communication = require('./communication');
-
-var _participant = require('./participant');
-
-var _participant2 = _interopRequireDefault(_participant);
-
-var _Chat = require('./Chat');
-
-var _Chat2 = _interopRequireDefault(_Chat);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 PT Inovação e Sistemas SA
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 INESC-ID
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 QUOBIS NETWORKS SL
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 ORANGE SA
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 Deutsche Telekom AG
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 Apizee
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Licensed under the Apache License, Version 2.0 (the "License");
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * you may not use this file except in compliance with the License.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * You may obtain a copy of the License at
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *   http://www.apache.org/licenses/LICENSE-2.0
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * Unless required by applicable law or agreed to in writing, software
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * distributed under the License is distributed on an "AS IS" BASIS,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * See the License for the specific language governing permissions and
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * limitations under the License.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               **/
-
-// Service Framework
-
-
+'use strict';Object.defineProperty(exports,"__esModule",{value:true});var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value" in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();exports.default=activate;var _HypertyDiscovery=require('service-framework/dist/HypertyDiscovery');var _HypertyDiscovery2=_interopRequireDefault(_HypertyDiscovery);var _IdentityManager=require('service-framework/dist/IdentityManager');var _IdentityManager2=_interopRequireDefault(_IdentityManager);var _Discovery=require('service-framework/dist/Discovery');var _Discovery2=_interopRequireDefault(_Discovery);var _Syncher=require('service-framework/dist/Syncher');var _EventEmitter2=require('../utils/EventEmitter');var _EventEmitter3=_interopRequireDefault(_EventEmitter2);var _utils=require('../utils/utils');var _communication=require('./communication');var _participant=require('./participant');var _participant2=_interopRequireDefault(_participant);var _Chat=require('./Chat');var _Chat2=_interopRequireDefault(_Chat);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _possibleConstructorReturn(self,call){if(!self){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return call&&(typeof call==="object"||typeof call==="function")?call:self;}function _inherits(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function, not "+typeof superClass);}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,enumerable:false,writable:true,configurable:true}});if(superClass)Object.setPrototypeOf?Object.setPrototypeOf(subClass,superClass):subClass.__proto__=superClass;} /**
+* Copyright 2016 PT Inovação e Sistemas SA
+* Copyright 2016 INESC-ID
+* Copyright 2016 QUOBIS NETWORKS SL
+* Copyright 2016 FRAUNHOFER-GESELLSCHAFT ZUR FOERDERUNG DER ANGEWANDTEN FORSCHUNG E.V
+* Copyright 2016 ORANGE SA
+* Copyright 2016 Deutsche Telekom AG
+* Copyright 2016 Apizee
+* Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*   http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+**/ // Service Framework
 // Utils
-
-
 // Internals
-
-
 /**
 * Hyperty Chat;
 * @author Vitor Silva [vitor-t-silva@telecom.pt]
 * @version 0.1.0
-*/
-
-var HypertyChat = function (_EventEmitter) {
-  _inherits(HypertyChat, _EventEmitter);
-
-  function HypertyChat(hypertyURL, bus, configuration) {
-    _classCallCheck(this, HypertyChat);
-
-    if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
-    if (!bus) throw new Error('The MiniBus is a needed parameter');
-    if (!configuration) throw new Error('The configuration is a needed parameter');
-
-    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(HypertyChat).call(this, hypertyURL, bus, configuration));
-
-    var _this = _this2;
-    var syncher = new _Syncher.Syncher(hypertyURL, bus, configuration);
-
-    var domain = (0, _utils.divideURL)(hypertyURL).domain;
-    var hypertyDiscovery = new _HypertyDiscovery2.default(hypertyURL, bus);
-    var discovery = new _Discovery2.default(hypertyURL, bus);
-    var identityManager = new _IdentityManager2.default(hypertyURL, configuration.runtimeURL, bus);
-
-    _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
-
-    _this._hypertyURL = hypertyURL;
-    _this._syncher = syncher;
-    _this._domain = domain;
-
-    _this.hypertyDiscovery = hypertyDiscovery;
-    _this.discovery = discovery;
-    _this.identityManager = identityManager;
-
-    console.log('Discover: ', discovery);
-    console.log('Identity Manager: ', identityManager);
-    console.log('Hyperty Discovery: ', hypertyDiscovery);
-
-    syncher.onNotification(function (event) {
-      console.log('Notification: ', event);
-      _this._autoSubscribe(event.url);
-    });
-
-    return _this2;
-  }
-
-  /**
+*/var HypertyChat=function(_EventEmitter){_inherits(HypertyChat,_EventEmitter);function HypertyChat(hypertyURL,bus,configuration){_classCallCheck(this,HypertyChat);if(!hypertyURL)throw new Error('The hypertyURL is a needed parameter');if(!bus)throw new Error('The MiniBus is a needed parameter');if(!configuration)throw new Error('The configuration is a needed parameter');var _this2=_possibleConstructorReturn(this,Object.getPrototypeOf(HypertyChat).call(this,hypertyURL,bus,configuration));var _this=_this2;var syncher=new _Syncher.Syncher(hypertyURL,bus,configuration);var domain=(0,_utils.divideURL)(hypertyURL).domain;var hypertyDiscovery=new _HypertyDiscovery2.default(hypertyURL,bus);var discovery=new _Discovery2.default(hypertyURL,bus);var identityManager=new _IdentityManager2.default(hypertyURL,configuration.runtimeURL,bus);_this._objectDescURL='hyperty-catalogue://catalogue.'+domain+'/.well-known/dataschema/Communication';_this._hypertyURL=hypertyURL;_this._syncher=syncher;_this._domain=domain;_this.hypertyDiscovery=hypertyDiscovery;_this.discovery=discovery;_this.identityManager=identityManager;console.log('Discover: ',discovery);console.log('Identity Manager: ',identityManager);console.log('Hyperty Discovery: ',hypertyDiscovery);syncher.onNotification(function(event){console.log('Notification: ',event);_this._autoSubscribe(event.url);});return _this2;} /**
    * This function is used to create a new Group Chat providing the identifier of the Group to be notified.
    * @param  {String} name             chat name
    * @param  {URL.UserURL} UserURLList List of User allowed
    * @return {Promise}
-   */
-
-
-  _createClass(HypertyChat, [{
-    key: 'create',
-    value: function create(name, participants) {
-
-      var _this = this;
-      var syncher = _this._syncher;
-
-      return new Promise(function (resolve, reject) {
-
-        // Create owner participant
-        // TODO: create all information to communication;
-        _communication.communicationObject.owner = _this._hypertyURL;
-        _communication.communicationObject.name = name;
-        _communication.communicationObject.id = name;
-        _communication.communicationObject.status = _communication.CommunicationStatus.OPEN;
-        _communication.communicationObject.startingTime = new Date().toJSON();
-        _communication.communicationObject.lastModified = _communication.communicationObject.startingTime;
-
-        // Set the other subscription like a participant
-        _participant2.default.hypertyResource = _this._hypertyURL;
-        _communication.communicationObject.participants.push(_participant2.default);
-
-        console.info('----------------------- Mapping Particpants -------------------- \n');
-        _this._mappingUser(participants).then(function (hyperties) {
-          return _this._createSyncher(hyperties, _communication.communicationObject);
-        }).catch(function (hyperties) {
-          return _this._createSyncher(hyperties, _communication.communicationObject);
-        }).then(function (dataObjectReporter) {
-          console.info('3. Return Create Data Object Reporter', dataObjectReporter);
-
-          var chat = new _Chat2.default(syncher, _this.discovery, _this._domain);
-          chat.dataObjectReporter = dataObjectReporter;
-          _this.chat = chat;
-          resolve(chat);
-        }).catch(function (reason) {
-          reject(reason);
-        });
-      });
-    }
-  }, {
-    key: 'join',
-    value: function join(resource) {
-      var _this = this;
-      var syncher = _this._syncher;
-
-      return new Promise(function (resolve, reject) {
-
-        console.info('------------------------ Syncher subscribe ---------------------- \n');
-        console.info(resource);
-
-        syncher.subscribe(_this._objectDescURL, resource).then(function (dataObjectObserver) {
-          console.info('Data Object Observer: ', dataObjectObserver);
-          var chat = new _Chat2.default(syncher, _this.discovery, _this._domain);
-          chat.dataObjectObserver = dataObjectObserver;
-
-          resolve(chat);
-        }).catch(function (reason) {
-          reject(reason);
-        });
-      });
-    }
-
-    /**
-     * Invite other observers
-     * @param  {userList} Array Array of objects that contining the user.email and user.domain;
-     * @return {chat}           Chat Group controller
-     */
-
-  }, {
-    key: 'invite',
-    value: function invite(userList) {
-
-      var _this = this;
-      var syncher = _this._syncher;
-
-      return new Promise(function (resolve, reject) {
-
-        _this.chat.invite(userList).then(function () {
-          console.info('users are invited');
-          var chat = new _Chat2.default(syncher, _this.discovery, _this._domain);
-
-          resolve(chat);
-        }).catch(function (reason) {
-          reject(reason);
-        });
-      });
-    }
-  }, {
-    key: '_autoSubscribe',
-    value: function _autoSubscribe(resource) {
-      var _this = this;
-
-      _this.join(resource).then(function (chatGroup) {
-        _this.trigger('chat:subscribe', chatGroup);
-      }).catch(function (reason) {
-        console.error(reason);
-      });
-    }
-  }, {
-    key: '_createSyncher',
-    value: function _createSyncher(hyperties, communication) {
-      var _this = this;
-      var syncher = _this._syncher;
-
-      console.info('Have ' + hyperties.length + ' participants;');
-      console.info('WIth communicationObject: ', communication);
-
-      console.info('------------------------ Syncher Create ---------------------- \n');
-      return syncher.create(_this._objectDescURL, hyperties, communication);
-    }
-  }, {
-    key: '_mappingUser',
-    value: function _mappingUser(userList) {
-
-      var _this = this;
-
-      return new Promise(function (resolve, reject) {
-
-        var hyperties = [];
-        var count = 0;
-
-        console.log('User List:', userList, userList.length);
-
-        if (userList.length === 0) reject(hyperties);
-
-        var resultUsers = function resultUsers() {
-          if (count === userList.length) {
-            console.info('Have ' + hyperties.length + 'users found;');
-            resolve(hyperties);
-          }
-        };
-
-        var activeUsers = function activeUsers(user) {
-          count++;
-          hyperties.push(user.hypertyURL);
-          resultUsers();
-        };
-
-        var inactiveUsers = function inactiveUsers() {
-          count++;
-          resultUsers();
-        };
-
-        userList.forEach(function (user) {
-          console.log(user);
-          if (user.email.length) {
-            return _this.discovery.discoverHypertyPerUser(user.email, user.domain).then(activeUsers).catch(inactiveUsers);
-          }
-        });
-      });
-    }
-  }]);
-
-  return HypertyChat;
-}(_EventEmitter3.default);
-
-function activate(hypertyURL, bus, configuration) {
-
-  return {
-    name: 'HypertyChat',
-    instance: new HypertyChat(hypertyURL, bus, configuration)
-  };
-}
-module.exports = exports['default'];
+   */_createClass(HypertyChat,[{key:'create',value:function create(name,participants){var _this=this;var syncher=_this._syncher;return new Promise(function(resolve,reject){ // Create owner participant
+// TODO: create all information to communication;
+_communication.communicationObject.owner=_this._hypertyURL;_communication.communicationObject.name=name;_communication.communicationObject.id=name;_communication.communicationObject.status=_communication.CommunicationStatus.OPEN;_communication.communicationObject.startingTime=new Date().toJSON();_communication.communicationObject.lastModified=_communication.communicationObject.startingTime; // Set the other subscription like a participant
+_participant2.default.hypertyResource=_this._hypertyURL;_communication.communicationObject.participants.push(_participant2.default);console.info('----------------------- Mapping Particpants -------------------- \n');_this._mappingUser(participants).then(function(hyperties){return _this._createSyncher(hyperties,_communication.communicationObject);}).catch(function(hyperties){return _this._createSyncher(hyperties,_communication.communicationObject);}).then(function(dataObjectReporter){console.info('3. Return Create Data Object Reporter',dataObjectReporter);var chat=new _Chat2.default(syncher,_this.discovery,_this._domain);chat.dataObjectReporter=dataObjectReporter;_this.chat=chat;resolve(chat);}).catch(function(reason){reject(reason);});});}},{key:'join',value:function join(resource){var _this=this;var syncher=_this._syncher;return new Promise(function(resolve,reject){console.info('------------------------ Syncher subscribe ---------------------- \n');console.info(resource);syncher.subscribe(_this._objectDescURL,resource).then(function(dataObjectObserver){console.info('Data Object Observer: ',dataObjectObserver);var chat=new _Chat2.default(syncher,_this.discovery,_this._domain);chat.dataObjectObserver=dataObjectObserver;resolve(chat);}).catch(function(reason){reject(reason);});});} /**
+   * Invite other observers
+   * @param  {userList} Array Array of objects that contining the user.email and user.domain;
+   * @return {chat}           Chat Group controller
+   */},{key:'invite',value:function invite(userList){var _this=this;var syncher=_this._syncher;return new Promise(function(resolve,reject){_this.chat.invite(userList).then(function(){console.info('users are invited');var chat=new _Chat2.default(syncher,_this.discovery,_this._domain);resolve(chat);}).catch(function(reason){reject(reason);});});}},{key:'_autoSubscribe',value:function _autoSubscribe(resource){var _this=this;_this.join(resource).then(function(chatGroup){_this.trigger('chat:subscribe',chatGroup);}).catch(function(reason){console.error(reason);});}},{key:'_createSyncher',value:function _createSyncher(hyperties,communication){var _this=this;var syncher=_this._syncher;console.info('Have '+hyperties.length+' participants;');console.info('WIth communicationObject: ',communication);console.info('------------------------ Syncher Create ---------------------- \n');return syncher.create(_this._objectDescURL,hyperties,communication);}},{key:'_mappingUser',value:function _mappingUser(userList){var _this=this;return new Promise(function(resolve,reject){var hyperties=[];var count=0;console.log('User List:',userList,userList.length);if(userList.length===0)reject(hyperties);var resultUsers=function resultUsers(){if(count===userList.length){console.info('Have '+hyperties.length+'users found;');resolve(hyperties);}};var activeUsers=function activeUsers(user){count++;hyperties.push(user.hypertyURL);resultUsers();};var inactiveUsers=function inactiveUsers(){count++;resultUsers();};userList.forEach(function(user){console.log(user);if(user.email.length){return _this.discovery.discoverHypertyPerUser(user.email,user.domain).then(activeUsers).catch(inactiveUsers);}});});}}]);return HypertyChat;}(_EventEmitter3.default);function activate(hypertyURL,bus,configuration){return {name:'HypertyChat',instance:new HypertyChat(hypertyURL,bus,configuration)};}module.exports=exports['default'];
 
 },{"../utils/EventEmitter":9,"../utils/utils":10,"./Chat":5,"./communication":7,"./participant":8,"service-framework/dist/Discovery":1,"service-framework/dist/HypertyDiscovery":2,"service-framework/dist/IdentityManager":3,"service-framework/dist/Syncher":4}],7:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
+'use strict';Object.defineProperty(exports,"__esModule",{value:true}); /**
 * Copyright 2016 PT Inovação e Sistemas SA
 * Copyright 2016 INESC-ID
 * Copyright 2016 QUOBIS NETWORKS SL
@@ -761,35 +235,10 @@ Object.defineProperty(exports, "__esModule", {
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-**/
-
-var CommunicationStatus = exports.CommunicationStatus = {
-  OPEN: 'open',
-  PENDING: 'pending',
-  CLOSED: 'closed',
-  PAUSED: 'paused',
-  FAILED: 'failed'
-};
-
-var communicationObject = exports.communicationObject = {
-  id: '',
-  name: '',
-  owner: '',
-  startingTime: '',
-  lastModified: '',
-  duration: '',
-  status: '',
-  qos: '',
-  participants: []
-};
+**/var CommunicationStatus=exports.CommunicationStatus={OPEN:'open',PENDING:'pending',CLOSED:'closed',PAUSED:'paused',FAILED:'failed'};var communicationObject=exports.communicationObject={id:'',name:'',owner:'',startingTime:'',lastModified:'',duration:'',status:'',qos:'',participants:[]};
 
 },{}],8:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
+'use strict';Object.defineProperty(exports,"__esModule",{value:true}); /**
 * Copyright 2016 PT Inovação e Sistemas SA
 * Copyright 2016 INESC-ID
 * Copyright 2016 QUOBIS NETWORKS SL
@@ -810,29 +259,10 @@ Object.defineProperty(exports, "__esModule", {
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-**/
-
-var participant = {
-  status: '',
-  hypertyResource: '',
-  identity: ''
-};
-
-exports.default = participant;
-module.exports = exports['default'];
+**/var participant={status:'',hypertyResource:'',identity:''};exports.default=participant;module.exports=exports['default'];
 
 },{}],9:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
+"use strict";Object.defineProperty(exports,"__esModule",{value:true});var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value" in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}} /**
 * Copyright 2016 PT Inovação e Sistemas SA
 * Copyright 2016 INESC-ID
 * Copyright 2016 QUOBIS NETWORKS SL
@@ -853,68 +283,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License.
-**/
-
-/**
+**/ /**
  * EventEmitter
  * All classes which extends this, can have addEventListener and trigger events;
- */
-
-var EventEmitter = function () {
-  function EventEmitter() {
-    _classCallCheck(this, EventEmitter);
-  }
-
-  _createClass(EventEmitter, [{
-    key: "addEventListener",
-
-
-    /**
-     * addEventListener listen for an eventType
-     * @param  {string}         eventType - listening for this type of event
-     * @param  {Function}       cb        - callback function will be executed when the event it is invoked
-     */
-    value: function addEventListener(eventType, cb) {
-      var _this = this;
-      _this[eventType] = cb;
-    }
-
-    /**
-     * Invoke the eventType
-     * @param  {string} eventType - event will be invoked
-     * @param  {object} params - parameters will be passed to the addEventListener
-     */
-
-  }, {
-    key: "trigger",
-    value: function trigger(eventType, params) {
-      var _this = this;
-
-      if (_this[eventType]) {
-        _this[eventType](params);
-      }
-    }
-  }]);
-
-  return EventEmitter;
-}();
-
-exports.default = EventEmitter;
-module.exports = exports['default'];
+ */var EventEmitter=function(){function EventEmitter(){_classCallCheck(this,EventEmitter);}_createClass(EventEmitter,[{key:"addEventListener", /**
+   * addEventListener listen for an eventType
+   * @param  {string}         eventType - listening for this type of event
+   * @param  {Function}       cb        - callback function will be executed when the event it is invoked
+   */value:function addEventListener(eventType,cb){var _this=this;_this[eventType]=cb;} /**
+   * Invoke the eventType
+   * @param  {string} eventType - event will be invoked
+   * @param  {object} params - parameters will be passed to the addEventListener
+   */},{key:"trigger",value:function trigger(eventType,params){var _this=this;if(_this[eventType]){_this[eventType](params);}}}]);return EventEmitter;}();exports.default=EventEmitter;module.exports=exports['default'];
 
 },{}],10:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.divideURL = divideURL;
-exports.deepClone = deepClone;
-exports.getConfig = getConfig;
-exports.getUserMedia = getUserMedia;
-exports.serialize = serialize;
-exports.getTemplate = getTemplate;
-/**
+'use strict';Object.defineProperty(exports,"__esModule",{value:true});exports.divideURL=divideURL;exports.deepClone=deepClone;exports.getConfig=getConfig;exports.getUserMedia=getUserMedia;exports.serialize=serialize;exports.getTemplate=getTemplate; /**
  * Copyright 2016 PT Inovação e Sistemas SA
  * Copyright 2016 INESC-ID
  * Copyright 2016 QUOBIS NETWORKS SL
@@ -935,163 +318,37 @@ exports.getTemplate = getTemplate;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
-
-// jshint browser:true, jquery: true
+ **/ // jshint browser:true, jquery: true
 // jshint varstmt: true
-/* global Handlebars */
-
-/**
+/* global Handlebars */ /**
  * Support module with some functions will be useful
  * @module utils
- */
-
-/**
+ */ /**
  * @typedef divideURL
  * @type Object
  * @property {string} type The type of URL
  * @property {string} domain The domain of URL
  * @property {string} identity The identity of URL
- */
-
-/**
+ */ /**
  * Divide an url in type, domain and identity
  * @param  {URL.URL} url - url address
  * @return {divideURL} the result of divideURL
- */
-function divideURL(url) {
-
-  // let re = /([a-zA-Z-]*)?:\/\/(?:\.)?([-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b)*(\/[\/\d\w\.-]*)*(?:[\?])*(.+)*/gi;
-  var re = /([a-zA-Z-]*):\/\/(?:\.)?([-a-zA-Z0-9@:%._\+~#=]{2,256})([-a-zA-Z0-9@:%._\+~#=\/]*)/gi;
-  var subst = '$1,$2,$3';
-  var parts = url.replace(re, subst).split(',');
-
-  // If the url has no protocol, the default protocol set is https
-  if (parts[0] === url) {
-    parts[0] = 'https';
-    parts[1] = url;
-  }
-
-  var result = {
-    type: parts[0],
-    domain: parts[1],
-    identity: parts[2]
-  };
-
-  return result;
-}
-
-/**
+ */function divideURL(url){ // let re = /([a-zA-Z-]*)?:\/\/(?:\.)?([-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b)*(\/[\/\d\w\.-]*)*(?:[\?])*(.+)*/gi;
+var re=/([a-zA-Z-]*):\/\/(?:\.)?([-a-zA-Z0-9@:%._\+~#=]{2,256})([-a-zA-Z0-9@:%._\+~#=\/]*)/gi;var subst='$1,$2,$3';var parts=url.replace(re,subst).split(','); // If the url has no protocol, the default protocol set is https
+if(parts[0]===url){parts[0]='https';parts[1]=url;}var result={type:parts[0],domain:parts[1],identity:parts[2]};return result;} /**
  * Make a COPY of the original data
  * @param  {Object}  obj - object to be cloned
  * @return {Object}
- */
-function deepClone(obj) {
-  //TODO: simple but inefficient JSON deep clone...
-  if (obj) return JSON.parse(JSON.stringify(obj));
-}
-
-/**
+ */function deepClone(obj){ //TODO: simple but inefficient JSON deep clone...
+if(obj)return JSON.parse(JSON.stringify(obj));} /**
  * Get the configuration from an json file;
  * @param  {JSONObject} jsonFile
  * @return {object}
- */
-function getConfig(JSONObject) {
-  console.log('develop');
-  return JSONObject['develop'];
-}
-
-/**
+ */function getConfig(JSONObject){console.log('production');return JSONObject['production'];} /**
  * Get WebRTC API resources
  * @param  {Object}     options Object containing the information that resources will be used (camera, mic, resolution, etc);
  * @return {Promise}
- */
-function getUserMedia(constraints) {
-
-  return new Promise(function (resolve, reject) {
-
-    navigator.mediaDevices.getUserMedia(constraints).then(function (mediaStream) {
-      resolve(mediaStream);
-    }).catch(function (reason) {
-      reject(reason);
-    });
-  });
-}
-
-function serialize() {
-
-  $.fn.serializeObject = function () {
-    var o = {};
-    var a = this.serializeArray();
-    $.each(a, function () {
-      if (o[this.name] !== undefined) {
-        if (!o[this.name].push) {
-          o[this.name] = [o[this.name]];
-        }
-
-        o[this.name].push(this.value || '');
-      } else {
-        o[this.name] = this.value || '';
-      }
-    });
-
-    return o;
-  };
-
-  $.fn.serializeObjectArray = function () {
-    var o = {};
-    var a = this.serializeArray();
-    $.each(a, function () {
-      if (o[this.name] !== undefined) {
-        if (!o[this.name].push) {
-          o[this.name] = [o[this.name]];
-        }
-
-        o[this.name].push(this.value || '');
-      } else {
-        if (!o[this.name]) o[this.name] = [];
-        o[this.name].push(this.value || '');
-      }
-    });
-
-    return o;
-  };
-}
-
-function getTemplate(path, script) {
-
-  return new Promise(function (resolve, reject) {
-
-    if (Handlebars.templates === undefined || Handlebars.templates[name] === undefined) {
-      Handlebars.templates = {};
-    } else {
-      resolve(Handlebars.templates[name]);
-    }
-
-    var templateFile = $.ajax({
-      url: path + '.hbs',
-      success: function success(data) {
-        Handlebars.templates[name] = Handlebars.compile(data);
-      },
-
-      fail: function fail(reason) {
-        return reason;
-      }
-    });
-
-    var scriptFile = $.getScript(script);
-
-    var requests = [];
-    if (path) requests.push(templateFile);
-    if (script) requests.push(scriptFile);
-
-    Promise.all(requests).then(function (result) {
-      resolve(Handlebars.templates[name]);
-    }).catch(function (reason) {
-      reject(reason);
-    });
-  });
-}
+ */function getUserMedia(constraints){return new Promise(function(resolve,reject){navigator.mediaDevices.getUserMedia(constraints).then(function(mediaStream){resolve(mediaStream);}).catch(function(reason){reject(reason);});});}function serialize(){$.fn.serializeObject=function(){var o={};var a=this.serializeArray();$.each(a,function(){if(o[this.name]!==undefined){if(!o[this.name].push){o[this.name]=[o[this.name]];}o[this.name].push(this.value||'');}else {o[this.name]=this.value||'';}});return o;};$.fn.serializeObjectArray=function(){var o={};var a=this.serializeArray();$.each(a,function(){if(o[this.name]!==undefined){if(!o[this.name].push){o[this.name]=[o[this.name]];}o[this.name].push(this.value||'');}else {if(!o[this.name])o[this.name]=[];o[this.name].push(this.value||'');}});return o;};}function getTemplate(path,script){return new Promise(function(resolve,reject){if(Handlebars.templates===undefined||Handlebars.templates[name]===undefined){Handlebars.templates={};}else {resolve(Handlebars.templates[name]);}var templateFile=$.ajax({url:path+'.hbs',success:function success(data){Handlebars.templates[name]=Handlebars.compile(data);},fail:function fail(reason){return reason;}});var scriptFile=$.getScript(script);var requests=[];if(path)requests.push(templateFile);if(script)requests.push(scriptFile);Promise.all(requests).then(function(result){resolve(Handlebars.templates[name]);}).catch(function(reason){reject(reason);});});}
 
 },{}]},{},[6])(6)
 });

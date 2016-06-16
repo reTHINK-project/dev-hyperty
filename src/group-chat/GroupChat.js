@@ -51,6 +51,7 @@ const GroupChat = {
 
 export default function(dataObject, position, identity){
     return Object.assign(Object.create(GroupChat), {
+        id: dataObject.url,
         _dataObject: dataObject,
         name: dataObject.data.name,
         startingTime: dataObject.data.startingTime,
