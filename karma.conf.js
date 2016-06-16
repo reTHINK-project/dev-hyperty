@@ -8,21 +8,8 @@ module.exports = function (config) {
 
         browserify: {
             debug: true,
-            configure: function(bundle) {
-            bundle.once('prebundle', function() {
-                  bundle.transform('babelify')
-                      .plugin('proxyquireify/plugin');
-                });
-            }
+            transform: ['babelify']
         },
-
-        client:{
-            mocha: {
-                timeout: 0
-            }
-        },
-
-        browserDisconnectTimeout: 20000,
 
         files: [
             'test/*.spec.js'

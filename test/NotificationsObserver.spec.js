@@ -1,22 +1,23 @@
-var proxyquire = require('proxyquireify')(require)
 import sinon from 'sinon'
 import { expect } from 'chai'
-import { Syncher } from 'service-framework/dist/Syncher'
+import activate from '../src/notifications/NotificationsObserver.hy.js'
 
 function syncher(){} 
-syncher.prototype.Syncher = function(){}
+syncher.prototype.onNotification = (callback)=>{ 
+    syncher.prototype._callback = callback
+} 
+syncher.prototype.subscribe = ()=>Promise.resolve({onAddChild:(callback)=>callback({})})
 
 describe('Notification Observer', ()=>{
     describe('onNotification', ()=>{
-        //TODO: proxyquire doesn't work with Syncher, I'll check this later.
-        xit('should receive notifications', ()=>{
-let activate = proxyquire('../src/notifications/NotificationsObserver.hy.js',
-        {'service-framework/dist/Syncher': syncher}).default
-            let observer =  activate({},{},{})
+        it('should receive notifications', (done)=>{
+            activate.__Rewire__('Syncher', syncher)
+            let observer =  activate('http://test.com',{},{})
             
-            observer.onNotification((notification)=>{
-                //assert
+            observer.instance.onNotification((notification)=>{
+                done()
             })
+            syncher.prototype._callback.bind(observer.instance)({schema: 'hyperty-catalogue://test.com/.well-known/dataschemas/Communication'})
         })
     })
 })
