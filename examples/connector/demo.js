@@ -251,7 +251,7 @@ function showVideo(controller) {
 
     event.preventDefault();
 
-    controller.disableCam().then(function(status) {
+    controller.disableVideo().then(function(status) {
       console.log(status, 'camera');
       var icon = 'videocam_off';
       var text = 'Disable Camera';
@@ -295,7 +295,7 @@ function showVideo(controller) {
 
     event.preventDefault();
 
-    controller.disableMic().then(function(status) {
+    controller.disableAudio().then(function(status) {
       console.log(status, 'mic');
       var icon = 'mic_off';
       var text = 'Disable Microphone';
