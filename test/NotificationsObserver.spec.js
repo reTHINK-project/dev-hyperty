@@ -1,23 +1,20 @@
 import sinon from 'sinon'
 import { expect } from 'chai'
 import activate from '../src/notifications/NotificationsObserver.hy.js'
-
-function syncher(){} 
-syncher.prototype.onNotification = (callback)=>{ 
-    syncher.prototype._callback = callback
-} 
-syncher.prototype.subscribe = ()=>Promise.resolve({onAddChild:(callback)=>callback({})})
+import { syncherFactory } from './stubs'
 
 describe('Notification Observer', ()=>{
     describe('onNotification', ()=>{
         it('should receive notifications', (done)=>{
-            activate.__Rewire__('Syncher', syncher)
+            let callback
+            let setCallback = (c)=>callback = c
+            activate.__Rewire__('Syncher', syncherFactory(setCallback))
             let observer =  activate('http://test.com',{},{})
             
             observer.instance.onNotification((notification)=>{
                 done()
             })
-            syncher.prototype._callback.bind(observer.instance)({schema: 'hyperty-catalogue://test.com/.well-known/dataschemas/Communication'})
+            callback({schema: 'hyperty-catalogue://test.com/.well-known/dataschemas/Communication'})
         })
     })
 })
