@@ -51,7 +51,7 @@ rethink.install(config).then(function(result) {
 function getListOfHyperties(domain) {
 
   let hypertiesURL = 'https://catalogue.' + domain + '/.well-known/hyperty/';
-  if (config.development === 'true') {
+  if (config.development) {
     hypertiesURL = 'https://' + domain + '/.well-known/hyperty/Hyperties.json';
   }
 
@@ -85,7 +85,7 @@ function loadHyperty(event) {
   let hypertyName = $(event.currentTarget).attr('data-name');
 
   let hypertyPath = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/hyperty/' + hypertyName;
-  if (config.development === 'true') {
+  if (config.development) {
     hypertyPath = 'hyperty-catalogue://' + domain + '/.well-known/hyperty/' + hypertyName;
   };
 
