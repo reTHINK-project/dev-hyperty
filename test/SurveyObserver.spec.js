@@ -1,23 +1,55 @@
-import sinon from 'sinon'
 import { expect } from 'chai'
-//import activate from '../src/notifications/SurveyObserver.hy.js'
+import activate from '../src/survey/SurveyObserver.hy.js'
+import { syncherFactory, hypertyDiscoveryFactory, notifications, identityFactory } from './stubs'
 
-function syncher(){} 
-syncher.prototype.onNotification = (callback)=>{ 
-    syncher.prototype._callback = callback
-} 
-syncher.prototype.subscribe = ()=>Promise.resolve({onAddChild:(callback)=>callback({})})
 
-describe('Notification Observer', ()=>{
-    describe('onNotification', ()=>{
-        xit('should receive notifications', (done)=>{
- //           activate.__Rewire__('Syncher', syncher)
- //           let observer =  activate('http://test.com',{},{})
- //           
- //           observer.instance.onNotification((notification)=>{
- //               done()
- //           })
- //           syncher.prototype._callback.bind(observer.instance)({schema: 'hyperty-catalogue://test.com/.well-known/dataschemas/Communication'})
+
+describe('Survey Observer', ()=>{
+    beforeEach(function() {
+        activate.__Rewire__('HypertyDiscovery', hypertyDiscoveryFactory('NotificationsObserver'))
+        activate.__Rewire__('NotificationsTrigger', notifications)
+        activate.__Rewire__('IdentityManager', identityFactory())
+    })
+
+    describe('onRequest', ()=>{
+        it('should receive a survey', (done)=>{
+            let callback
+            let setCallback = (c)=>callback = c
+
+            activate.__Rewire__('Syncher', syncherFactory(setCallback, {data:{name:''}}))
+            let observer = activate('http://test.com', {}, {})
+            observer.instance.onRequest((survey)=>{
+                expect(survey).to.exist
+                done()
+            })
+            callback({schema: 'hyperty-catalogue://test.com/.well-known/dataschemas/Communication'})
+        })
+
+        it('should launch a notification', (done)=>{
+            let callback
+            let setCallback = (c)=>callback = c
+            activate.__Rewire__('Syncher', syncherFactory(setCallback, {data:{name:''}}))
+            let observer = activate('http://test.com', {}, {})
+            observer.instance.onRequest(()=>{})
+            notifications.prototype.callback = ()=> done()
+            callback({schema: 'hyperty-catalogue://test.com/.well-known/dataschemas/Communication'})
+        })
+    })
+})
+
+describe('Survey', ()=>{
+    describe('answer', ()=>{
+        it('it should send the answer', (done)=>{
+            let callback
+            let dataObject = { addChild:()=>done() , data:{name:''}}
+            let syncher = syncherFactory((c)=>callback = c, dataObject)
+            activate.__Rewire__('Syncher', syncher)
+            let observer = activate('http://test.com', {}, {})
+            
+            observer.instance.onRequest((survey)=>{
+                survey.answer({}) 
+            })
+            callback({schema: 'hyperty-catalogue://test.com/.well-known/dataschemas/Communication'})
         })
     })
 })

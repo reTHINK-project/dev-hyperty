@@ -1,4 +1,3 @@
-import sinon from 'sinon'
 import { expect } from 'chai'
 import activate from '../src/survey/SurveyReporter.hy.js'
 import { syncherFactory, hypertyDiscoveryFactory } from './stubs'
@@ -6,9 +5,7 @@ import { syncherFactory, hypertyDiscoveryFactory } from './stubs'
 describe('Survey Reporter', ()=>{
     describe('create', ()=>{
         it('should create a survey', (done)=>{
-            let callback
-            let setCallback = (c)=>callback = c
-            activate.__Rewire__('Syncher', syncherFactory(setCallback))
+            activate.__Rewire__('Syncher', syncherFactory(()=>{}))
             activate.__Rewire__('HypertyDiscovery', hypertyDiscoveryFactory('SurveyObserver'))
             let survey = {}            
             let participants =[{email: '', domain: ''}]

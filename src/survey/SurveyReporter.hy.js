@@ -1,5 +1,4 @@
 import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery'
-import URI from 'urijs'
 import { Syncher} from 'service-framework/dist/Syncher'
 
 let Survey = {
@@ -29,7 +28,6 @@ const SurveyReporter = {
     },
 
     create (survey, participants) {
-        let identity = undefined
         return this._getHyFor(participants)
             .then((hyperties)=>this._createSyncher(survey, hyperties))
             .then((dataObjectReporter) => {
@@ -40,18 +38,17 @@ const SurveyReporter = {
                 Survey.config = survey
                 return Survey
             })
-    },
+    }
 }
 
 const SurveyReporterFactory = function(hypertyURL, bus, config){
-    let uri = new URI(hypertyURL)
     let hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus)
-    let syncher = new Syncher(hypertyURL, bus, config);
+    let syncher = new Syncher(hypertyURL, bus, config)
     return Object.assign(Object.create(SurveyReporter), {
-            hypertyDiscoveryService: hypertyDiscovery,
-            hypertyURL: hypertyURL,
-            syncher: syncher
-        })
+        hypertyDiscoveryService: hypertyDiscovery,
+        hypertyURL: hypertyURL,
+        syncher: syncher
+    })
 }
 
 export default function activate(hypertyURL, bus, config){
