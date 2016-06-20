@@ -119,40 +119,50 @@ function hypertyDeployed(hyperty) {
       script =  'hello-world/helloObserver.js';
       break;
 
-        case 'HelloWorldReporter':
-            template = 'hello-world/helloWorld';
-            script = 'hello-world/helloReporter.js';
-            break;
+    case 'HelloWorldReporter':
+        template = 'hello-world/helloWorld';
+        script = 'hello-world/helloReporter.js';
+        break;
 
-        case 'GroupChat':
-            template = 'group-chat/groupChat';
-            script = 'group-chat/groupChat.js';
-            break;
+    case 'GroupChat':
+        template = 'group-chat/groupChat';
+        script = 'group-chat/groupChat.js';
+        break;
 
-        case 'NotificationsReporter':
-            template = 'notifications/notificationsReporter';
-            script = 'notifications/notificationsReporter.js';
-            break;
+    case 'SurveyReporter':
+        template = 'survey/surveyReporter';
+        script = 'survey/surveyReporter.js';
+        break;
 
-        case 'NotificationsObserver':
-            template = 'notifications/notificationsObserver';
-            script = 'notifications/notificationsObserver.js';
-            break;
+    case 'SurveyObserver':
+        template = 'survey/surveyObserver';
+        script = 'survey/surveyObserver.js';
+        break;
 
-        case 'Location':
-            template = 'location/location';
-            script = 'location/location.js';
-            break;
+    case 'NotificationsReporter':
+        template = 'notifications/notificationsReporter';
+        script = 'notifications/notificationsReporter.js';
+        break;
 
-        case 'RoomUIObserver':
-            template = 'room-ui/room';
-            script = 'room-ui/roomObserver.js';
-            break;
+    case 'NotificationsObserver':
+        template = 'notifications/notificationsObserver';
+        script = 'notifications/notificationsObserver.js';
+        break;
 
-        case 'RoomUIReporter':
-            template = 'room-ui/room';
-            script = 'room-ui/roomReporter.js';
-            break;
+    case 'Location':
+        template = 'location/location';
+        script = 'location/location.js';
+        break;
+
+    case 'RoomUIObserver':
+        template = 'room-ui/room';
+        script = 'room-ui/roomObserver.js';
+        break;
+
+    case 'RoomUIReporter':
+        template = 'room-ui/room';
+        script = 'room-ui/roomReporter.js';
+        break;
 
 	case 'UserStatus':
 	    template = 'user-status/UserStatus';

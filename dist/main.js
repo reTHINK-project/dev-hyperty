@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 module.exports={
-  "development": false,
-  "runtimeURL": "hyperty-catalogue://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/runtime/Runtime",
+  "development": true,
+  "runtimeURL": "hyperty-catalogue://hybroker.rethink.ptinovacao.pt/.well-known/runtime/Runtime",
   "domain": "hybroker.rethink.ptinovacao.pt"
 }
 },{}],2:[function(require,module,exports){
@@ -13,18 +13,246 @@ o.find_uri_expression=/\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],3:[function(require,module,exports){
-'use strict';var _typeof=typeof Symbol==="function"&&typeof Symbol.iterator==="symbol"?function(obj){return typeof obj;}:function(obj){return obj&&typeof Symbol==="function"&&obj.constructor===Symbol?"symbol":typeof obj;}; // jshint browser:true, jquery: true
+'use strict';
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; // jshint browser:true, jquery: true
 // jshint varstmt: true
-var _rethink=require('runtime-browser/bin/rethink');var _rethink2=_interopRequireDefault(_rethink);var _utils=require('./utils/utils');var _config=require('../config.json');var _config2=_interopRequireDefault(_config);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}window.KJUR={};var domain=_config2.default.domain;var runtimeLoader=void 0;_rethink2.default.install(_config2.default).then(function(result){runtimeLoader=result;console.log(result);return getListOfHyperties(domain);}).then(function(hyperties){var $dropDown=$('#hyperties-dropdown');hyperties.forEach(function(key){var $item=$(document.createElement('li'));var $link=$(document.createElement('a')); // create the link features
-$link.html(key);$link.css('text-transform','none');$link.attr('data-name',key);$link.on('click',loadHyperty);$item.append($link);$dropDown.append($item);});$('.preloader-wrapper').remove();$('.card .card-action').removeClass('center');$('.hyperties-list-holder').removeClass('hide');}).catch(function(reason){console.error(reason);});function getListOfHyperties(domain){var hypertiesURL='https://catalogue.'+domain+'/.well-known/hyperty/';if(_config2.default.development){hypertiesURL='https://'+domain+'/.well-known/hyperty/Hyperties.json';}return new Promise(function(resolve,reject){$.ajax({url:hypertiesURL,success:function success(result){var response=[];if((typeof result==='undefined'?'undefined':_typeof(result))==='object'){Object.keys(result).forEach(function(key){response.push(key);});}else if(typeof result==='string'){response=JSON.parse(result);}resolve(response);},fail:function fail(reason){reject(reason);notification(reason,'warn');}});});}function loadHyperty(event){event.preventDefault();var hypertyName=$(event.currentTarget).attr('data-name');var hypertyPath='hyperty-catalogue://catalogue.'+domain+'/.well-known/hyperty/'+hypertyName;var $el=$('.main-content .notification');addLoader($el);runtimeLoader.requireHyperty(hypertyPath).then(hypertyDeployed).catch(hypertyFail);}function hypertyDeployed(hyperty){var $el=$('.main-content .notification');removeLoader($el); // Add some utils
-(0,_utils.serialize)();var $mainContent=$('.main-content').find('.row');var template='';var script='';switch(hyperty.name){case 'HypertyConnector':template='hyperty-connector/HypertyConnector';script='hyperty-connector/demo.js';break;case 'HypertyChat':template='hyperty-chat/HypertyChat';script='hyperty-chat/demo.js';break;case 'HelloWorldObserver':template='hello-world/helloWorld';script='hello-world/helloObserver.js';break;case 'HelloWorldReporter':template='hello-world/helloWorld';script='hello-world/helloReporter.js';break;case 'GroupChat':template='group-chat/groupChat';script='group-chat/groupChat.js';break;case 'NotificationsReporter':template='notifications/notificationsReporter';script='notifications/notificationsReporter.js';break;case 'NotificationsObserver':template='notifications/notificationsObserver';script='notifications/notificationsObserver.js';break;case 'Location':template='location/location';script='location/location.js';break;case 'RoomUIObserver':template='room-ui/room';script='room-ui/roomObserver.js';break;case 'RoomUIReporter':template='room-ui/room';script='room-ui/roomReporter.js';break;case 'UserStatus':template='user-status/UserStatus';script='user-status/user-status.js';break;}if(!template){throw Error('You must need specify the template for your example');}(0,_utils.getTemplate)(template,script).then(function(template){var html=template();$mainContent.html(html);if(typeof hypertyLoaded==='function'){hypertyLoaded(hyperty);}else {var msg='If you need pass the hyperty to your template, create a function called hypertyLoaded';console.info(msg);notification(msg,'warn');}});}function hypertyFail(reason){console.error(reason);notification(reason,'error');}function addLoader(el){var html='<div class="preloader preloader-wrapper small active">'+'<div class="spinner-layer spinner-blue-only">'+'<div class="circle-clipper left">'+'<div class="circle"></div></div><div class="gap-patch"><div class="circle"></div>'+'</div><div class="circle-clipper right">'+'<div class="circle"></div></div></div></div>';el.addClass('center');el.append(html);}function removeLoader(el){el.find('.preloader').remove();el.removeClass('center');}function notification(msg,type){var $el=$('.main-content .notification');var color=type==='error'?'red':'black';removeLoader($el);$el.append('<span class="'+color+'-text">'+msg+'</span>');} // runtimeCatalogue.getHypertyDescriptor(hyperty).then(function(descriptor) {
+
+var _rethink = require('runtime-browser/bin/rethink');
+
+var _rethink2 = _interopRequireDefault(_rethink);
+
+var _utils = require('./utils/utils');
+
+var _config = require('../config.json');
+
+var _config2 = _interopRequireDefault(_config);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+window.KJUR = {};
+
+var domain = _config2.default.domain;
+var runtimeLoader = void 0;
+
+_rethink2.default.install(_config2.default).then(function (result) {
+
+  runtimeLoader = result;
+  console.log(result);
+
+  return getListOfHyperties(domain);
+}).then(function (hyperties) {
+
+  var $dropDown = $('#hyperties-dropdown');
+
+  hyperties.forEach(function (key) {
+    var $item = $(document.createElement('li'));
+    var $link = $(document.createElement('a'));
+
+    // create the link features
+    $link.html(key);
+    $link.css('text-transform', 'none');
+    $link.attr('data-name', key);
+    $link.on('click', loadHyperty);
+
+    $item.append($link);
+
+    $dropDown.append($item);
+  });
+
+  $('.preloader-wrapper').remove();
+  $('.card .card-action').removeClass('center');
+  $('.hyperties-list-holder').removeClass('hide');
+}).catch(function (reason) {
+  console.error(reason);
+});
+
+function getListOfHyperties(domain) {
+
+  var hypertiesURL = 'https://catalogue.' + domain + '/.well-known/hyperty/';
+  if (_config2.default.development) {
+    hypertiesURL = 'https://' + domain + '/.well-known/hyperty/Hyperties.json';
+  }
+
+  return new Promise(function (resolve, reject) {
+    $.ajax({
+      url: hypertiesURL,
+      success: function success(result) {
+        var response = [];
+        if ((typeof result === 'undefined' ? 'undefined' : _typeof(result)) === 'object') {
+          Object.keys(result).forEach(function (key) {
+            response.push(key);
+          });
+        } else if (typeof result === 'string') {
+          response = JSON.parse(result);
+        }
+        resolve(response);
+      },
+      fail: function fail(reason) {
+        reject(reason);
+        notification(reason, 'warn');
+      }
+
+    });
+  });
+}
+
+function loadHyperty(event) {
+  event.preventDefault();
+
+  var hypertyName = $(event.currentTarget).attr('data-name');
+  var hypertyPath = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/hyperty/' + hypertyName;
+
+  var $el = $('.main-content .notification');
+  addLoader($el);
+
+  runtimeLoader.requireHyperty(hypertyPath).then(hypertyDeployed).catch(hypertyFail);
+}
+
+function hypertyDeployed(hyperty) {
+
+  var $el = $('.main-content .notification');
+  removeLoader($el);
+
+  // Add some utils
+  (0, _utils.serialize)();
+
+  var $mainContent = $('.main-content').find('.row');
+
+  var template = '';
+  var script = '';
+
+  switch (hyperty.name) {
+    case 'HypertyConnector':
+      template = 'hyperty-connector/HypertyConnector';
+      script = 'hyperty-connector/demo.js';
+      break;
+
+    case 'HypertyChat':
+      template = 'hyperty-chat/HypertyChat';
+      script = 'hyperty-chat/demo.js';
+      break;
+
+    case 'HelloWorldObserver':
+      template = 'hello-world/helloWorld';
+      script = 'hello-world/helloObserver.js';
+      break;
+
+    case 'HelloWorldReporter':
+      template = 'hello-world/helloWorld';
+      script = 'hello-world/helloReporter.js';
+      break;
+
+    case 'GroupChat':
+      template = 'group-chat/groupChat';
+      script = 'group-chat/groupChat.js';
+      break;
+
+    case 'SurveyReporter':
+      template = 'survey/surveyReporter';
+      script = 'survey/surveyReporter.js';
+      break;
+
+    case 'SurveyObserver':
+      template = 'survey/surveyObserver';
+      script = 'survey/surveyObserver.js';
+      break;
+
+    case 'NotificationsReporter':
+      template = 'notifications/notificationsReporter';
+      script = 'notifications/notificationsReporter.js';
+      break;
+
+    case 'NotificationsObserver':
+      template = 'notifications/notificationsObserver';
+      script = 'notifications/notificationsObserver.js';
+      break;
+
+    case 'Location':
+      template = 'location/location';
+      script = 'location/location.js';
+      break;
+
+    case 'RoomUIObserver':
+      template = 'room-ui/room';
+      script = 'room-ui/roomObserver.js';
+      break;
+
+    case 'RoomUIReporter':
+      template = 'room-ui/room';
+      script = 'room-ui/roomReporter.js';
+      break;
+
+    case 'UserStatus':
+      template = 'user-status/UserStatus';
+      script = 'user-status/user-status.js';
+      break;
+  }
+
+  if (!template) {
+    throw Error('You must need specify the template for your example');
+  }
+
+  (0, _utils.getTemplate)(template, script).then(function (template) {
+    var html = template();
+    $mainContent.html(html);
+
+    if (typeof hypertyLoaded === 'function') {
+      hypertyLoaded(hyperty);
+    } else {
+      var msg = 'If you need pass the hyperty to your template, create a function called hypertyLoaded';
+      console.info(msg);
+      notification(msg, 'warn');
+    }
+  });
+}
+
+function hypertyFail(reason) {
+  console.error(reason);
+  notification(reason, 'error');
+}
+
+function addLoader(el) {
+
+  var html = '<div class="preloader preloader-wrapper small active">' + '<div class="spinner-layer spinner-blue-only">' + '<div class="circle-clipper left">' + '<div class="circle"></div></div><div class="gap-patch"><div class="circle"></div>' + '</div><div class="circle-clipper right">' + '<div class="circle"></div></div></div></div>';
+
+  el.addClass('center');
+  el.append(html);
+}
+
+function removeLoader(el) {
+  el.find('.preloader').remove();
+  el.removeClass('center');
+}
+
+function notification(msg, type) {
+
+  var $el = $('.main-content .notification');
+  var color = type === 'error' ? 'red' : 'black';
+
+  removeLoader($el);
+  $el.append('<span class="' + color + '-text">' + msg + '</span>');
+}
+
+// runtimeCatalogue.getHypertyDescriptor(hyperty).then(function(descriptor) {
 //   console.log(descriptor);
 // }).catch(function(reason) {
 //   console.error('Error: ', reason);
 // });
 
 },{"../config.json":1,"./utils/utils":4,"runtime-browser/bin/rethink":2}],4:[function(require,module,exports){
-'use strict';Object.defineProperty(exports,"__esModule",{value:true});exports.divideURL=divideURL;exports.deepClone=deepClone;exports.getConfig=getConfig;exports.getUserMedia=getUserMedia;exports.serialize=serialize;exports.getTemplate=getTemplate; /**
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.divideURL = divideURL;
+exports.deepClone = deepClone;
+exports.getConfig = getConfig;
+exports.getUserMedia = getUserMedia;
+exports.serialize = serialize;
+exports.getTemplate = getTemplate;
+/**
  * Copyright 2016 PT Inovação e Sistemas SA
  * Copyright 2016 INESC-ID
  * Copyright 2016 QUOBIS NETWORKS SL
@@ -45,36 +273,162 @@ $link.html(key);$link.css('text-transform','none');$link.attr('data-name',key);$
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/ // jshint browser:true, jquery: true
+ **/
+
+// jshint browser:true, jquery: true
 // jshint varstmt: true
-/* global Handlebars */ /**
+/* global Handlebars */
+
+/**
  * Support module with some functions will be useful
  * @module utils
- */ /**
+ */
+
+/**
  * @typedef divideURL
  * @type Object
  * @property {string} type The type of URL
  * @property {string} domain The domain of URL
  * @property {string} identity The identity of URL
- */ /**
+ */
+
+/**
  * Divide an url in type, domain and identity
  * @param  {URL.URL} url - url address
  * @return {divideURL} the result of divideURL
- */function divideURL(url){ // let re = /([a-zA-Z-]*)?:\/\/(?:\.)?([-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b)*(\/[\/\d\w\.-]*)*(?:[\?])*(.+)*/gi;
-var re=/([a-zA-Z-]*):\/\/(?:\.)?([-a-zA-Z0-9@:%._\+~#=]{2,256})([-a-zA-Z0-9@:%._\+~#=\/]*)/gi;var subst='$1,$2,$3';var parts=url.replace(re,subst).split(','); // If the url has no protocol, the default protocol set is https
-if(parts[0]===url){parts[0]='https';parts[1]=url;}var result={type:parts[0],domain:parts[1],identity:parts[2]};return result;} /**
+ */
+function divideURL(url) {
+
+  // let re = /([a-zA-Z-]*)?:\/\/(?:\.)?([-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b)*(\/[\/\d\w\.-]*)*(?:[\?])*(.+)*/gi;
+  var re = /([a-zA-Z-]*):\/\/(?:\.)?([-a-zA-Z0-9@:%._\+~#=]{2,256})([-a-zA-Z0-9@:%._\+~#=\/]*)/gi;
+  var subst = '$1,$2,$3';
+  var parts = url.replace(re, subst).split(',');
+
+  // If the url has no protocol, the default protocol set is https
+  if (parts[0] === url) {
+    parts[0] = 'https';
+    parts[1] = url;
+  }
+
+  var result = {
+    type: parts[0],
+    domain: parts[1],
+    identity: parts[2]
+  };
+
+  return result;
+}
+
+/**
  * Make a COPY of the original data
  * @param  {Object}  obj - object to be cloned
  * @return {Object}
- */function deepClone(obj){ //TODO: simple but inefficient JSON deep clone...
-if(obj)return JSON.parse(JSON.stringify(obj));} /**
+ */
+function deepClone(obj) {
+  //TODO: simple but inefficient JSON deep clone...
+  if (obj) return JSON.parse(JSON.stringify(obj));
+}
+
+/**
  * Get the configuration from an json file;
  * @param  {JSONObject} jsonFile
  * @return {object}
- */function getConfig(JSONObject){console.log('production');return JSONObject['production'];} /**
+ */
+function getConfig(JSONObject) {
+  console.log('develop');
+  return JSONObject['develop'];
+}
+
+/**
  * Get WebRTC API resources
  * @param  {Object}     options Object containing the information that resources will be used (camera, mic, resolution, etc);
  * @return {Promise}
- */function getUserMedia(constraints){return new Promise(function(resolve,reject){navigator.mediaDevices.getUserMedia(constraints).then(function(mediaStream){resolve(mediaStream);}).catch(function(reason){reject(reason);});});}function serialize(){$.fn.serializeObject=function(){var o={};var a=this.serializeArray();$.each(a,function(){if(o[this.name]!==undefined){if(!o[this.name].push){o[this.name]=[o[this.name]];}o[this.name].push(this.value||'');}else {o[this.name]=this.value||'';}});return o;};$.fn.serializeObjectArray=function(){var o={};var a=this.serializeArray();$.each(a,function(){if(o[this.name]!==undefined){if(!o[this.name].push){o[this.name]=[o[this.name]];}o[this.name].push(this.value||'');}else {if(!o[this.name])o[this.name]=[];o[this.name].push(this.value||'');}});return o;};}function getTemplate(path,script){return new Promise(function(resolve,reject){if(Handlebars.templates===undefined||Handlebars.templates[name]===undefined){Handlebars.templates={};}else {resolve(Handlebars.templates[name]);}var templateFile=$.ajax({url:path+'.hbs',success:function success(data){Handlebars.templates[name]=Handlebars.compile(data);},fail:function fail(reason){return reason;}});var scriptFile=$.getScript(script);var requests=[];if(path)requests.push(templateFile);if(script)requests.push(scriptFile);Promise.all(requests).then(function(result){resolve(Handlebars.templates[name]);}).catch(function(reason){reject(reason);});});}
+ */
+function getUserMedia(constraints) {
+
+  return new Promise(function (resolve, reject) {
+
+    navigator.mediaDevices.getUserMedia(constraints).then(function (mediaStream) {
+      resolve(mediaStream);
+    }).catch(function (reason) {
+      reject(reason);
+    });
+  });
+}
+
+function serialize() {
+
+  $.fn.serializeObject = function () {
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function () {
+      if (o[this.name] !== undefined) {
+        if (!o[this.name].push) {
+          o[this.name] = [o[this.name]];
+        }
+
+        o[this.name].push(this.value || '');
+      } else {
+        o[this.name] = this.value || '';
+      }
+    });
+
+    return o;
+  };
+
+  $.fn.serializeObjectArray = function () {
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function () {
+      if (o[this.name] !== undefined) {
+        if (!o[this.name].push) {
+          o[this.name] = [o[this.name]];
+        }
+
+        o[this.name].push(this.value || '');
+      } else {
+        if (!o[this.name]) o[this.name] = [];
+        o[this.name].push(this.value || '');
+      }
+    });
+
+    return o;
+  };
+}
+
+function getTemplate(path, script) {
+
+  return new Promise(function (resolve, reject) {
+
+    if (Handlebars.templates === undefined || Handlebars.templates[name] === undefined) {
+      Handlebars.templates = {};
+    } else {
+      resolve(Handlebars.templates[name]);
+    }
+
+    var templateFile = $.ajax({
+      url: path + '.hbs',
+      success: function success(data) {
+        Handlebars.templates[name] = Handlebars.compile(data);
+      },
+
+      fail: function fail(reason) {
+        return reason;
+      }
+    });
+
+    var scriptFile = $.getScript(script);
+
+    var requests = [];
+    if (path) requests.push(templateFile);
+    if (script) requests.push(scriptFile);
+
+    Promise.all(requests).then(function (result) {
+      resolve(Handlebars.templates[name]);
+    }).catch(function (reason) {
+      reject(reason);
+    });
+  });
+}
 
 },{}]},{},[3]);

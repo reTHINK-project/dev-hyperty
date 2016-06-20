@@ -31,7 +31,7 @@ describe('Survey Reporter', ()=>{
 
             reporter.instance.create(survey, participants)
                 .then((survey)=>{
-                    callback({data:{response:{}}})
+                    callback({value:{response:{}}})
                     expect(survey.results.length).to.be.equal(1)
                     done()
                 })

@@ -30,12 +30,14 @@ let SurveyObserver = {
                     .then((id)=>identity=id)
                     .then(()=>this.syncher.subscribe(this.objectDescURL, event.url))
                     .then((dataObject) => {
+                        console.log('trigger')
                         this.notifications.trigger([{email: identity.username, domain: this.domain}], 
-                                {type: 'NEW_CHAT', payload:{id: dataObject.url, name: dataObject.data.name}})
+                                {type: 'NEW_SURVEY', payload:{id: dataObject.url}})
                         callback({
                             answer:(answer)=>{
                                 dataObject.addChild('chatmessages', {response:answer})
-                            }
+                            },
+                            data:dataObject.data.survey
                         })
                     })
             }

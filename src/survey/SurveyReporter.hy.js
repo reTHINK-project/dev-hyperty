@@ -1,3 +1,4 @@
+import URI from 'urijs'
 import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery'
 import { Syncher} from 'service-framework/dist/Syncher'
 
@@ -33,7 +34,7 @@ const SurveyReporter = {
             .then((dataObjectReporter) => {
                 dataObjectReporter.onSubscription((event)=>event.accept())
                 dataObjectReporter.onAddChild((dataChild)=>{
-                    Survey._addResponse(dataChild.data.response)
+                    Survey._addResponse(dataChild.value.response)
                 })
                 Survey.config = survey
                 return Survey
@@ -42,10 +43,12 @@ const SurveyReporter = {
 }
 
 const SurveyReporterFactory = function(hypertyURL, bus, config){
+    let uri = new URI(hypertyURL)
     let hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus)
     let syncher = new Syncher(hypertyURL, bus, config)
     return Object.assign(Object.create(SurveyReporter), {
         hypertyDiscoveryService: hypertyDiscovery,
+        objectDescURL: 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/Communication',
         hypertyURL: hypertyURL,
         syncher: syncher
     })
@@ -53,7 +56,7 @@ const SurveyReporterFactory = function(hypertyURL, bus, config){
 
 export default function activate(hypertyURL, bus, config){
     return {
-        name: 'NotificationsReporter',
+        name: 'SurveyReporter',
         instance: SurveyReporterFactory(hypertyURL, bus, config)
     }
 }
