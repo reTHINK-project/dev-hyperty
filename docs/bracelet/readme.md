@@ -61,7 +61,7 @@ The My Bracelet Hyperty descriptor is:
     "signature": ""
   },
   "hypertyType": [
-    "heart_rate". "sleep", "steps", "battery"
+    "heart_rate", "sleep", "steps", "battery"
   ],
   "cguid": 10004,
   "version": "0.1",
