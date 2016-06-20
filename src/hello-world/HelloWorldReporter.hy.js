@@ -81,7 +81,7 @@ class HelloWorldReporter {
 
     console.log('bye:', _this.helloObjtReporter );
 
-    _this.helloObjtReporter.data.hello = "Bye!!";
+    _this.helloObjtReporter.data.hello = "Bye, Bye!!";
   }
 
 
