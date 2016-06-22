@@ -36,7 +36,7 @@ const NotificationsTrigger = (domain, syncher, discoveryService)=>{
 
             _discoveryService: discoveryService,
 
-            _objectDescURL:`hyperty-catalogue://${domain}/.well-known/dataschemas/Communication`,
+            _objectDescURL:`hyperty-catalogue://catalogue.${domain}/.well-known/dataschema/Communication`,
         }, NotificationsTriggerObject)
 }
 

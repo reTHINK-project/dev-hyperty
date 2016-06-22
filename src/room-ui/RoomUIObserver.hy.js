@@ -31,88 +31,112 @@ class RoomUIObserver extends EventEmitter {
 
         super();
 
-        this._domain = divideURL(hypertyURL).domain;
+        this.domain = divideURL(hypertyURL).domain;
 
         // create Object Schema URL
-        this._objectDescURL = 'hyperty-catalogue://' + this._domain + '/.well-known/dataschemas/RoomUIDataSchema';
+        this.roomSchemaURL = 'hyperty-catalogue://' + this.domain + '/.well-known/dataschemas/RoomUIDataSchema';
 
         // make arguments available
         this.hypertyURL = hypertyURL;
         this.bus = bus;
         this.configuration = configuration;
 
-        let hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus);
-        let discovery = new Discovery(hypertyURL, bus);
-
-        this.hypertyDiscovery = hypertyDiscovery;
-        this.discovery = discovery;
-
-        // identity manager to get user identity for this hyperty
-        //let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
-        //identityManager.discoverUserRegistered(hypertyURL).then((userURL) => {
-        //    l.d("got user URL:", userURL);
-        //});
-
-        let _this = this;
+        // discovery stuff
+        this.hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus);
+        this.discovery = new Discovery(hypertyURL, bus);
+        this.identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
 
         // syncher
         let syncher = new Syncher(hypertyURL, bus, configuration);
-        this._syncher = syncher;
-        syncher.onNotification(function (event) {
-            _this._onNotification(event);
+        this.syncher = syncher;
+        syncher.onNotification((event) => {
+            l.d('Event Received: ', event);
         });
 
         // testing discovery with hardcoded user
         let user = "openidtest10@gmail.com";
         l.d("trying to find hyperty of user", user);
-        this.hypertyDiscovery.discoverHypertyPerUser(user, null).then(function (foundUser) {
-            l.d("found: ", foundUser);
+        this.hypertyDiscovery.discoverHypertiesPerUser(user, null).then((hyperties) => {
+            l.d("found hyperties: ", hyperties);
+            let latestRoomReporterHyperty;
+            let latestDate;
+            // iterate through hyperties to find most current RoomUIReporter hyperty
+            for (hyperty in hyperties) {
+                hyperty = hyperties[hyperty];
+                l.d("checking hyperty", hyperty);
+                let name = hyperty.descriptor.substring(hyperty.descriptor.lastIndexOf('/') + 1);
+                l.d("checking name:", name);
+                if (name === "RoomUIReporter") {
+                    let date = hyperty.startingTime;
+                    l.d("is room ui reporter with startingTime:", date);
+                    if (!latestDate || date > latestDate) {
+                        l.d("is new latest hyperty:", date);
+                        latestDate = date;
+                        latestRoomReporterHyperty = hyperty;
+                    }
+                }
+            }
+            l.d("latestRoomReporterHyperty:", latestRoomReporterHyperty);
+
+            // get room object URLs from hyperty using the message bus directly
+            let msg = {
+                type: 'execute', from: hypertyURL, to: latestRoomReporterHyperty.hypertyID,
+                body: {method: "getRooms"}
+            };
+            bus.postMessage(msg, (reply) => {
+                l.d("got getRooms reply!", reply);
+                if (reply.body.code == 200) {
+                    let urls = reply.body.value;
+                    l.d("room URLs:", urls);
+
+                    // subscribe to rooms
+                    urls.forEach((url) => {
+                        this.subscribe(url);
+                    })
+                }
+            });
         });
 
-
+        // test identity discovery with timeout
+        setTimeout(() => {
+            l.d("timeout function invoked, trying to get user identity");
+            this.identityManager.discoverUserRegistered(this.hypertyURL).then((userURL) => {
+                l.d("got user URL:", userURL);
+            });
+        }, 5000);
     }
 
     /**
      * Subscribe to an object using the syncher
-     * @param objectURL - URL of the object
+     * @param roomURL - URL of the object
      */
-    subscribe(objectURL) {
-        let _this = this;
-        this._syncher.subscribe(_this._objectDescURL, objectURL).then(function (obj) {
+    subscribe(roomURL) {
+        this.syncher.subscribe(this.roomSchemaURL, roomURL).then((room) => {
+            console.info("subscribed to object:", room);
 
-            console.info("subscribed to object:", obj);
-
-
-            //roomObjtReporter.onAddChild((child) => {
-            //    l.d("child added:", child);
-            //    let childData = child.data ? child.data : child.value;
-            //    l.d("child data:", childData);
-            //});
-
-            _this.observer = obj;
-            obj.onChange('*', function (event) {
-
-                // Hello World Object was changed
-                console.info('message received:', event);
-                // lets notify the App about the change
-                _this.trigger('onChange', event);
-
+            // register onChange callback
+            room.onChange('*', (event) => {
+                l.d('onChange received:', event);
+                l.d("current room state:", room);
+                this.trigger('roomChanged', room);
             });
+
+            // trigger the newRoom event
+            this.trigger('newRoom', room);
+
+            // make it available for addChild test
+            this.room = room;
 
         }).catch(function (reason) {
             console.error(reason);
         });
     }
 
-    _onNotification(event) {
-        console.info('Event Received: ', event);
-    }
-
     /**
      * Test addChild functionality
      */
     addChild() {
-        l.d("adding child");
+        // just something to attach to the room
         let action = {
             "id": "someID",
             "type": "someType",
@@ -125,7 +149,10 @@ class RoomUIObserver extends EventEmitter {
                 "sum": "whatever"
             }]
         };
-        this.observer.addChild('actions', action);
+
+        l.d("adding to child:", action);
+
+        this.room.addChild('actions', action);
     }
 }
 

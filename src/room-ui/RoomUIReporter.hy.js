@@ -9,7 +9,7 @@ import {divideURL} from '../utils/utils';
 import roomJson from './roomJson';
 import EventEmitter from '../utils/EventEmitter';
 
-var url = "https://localhost:8000";
+var url = "https://praxis:8000";
 var l = new Logger("ROOMUI");
 
 class RoomUIReporter extends EventEmitter {
@@ -32,183 +32,192 @@ class RoomUIReporter extends EventEmitter {
 
         super();
 
-        this._domain = divideURL(hypertyURL).domain;
+        this.domain = divideURL(hypertyURL).domain;
 
         // create Object Schema URL
-        this._objectDescURL = 'hyperty-catalogue://' + this._domain + '/.well-known/dataschemas/RoomUIDataSchema';
+        this.roomSchemaURL = 'hyperty-catalogue://' + this.domain + '/.well-known/dataschemas/RoomUIDataSchema';
 
         // make hyperty discoverable
         let discovery = new Discovery(hypertyURL, bus);
-
-        // test identity gathering
-        let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
-        identityManager.discoverUserRegistered(hypertyURL).then((userURL) => {
-            l.d("got user URL:", userURL);
-        });
 
         // make arguments available
         this.hypertyURL = hypertyURL;
         this.bus = bus;
         this.configuration = configuration;
 
-        // make example room available
-        this.room = roomJson;
-
-        // list of deviceReporter objects
-        this.devices = [];
-
         // syncher
-        let syncher = new Syncher(hypertyURL, bus, configuration);
-        this._syncher = syncher;
+        this.syncher = new Syncher(hypertyURL, bus, configuration);
 
-        // get contexts
-        let deviceContexts = this.getDeviceContexts("room1");
+        l.d("calling setUpRooms...");
+        this.setUpRooms().then((roomSyncObjects) => {
+            l.d("setUpdRooms done, objects:", roomSyncObjects);
+            let roomMap = {};
+            roomSyncObjects.forEach((roomSyncObject) => {
+                l.d("adding room map:", roomSyncObject.data.name);
+                roomMap[roomSyncObject.data.name] = roomSyncObject
+            });
+            l.d("triggering roomMap...");
+            this.trigger('roomMap', roomMap);
+            this.roomMap = roomMap;
 
-        // create deviceReporter object for each context and add it to the 'devices' list
-        deviceContexts.forEach((context, i) => {
-            l.d("building syncher based on context:", context);
-            let _this = this;
-            syncher.create(_this._objectDescURL, [hypertyURL], context).then(function (deviceReporter) {
-                l.d('device reporter created:', deviceReporter);
+        });
 
-                _this.devices[i] = deviceReporter;
+        // listen for getRooms execution message
+        bus.addListener(hypertyURL, (msg) => {
+            if (msg.type === "execute" && msg.body.method === "getRooms") {
+                l.d("got execute message:", msg);
 
-                // trigger for GUI (objUrl is the one RoomUIObserver subscribes to)
-                _this.trigger('objUrl', deviceReporter._url);
+                let list = this.getRooms();
+
+                bus.postMessage({
+                    id: msg.id,
+                    type: "response",
+                    from: msg.to,
+                    to: msg.from,
+                    body: {code: 200, value: list}
+                });
+            }
+        });
+    }
+
+    /**
+     * function to test syncObject manipulation and its corresponding callbacks
+     * @param roomNr
+     */
+    modifyRoom(roomNr) {
+        let values = this.roomMap[roomNr].data.values;
+        let val = values[0];
+        val.name = "someOtherName";
+        values[0] = val;
+        this.roomMap[roomNr].data.values = values;
+    }
+
+    /**
+     * Returns a list of object URLs for rooms a certain user can subscribe to
+     * @param {String} user - user identity that is associated to the requesting hyperty
+     * @returns {Array} - list of object URLs
+     */
+    getRooms(user) {
+        let urls = [];
+        // iterate through rooms and extract their URLs
+        for (room in this.roomMap) {
+            // TODO: check member array for having user in it
+            urls.push(this.roomMap[room].url);
+        }
+        l.d("getRooms returns:", urls);
+        return urls;
+    }
+
+    /**
+     * Requests the room list from the LWM2M server and sets up the syncObjects that represent them
+     * @returns {Promise} - Promise that returns the array of rooms as SyncObjects
+     */
+    setUpRooms() {
+        //let json = {"mode": "read", "room": null};
+        //return this.makeRequest(json).then((respJson) => {
+        //    return this.setUpRoomSyncherObjects(respJson.data)
+        //});
+        l.d("setUpRooms uses roomJson:", roomJson);
+        return this.setUpRoomSyncherObjects(roomJson.data);
+    }
+
+    /**
+     * Sets up the syncher objects that represent rooms included in this json
+     * @param {Array} roomArray - array of room objects as received from LWM2MServer
+     * @returns {Promise} - Promise that returns the array of rooms as SyncObjects
+     */
+    setUpRoomSyncherObjects(roomArray) {
+        l.d("setting up room syncher objects based on:", roomArray);
+        let contexts = [];
+        roomArray.forEach((room) => {
+            contexts.push(this.createRoomContext(room))
+        });
+        l.d("context JSONs created:", contexts);
+
+        let promises = [];
+        contexts.forEach((roomContext) => {
+            l.d("creating syncher object for:", roomContext);
+            promises.push(this.syncher.create(this.roomSchemaURL, [this.hypertyURL], roomContext).then(function (synchRoom) {
+                l.d('room reporter for room ' + roomContext.name + ' created:', synchRoom);
 
                 // react to added children
-                deviceReporter.onAddChild((child) => {
+                synchRoom.onAddChild((child) => {
                     l.d("onAddChild:", child);
                     let childData = child.data ? child.data : child.value;
                     l.d("child data:", childData);
-                    _this.trigger('onAddChild', childData);
                 });
 
                 // react to subscription requests
-                deviceReporter.onSubscription((event) => {
+                synchRoom.onSubscription((event) => {
                     l.d('onSubscription:', event);
 
-                    // accept and trigger
+                    // accept
                     event.accept();
-                    _this.trigger('onSubscribe', event);
                 });
-            }).catch(function (reason) {
-                console.error(reason);
-            });
+
+                return synchRoom;
+            }));
+        });
+
+        return Promise.all(promises).then((synchObjects) => {
+            l.d("all promises done: ", synchObjects);
+            return synchObjects;
         });
     }
 
     /**
-     * Modify the ID field of all device reporter objects (to test if subscription works)
+     * Create Context JSON based on the json of a room
+     * @param {JSON} roomJson - room object as received from LWM2MServer
+     * @returns {JSON} - room Context JSON
      */
-    modifyRoom() {
-        let rString = Math.random().toString(36).substr(2, 5);
-        this.devices.forEach((device, i) => {
-            l.d("Setting ID to '" + rString + "' of device:", device);
-            device.data.id = rString;
-        });
-    }
-
-    /**
-     * Get the list of devices (JSON) of a room
-     * @param {string} roomId - Room ID
-     * @returns {Array} devices
-     */
-    getRawDevices(roomId) {
-        l.d("getRawDevices:", roomId);
-
-        //var json = {'room': roomId};
-        //var room = this.makeRequest(json).data;
-
-        // For now we use the example room
-        var room = this.room.data;
-        l.d("got room:", room);
-
-        return room.devices;
-    }
-
-    /**
-     * Create a Device Context based on a JSON object
-     * @param {JSON} device - raw Device in JSON format
-     * @returns {{id: *, type: string, values: *[], children: string[]}} context
-     */
-    createDeviceContext(device) {
-        let deviceContext = {
-            "id": device._id,
-            "type": "LIGHT",
-            "values": [
-                {
-                    "name": device.name,
-                    "unit": "someUnit",
-                    "value": device,
-                    "sum": "someUnit"
-                }
-            ],
-            "children": ["actions", "contexts"]
+    createRoomContext(roomJson) {
+        l.d("creating room context JSON based on:", roomJson);
+        let context = {
+            "id": roomJson._id,
+            "name": roomJson.name,
+            "values": []
         };
-        return deviceContext;
-    }
 
-    /**
-     * Get all devices Contexts for a given room
-     * @param {string} roomId - Room ID
-     * @returns {Array} contexts
-     */
-    getDeviceContexts(roomId) {
-        var devices = this.getRawDevices(roomId);
-        var deviceContexts = [];
-        devices.forEach((device, i) => {
-            deviceContexts[i] = this.createDeviceContext(device);
+        roomJson.devices.forEach((device, i) => {
+            context.values.push({
+                "name": device.name, //TODO: use ID
+                "value": device
+            })
         });
-        return deviceContexts;
-    }
 
-    /**
-     * Get the raw Device JSON based on ID
-     * @param {string} deviceId
-     * @returns {JSON} device
-     */
-    getRawDevice(deviceId) {
-        l.d("getRawDevice:", deviceId);
-
-        //var json = {'device': deviceId};
-        //var device = this.makeRequest(json).data;
-
-        // For now we use the device of the example room
-        var device = this.room.data.devices[0];
-        l.d("got device:", device);
-
-        return device;
+        return context;
     }
 
     /**
      * Makes a POST request with the given payload and returns the response
-     * @param {JSON} json - JSON payload for POST request
-     * @returns {JSON} response
+     * @param json - JSON Payload
+     * @returns {Promise} - Promise that fulfills with parsed JSON response
      */
     makeRequest(json) {
-        var xmlHttp = new XMLHttpRequest();
-        try {
-            xmlHttp.open('POST', url, false); // false for synchronous request
+        return new Promise((resolve, reject) => {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open('POST', url, true); // false for synchronous request
+
+            xmlHttp.onload = (e) => {
+                if (xmlHttp.readyState === 4) {
+                    if (xmlHttp.status === 200) {
+                        try {
+                            resolve(JSON.parse(xmlHttp.responseText));
+                        } catch (e) {
+                            l.e("json parsing failed! raw:", xmlHttp.responseText);
+                            reject(e);
+                        }
+                    } else {
+                        l.e("Unsuccessful request:", xmlHttp.statusText);
+                        reject(xmlHttp.statusText);
+                    }
+                }
+            };
+
             xmlHttp.send(JSON.stringify(json));
-        } catch (e) {
-            console.error('request failed: ', e);
-            throw e;
-        }
-
-        console.log('got response: ' + xmlHttp.responseText);
-        var resp = xmlHttp.responseText;
-
-        try {
-            resp = JSON.parse(xmlHttp.responseText);
-        } catch (e) {
-            //console.log('json parsing failed, probably not json:', resp);
-        }
-        l.d("makeRequest returns:", resp);
-
-        // TODO error handling
-        return resp;
+        });
     }
+
 
 }
 

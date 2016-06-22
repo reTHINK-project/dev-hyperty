@@ -53,7 +53,7 @@ let SurveyObserverFactory = function(hypertyURL, bus, config){
     let identityManager = new IdentityManager(hypertyURL, config.runtimeURL, bus)
     return Object.assign(Object.create(SurveyObserver), {
         syncher: syncher,
-        objectDescURL: 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/Communication',
+        objectDescURL: 'hyperty-catalogue://catalogue.' + uri.hostname() + '/.well-known/dataschema/Communication',
         hypertyURL: hypertyURL,
         notifications: notifications,
         identityManagerService: identityManager
