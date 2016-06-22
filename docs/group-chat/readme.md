@@ -21,13 +21,13 @@ Create a new chat group
 
 *participants*
 
- List of hyperties urls.
+ Participant Collection `[{email:"email@test.com", domain:"domain"}, ...]`.
 
 ####Returned value
 Returns a [group chat](#2.1-group-chat-api) instance
 
 ####How to use it.
-    groupchatHy.create('name', [<hyperty-runtime-url>,...])
+    groupchatHy.create('name', participants)
         .then((groupChat)=>{
             console.log(groupChat)
         })
