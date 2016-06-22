@@ -32,7 +32,7 @@ class EventEmitter {
      */
     constructor() {
         // set up listener holder
-        this.listeners = {};
+        this.__eventListeners = {};
     }
 
     /**
@@ -43,10 +43,10 @@ class EventEmitter {
     addEventListener(eventType, cb) {
         // add callback to the list of callbacks for this type
         // if the list doesn't exist yet, create it with the callback as member
-        if (!this.listeners[eventType])
-            this.listeners[eventType] = [cb];
+        if (!this.__eventListeners[eventType])
+            this.__eventListeners[eventType] = [cb];
         else
-            this.listeners[eventType].push(cb);
+            this.__eventListeners[eventType].push(cb);
     }
 
     /**
@@ -56,7 +56,7 @@ class EventEmitter {
      */
     trigger(eventType, params) {
         // check if there are callbacks for this type
-        let callbacks = this.listeners[eventType];
+        let callbacks = this.__eventListeners[eventType];
         if (callbacks) {
             callbacks.forEach((cb) => {
                 // catch errors to make sure every callback is being called
