@@ -60,31 +60,39 @@ class RoomUIReporter extends EventEmitter {
             this.roomMap = roomMap;
 
             l.d("triggering roomMap");
-            this.trigger('roomMap', roomMap);
+            this.trigger('roomMap', this.roomMap);
 
         });
 
         // listen for getRooms execution message
         l.d("Setting up bus listener for getRooms()...");
         bus.addListener(hypertyURL, (msg) => {
-            if (msg.type === "execute" && msg.body.method === "getRooms") {
+            if (msg.type === "execute") {
                 l.d("got execute message:", msg);
-                let identity;
-                try {
-                    identity = msg.body.params[0];
-                } catch (e) {
-                    l.w("getRooms called remotely, but no identity was provided!");
+                let func;
+                switch (msg.body.method) {
+                    case "getRooms":
+                        func = this.getRooms;
+                        break;
+                    case "action":
+                        func = this.action;
+                        break;
                 }
 
-                let list = this.getRooms(identity);
+                if (func) {
+                    l.d("function " + func.name + " is being called remotely");
+                    let result = func.apply(this, msg.body.params);
+                    l.d("function " + func.name + " returned:", result);
+                    bus.postMessage({
+                        id: msg.id,
+                        type: "response",
+                        from: msg.to,
+                        to: msg.from,
+                        body: {code: 200, value: result}
+                    });
+                }
 
-                bus.postMessage({
-                    id: msg.id,
-                    type: "response",
-                    from: msg.to,
-                    to: msg.from,
-                    body: {code: 200, value: list}
-                });
+
             }
         });
     }
@@ -107,13 +115,14 @@ class RoomUIReporter extends EventEmitter {
      * @returns {Array} - list of object URLs
      */
     getRooms(user) {
+        l.d("getRoooms:", [user]);
         let urls = [];
         // iterate through rooms and extract their URLs
+        l.d("iterating through rooms:", this.roomMap);
         for (room in this.roomMap) {
             // TODO: check member array for having user in it
             urls.push(this.roomMap[room].url);
         }
-        l.d("getRooms returns:", urls);
         return urls;
     }
 
@@ -140,7 +149,7 @@ class RoomUIReporter extends EventEmitter {
      * @returns {Promise} - Promise that returns the array of rooms as SyncObjects
      */
     setUpRoomSyncherObjects(roomArray) {
-        l.d("setting up room syncher objects based on:", roomArray);
+        l.d("setUpRoomSyncherObjects:", [roomArray]);
         let contexts = [];
         roomArray.forEach((room) => {
             contexts.push(this.createRoomContext(room))

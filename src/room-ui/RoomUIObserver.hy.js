@@ -54,8 +54,14 @@ class RoomUIObserver extends EventEmitter {
         // 2. get the SyncObject URLs of rooms this identity is allowed to monitor and control
         // 3. suscribe to those objects
         Promise.all([this.discoverIdentity(), this.getRoomUIReporterHypertyURL(roomUIReporterIdentity)])
-            .then(([identity, hypertyURL]) => this.requestRoomURLs(identity, hypertyURL))
-            .then((urls) => this.subscribeToRooms(urls))
+            .then(([identity, hypertyURL]) => {
+                this.reporterURL = hypertyURL;
+                this.identity = identity;
+                return this.requestRoomURLs(identity, hypertyURL)
+            })
+            .then((urls) => {
+                return this.subscribeToRooms(urls)
+            })
             .then((syncRooms) => {
                 l.d("Initialization done, syncObjectRooms:", syncRooms);
             });
@@ -149,23 +155,32 @@ class RoomUIObserver extends EventEmitter {
      */
     requestRoomURLs(identity, remoteHypertyURL) {
         l.d("requestRoomURLs:", [identity, remoteHypertyURL]);
+        return this.executeOnRemote(remoteHypertyURL, "getRooms", [identity]);
+    }
+
+    /**
+     * invokes a function at the remote hyperty
+     * @param {String} remoteHypertyURL - URL of the remote hyperty
+     * @param {String} method - name of the function to be invoked
+     * @param {Array} params - parameters provided for the remote function
+     * @returns {Promise} - fulfills with the result of the remote function call
+     */
+    executeOnRemote(remoteHypertyURL, method, params) {
         return new Promise((resolve, reject) => {
-            if (!remoteHypertyURL) {
-                reject("No remote hyperty URL provided. Where am I supposed to send the message to?");
+            if (!remoteHypertyURL || !method) {
+                reject("hyperty URL (" + remoteHypertyURL + ") and method (" + method + ") are mandatory!");
                 return;
             }
-
             // creat execute message
             let msg = {
                 type: 'execute', from: this.hypertyURL, to: remoteHypertyURL,
-                body: {method: "getRooms", params: [identity]}
+                body: {method: method, params: params}
             };
             // send message, resolve on reply
             this.bus.postMessage(msg, (reply) => {
-                l.d("got getRooms reply!", reply);
+                l.d("got " + method + " reply!", reply);
                 if (reply.body.code == 200) {
                     let urls = reply.body.value;
-                    l.d("room URLs:", urls);
                     resolve(urls);
                 } else {
                     l.e("getRooms request rejected (" + reply.body.code + "):", reply.body.value);
@@ -202,6 +217,16 @@ class RoomUIObserver extends EventEmitter {
         }).catch(function (reason) {
             console.error(reason);
         });
+    }
+
+    /**
+     * executes an action on the RoomUIReporter hyperty
+     * @param {JSON} json - action payload
+     * @returns {Promise} - fulfills with the result of the remote functon call
+     */
+    sendAction(json) {
+        l.d("sendAction:", [json]);
+        return this.executeOnRemote(this.reporterURL, "action", [json]);
     }
 }
 
