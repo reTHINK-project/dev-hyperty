@@ -100,8 +100,8 @@ let groupChatFactory = function(hypertyURL, bus, config){
             'syncher': syncher,
             'hypertyDiscoveryService': hypertyDiscovery,
             'identityManagerService': identityManager,
-            'objectDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/Communication',
-            'locationDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/ContextDataSchema',
+            'objectDescURL': 'hyperty-catalogue://catalogue.' + uri.hostname() + '/.well-known/dataschema/Communication',
+            'locationDescURL': 'hyperty-catalogue://catalogue.' + uri.hostname() + '/.well-known/dataschema/Context',
             'hypertyURL': hypertyURL,
             'notifications': notifications,
             domain: uri.hostname()

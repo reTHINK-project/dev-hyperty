@@ -48,7 +48,7 @@ const SurveyReporterFactory = function(hypertyURL, bus, config){
     let syncher = new Syncher(hypertyURL, bus, config)
     return Object.assign(Object.create(SurveyReporter), {
         hypertyDiscoveryService: hypertyDiscovery,
-        objectDescURL: 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/Communication',
+        objectDescURL: 'hyperty-catalogue://catalogue.' + uri.hostname() + '/.well-known/dataschema/Communication',
         hypertyURL: hypertyURL,
         syncher: syncher
     })
