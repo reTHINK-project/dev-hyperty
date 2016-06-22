@@ -4,8 +4,7 @@
   "type": "object",
   "required": [
     "id",
-    "type",
-    "value"
+    "values"
   ],
   "properties": {
     "id": {
@@ -27,7 +26,7 @@
     "version": {
       "type": "integer"
     },
-    "value": {
+    "values": {
       "$ref": "#/ContextValueList"
     },
     "tag": {

@@ -131,14 +131,14 @@ function hypertyDeployed(hyperty) {
       break;
 
     case 'SurveyReporter':
-        template = 'survey/surveyReporter';
-        script = 'survey/surveyReporter.js';
-        break;
+      template = 'survey/surveyReporter';
+      script = 'survey/surveyReporter.js';
+      break;
 
     case 'SurveyObserver':
-        template = 'survey/surveyObserver';
-        script = 'survey/surveyObserver.js';
-        break;
+      template = 'survey/surveyObserver';
+      script = 'survey/surveyObserver.js';
+      break;
 
     case 'GroupChat':
       template = 'group-chat/groupChat';
@@ -174,6 +174,12 @@ function hypertyDeployed(hyperty) {
       template = 'user-status/UserStatus';
       script = 'user-status/user-status.js';
       break;
+
+    case 'BraceletSensorObserver':
+      template = 'bracelet/bracelet';
+      script = 'bracelet/BraceletSensorObserver.js';
+      break;
+
   }
 
   if (!template) {

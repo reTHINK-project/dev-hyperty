@@ -12,18 +12,16 @@ function hypertyLoaded(result) {
     window.hyperty = hypertyObserver;
     hyperty = hypertyObserver;
     $('.observer').show();
-
-    let urlform = $('.urlform');
-    urlform.on('submit', subscribe);
-
-    hyperty.addEventListener('onChange', function (event) {
-        console.log('ONCHANGE: ', event);
-        alert("room changed: " + JSON.stringify(event, null, 2));
+    let rooms = $('#rooms');
+    // add listener for new room objects and them to the table
+    hyperty.addEventListener('newRoom', (room) => {
+        let appendString =
+            "<tr>" +
+            "<td>" + room.data.name + "</td>" +
+            "<td><pre>" + JSON.stringify(room.data, null, 2) + "</pre></td>" +
+            "</tr>";
+        rooms.append(appendString);
     });
-
-    $('#addchildbtn').click(addChild);
-
-
 }
 
 function addChild() {
