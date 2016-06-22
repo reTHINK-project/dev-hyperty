@@ -10,6 +10,8 @@ import EventEmitter from '../utils/EventEmitter';
 import Logger from './Logger';
 
 var l = new Logger("ROOMUI");
+var roomUIReporterIdentity = "openidtest10@gmail.com";
+
 
 class RoomUIObserver extends EventEmitter {
 
@@ -25,93 +27,162 @@ class RoomUIObserver extends EventEmitter {
         if (!bus) throw new Error('The MiniBus is a needed parameter');
         if (!configuration) throw new Error('The configuration is a needed parameter');
 
+        super();
+
         l.d("hypertyURL:", hypertyURL);
         l.d("bus:", bus);
         l.d("configuration:", configuration);
 
-        super();
-
-        this.domain = divideURL(hypertyURL).domain;
-
-        // create Object Schema URL
-        this.roomSchemaURL = 'hyperty-catalogue://' + this.domain + '/.well-known/dataschemas/RoomUIDataSchema';
-
-        // make arguments available
+        // make parameters available
         this.hypertyURL = hypertyURL;
         this.bus = bus;
         this.configuration = configuration;
+
+        // create Context Schema URL
+        this.contextSchemaURL = 'hyperty-catalogue://' + divideURL(hypertyURL).domain + '/.well-known/dataschema/Context';
 
         // discovery stuff
         this.hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus);
         this.discovery = new Discovery(hypertyURL, bus);
         this.identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
 
-        // syncher
-        let syncher = new Syncher(hypertyURL, bus, configuration);
-        this.syncher = syncher;
-        syncher.onNotification((event) => {
-            l.d('Event Received: ', event);
-        });
+        // Syncher
+        this.syncher = new Syncher(hypertyURL, bus, configuration);
 
-        // testing discovery with hardcoded user
-        let user = "openidtest10@gmail.com";
-        l.d("trying to find hyperty of user", user);
-        this.hypertyDiscovery.discoverHypertiesPerUser(user, null).then((hyperties) => {
-            l.d("found hyperties: ", hyperties);
+        // this promise chain represents the complete setup process
+        // 1. (a) discover the associated identity and (b) get the URL of the RoomUIReporter hyperty
+        // 2. get the SyncObject URLs of rooms this identity is allowed to monitor and control
+        // 3. suscribe to those objects
+        Promise.all([this.discoverIdentity(), this.getRoomUIReporterHypertyURL(roomUIReporterIdentity)])
+            .then(([identity, hypertyURL]) => this.requestRoomURLs(identity, hypertyURL))
+            .then((urls) => this.subscribeToRooms(urls))
+            .then((syncRooms) => {
+                l.d("Initialization done, syncObjectRooms:", syncRooms);
+            });
+    }
+
+    /**
+     * Discover the identity associated with this hyperty
+     * @returns {Promise} - fulfills with the identity this hyperty is associated with
+     */
+    discoverIdentity() {
+        l.d("discoverIdentity...");
+        return new Promise((resolve, reject) => {
+            // first discoverUserRegistered call
+            this.identityManager.discoverUserRegistered().then((user) => {
+                // if user is an object, it is assumed the discovery succeeded
+                if (user instanceof Object) {
+                    l.d("discovered user identity:", user);
+                    // stop interval if identity is known
+                    resolve(user.username); //TODO maybe a different property will be used, take username for now
+                } else {
+                    let errorString = "discovering user identity should have returned with an object, but instead returned with: " + user;
+                    l.w(errorString);
+                    throw new Error(errorString);
+                }
+            }).catch((e) => {
+                l.w("discovering user identity failed with:", e);
+                l.d("trying discovery again after a timeout");
+                // if discovery fails, retry after some timeout
+                setTimeout(() => this.discoverIdentity().then(resolve), 500);
+            });
+        });
+    }
+
+    /**
+     * Gets the hypertyURL of the RoomUIReporter hyperty
+     * @param reporterIdentity - identity that the desired RoomUIReporter hyperty is associated to
+     * @returns {Promise} - fulfills with the hypertyURL of the RoomUIReporter hyperty
+     */
+    getRoomUIReporterHypertyURL(reporterIdentity) {
+        l.d("getRoomUIReporterHypertyURL:", [reporterIdentity]);
+        return this.hypertyDiscovery.discoverHypertiesPerUser(reporterIdentity, null).then((hyperties) => {
+            //l.d("found hyperties: ", hyperties);
             let latestRoomReporterHyperty;
             let latestDate;
             // iterate through hyperties to find most current RoomUIReporter hyperty
             for (hyperty in hyperties) {
                 hyperty = hyperties[hyperty];
-                l.d("checking hyperty", hyperty);
+                //l.d("checking hyperty", hyperty);
                 let name = hyperty.descriptor.substring(hyperty.descriptor.lastIndexOf('/') + 1);
-                l.d("checking name:", name);
+                //l.d("checking name:", name);
                 if (name === "RoomUIReporter") {
                     let date = hyperty.startingTime;
-                    l.d("is room ui reporter with startingTime:", date);
+                    //l.d("is room ui reporter with startingTime:", date);
                     if (!latestDate || date > latestDate) {
-                        l.d("is new latest hyperty:", date);
+                        //l.d("is new latest hyperty:", date);
                         latestDate = date;
                         latestRoomReporterHyperty = hyperty;
                     }
                 }
             }
-            l.d("latestRoomReporterHyperty:", latestRoomReporterHyperty);
+            if (latestRoomReporterHyperty) {
+                return latestRoomReporterHyperty.hypertyID;
+            } else {
+                l.e("Unable to find RoomUIReporter hyperty!");
+                throw new Error()
+            }
+        });
+    }
 
-            // get room object URLs from hyperty using the message bus directly
+    /**
+     * Subscribes to each SyncObject each URL in the provided array points to
+     * @param {Array} urls - array of URLs that point to SyncObjects
+     * @returns {Promise} - fulfills with an array of SyncObjects
+     */
+    subscribeToRooms(urls) {
+        l.d("subscribeToRooms:", [urls]);
+        let subscribePromises = [];
+        urls.forEach((url) => {
+            let p = this.subscribe(url);
+            subscribePromises.push(p);
+        });
+        return Promise.all(subscribePromises);
+    }
+
+    /**
+     * Requests a list of URLs of SyncObjects representing rooms from the desired remote hyperty
+     * that the given identity is allowed to monitor & control
+     * @param {String} identity - identity provided to the remote hyperty to decide which URLs it will return (access control)
+     * @param {String} remoteHypertyURL - hyperty URL pointing to the remote (RoomUIReporter) hyperty
+     * @returns {Promise} - fulfills with an array of SyncObject URLs
+     */
+    requestRoomURLs(identity, remoteHypertyURL) {
+        l.d("requestRoomURLs:", [identity, remoteHypertyURL]);
+        return new Promise((resolve, reject) => {
+            if (!remoteHypertyURL) {
+                reject("No remote hyperty URL provided. Where am I supposed to send the message to?");
+                return;
+            }
+
+            // creat execute message
             let msg = {
-                type: 'execute', from: hypertyURL, to: latestRoomReporterHyperty.hypertyID,
-                body: {method: "getRooms"}
+                type: 'execute', from: this.hypertyURL, to: remoteHypertyURL,
+                body: {method: "getRooms", params: [identity]}
             };
-            bus.postMessage(msg, (reply) => {
+            // send message, resolve on reply
+            this.bus.postMessage(msg, (reply) => {
                 l.d("got getRooms reply!", reply);
                 if (reply.body.code == 200) {
                     let urls = reply.body.value;
                     l.d("room URLs:", urls);
-
-                    // subscribe to rooms
-                    urls.forEach((url) => {
-                        this.subscribe(url);
-                    })
+                    resolve(urls);
+                } else {
+                    l.e("getRooms request rejected (" + reply.body.code + "):", reply.body.value);
+                    reject(reply.body.value);
                 }
             });
         });
-
-        // test identity discovery with timeout
-        setTimeout(() => {
-            l.d("timeout function invoked, trying to get user identity");
-            this.identityManager.discoverUserRegistered(this.hypertyURL).then((userURL) => {
-                l.d("got user URL:", userURL);
-            });
-        }, 5000);
     }
 
     /**
-     * Subscribe to an object using the syncher
+     * Subscribe to an object using the Syncher
      * @param roomURL - URL of the object
+     * @returns {Promise} - Promise that fulfills with the subscribed object
      */
     subscribe(roomURL) {
-        this.syncher.subscribe(this.roomSchemaURL, roomURL).then((room) => {
+        l.d("subscribe:", [roomURL]);
+        return this.syncher.subscribe(this.contextSchemaURL, roomURL).then((room) => {
             console.info("subscribed to object:", room);
 
             // register onChange callback
@@ -126,33 +197,11 @@ class RoomUIObserver extends EventEmitter {
 
             // make it available for addChild test
             this.room = room;
+            return room;
 
         }).catch(function (reason) {
             console.error(reason);
         });
-    }
-
-    /**
-     * Test addChild functionality
-     */
-    addChild() {
-        // just something to attach to the room
-        let action = {
-            "id": "someID",
-            "type": "someType",
-            "values": [{
-                "name": "setBrightness",
-                "unit": "someUnit",
-                "value": {
-                    "brightness": 75
-                },
-                "sum": "whatever"
-            }]
-        };
-
-        l.d("adding to child:", action);
-
-        this.room.addChild('actions', action);
     }
 }
 

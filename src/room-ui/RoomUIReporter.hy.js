@@ -9,8 +9,10 @@ import {divideURL} from '../utils/utils';
 import roomJson from './roomJson';
 import EventEmitter from '../utils/EventEmitter';
 
-var url = "https://praxis:8000";
 var l = new Logger("ROOMUI");
+
+var url = "https://praxis:8000";
+var useExampleRoomJson = true;
 
 class RoomUIReporter extends EventEmitter {
 
@@ -26,48 +28,55 @@ class RoomUIReporter extends EventEmitter {
         if (!bus) throw new Error('The MiniBus is a needed parameter');
         if (!configuration) throw new Error('The configuration is a needed parameter');
 
+        super();
+
         l.d("hypertyURL:", hypertyURL);
         l.d("bus:", bus);
         l.d("configuration:", configuration);
 
-        super();
-
-        this.domain = divideURL(hypertyURL).domain;
-
-        // create Object Schema URL
-        this.roomSchemaURL = 'hyperty-catalogue://' + this.domain + '/.well-known/dataschemas/RoomUIDataSchema';
-
-        // make hyperty discoverable
-        let discovery = new Discovery(hypertyURL, bus);
-
-        // make arguments available
+        // make parameters available
         this.hypertyURL = hypertyURL;
         this.bus = bus;
         this.configuration = configuration;
 
+        // create Context Schema URL
+        this.contextSchemaURL = 'hyperty-catalogue://' + divideURL(hypertyURL).domain + '/.well-known/dataschema/Context';
+
+        // make hyperty discoverable
+        this.discovery = new Discovery(hypertyURL, bus);
+
         // syncher
         this.syncher = new Syncher(hypertyURL, bus, configuration);
 
-        l.d("calling setUpRooms...");
+        // set up the rooms
         this.setUpRooms().then((roomSyncObjects) => {
             l.d("setUpdRooms done, objects:", roomSyncObjects);
+
             let roomMap = {};
             roomSyncObjects.forEach((roomSyncObject) => {
                 l.d("adding room map:", roomSyncObject.data.name);
                 roomMap[roomSyncObject.data.name] = roomSyncObject
             });
-            l.d("triggering roomMap...");
-            this.trigger('roomMap', roomMap);
             this.roomMap = roomMap;
+
+            l.d("triggering roomMap");
+            this.trigger('roomMap', roomMap);
 
         });
 
         // listen for getRooms execution message
+        l.d("Setting up bus listener for getRooms()...");
         bus.addListener(hypertyURL, (msg) => {
             if (msg.type === "execute" && msg.body.method === "getRooms") {
                 l.d("got execute message:", msg);
+                let identity;
+                try {
+                    identity = msg.body.params[0];
+                } catch (e) {
+                    l.w("getRooms called remotely, but no identity was provided!");
+                }
 
-                let list = this.getRooms();
+                let list = this.getRooms(identity);
 
                 bus.postMessage({
                     id: msg.id,
@@ -113,12 +122,16 @@ class RoomUIReporter extends EventEmitter {
      * @returns {Promise} - Promise that returns the array of rooms as SyncObjects
      */
     setUpRooms() {
-        //let json = {"mode": "read", "room": null};
-        //return this.makeRequest(json).then((respJson) => {
-        //    return this.setUpRoomSyncherObjects(respJson.data)
-        //});
-        l.d("setUpRooms uses roomJson:", roomJson);
-        return this.setUpRoomSyncherObjects(roomJson.data);
+        l.d("setUpRooms...");
+        if (useExampleRoomJson) {
+            l.d("setUpRooms uses roomJson:", roomJson);
+            return this.setUpRoomSyncherObjects(roomJson.data);
+        } else {
+            let json = {"mode": "read", "room": null};
+            return this.makeRequest(json).then((respJson) => {
+                return this.setUpRoomSyncherObjects(respJson.data)
+            });
+        }
     }
 
     /**
@@ -137,7 +150,7 @@ class RoomUIReporter extends EventEmitter {
         let promises = [];
         contexts.forEach((roomContext) => {
             l.d("creating syncher object for:", roomContext);
-            promises.push(this.syncher.create(this.roomSchemaURL, [this.hypertyURL], roomContext).then(function (synchRoom) {
+            promises.push(this.syncher.create(this.contextSchemaURL, [this.hypertyURL], roomContext).then(function (synchRoom) {
                 l.d('room reporter for room ' + roomContext.name + ' created:', synchRoom);
 
                 // react to added children
@@ -189,14 +202,14 @@ class RoomUIReporter extends EventEmitter {
     }
 
     /**
-     * Makes a POST request with the given payload and returns the response
+     * Makes a POST request to the remote LWM2MServer with the given payload and returns the response
      * @param json - JSON Payload
      * @returns {Promise} - Promise that fulfills with parsed JSON response
      */
     makeRequest(json) {
         return new Promise((resolve, reject) => {
             var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open('POST', url, true); // false for synchronous request
+            xmlHttp.open('POST', url, true);
 
             xmlHttp.onload = (e) => {
                 if (xmlHttp.readyState === 4) {
@@ -205,6 +218,7 @@ class RoomUIReporter extends EventEmitter {
                             resolve(JSON.parse(xmlHttp.responseText));
                         } catch (e) {
                             l.e("json parsing failed! raw:", xmlHttp.responseText);
+                            l.e(e);
                             reject(e);
                         }
                     } else {
