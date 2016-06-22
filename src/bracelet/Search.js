@@ -1,5 +1,5 @@
 // TODO: optimize this process
-const DOMAINS = ['hybroker.rethink.ptinovacao.pt', 'rethink.quobis.com', 'luis.dev'];
+const DOMAINS = ['hybroker.rethink.ptinovacao.pt'];
 
 class Search {
 
@@ -54,7 +54,7 @@ class Search {
 
         usersURLs.forEach((userURL) => {
           DOMAINS.forEach((domain) => {
-            getUsers.push(_this.discovery.discoverHyperty(userURL, ['connection'], ['video', 'audio'], domain));
+            getUsers.push(_this.discovery.discoverHyperty(userURL, ['context'], ['steps','battery'], domain));
           });
         });
 
