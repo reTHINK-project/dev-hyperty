@@ -1,7 +1,6 @@
 /* jshint undef: true */
 
 import {Syncher} from 'service-framework/dist/Syncher';
-import Discovery from 'service-framework/dist/Discovery';
 import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery';
 import IdentityManager from 'service-framework/dist/IdentityManager';
 
@@ -10,13 +9,13 @@ import EventEmitter from '../utils/EventEmitter';
 import Logger from './Logger';
 
 var l = new Logger("ROOMUI");
-var roomUIReporterIdentity = "openidtest10@gmail.com";
+var roomServerIdentity = "openidtest10@gmail.com";
 
 
-class RoomUIObserver extends EventEmitter {
+class RoomClient extends EventEmitter {
 
     /**
-     * Create a new RoomUIReporter
+     * Create a new RoomClient
      * @param {string} hypertyURL - URL of the hyperty
      * @param {MiniBus} bus - MiniBus
      * @param {Object} configuration - configuration of hyperty
@@ -43,27 +42,26 @@ class RoomUIObserver extends EventEmitter {
 
         // discovery stuff
         this.hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus);
-        this.discovery = new Discovery(hypertyURL, bus);
         this.identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
 
         // Syncher
         this.syncher = new Syncher(hypertyURL, bus, configuration);
 
         // this promise chain represents the complete setup process
-        // 1. (a) discover the associated identity and (b) get the URL of the RoomUIReporter hyperty
-        // 2. get the SyncObject URLs of rooms this identity is allowed to monitor and control
-        // 3. suscribe to those objects
-        Promise.all([this.discoverIdentity(), this.getRoomUIReporterHypertyURL(roomUIReporterIdentity)])
+        // 1. (a) discover the associated identity and (b) get the URL of the RoomServer hyperty
+        // 2. get SyncObject URLs of rooms this identity is allowed to subscribe to from the RoomServer hyperty
+        // 3. subscribe to those objects
+        Promise.all([this.discoverIdentity(), this.getRoomServerHypertyURL(roomServerIdentity)])
             .then(([identity, hypertyURL]) => {
-                this.reporterURL = hypertyURL;
+                this.roomServerURL = hypertyURL;
                 this.identity = identity;
-                return this.requestRoomURLs(identity, hypertyURL)
+                return this.requestRoomURLs(identity, hypertyURL);
             })
             .then((urls) => {
                 return this.subscribeToRooms(urls)
             })
             .then((syncRooms) => {
-                l.d("Initialization done, syncObjectRooms:", syncRooms);
+                l.d("Initialization done, room SyncObjects:", syncRooms);
             });
     }
 
@@ -72,7 +70,7 @@ class RoomUIObserver extends EventEmitter {
      * @returns {Promise} - fulfills with the identity this hyperty is associated with
      */
     discoverIdentity() {
-        l.d("discoverIdentity...");
+        l.d("discoverIdentity");
         return new Promise((resolve, reject) => {
             // first discoverUserRegistered call
             this.identityManager.discoverUserRegistered().then((user) => {
@@ -96,36 +94,37 @@ class RoomUIObserver extends EventEmitter {
     }
 
     /**
-     * Gets the hypertyURL of the RoomUIReporter hyperty
-     * @param reporterIdentity - identity that the desired RoomUIReporter hyperty is associated to
-     * @returns {Promise} - fulfills with the hypertyURL of the RoomUIReporter hyperty
+     * Gets the hypertyURL of the RoomServer hyperty
+     * @param {string} roomServerURL - identity that the desired RoomServer hyperty is associated to
+     * @returns {Promise} - fulfills with the hypertyURL of the RoomServer hyperty
      */
-    getRoomUIReporterHypertyURL(reporterIdentity) {
-        l.d("getRoomUIReporterHypertyURL:", [reporterIdentity]);
-        return this.hypertyDiscovery.discoverHypertiesPerUser(reporterIdentity, null).then((hyperties) => {
+    getRoomServerHypertyURL(roomServerURL) {
+        l.d("getRoomServerHypertyURL:", [roomServerURL]);
+        return this.hypertyDiscovery.discoverHypertiesPerUser(roomServerURL, null).then((hyperties) => {
             //l.d("found hyperties: ", hyperties);
-            let latestRoomReporterHyperty;
+            let latestRoomServerHyperty;
             let latestDate;
-            // iterate through hyperties to find most current RoomUIReporter hyperty
+            let hyperty;
+            // iterate through hyperties to find most current RoomServer hyperty
             for (hyperty in hyperties) {
                 hyperty = hyperties[hyperty];
                 //l.d("checking hyperty", hyperty);
                 let name = hyperty.descriptor.substring(hyperty.descriptor.lastIndexOf('/') + 1);
                 //l.d("checking name:", name);
-                if (name === "RoomUIReporter") {
+                if (name === "RoomServer") {
                     let date = hyperty.startingTime;
-                    //l.d("is room ui reporter with startingTime:", date);
+                    //l.d("is room server hyperty with startingTime:", date);
                     if (!latestDate || date > latestDate) {
                         //l.d("is new latest hyperty:", date);
                         latestDate = date;
-                        latestRoomReporterHyperty = hyperty;
+                        latestRoomServerHyperty = hyperty;
                     }
                 }
             }
-            if (latestRoomReporterHyperty) {
-                return latestRoomReporterHyperty.hypertyID;
+            if (latestRoomServerHyperty) {
+                return latestRoomServerHyperty.hypertyID;
             } else {
-                l.e("Unable to find RoomUIReporter hyperty!");
+                l.e("Unable to find RoomServer hyperty!");
                 throw new Error()
             }
         });
@@ -149,8 +148,8 @@ class RoomUIObserver extends EventEmitter {
     /**
      * Requests a list of URLs of SyncObjects representing rooms from the desired remote hyperty
      * that the given identity is allowed to monitor & control
-     * @param {String} identity - identity provided to the remote hyperty to decide which URLs it will return (access control)
-     * @param {String} remoteHypertyURL - hyperty URL pointing to the remote (RoomUIReporter) hyperty
+     * @param {string} identity - identity provided to the remote hyperty to decide which URLs it will return (access control)
+     * @param {string} remoteHypertyURL - hyperty URL pointing to the remote (RoomServer) hyperty
      * @returns {Promise} - fulfills with an array of SyncObject URLs
      */
     requestRoomURLs(identity, remoteHypertyURL) {
@@ -160,8 +159,8 @@ class RoomUIObserver extends EventEmitter {
 
     /**
      * invokes a function at the remote hyperty
-     * @param {String} remoteHypertyURL - URL of the remote hyperty
-     * @param {String} method - name of the function to be invoked
+     * @param {string} remoteHypertyURL - URL of the remote hyperty
+     * @param {string} method - name of the function to be invoked
      * @param {Array} params - parameters provided for the remote function
      * @returns {Promise} - fulfills with the result of the remote function call
      */
@@ -192,7 +191,7 @@ class RoomUIObserver extends EventEmitter {
 
     /**
      * Subscribe to an object using the Syncher
-     * @param roomURL - URL of the object
+     * @param {string} roomURL - URL of the object
      * @returns {Promise} - Promise that fulfills with the subscribed object
      */
     subscribe(roomURL) {
@@ -204,7 +203,7 @@ class RoomUIObserver extends EventEmitter {
             room.onChange('*', (event) => {
                 l.d('onChange received:', event);
                 l.d("current room state:", room);
-                this.trigger('roomChanged', room);
+                this.trigger('changedRoom', room);
             });
 
             // trigger the newRoom event
@@ -220,13 +219,25 @@ class RoomUIObserver extends EventEmitter {
     }
 
     /**
-     * executes an action on the RoomUIReporter hyperty
-     * @param {JSON} json - action payload
-     * @returns {Promise} - fulfills with the result of the remote functon call
+     * executes an action on the RoomServer hyperty
+     * @param {string} deviceName - name of the target device, e.g. "myDevice"
+     * @param {string} objectType - the type of the target device part that is being controlled, e.g. "light"
+     * @param {string} objectId - the ID of the target device's part that is being controlled
+     * @param {string} resourceType - the resource that is being changed, e.g. "isOn"
+     * @param {*} value - the value that the resource is being changed to
+     * @returns {Promise} - fulfills with the result of the remote function call
      */
-    sendAction(json) {
-        l.d("sendAction:", [json]);
-        return this.executeOnRemote(this.reporterURL, "action", [json]);
+    sendAction(deviceName, objectType, objectId, resourceType, value) {
+        // example: {"mode":"write", "deviceName": "myRaspberry", "objectType": "light", "objectId": "1", "resourceType": "isOn", "value": "false"}
+        let json = {
+            "mode": "write",
+            "deviceName": deviceName,
+            "objectType": objectType,
+            "objectId": objectId,
+            "resourceType": resourceType,
+            "value": value
+        };
+        return this.executeOnRemote(this.roomServerURL, "action", [json]);
     }
 }
 
@@ -234,8 +245,8 @@ class RoomUIObserver extends EventEmitter {
 export default function activate(hypertyURL, bus, configuration) {
 
     return {
-        name: 'RoomUIObserver',
-        instance: new RoomUIObserver(hypertyURL, bus, configuration)
+        name: 'RoomClient',
+        instance: new RoomClient(hypertyURL, bus, configuration)
     };
 
 }

@@ -1,17 +1,11 @@
 // "use strict";
-var hyperty;
-
 function hypertyLoaded(result) {
 
-    let hypertyObserver;
+    let hyperty = result.instance;
 
-    hypertyObserver = result.instance;
+    console.log("hyperty loaded:", hyperty);
 
-    console.log("hyperty loaded:", hypertyObserver);
-
-    window.hyperty = hypertyObserver;
-    hyperty = hypertyObserver;
-    $('.observer').show();
+    window.hyperty = hyperty;
     let rooms = $('#rooms');
     // add listener for new room objects and them to the table
     hyperty.addEventListener('newRoom', (room) => {
@@ -22,11 +16,15 @@ function hypertyLoaded(result) {
             "</tr>";
         rooms.append(appendString);
     });
+
+    hyperty.addEventListener('changedRoom', (room) => {
+        console.debug("room changed!:", room);
+    });
 }
 
 function addChild() {
     console.log("ADDCHILD");
-    hyperty.addChild();
+    window.hyperty.addChild();
 }
 
 function subscribe(event) {
@@ -39,7 +37,7 @@ function subscribe(event) {
 
     console.log("got url: ", url);
 
-    hyperty.subscribe(url);
+    window.hyperty.subscribe(url);
 }
 
 

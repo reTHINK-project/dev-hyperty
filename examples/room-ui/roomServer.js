@@ -1,42 +1,16 @@
 // "use strict";
 
-var hyperty;
-
 function hypertyLoaded(result) {
-
-
     hyperty = result.instance;
+    window.hyperty = hyperty;
 
     console.log("hyperty loaded:", hyperty);
-
-    window.hyperty = hyperty;
-    $('.reporter').show();
-
-    // add listener for roomMap and add each entry to the table
-    hyperty.addEventListener('roomMap', function (roomMap) {
-        console.debug('roomMap event received:', roomMap);
-        let urls = $('#urls');
-        for (room in roomMap) {
-            let appendString =
-                "<tr>" +
-                "<td>" + room + "</td>" +
-                "<td><pre>" + roomMap[room].url + "</pre></td>" +
-                "</tr>";
-            urls.append(appendString);
-        }
-    });
-
     $('#modifybtn').click(modify);
-
-    hyperty.addEventListener('onSubscribe', function (event) {
-        console.log('ONSUBSCRIBE: ', event);
-        alert("got subscription: " + JSON.stringify(event, null, 2));
-    });
 }
 
 function modify() {
     console.log("modify");
-    hyperty.modifyRoom("2012");
+    window.hyperty.modifyRoom("2012");
 }
 
 
