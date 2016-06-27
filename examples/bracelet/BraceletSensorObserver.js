@@ -13,24 +13,7 @@ function hypertyLoaded(result) {
 
   let email = $('.email-input');
   let observer = result.instance;
-  /*observer.onChange(function(event) {
-    let lblBattery = $('.bt-label');
-    lblBattery.removeClass('hide');
-    let lblSteps = $('.steps-label');
-    lblSteps.removeClass('hide');
-    console.log('new event', event);
-    let stepValue = $('.value_step');
-    let batteryValue = $('.value_battery');//stepValue.text = dataChanged
-    let type = event.data[0].type;
-    console.log('type', type);
-    if (type === 'battery') {
-      batteryValue.text(event.data[0].value);
-      console.log(event.data[0].value);
-    } else if (type === 'user_steps') {
-      stepValue.text(event.data[0].value);
-      console.log(event.data[0].value);
-    }
-  });*/
+
   button.on('click', function(event) {
     observer.discovery(email.val()).then(function(result) {
       console.log('resultt', result[0]);
@@ -46,94 +29,97 @@ function hypertyLoaded(result) {
       subscribe.on('click', function(event) {
         observer.connect(result[0].hypertyID).then(function(urlDataObject) {
           console.log('Subscribed', urlDataObject);
-          observer.ObserveBracelet(urlDataObject);
+          observer.ObserveBracelet(urlDataObject).then(observerDataObject => loadChart(observerDataObject.data.values[1].value));
         });
       });
     });});
 
   Highcharts.setOptions({global: {useUTC: false}});
 
-  $('#container').highcharts({
-      chart: {
-          type: 'spline',
-          animation: Highcharts.svg, // don't animate in old IE
-          marginRight: 10,
-          events: {
-              load: function() {
-                  let series = this.series[0];
-                  observer.onChange(function(event) {
-                    let lblBattery = $('.bt-label');
-                    let chart = $('#container');
-                    chart.removeClass('hide');
-                    lblBattery.removeClass('hide');
-                    let lblSteps = $('.steps-label');
-                    lblSteps.removeClass('hide');
-                    let stepValue = $('.value_step');
-                    let batteryValue = $('.value_battery');
-                    console.log('new event', event);
-                    let type = event.data[0].type;
-                    console.log('type', type);
-                    if (type === 'battery') {
-                      batteryValue.text(event.data[0].value);
-                      console.log(event.data[0].value);
-                    } else if (type === 'user_steps') {
-                      let x = (new Date()).getTime();
+  function loadChart(firstValue) {
+    $('#container').highcharts({
+        chart: {
+            type: 'spline',
+            animation: Highcharts.svg, // don't animate in old IE
+            marginRight: 10,
+            events: {
+                load: function() {
+                    let series = this.series[0];
+                    observer.onChange(function(event) {
+                      let lblBattery = $('.bt-label');
+                      let chart = $('#container');
+                      chart.removeClass('hide');
+                      lblBattery.removeClass('hide');
+                      let lblSteps = $('.steps-label');
+                      lblSteps.removeClass('hide');
+                      let stepValue = $('.value_step');
+                      let batteryValue = $('.value_battery');
+                      console.log('new event', event);
+                      let type = event.data[0].type;
+                      console.log('type', type);
+                      if (type === 'battery') {
+                        batteryValue.text(event.data[0].value);
+                        console.log(event.data[0].value);
+                      } else if (type === 'user_steps') {
+                        let x = (new Date()).getTime();
 
-                      series.addPoint([x, event.data[0].value], true, true);
-                      console.log('series', series);
-                      stepValue.text(event.data[0].value);
-                      console.log(event.data[0].value);
-                    }
-                  });
-                }
-            }
-        },
-      title: {
-          text: 'User Steps'
-        },
-      xAxis: {
-          type: 'datetime',
-          tickPixelInterval: 150
-        },
-      yAxis: {
-          title: {
-              text: 'Value'
-            },
-          plotLines: [{
-              value: 0,
-              width: 1,
-              color: '#808080'
-            }]
-        },
-      tooltip: {
-          formatter: function() {
-              return '<b>' + this.series.name + '</b><br/>' +
-                  Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                  Highcharts.numberFormat(this.y, 2);
-            }
-        },
-      legend: {
-          enabled: false
-        },
-      exporting: {
-          enabled: false
-        },
-      series: [{
-          name: 'Steps Data',
-          data: (function() {
-              // generate an array of random data
-              let data = [];
-              let time = (new Date()).getTime();
-              let i;
-
-              for (i = -19; i <= 0; i += 1) {
-                data.push({
-                      x: time + i * 1000,
-                      y: Math.random()
+                        series.addPoint([x, event.data[0].value], true, true);
+                        console.log('series', series);
+                        stepValue.text(event.data[0].value);
+                        console.log(event.data[0].value);
+                      }
                     });
+                  }
               }
-              return data;
-            }())
-        }]
-    });
+          },
+        title: {
+            text: 'User Steps'
+          },
+        xAxis: {
+            type: 'datetime',
+            tickPixelInterval: 150
+          },
+        yAxis: {
+            title: {
+                text: 'Value'
+              },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+              }]
+          },
+        tooltip: {
+            formatter: function() {
+                return '<b>' + this.series.name + '</b><br/>' +
+                    Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                    Highcharts.numberFormat(this.y, 2);
+              }
+          },
+        legend: {
+            enabled: false
+          },
+        exporting: {
+            enabled: false
+          },
+        series: [{
+            name: 'Steps Data',
+            data: (function() {
+                // generate an array of random data
+                let data = [];
+                let time = (new Date()).getTime();
+                let i;
+
+                for (i = -19; i <= 0; i += 1) {
+                  data.push({
+                        x: time + i * 1000,
+                        y: firstValue
+                      });
+                }
+                return data;
+              }())
+          }]
+      });
+  }
+
 }

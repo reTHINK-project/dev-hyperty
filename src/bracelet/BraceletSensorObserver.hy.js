@@ -52,9 +52,10 @@ class BraceletSensorObserver {
     return new Promise(function(resolve,reject) {
         _this._syncher.subscribe(_this._objectDescURL, url).then((observer) => {
           console.log('data object observer', observer);
+          resolve(observer);
           observer.onChange('*', (event) => {
             console.log('event->->->->->:', event);
-            resolve(event);
+
             if (_this._onChange) _this._onChange(event);
           });
         });
