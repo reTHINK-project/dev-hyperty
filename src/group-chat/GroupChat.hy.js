@@ -1,4 +1,4 @@
-import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery'
+import HypertyDiscovery from 'service-framework/dist/Discovery'
 import IdentityManager from 'service-framework/dist/IdentityManager'
 import URI from 'urijs'
 import { Syncher } from 'service-framework/dist/Syncher'
@@ -20,13 +20,9 @@ class Communication {
 let GroupChatHyperty = {
     _getHyFor (participants){
         return Promise.all(participants.map((p) => {
-            return this.hypertyDiscoveryService.discoverHypertiesPerUser(p.email, p.domain)
-                .then((hyperties)=>{
-                    return Object.keys(hyperties)
-                        .map((key)=>{return {key:key, descriptor:hyperties[key].descriptor, lastModified:hyperties[key].lastModified}})
-                        .filter((desc)=>desc.descriptor.endsWith('GroupChat'))
-                        .sort((a,b)=>(new Date(a.lastModified)<new Date(b.lastModified))?1:-1)
-                        .shift().key
+            return this.hypertyDiscoveryService.discoverHyperty(p.email,['comm'], ['chat'], p.domain)
+                .then((hyperty)=>{
+                    return hyperty.key
                 })
         }))
     },
@@ -67,12 +63,12 @@ let GroupChatHyperty = {
 
     onInvite (callback) {
         this.syncher.onNotification((event) =>{
-            if(event.schema === this.locationDescURL){
+            if(event.schema === this.locationDS){
                 this.syncher.subscribe(this.locationDescURL, event.url)
                     .then((dataObject) => {
                         this._position = dataObject
                     })
-            }else if(event.schema === this.objectDescURL){
+            }else if(event.schema === this.groupChatDS){
                 let identity = undefined
                 this._resolveIdentity()
                     .then((id)=>identity=id)
@@ -89,23 +85,27 @@ let GroupChatHyperty = {
 }
 
 let groupChatFactory = function(hypertyURL, bus, config){
-    let syncher = new Syncher(hypertyURL, bus, config);
+    let syncher = new Syncher(hypertyURL, bus, config)
     let hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus)
     let identityManager = new IdentityManager(hypertyURL, config.runtimeURL, bus)
     let uri = new URI(hypertyURL)
     let notifications = NotificationsTrigger(uri.hostname(), syncher, hypertyDiscovery)
+    let groupChatDS = 'Communication'
+    let locationDS = 'Context'
     
     return Object.assign(Object.create(GroupChatHyperty), {
-            '_position': {data:{values:{}}},
-            'syncher': syncher,
-            'hypertyDiscoveryService': hypertyDiscovery,
-            'identityManagerService': identityManager,
-            'objectDescURL': 'hyperty-catalogue://catalogue.' + uri.hostname() + '/.well-known/dataschema/Communication',
-            'locationDescURL': 'hyperty-catalogue://catalogue.' + uri.hostname() + '/.well-known/dataschema/Context',
-            'hypertyURL': hypertyURL,
-            'notifications': notifications,
-            domain: uri.hostname()
-        })
+        _position: {data:{values:{}}},
+        syncher: syncher,
+        hypertyDiscoveryService: hypertyDiscovery,
+        identityManagerService: identityManager,
+        objectDescURL:`hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/${groupChatDS}`,
+        locationDescURL:`hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/${locationDS}`,
+        hypertyURL: hypertyURL,
+        notifications: notifications,
+        domain: uri.hostname(),
+        groupChatDS: groupChatDS,
+        locationDS: locationDS
+    })
 }
 
 export default function activate(hypertyURL, bus, config){
