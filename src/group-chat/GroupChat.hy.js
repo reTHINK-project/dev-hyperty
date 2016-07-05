@@ -1,4 +1,4 @@
-import HypertyDiscovery from 'service-framework/dist/Discovery'
+import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery'
 import IdentityManager from 'service-framework/dist/IdentityManager'
 import URI from 'urijs'
 import { Syncher } from 'service-framework/dist/Syncher'
@@ -20,9 +20,13 @@ class Communication {
 let GroupChatHyperty = {
     _getHyFor (participants){
         return Promise.all(participants.map((p) => {
-            return this.hypertyDiscoveryService.discoverHyperty(p.email,['comm'], ['chat'], p.domain)
-                .then((hyperty)=>{
-                    return hyperty.key
+            return this.hypertyDiscoveryService.discoverHypertiesPerUser(p.email, p.domain)
+                .then((hyperties)=>{
+                    return Object.keys(hyperties)
+                        .map((key)=>{return {key:key, descriptor:hyperties[key].descriptor, lastModified:hyperties[key].lastModified}})
+                        .filter((desc)=>desc.descriptor.endsWith('GroupChat'))
+                        .sort((a,b)=>(new Date(a.lastModified)<new Date(b.lastModified))?1:-1)
+                        .shift().key
                 })
         }))
     },

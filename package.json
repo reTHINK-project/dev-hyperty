@@ -23,11 +23,5 @@
   "devDependencies": {
     "esdoc": "^0.4.7",
     "esdoc-es7-plugin": "0.0.3"
-  },
-  "dependencies": {
-    "gulp-uglify": "1.5.4",
-    "run-sequence": "1.2.2",
-    "runtime-browser": "github:rethink-project/dev-runtime-browser#master",
-    "service-framework": "github:rethink-project/dev-service-framework#develop"
   }
 }
