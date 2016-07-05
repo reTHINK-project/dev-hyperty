@@ -16,37 +16,37 @@ console.log('Configuration file:', config);
 
 rethink.install(config).then(function(result) {
 
-  runtimeLoader = result;
-  console.log(result);
+    runtimeLoader = result;
+    console.log(result);
 
-  return getListOfHyperties(domain);
+    return getListOfHyperties(domain);
 
-}).then(function(hyperties) {
+  }).then(function(hyperties) {
 
-  let $dropDown = $('#hyperties-dropdown');
+    let $dropDown = $('#hyperties-dropdown');
 
-  hyperties.forEach(function(key) {
-    let $item = $(document.createElement('li'));
-    let $link = $(document.createElement('a'));
+    hyperties.forEach(function(key) {
+        let $item = $(document.createElement('li'));
+        let $link = $(document.createElement('a'));
 
-    // create the link features
-    $link.html(key);
-    $link.css('text-transform', 'none');
-    $link.attr('data-name', key);
-    $link.on('click', loadHyperty);
+        // create the link features
+        $link.html(key);
+        $link.css('text-transform', 'none');
+        $link.attr('data-name', key);
+        $link.on('click', loadHyperty);
 
-    $item.append($link);
+        $item.append($link);
 
-    $dropDown.append($item);
+        $dropDown.append($item);
+      });
+
+    $('.preloader-wrapper').remove();
+    $('.card .card-action').removeClass('center');
+    $('.hyperties-list-holder').removeClass('hide');
+
+  }).catch(function(reason) {
+    console.error(reason);
   });
-
-  $('.preloader-wrapper').remove();
-  $('.card .card-action').removeClass('center');
-  $('.hyperties-list-holder').removeClass('hide');
-
-}).catch(function(reason) {
-  console.error(reason);
-});
 
 function getListOfHyperties(domain) {
 
@@ -56,29 +56,27 @@ function getListOfHyperties(domain) {
   }
 
   return new Promise(function(resolve, reject) {
-    $.ajax({
-      url: hypertiesURL,
-      success: function(result) {
-        let response = [];
-        if (typeof result === 'object') {
-          Object.keys(result).forEach(function(key) {
-            response.push(key);
+        $.ajax({
+            url: hypertiesURL,
+            success: function(result) {
+                let response = [];
+                if (typeof result === 'object') {
+                  Object.keys(result).forEach(function(key) {
+                      response.push(key);
+                    });
+                } else if (typeof result === 'string') {
+                  response = JSON.parse(result);
+                }
+                resolve(response);
+              },
+            fail: function(reason) {
+                reject(reason);
+                notification(reason, 'warn');
+              }
+
           });
-        } else if (typeof result === 'string') {
-          response = JSON.parse(result);
-        }
-        resolve(response);
-      },
-      fail: function(reason) {
-        reject(reason);
-        notification(reason, 'warn');
-      }
-
-    });
-  });
-
+      });
 }
-
 function loadHyperty(event) {
   event.preventDefault();
 
@@ -87,7 +85,7 @@ function loadHyperty(event) {
   let hypertyPath = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/hyperty/' + hypertyName;
   if (config.development) {
     hypertyPath = 'hyperty-catalogue://' + domain + '/.well-known/hyperty/' + hypertyName;
-  };
+  }
 
   let $el = $('.main-content .notification');
   addLoader($el);
@@ -112,17 +110,17 @@ function hypertyDeployed(hyperty) {
   switch (hyperty.name) {
     case 'Connector':
       template = 'connector/Connector';
-      script =  'connector/demo.js';
+      script = 'connector/demo.js';
       break;
 
     case 'GroupChatManager':
       template = 'group-chat-manager/ChatManager';
-      script =  'group-chat-manager/demo.js';
+      script = 'group-chat-manager/demo.js';
       break;
 
     case 'HelloWorldObserver':
       template = 'hello-world/helloWorld';
-      script =  'hello-world/helloObserver.js';
+      script = 'hello-world/helloObserver.js';
       break;
 
     case 'HelloWorldReporter':
@@ -131,14 +129,14 @@ function hypertyDeployed(hyperty) {
       break;
 
     case 'SurveyReporter':
-        template = 'survey/surveyReporter';
-        script = 'survey/surveyReporter.js';
-        break;
+      template = 'survey/surveyReporter';
+      script = 'survey/surveyReporter.js';
+      break;
 
     case 'SurveyObserver':
-        template = 'survey/surveyObserver';
-        script = 'survey/surveyObserver.js';
-        break;
+      template = 'survey/surveyObserver';
+      script = 'survey/surveyObserver.js';
+      break;
 
     case 'GroupChat':
       template = 'group-chat/groupChat';
@@ -160,20 +158,26 @@ function hypertyDeployed(hyperty) {
       script = 'location/location.js';
       break;
 
-    case 'RoomUIObserver':
-      template = 'room-ui/room';
-      script = 'room-ui/roomObserver.js';
+    case 'RoomClient':
+      template = 'room-ui/roomClient';
+      script = 'room-ui/roomClient.js';
       break;
 
-    case 'RoomUIReporter':
-      template = 'room-ui/room';
-      script = 'room-ui/roomReporter.js';
+    case 'RoomServer':
+      template = 'room-ui/roomServer';
+      script = 'room-ui/roomServer.js';
       break;
 
     case 'UserStatus':
       template = 'user-status/UserStatus';
       script = 'user-status/user-status.js';
       break;
+
+    case 'BraceletSensorObserver':
+      template = 'bracelet/bracelet';
+      script = 'bracelet/BraceletSensorObserver.js';
+      break;
+
   }
 
   if (!template) {
@@ -203,11 +207,11 @@ function hypertyFail(reason) {
 function addLoader(el) {
 
   let html = '<div class="preloader preloader-wrapper small active">' +
-  '<div class="spinner-layer spinner-blue-only">' +
-  '<div class="circle-clipper left">' +
-  '<div class="circle"></div></div><div class="gap-patch"><div class="circle"></div>' +
-  '</div><div class="circle-clipper right">' +
-  '<div class="circle"></div></div></div></div>';
+      '<div class="spinner-layer spinner-blue-only">' +
+      '<div class="circle-clipper left">' +
+      '<div class="circle"></div></div><div class="gap-patch"><div class="circle"></div>' +
+      '</div><div class="circle-clipper right">' +
+      '<div class="circle"></div></div></div></div>';
 
   el.addClass('center');
   el.append(html);
@@ -224,7 +228,7 @@ function notification(msg, type) {
   let color = type === 'error' ? 'red' : 'black';
 
   removeLoader($el);
-  $el.append('<span class="' + color + '-text">' + msg  + '</span>');
+  $el.append('<span class="' + color + '-text">' + msg + '</span>');
 }
 
 // runtimeCatalogue.getHypertyDescriptor(hyperty).then(function(descriptor) {

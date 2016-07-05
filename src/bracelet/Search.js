@@ -1,5 +1,5 @@
 // TODO: optimize this process
-const DOMAINS = ['hybroker.rethink.ptinovacao.pt', 'rethink.quobis.com'];
+const DOMAINS = ['hybroker.rethink.ptinovacao.pt'];
 
 class Search {
 
@@ -37,7 +37,7 @@ class Search {
    */
   users(usersURLs) {
 
-    if (!usersURLs) throw new Error('You need to provide a list of users');
+    if (!usersURLs) throw new Error('You need to provide a list of');
 
     let _this = this;
 
@@ -49,17 +49,19 @@ class Search {
         console.info('Don\'t have users to discovery');
         resolve(usersURLs);
       } else {
+        console.log('Get all users');
         let getUsers = [];
 
         usersURLs.forEach((userURL) => {
           DOMAINS.forEach((domain) => {
-            getUsers.push(_this.discovery.discoverHyperty(userURL, ['comm'], ['chat'], domain));
+            getUsers.push(_this.discovery.discoverHyperty(userURL, ['context'], ['steps','battery'], domain));
           });
         });
 
         console.info('Requests promises: ', getUsers);
-
         Promise.all(getUsers).then((hyperties) => {
+
+          console.log('Hyperties: ', hyperties);
 
           let result = hyperties.map(function(hyperty) {
 
@@ -71,7 +73,7 @@ class Search {
               }
               return a;
             });
-            return hyperty[recent].hypertyID;
+            return hyperty[recent];
           });
 
           let clean = result.filter((hyperty) => {

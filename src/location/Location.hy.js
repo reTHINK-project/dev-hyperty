@@ -24,7 +24,7 @@ const LocationHyperty = {
 
 const LocationHypertyFactory = function(hypertyURL, bus, config){
     let uri = new URI(hypertyURL)
-    LocationHyperty._objectDescURL = `hyperty-catalogue://${uri.hostname()}/.well-known/dataschemas/ContextDataSchema`
+    LocationHyperty._objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Context`
     LocationHyperty._syncher = new Syncher(hypertyURL, bus, config)
 
     return LocationHyperty

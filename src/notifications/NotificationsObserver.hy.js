@@ -26,7 +26,7 @@ let NotificationsObserverFactory = function(hypertyURL, bus, config){
     let syncher = new Syncher(hypertyURL, bus, config);
     return Object.assign(Object.create(NotificationsObserver), {
             'syncher': syncher,
-            'objectDescURL': 'hyperty-catalogue://' + uri.hostname() + '/.well-known/dataschemas/Communication',
+            'objectDescURL': 'hyperty-catalogue://catalogue.' + uri.hostname() + '/.well-known/dataschema/Communication',
             'hypertyURL': hypertyURL,
             notifications: []
         })

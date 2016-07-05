@@ -1,35 +1,16 @@
 // "use strict";
 
-var hyperty;
-
 function hypertyLoaded(result) {
-
-
     hyperty = result.instance;
+    window.hyperty = hyperty;
 
     console.log("hyperty loaded:", hyperty);
-
-    window.hyperty = hyperty;
-    $('.reporter').show();
-
-    hyperty.addEventListener('objUrl', function (url) {
-        console.log('objUrl event received:', url);
-        let urlp = $('#url');
-        urlp.append(url);
-    });
-
     $('#modifybtn').click(modify);
-
-    hyperty.addEventListener('onSubscribe', function (event) {
-        console.log('ONSUBSCRIBE: ', event);
-        alert("got subscription: " + JSON.stringify(event, null, 2));
-    });
-
 }
 
 function modify() {
     console.log("modify");
-    hyperty.modifyRoom();
+    window.hyperty.modifyRoom("2012");
 }
 
 
