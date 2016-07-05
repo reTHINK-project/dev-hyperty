@@ -160,7 +160,7 @@ class Connector {
    * @param  {string}             name         is a string to identify the connection.
    * @return {<Promise>ConnectionController}   A ConnectionController object as a Promise.
    */
-  connect(userURL, stream, name) {
+  connect(userURL, stream, name, domain) {
     // TODO: Pass argument options as a stream, because is specific of implementation;
     // TODO: CHange the hypertyURL for a list of URLS
     let _this = this;
@@ -188,7 +188,7 @@ class Connector {
         _this.connectionObject.owner = identity.userURL;
         _this.connectionObject.peer = '';
 
-        return _this.search.users([userURL]);
+        return _this.search.users([userURL], domain);
       })
       .then(function(hyperties) {
 

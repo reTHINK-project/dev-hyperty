@@ -103,7 +103,7 @@ class GroupChatManager {
    * @param  {array<URL.userURL>}         users Array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL, like this format user://<ipddomain>/<user-identifier>
    * @return {<Promise>ChatController}    A ChatController object as a Promise.
    */
-  create(name, users) {
+  create(name, users, domain) {
 
     let _this = this;
     let syncher = _this._syncher;
@@ -124,7 +124,9 @@ class GroupChatManager {
         // Add my identity
         _this.communicationObject.participants.push(identity);
 
-        return _this.search.users(users);
+        console.info(`searching ${users[0]} at domain `, domain);
+
+        return _this.search.users(users, domain);
       }).then((hypertiesIDs) => {
 
         console.info(`Have ${hypertiesIDs.length} users;`);
