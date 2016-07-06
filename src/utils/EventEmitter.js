@@ -43,10 +43,12 @@ class EventEmitter {
     addEventListener(eventType, cb) {
         // add callback to the list of callbacks for this type
         // if the list doesn't exist yet, create it with the callback as member
-        if (!this.__eventListeners[eventType])
-            this.__eventListeners[eventType] = [cb];
-        else
-            this.__eventListeners[eventType].push(cb);
+        if (cb != undefined) {
+            if (!this.__eventListeners[eventType])
+                this.__eventListeners[eventType] = [cb];
+            else
+                this.__eventListeners[eventType].push(cb);
+        }
     }
 
     /**
