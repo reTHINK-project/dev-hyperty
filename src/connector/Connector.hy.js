@@ -160,11 +160,13 @@ class Connector {
    * @param  {string}             name         is a string to identify the connection.
    * @return {<Promise>ConnectionController}   A ConnectionController object as a Promise.
    */
-  connect(userURL, stream, name, domain) {
+  connect(hypertyURL, stream, name) {
     // TODO: Pass argument options as a stream, because is specific of implementation;
     // TODO: CHange the hypertyURL for a list of URLS
     let _this = this;
     let syncher = _this._syncher;
+
+    console.log('connecting: ', hypertyURL );
 
     return new Promise(function(resolve, reject) {
 
@@ -185,8 +187,10 @@ class Connector {
         _this.connectionObject.name = connectionName;
         _this.connectionObject.scheme = 'connection';
         _this.connectionObject.status = '';
-        _this.connectionObject.owner = identity.userURL;
+        _this.connectionObject.owner = identity.hypertyURL;
         _this.connectionObject.peer = '';
+
+      /*  console.log('connector searching: ', [userURL], `at domain `, domain);
 
         return _this.search.users([userURL], domain);
       })
@@ -196,8 +200,8 @@ class Connector {
           return hyperty.hypertyID;
         });
 
-        // Only support one to one connection;
-        selectedHyperty = hypertiesURLs[0];
+        // Only support one to one connection;*/
+        selectedHyperty = hypertyURL;
         console.info('Only support communication one to one, selected hyperty: ', selectedHyperty);
         return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject);
       })
