@@ -3,7 +3,6 @@
 	"id": "HelloObject",
 	"type": "object",
 	"required": ["hello"],
-	"additionalProperties": false,
   "properties": {
 		"scheme": {
 			"constant": "hello"

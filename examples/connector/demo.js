@@ -111,6 +111,7 @@ function discoverEmail(search) {
   var section = $('.discover');
   var searchForm = section.find('.form');
   var inputField = searchForm.find('.friend-email');
+  var inputDomain = searchForm.find('.input-domain');
 
   section.removeClass('hide');
 
@@ -125,8 +126,11 @@ function discoverEmail(search) {
     collection.prepend(collectionItem);
 
     var email = inputField.val();
+    var domain = inputDomain.val();
 
-    search.users([email]).then(emailDiscovered).catch(emailDiscoveredError);
+    console.log('searching for: ', email, ' at domain: ', domain);
+
+    search.users([email], domain).then(emailDiscovered).catch(emailDiscoveredError);
 
   });
 }

@@ -71,6 +71,10 @@ function addParticipantEvent(event) {
     '  <input class="input-email" name="email" id="email-' + countParticipants + '" required aria-required="true" type="text">' +
     '  <label for="email-' + countParticipants + '">Participant Email</label>' +
     '</div>' +
+    '<div class="input-field col s4">' +
+    '  <input class="input-domain" name="domain" id="domain-' + countParticipants + '" type="text">' +
+    '  <label for="domain-' + countParticipants + '">Participant domain</label>' +
+    '</div>' +
   '</div>';
 
   participants.append(participantEl);
@@ -84,17 +88,21 @@ function createRoomEvent(event) {
   let participantsForm = createRoomModal.find('.participants-form');
   let serializedObject = $(participantsForm).serializeArray();
   let users = [];
+  let domain;
+
   if (serializedObject) {
     let emailsObject = serializedObject.filter((field) => { return field.name === 'email';});
     users = emailsObject.map((emailObject) => { return emailObject.value; });
+    let domainObject = serializedObject.filter((field) => { return field.name === 'domain';});
+    domain = domainObject.map((domainObject) => { return domainObject.value; });
   }
 
   // Prepare the chat
   let name = createRoomModal.find('.input-name').val();
 
-  console.log('Participants: ', users);
+  console.log('Participants: ', users, ' domain: ', domain);
 
-  chatGroupManager.create(name, users).then(function(chatController) {
+  chatGroupManager.create(name, users, domain[0]).then(function(chatController) {
 
     let isOwner = true;
     prepareChat(chatController, isOwner);
