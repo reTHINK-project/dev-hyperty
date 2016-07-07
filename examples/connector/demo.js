@@ -54,6 +54,8 @@ function notificationHandler(controller, identity) {
 
   acceptBtn.on('click', function(e) {
 
+    console.log('accepted call from', calleeInfo);
+
     e.preventDefault();
 
     var options = options || {video: true, audio: true};
@@ -184,14 +186,16 @@ function emailDiscoveredError(result) {
 
 function openVideo(result) {
 
-  var toUser = result[0].userID;
+  console.error('connecting hyperty: ', result);
+
+  var toHyperty = result[0].hypertyID;
   var localMediaStream;
 
   var options = options || {video: true, audio: true};
   getUserMedia(options).then(function(mediaStream) {
     console.info('recived media stream: ', mediaStream);
     localMediaStream = mediaStream;
-    return connector.connect(toUser, mediaStream);
+    return connector.connect(toHyperty, mediaStream);
   })
   .then(function(controller) {
     showVideo(controller);

@@ -252,7 +252,9 @@ class RoomServer {
         let context = {
             "id": roomJson._id,
             "name": roomJson.name,
-            "values": []
+            "values": [],
+            "scheme": "context",
+            "type": "chat"
         };
 
         roomJson.devices.forEach((device) => {
