@@ -14,7 +14,7 @@ class BraceletSensorReporter {
 
     _this._domain = divideURL(hypertyURL).domain;
 
-    _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Context';
+    _this._objectDescURL = 'hyperty-catalogue://' + _this._domain + '/.well-known/dataschema/Context';
 
     console.log('Init BraceletSensorReporter: ', hypertyURL);
     _this._syncher = new Syncher(hypertyURL, bus, configuration);
@@ -53,7 +53,7 @@ class BraceletSensorReporter {
           resolve(devicesList);
         }, function(b) {
           console.log('status3', b); });
-      }, 5000);
+      }, 10000);
 
       bluetoothle.initialize((a) => {
         console.log('ble initialized', a);
@@ -75,6 +75,9 @@ class BraceletSensorReporter {
       let disconnectSuccess = function(status) {
         console.log('disconnect success', status);
         _this.reconnecting = true;
+        let statusChanged = { connection: 'reconnecting', address: id };
+        if (_this._onStatusChange) _this._onStatusChange(statusChanged);
+        resolve('reconnecting');
         setTimeout(() => {
           bluetoothle.reconnect(reconnectSuccess, reconnectError, params);
         }, 5000);
@@ -114,12 +117,18 @@ class BraceletSensorReporter {
         console.log('reconnect success', status);
         if (status.status === 'connected') {
           _this.reconnecting = false;
+          let statusChanged = { connection: 'connected', address: id };
+          if (_this._onStatusChange) _this._onStatusChange(statusChanged);
+          resolve('connected');
           console.log('Connected');
           bluetoothle.discover(discoverSuccess, discoverError, params);
         }else if (status.status === 'disconnected') {
           if (!_this.reconnecting) {
             console.log('On Reconnect Success Reconnecting after disconnect');
             _this.reconnecting = true;
+            let statusChanged = { connection: 'reconnecting', address: id };
+            if (_this._onStatusChange) _this._onStatusChange(statusChanged);
+            resolve('reconnecting');
             setTimeout(() => {
               bluetoothle.reconnect(reconnectSuccess, reconnectError, params);
             }, 5000);
@@ -140,13 +149,16 @@ class BraceletSensorReporter {
       let connectSuccess = function(status) {
         console.log('connect success', status);
 
-        if (status.status === 'connected')
+        if (status.status === 'connected') {
+          resolve('connected');
           bluetoothle.discover(discoverSuccess, discoverError, params);
-        else if (status.status === 'disconnected') {
+        }else if (status.status === 'disconnected') {
           if (!_this.reconnecting) {
             console.log('Reconnecting after disconnect');
             _this.reconnecting = true;
-
+            let statusChanged = { connection: 'reconnecting', address: id };
+            if (_this._onStatusChange) _this._onStatusChange(statusChanged);
+            resolve('reconnecting');
             setTimeout(() => {
               bluetoothle.reconnect(reconnectSuccess, reconnectError, params);
             }, 5000);
@@ -164,6 +176,9 @@ class BraceletSensorReporter {
           if (!_this.reconnecting)
           {
             _this.reconnecting = true;
+            let statusChanged = { connection: 'reconnecting', address: id };
+            if (_this._onStatusChange) _this._onStatusChange(statusChanged);
+            resolve('reconnecting');
             console.log('trying to reconnect', _this.reconnecting);
             setTimeout(() => {
               bluetoothle.reconnect(reconnectSuccess, reconnectError, params);
@@ -172,7 +187,9 @@ class BraceletSensorReporter {
         }
       };
       if (_this.reconnecting) {
-        console.log('Still Reconnecting');
+        console.log('Still Reconnecting, resolve reconnecting..');
+        let statusChanged = { connection: 'reconnecting', address: id };
+        if (_this._onStatusChange) _this._onStatusChange(statusChanged);
       } else {
         console.log('Connecting');
         bluetoothle.connect(connectSuccess, connectError, params);
@@ -209,7 +226,7 @@ class BraceletSensorReporter {
       console.log('HYPERTY REPORTER : ', reporter.url);
       setInterval(() => {
         bluetoothle.isConnected(isConnectedSuccess, isConnectedError, params);
-      }, 3000);
+      }, 2000);
     });
 
   }
@@ -268,6 +285,11 @@ class BraceletSensorReporter {
   onDataChange(callback) {
     let _this = this;
     _this._onDataChange = callback;
+  }
+
+  onStatusChange(callback) {
+    let _this = this;
+    _this._onStatusChange = callback;
   }
 }
 
