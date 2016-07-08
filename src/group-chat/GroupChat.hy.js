@@ -1,71 +1,35 @@
-import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery'
+import Discovery from 'service-framework/dist/Discovery'
 import IdentityManager from 'service-framework/dist/IdentityManager'
 import URI from 'urijs'
 import { Syncher } from 'service-framework/dist/Syncher'
 import GroupChat from './GroupChat' 
 import NotificationsTrigger from '../notifications/notifications-trigger'
-
-class Communication {
-    constructor(name, participants){
-        this.startingTime = Date.now()
-        this.lastModified = Date.now()
-        this.status = 'pending'
-        this.resources = []
-        this.children = []
-        this.name = name
-        this.participants = participants
-    }
-}
+import buildComm from './communication'
 
 let GroupChatHyperty = {
     _getHyFor (participants){
         return Promise.all(participants.map((p) => {
-            return this.hypertyDiscoveryService.discoverHypertiesPerUser(p.email, p.domain)
+            return this.hypertyDiscoveryService.discoverHyperty(p.email, this.scheme, this.resources, p.domain)
                 .then((hyperties)=>{
                     let target = Object.keys(hyperties)
-                        .map((key)=>{return {key:key, resource:hyperties[key].resources[0], dataScheme: hyperties[key].dataSchemes[0], lastModified:hyperties[key].lastModified}})
-                        .filter((desc)=>desc.resource === 'chat' && desc.dataScheme === 'comm')
-                        .sort((a,b)=>(new Date(a.lastModified)<new Date(b.lastModified))?1:-1)
+                        .sort((a,b)=>(new Date(hyperties[a].lastModified)<new Date(hyperties[b].lastModified))?1:-1)
                         .shift()
 
                     if(!target)
                         throw new Error('Chat Hyperty not found', p)
 
-                    return target.key
+                    return target
                 })
         }))
     },
 
-    _createSyncher (name, hyperties){
-        return this.syncher.create(this.objectDescURL, hyperties, new Communication(name, hyperties.concat([this.hypertyURL])))
-    },
-
-    _resolveIdentity(){
-        return new Promise((resolve)=>{
-            if(this.identity)
-            {
-                resolve(this.identity)
-            }
-            else
-            {
-                this.identityManagerService.discoverUserRegistered('.', this.hypertyURL)
-                    .then((identity)=>{
-                        this.identity=identity
-                        resolve(identity)
-                    })
-            }
-        })
-    },
-
     create (name, participants) {
-        let identity = undefined
-        return this._resolveIdentity()
-            .then((id)=>identity=id)
-            .then(()=>this._getHyFor(participants))
-            .then((hyperties)=>this._createSyncher(name, hyperties))
+        return this._getHyFor(participants)
+            .then((hyperties)=>this.syncher.create(this.objectDescURL, hyperties, buildComm(name, hyperties.concat([this.hypertyURL]))))
             .then((dataObjectReporter) => {
                 dataObjectReporter.onSubscription((event)=>event.accept())
-                return GroupChat(dataObjectReporter, this._position.data, identity)
+                return this.identityManagerService.discoverUserRegistered()
+                    .then(identity=>GroupChat(dataObjectReporter, this._position.data, identity))
             })
     },
 
@@ -77,14 +41,14 @@ let GroupChatHyperty = {
                         this._position = dataObject
                     })
             }else if(event.schema.endsWith(this.groupChatDS)){
-                let identity = undefined
-                this._resolveIdentity()
-                    .then((id)=>identity=id)
-                    .then(()=>this.syncher.subscribe(this.objectDescURL, event.url))
+                this.syncher.subscribe(this.objectDescURL, event.url)
                     .then((dataObject) => {
-                        this.notifications.trigger([{email: identity.username, domain: this.domain}], 
-                                {type: 'NEW_CHAT', payload:{id: dataObject.url, name: dataObject.data.name}})
-                        return callback(GroupChat(dataObject, this._position.data, identity))
+                        return this.identityManagerService.discoverUserRegistered()
+                            .then(identity=>{
+                                this.notifications.trigger([{email: identity.username, domain: this.domain}], 
+                                        {type: 'NEW_CHAT', payload:{id: dataObject.url, name: dataObject.data.name}})
+                                callback(GroupChat(dataObject, this._position.data, identity))
+                            })
                     })
             }
         })
@@ -93,13 +57,13 @@ let GroupChatHyperty = {
 
 let groupChatFactory = function(hypertyURL, bus, config){
     let syncher = new Syncher(hypertyURL, bus, config)
-    let hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus)
+    let hypertyDiscovery = new Discovery(hypertyURL, bus)
     let identityManager = new IdentityManager(hypertyURL, config.runtimeURL, bus)
     let uri = new URI(hypertyURL)
     let notifications = NotificationsTrigger(uri.hostname(), syncher, hypertyDiscovery)
     let groupChatDS = 'Communication'
     let locationDS = 'Context'
-    
+
     return Object.assign(Object.create(GroupChatHyperty), {
         _position: {data:{values:{}}},
         syncher: syncher,
@@ -111,7 +75,9 @@ let groupChatFactory = function(hypertyURL, bus, config){
         notifications: notifications,
         domain: uri.hostname(),
         groupChatDS: groupChatDS,
-        locationDS: locationDS
+        locationDS: locationDS,
+        scheme: ['comm'],
+        resources: ['chat']
     })
 }
 
