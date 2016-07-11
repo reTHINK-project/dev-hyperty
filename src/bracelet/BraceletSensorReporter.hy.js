@@ -14,7 +14,7 @@ class BraceletSensorReporter {
 
     _this._domain = divideURL(hypertyURL).domain;
 
-    _this._objectDescURL = 'hyperty-catalogue://' + _this._domain + '/.well-known/dataschema/Context';
+    _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Context';
 
     console.log('Init BraceletSensorReporter: ', hypertyURL);
     _this._syncher = new Syncher(hypertyURL, bus, configuration);
