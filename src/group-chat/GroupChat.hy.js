@@ -23,13 +23,23 @@ let GroupChatHyperty = {
         }))
     },
 
+    _addChild (dataObject){
+        return (message)=>dataObject.addChild('chatmessages', message)
+    },
+
+    _onAddChild(dataObject){
+        return (callback)=>{dataObject.onAddChild((child)=>callback(child.data || child.value, child.identity))} 
+    },
+
     create (name, participants) {
         return this._getHyFor(participants)
             .then((hyperties)=>this.syncher.create(this.objectDescURL, hyperties, buildComm(name, hyperties.concat([this.hypertyURL]))))
             .then((dataObjectReporter) => {
                 dataObjectReporter.onSubscription((event)=>event.accept())
                 return this.identityManagerService.discoverUserRegistered()
-                    .then(identity=>GroupChat(dataObjectReporter, this._position.data, identity))
+                    .then(identity=>GroupChat(dataObjectReporter.url, this._addChild(dataObjectReporter),
+                                this._onAddChild(dataObjectReporter), 
+                                dataObjectReporter.data, this._position.data, identity))
             })
     },
 
@@ -47,7 +57,8 @@ let GroupChatHyperty = {
                             .then(identity=>{
                                 this.notifications.trigger([{email: identity.username, domain: this.domain}], 
                                         {type: 'NEW_CHAT', payload:{id: dataObject.url, name: dataObject.data.name}})
-                                callback(GroupChat(dataObject, this._position.data, identity))
+                                callback(GroupChat(dataObject.url, this._addChild(dataObject), this._onAddChild(dataObject), 
+                                            dataObject.data, this._position.data, identity))
                             })
                     })
             }
