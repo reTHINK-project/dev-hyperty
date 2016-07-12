@@ -35,7 +35,7 @@ class Search {
    * @param  {array<URL.userURL>}  users List of UserUR, like this format user://<ipddomain>/<user-identifier>
    * @return {Promise}
    */
-  users(usersURLs, providedDomain) {
+  users(usersURLs, providedDomains) {
 
     if (!usersURLs) throw new Error('You need to provide a list of users');
 
@@ -51,15 +51,16 @@ class Search {
       } else {
         let getUsers = [];
 
-        usersURLs.forEach((userURL) => {
-          if (providedDomain) {
-              console.log('Search for provided domain:', providedDomain);
-              getUsers.push(_this.discovery.discoverHyperty(userURL, ['comm'], ['chat'], providedDomain));
+        usersURLs.forEach((userURL, index) => {
+          if (providedDomains) {
+            let currentDomain = providedDomains[index];
+            console.log('Search user ' + userURL + ' for provided domain:', currentDomain);
+            getUsers.push(_this.discovery.discoverHyperty(userURL, ['comm'], ['chat'], currentDomain));
           } else {
-          DOMAINS.forEach((domain) => {
-            getUsers.push(_this.discovery.discoverHyperty(userURL, ['comm'], ['chat'], domain));
-          });
-        }
+            DOMAINS.forEach((domain) => {
+              getUsers.push(_this.discovery.discoverHyperty(userURL, ['comm'], ['chat'], domain));
+            });
+          }
         });
 
         console.info('Requests promises: ', getUsers);

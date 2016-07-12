@@ -85,20 +85,24 @@ function notificationHandler(controller, identity) {
   var parseInformation = '<div class="col s12">' +
         '<div class="row valign-wrapper">' +
           '<div class="col s2">' +
-            '<img src="' + calleeInfo.infoToken.picture + '" alt="" class="circle responsive-img">' +
+            '<img src="' + calleeInfo.avatar + '" alt="" class="circle responsive-img">' +
           '</div>' +
           '<span class="col s10">' +
             '<div class="row">' +
               '<span class="col s3 text-right">Name: </span>' +
-              '<span class="col s9 black-text">' + calleeInfo.infoToken.name + '</span>' +
+              '<span class="col s9 black-text">' + calleeInfo.cn + '</span>' +
             '</span>' +
             '<span class="row">' +
               '<span class="col s3 text-right">Email: </span>' +
-              '<span class="col s9 black-text">' + calleeInfo.infoToken.email + '</span>' +
+              '<span class="col s9 black-text">' + calleeInfo.username + '</span>' +
             '</span>' +
             '<span class="row">' +
-              '<span class="col s3 text-right">locale: </span>' +
-              '<span class="col s9 black-text">' + calleeInfo.infoToken.locale + '</span>' +
+              '<span class="col s3 text-right">Locale: </span>' +
+              '<span class="col s9 black-text">' + calleeInfo.locale + '</span>' +
+            '</span>' +
+            '<span class="row">' +
+              '<span class="col s3 text-right">UserURL: </span>' +
+              '<span class="col s9 black-text">' + calleeInfo.userURL + '</span>' +
             '</span>' +
           '</div>' +
         '</div>';
@@ -123,6 +127,7 @@ function discoverEmail(search) {
     var collection = section.find('.collection');
     var collectionItem = '<li class="collection-item item-loader"><div class="preloader-wrapper small active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div></li>';
 
+    collection.empty();
     collection.removeClass('hide');
     collection.addClass('center-align');
     collection.prepend(collectionItem);
@@ -138,33 +143,51 @@ function discoverEmail(search) {
 }
 
 function emailDiscovered(result) {
-  console.log('Email Discovered: ', result[0]);
+  console.log('Email Discovered: ', result);
 
   var section = $('.discover');
-  var avatar = 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg';
   var collection = section.find('.collection');
-  var collectionItem = '<li data-url="' + result[0].userID + '" class="collection-item avatar">' +
-  '<img src="' + avatar + '" alt="" class="circle" />' +
-  '<span class="title"><b>UserURL: </b>' + result[0].userID + '</span><p>&nbsp;</p>' +
-  '<p>' + result[0].descriptor + '<br>' + result[0].hypertyID + '</p>' +
-  '<a title="Call to ' + result[0].userID + '" class="waves-effect waves-light btn call-btn secondary-content"><i class="material-icons">call</i></a>' +
-  '</li>';
+  var collectionItem;
 
   collection.removeClass('center-align');
   var loader = collection.find('li.item-loader');
   loader.remove();
 
-  var itemsFound = collection.find('li[data-url="' + result[0].userID + '"]');
-  if (itemsFound.length) {
-    itemsFound[0].remove();
-  }
+  result.forEach((hyperty) => {
 
-  collection.append(collectionItem);
+    var itemsFound = collection.find('li[data-url="' + hyperty.userID + '"]');
+    if (itemsFound.length) {
+      itemsFound[0].remove();
+    }
+
+    if (hyperty.hasOwnProperty('userID')) {
+      collectionItem = '<li data-user="' + hyperty.userID + '" data-url="' + hyperty.hypertyID + '" class="collection-item">' +
+      '<span class="title"><b>UserURL: </b>' + hyperty.userID + '</span>' +
+      '<a title="Call to ' + hyperty.userID + '" class="waves-effect waves-light btn call-btn secondary-content"><i class="material-icons">call</i></a>' +
+      '<p><b>DescriptorURL: </b>' + hyperty.descriptor + '<br><b>HypertyURL: </b>' + hyperty.hypertyID +
+      '<br><b>Resources: </b>' + JSON.stringify(hyperty.resources) +
+      '<br><b>DataSchemes: </b>' + JSON.stringify(hyperty.dataSchemes) +
+      '</p></li>';
+    } else {
+      collectionItem = '<li class="collection-item orange lighten-3">' +
+      '<span class="title">' + hyperty + '</span>' +
+      '</li>';
+    }
+
+    collection.append(collectionItem);
+
+  });
 
   var callBtn = collection.find('.call-btn');
   callBtn.on('click', function(event) {
     event.preventDefault();
-    openVideo(result);
+    let userURL = $(event.currentTarget).parent().attr('data-user');
+    let hypertyURL = $(event.currentTarget).parent().attr('data-url');
+
+    let domain = hypertyURL.substring(hypertyURL.lastIndexOf(':') + 3, hypertyURL.lastIndexOf('/'));
+    console.log('Domain:', domain);
+
+    openVideo(userURL, domain);
   });
 
 }
@@ -184,18 +207,18 @@ function emailDiscoveredError(result) {
   collection.append(collectionItem);
 }
 
-function openVideo(result) {
+function openVideo(hyperty, domain) {
 
-  console.error('connecting hyperty: ', result);
+  console.log('connecting hyperty: ', hyperty);
 
-  var toHyperty = result[0].hypertyID;
+  var toHyperty = hyperty;
   var localMediaStream;
 
   var options = options || {video: true, audio: true};
   getUserMedia(options).then(function(mediaStream) {
     console.info('recived media stream: ', mediaStream);
     localMediaStream = mediaStream;
-    return connector.connect(toHyperty, mediaStream);
+    return connector.connect(toHyperty, mediaStream, '', domain);
   })
   .then(function(controller) {
     showVideo(controller);

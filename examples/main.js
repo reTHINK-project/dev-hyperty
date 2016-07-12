@@ -17,7 +17,7 @@ console.log('Configuration file:', config);
 rethink.install(config).then(function(result) {
 
     runtimeLoader = result;
-    console.log(result);
+    console.log('Installed:', result);
 
     return getListOfHyperties(domain);
 

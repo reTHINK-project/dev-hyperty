@@ -54,14 +54,14 @@ class Search {
 
         usersURLs.forEach((userURL) => {
           if (providedDomain) {
-              console.log('Search for provided domain:', providedDomain);
-              getUsers.push(_this.discovery.discoverHyperty(userURL, ['connection'], ['audio', 'video'], providedDomain));
+            console.log('Search for provided domain:', providedDomain);
+            getUsers.push(_this.discovery.discoverHyperty(userURL, ['connection'], ['audio', 'video'], providedDomain));
           } else {
-          DOMAINS.forEach((domain) => {
-            getUsers.push(_this.discovery.discoverHyperty(userURL, ['connection'], ['audio', 'video'], domain));
-          });
-        }
-      });
+            DOMAINS.forEach((domain) => {
+              getUsers.push(_this.discovery.discoverHyperty(userURL, ['connection'], ['audio', 'video'], domain));
+            });
+          }
+        });
 
         console.info('Requests promises: ', getUsers);
         Promise.all(getUsers).then((hyperties) => {

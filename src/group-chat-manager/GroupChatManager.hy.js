@@ -89,8 +89,12 @@ class GroupChatManager {
         _this.communicationObject.id = '';
         _this.communicationObject.status = '';
         _this.communicationObject.startingTime = '';
-        _this.communicationObject.lastModifed = '';
+        _this.communicationObject.lastModified = '';
         _this.communicationObject.participants = [];
+
+        if (_this.chatController) {
+          _this.chatController.closeEvent(event);
+        }
       }
 
     });
@@ -103,7 +107,7 @@ class GroupChatManager {
    * @param  {array<URL.userURL>}         users Array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL, like this format user://<ipddomain>/<user-identifier>
    * @return {<Promise>ChatController}    A ChatController object as a Promise.
    */
-  create(name, users, domain) {
+  create(name, users, domains) {
 
     let _this = this;
     let syncher = _this._syncher;
@@ -117,16 +121,16 @@ class GroupChatManager {
       _this.communicationObject.id = name;
       _this.communicationObject.status = CommunicationStatus.OPEN;
       _this.communicationObject.startingTime = new Date().toJSON();
-      _this.communicationObject.lastModifed = _this.communicationObject.startingTime;
+      _this.communicationObject.lastModified = _this.communicationObject.startingTime;
 
       _this.search.myIdentity().then((identity) => {
 
         // Add my identity
         _this.communicationObject.participants.push(identity);
 
-        console.info(`searching ${users[0]} at domain `, domain);
+        console.info('searching ' + users + ' at domain ' + domains);
 
-        return _this.search.users(users, domain);
+        return _this.search.users(users, domains);
       }).then((hypertiesIDs) => {
 
         console.info(`Have ${hypertiesIDs.length} users;`);

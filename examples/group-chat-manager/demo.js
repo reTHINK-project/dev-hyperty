@@ -15,7 +15,9 @@ function hypertyLoaded(result) {
   $('.card-panel').html(hypertyInfo);
 
   chatGroupManager = result.instance;
-  chatGroupManager.onInvitation(onInvitation);
+  chatGroupManager.onInvitation((event) => {
+    onInvitation(event);
+  });
 
   let messageChat = $('.chat');
   messageChat.removeClass('hide');
@@ -35,6 +37,16 @@ function onInvitation(event) {
 
   chatGroupManager.join(event.url).then(function(chatController) {
     prepareChat(chatController);
+
+    setTimeout(() => {
+      let users = event.value.participants;
+
+      users.forEach((user) => {
+        processNewUser(user);
+      });
+
+    }, 500);
+
   }).catch(function(reason) {
     console.error('Error connectin to', reason);
   });
@@ -67,7 +79,7 @@ function addParticipantEvent(event) {
   countParticipants++;
 
   let participantEl = '<div class="row">' +
-    '<div class="input-field col s12">' +
+    '<div class="input-field col s8">' +
     '  <input class="input-email" name="email" id="email-' + countParticipants + '" required aria-required="true" type="text">' +
     '  <label for="email-' + countParticipants + '">Participant Email</label>' +
     '</div>' +
@@ -88,21 +100,21 @@ function createRoomEvent(event) {
   let participantsForm = createRoomModal.find('.participants-form');
   let serializedObject = $(participantsForm).serializeArray();
   let users = [];
-  let domain;
+  let domains = [];
 
   if (serializedObject) {
     let emailsObject = serializedObject.filter((field) => { return field.name === 'email';});
     users = emailsObject.map((emailObject) => { return emailObject.value; });
     let domainObject = serializedObject.filter((field) => { return field.name === 'domain';});
-    domain = domainObject.map((domainObject) => { return domainObject.value; });
+    domains = domainObject.map((domainObject) => { return domainObject.value; });
   }
 
   // Prepare the chat
   let name = createRoomModal.find('.input-name').val();
 
-  console.log('Participants: ', users, ' domain: ', domain);
+  console.log('Participants: ', users, ' domain: ', domains);
 
-  chatGroupManager.create(name, users, domain[0]).then(function(chatController) {
+  chatGroupManager.create(name, users, domains).then(function(chatController) {
 
     let isOwner = true;
     prepareChat(chatController, isOwner);
@@ -170,26 +182,6 @@ function prepareChat(chatController, isOwner) {
   Handlebars.getTemplate('group-chat-manager/chat-section').then(function(html) {
 
     $('.chat-section').append(html);
-
-    // Process Existent participants
-    if (chatController.dataObject.data && chatController.dataObject.data.participants) {
-
-      let users = chatController.dataObject.data.participants || [];
-
-      users.map(function(user) {
-
-        let userProfile = {};
-        if (user.hasOwnProperty('userProfile')) {
-          userProfile = user;
-        } else {
-          userProfile.userProfile = user;
-        }
-
-        processNewUser(userProfile);
-
-      });
-
-    }
 
     chatManagerReady(chatController, isOwner);
 
@@ -335,30 +327,22 @@ function processNewUser(event) {
 
   let section = $('.conversations');
   let collection = section.find('.participant-list');
-  let collectionItem = [];
 
   if (event.hasOwnProperty('data') && event.data) {
 
     let users = event.data;
 
     users.map(function(user) {
-      collectionItem.push('<li class="chip" data-name="' + user.userProfile.userURL + '"><img src="' + user.userProfile.avatar + '" alt="Contact Person">' + user.userProfile.cn + '<i class="material-icons close">close</i></li>');
+      collection.append('<li class="chip" data-name="' + user.userURL + '"><img src="' + user.avatar + '" alt="Contact Person">' + user.cn + '<i class="material-icons close">close</i></li>');
     });
 
-  } else if (event.hasOwnProperty('userProfile')) {
+  } else {
     let user = event;
-    collectionItem.push('<li class="chip" data-name="' + user.userProfile.userURL + '"><img src="' + user.userProfile.avatar + '" alt="Contact Person">' + user.userProfile.cn + '<i class="material-icons close">close</i></li>');
+    console.log('Add User:', user);
+    collection.append('<li class="chip" data-name="' + user.userURL + '"><img src="' + user.avatar + '" alt="Contact Person">' + user.cn + '<i class="material-icons close">close</i></li>');
   }
 
   collection.removeClass('center-align');
-
-  setTimeout(function() {
-
-    collectionItem.forEach(function(item) {
-      collection.append(item);
-    });
-
-  }, 200);
 
   let closeBtn = collection.find('.close');
   closeBtn.on('click', function(e) {

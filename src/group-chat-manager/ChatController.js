@@ -44,13 +44,14 @@ class ChatController {
 
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
 
-    syncher.onNotification(function(event) {
+    // syncher.onNotification(function(event) {
+    //
+    //   if (event.type === 'delete') {
+    //     if (_this._onClose) _this._onClose(event);
+    //   }
+    //
+    // });
 
-      if (event.type === 'delete') {
-        if (_this._onClose) _this._onClose(event);
-      }
-
-    });
   }
 
   set dataObjectReporter(dataObjectReporter) {
@@ -62,9 +63,9 @@ class ChatController {
       event.accept();
 
       console.log('New user has subscribe this object: ', event.identity);
-      dataObjectReporter.data.participants.push(event.identity);
+      dataObjectReporter.data.participants.push(event.identity.userProfile);
 
-      if (_this._onUserAdded) _this._onUserAdded(event.identity);
+      if (_this._onUserAdded) _this._onUserAdded(event.identity.userProfile);
     });
 
     dataObjectReporter.onAddChild(function(child) {
@@ -86,26 +87,23 @@ class ChatController {
 
     _this._dataObjectObserver = dataObjectObserver;
 
-    if (_this._onChange) {
-      dataObjectObserver.onChange(_this._onChange);
-    }
-
     dataObjectObserver.onChange('*', function(event) {
       console.info('Observer - onChange', event);
-      if (_this._onChange) _this._onChange(event);
-    });
 
-    dataObjectObserver.onChange('participants.*', function(event) {
+      if (event.field.includes('participants')) {
+        switch (event.cType) {
+          case 'add':
+            if (_this._onUserAdded) _this._onUserAdded(event);
+            break;
 
-      switch (event.cType) {
-        case 'add':
-          if (_this._onUserAdded) _this._onUserAdded(event);
-          break;
-
-        case 'remove':
-          if (_this._onUserRemoved) _this._onUserRemoved(event);
-          break;
+          case 'remove':
+            if (_this._onUserRemoved) _this._onUserRemoved(event);
+            break;
+        }
       }
+
+      if (_this._onChange) _this._onChange(event);
+
     });
 
     dataObjectObserver.onAddChild(function(child) {
@@ -123,6 +121,18 @@ class ChatController {
   get dataObject() {
     let _this = this;
     return _this._dataObjectReporter ? _this.dataObjectReporter : _this.dataObjectObserver;
+  }
+
+  set closeEvent(event) {
+    let _this = this;
+    _this._closeEvent = event;
+
+    if (_this._onClose) _this._onClose(event);
+  }
+
+  get closeEvent() {
+    let _this = this;
+    return _this._closeEvent;
   }
 
   /**

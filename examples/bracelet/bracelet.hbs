@@ -1,15 +1,33 @@
 <div class="selection-panel">
 </div>
 
-<div class="hyperty-panel">
-</div>
-<p>Email</p><input class="email-input" type="text"><br>
-<button class="search-btn hide btn waves-effect waves-light">Search</button>
+<div class="card-panel teal lighten-2 white-text"></div>
+
+<section class="discover row hide">
+
+  <form class="form col s12 search-form">
+
+    <div class="row">
+      <div class="input-field col s12">
+        <input placeholder="your friend's email" id="email" required aria-required="true" type="email" class="email-input validate">
+        <label for="email" style="width: 100%;" data-error="the email format should be like user@domain.pt">search by email</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="input-field col s8">
+        <button class="search-btn waves-effect waves-light btn" type="submit"><i class="material-icons left">search</i>Search</button>
+      </div>
+    </div>
+  </form>
+
+</section>
 
 <div class="row">
-  <ul class="collection ">
+  <ul class="collection">
   </ul>
 </div>
+
 <a class="bt-label hide">Battery:</a>
 <span class="value_battery"></span><br>
 <a class="steps-label hide">Steps:</a>
