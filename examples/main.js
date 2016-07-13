@@ -1,7 +1,7 @@
 // jshint browser:true, jquery: true
 // jshint varstmt: true
 
-import rethink from 'runtime-browser/bin/rethink';
+import rethink from '../resources/factories/rethink';
 
 import {getTemplate, serialize} from '../src/utils/utils';
 
