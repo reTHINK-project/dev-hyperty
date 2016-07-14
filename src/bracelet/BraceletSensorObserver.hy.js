@@ -22,13 +22,14 @@ class BraceletSensorObserver {
     _this._discovery = discovery;
     _this.identityManager = identityManager;
     _this.search = new Search(discovery, identityManager);
+    window.discovery = _this._discovery;
   }
 
-  discovery(email)
+  discovery(email,domain)
   {
     let _this = this;
     return new Promise(function(resolve,reject) {
-      _this.search.users([email]).then(function(a) {
+      _this.search.users([email], domain).then(function(a) {
         resolve(a);
       });
     });
