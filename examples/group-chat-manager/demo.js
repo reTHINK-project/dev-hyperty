@@ -7,12 +7,33 @@ var chatGroupManager;
 
 function hypertyLoaded(result) {
 
-  let hypertyInfo = '<span class="white-text">' +
+  // Prepare to discover email:
+  var search = result.instance.search;
+
+  search.myIdentity().then(function(identity) {
+    hypertyReady(result, identity);
+  });
+}
+
+function hypertyReady(result, identity) {
+  let $cardPanel = $('.card-panel');
+  let hypertyInfo = '<div class="row"><span class="white-text">' +
                     '<b>Name:</b> ' + result.name + '</br>' +
                     '<b>Status:</b> ' + result.status + '</br>' +
                     '<b>HypertyURL:</b> ' + result.runtimeHypertyURL + '</br>' +
-                    '</span>';
-  $('.card-panel').html(hypertyInfo);
+                    '</span></div>';
+
+  let userInfo = '<div class="row"><span class="white-text">' +
+                 '<span class="col s2">' +
+                 '<img width="48" height="48" src="' + identity.avatar + '" alt="" class="circle">' +
+                 '</span><span class="col s10">' +
+                 '<b>Name:</b> ' + identity.cn + '</br>' +
+                 '<b>Email:</b> ' + identity.username + '</br>' +
+                 '<b>UserURL:</b> ' + identity.userURL +
+                 '</span></div>';
+
+  $cardPanel.append(userInfo);
+  $cardPanel.append(hypertyInfo);
 
   chatGroupManager = result.instance;
   chatGroupManager.onInvitation((event) => {

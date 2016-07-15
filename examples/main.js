@@ -16,42 +16,87 @@ console.log('Configuration file:', config);
 
 rethink.install(config).then(function(result) {
 
-    runtimeLoader = result;
-    console.log('Installed:', result);
+  runtimeLoader = result;
+  console.log('Installed:', result);
 
-    return getListOfHyperties(domain);
+  if (config.development) {
+    let a = loadStubs();
+    console.log('AAA: ', a);
+  }
 
-  }).then(function(hyperties) {
+  return getListOfHyperties(domain);
 
-    let $dropDown = $('#hyperties-dropdown');
+}).then(function(hyperties) {
 
-    hyperties.forEach(function(key) {
-        let $item = $(document.createElement('li'));
-        let $link = $(document.createElement('a'));
+  let $dropDown = $('#hyperties-dropdown');
 
-        // create the link features
-        $link.html(key);
-        $link.css('text-transform', 'none');
-        $link.attr('data-name', key);
-        $link.on('click', loadHyperty);
+  hyperties.forEach(function(key) {
+      let $item = $(document.createElement('li'));
+      let $link = $(document.createElement('a'));
 
-        $item.append($link);
+      // create the link features
+      $link.html(key);
+      $link.css('text-transform', 'none');
+      $link.attr('data-name', key);
+      $link.on('click', loadHyperty);
 
-        $dropDown.append($item);
-      });
+      $item.append($link);
 
-    $('.preloader-wrapper').remove();
-    $('.card .card-action').removeClass('center');
-    $('.hyperties-list-holder').removeClass('hide');
+      $dropDown.append($item);
+    });
 
-  }).catch(function(reason) {
-    console.error(reason);
+  $('.preloader-wrapper').remove();
+  $('.card .card-action').removeClass('center');
+  $('.hyperties-list-holder').removeClass('hide');
+
+}).catch(function(reason) {
+  console.error(reason);
+});
+
+function loadStubs() {
+
+  domain = window.location.hostname;
+  let protostubsURL = 'https://' + domain + '/.well-known/protocolstub/ProtoStubs.json';
+
+  return new Promise(function(resolve, reject) {
+    $.ajax({
+      url: protostubsURL,
+      success: function(result) {
+        let response = [];
+        if (typeof result === 'object') {
+          Object.keys(result).forEach(function(key) {
+            response.push(key);
+          });
+        } else if (typeof result === 'string') {
+          response = JSON.parse(result);
+        }
+
+        let stub = response.filter((stub) => {
+          return stub === window.location.hostname;
+        });
+
+        if (stub.length) {
+          runtimeLoader.requireProtostub('https://' + domain + '/.well-known/protocolstub/' + stub[0])
+          .then((result) => {
+            console.log('result', result);
+            resolve(response);
+          });
+        }
+
+      },
+      fail: function(reason) {
+        reject(reason);
+        notification(reason, 'warn');
+      }
+    });
   });
+}
 
 function getListOfHyperties(domain) {
 
   let hypertiesURL = 'https://catalogue.' + domain + '/.well-known/hyperty/';
   if (config.development) {
+    domain = window.location.hostname;
     hypertiesURL = 'https://' + domain + '/.well-known/hyperty/Hyperties.json';
   }
 
@@ -77,17 +122,24 @@ function getListOfHyperties(domain) {
           });
       });
 }
+
+let loading = false;
 function loadHyperty(event) {
   event.preventDefault();
+
+  if (loading) return;
+  loading = true;
 
   let hypertyName = $(event.currentTarget).attr('data-name');
 
   let hypertyPath = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/hyperty/' + hypertyName;
   if (config.development) {
+    domain = window.location.hostname;
     hypertyPath = 'hyperty-catalogue://' + domain + '/.well-known/hyperty/' + hypertyName;
   }
 
   let $el = $('.main-content .notification');
+  $el.empty();
   addLoader($el);
 
   runtimeLoader.requireHyperty(hypertyPath).then(hypertyDeployed).catch(hypertyFail);
@@ -195,6 +247,8 @@ function hypertyDeployed(hyperty) {
       console.info(msg);
       notification(msg, 'warn');
     }
+
+    loading = false;
   });
 
 }
