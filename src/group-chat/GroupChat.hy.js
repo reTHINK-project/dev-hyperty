@@ -58,7 +58,7 @@ let GroupChatHyperty = {
                                 this.notifications.trigger([{email: identity.username, domain: this.domain}], 
                                         {type: 'NEW_CHAT', payload:{id: dataObject.url, name: dataObject.data.name}})
                                 callback(GroupChat(dataObject.url, this._addChild(dataObject), this._onAddChild(dataObject), 
-                                            dataObject.data, this._position.data, identity))
+                                            dataObject.data, this._position.data, identity, false))
                             })
                     })
             }
