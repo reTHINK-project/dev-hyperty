@@ -12,7 +12,15 @@ window.KJUR = {};
 let domain = config.domain;
 let runtimeLoader;
 
-console.log('Configuration file:', config);
+console.log('Configuration file before:', config);
+
+if (config.development) {
+
+  config.domain = window.location.hostname;
+  config.runtimeURL = config.runtimeURL.replace(domain, window.location.hostname);
+}
+
+console.log('Configuration file after:', config);
 
 rethink.install(config).then(function(result) {
 
