@@ -1,42 +1,74 @@
+// jshint browser:true, jquery: true
+// jshint varstmt: false
 
 function hypertyLoaded(result) {
 
   $('.selection-panel').hide();
 
-  let hypertyPanel = $('.hyperty-panel');
-
-  let hi = '<p>Hyperty Observer URL: ' + result.runtimeHypertyURL + '</p>';
+  let hypertyInfo = '<span class="white-text">' +
+                    '<b>Name:</b> ' + result.name + '</br>' +
+                    '<b>Status:</b> ' + result.status + '</br>' +
+                    '<b>HypertyURL:</b> ' + result.runtimeHypertyURL + '</br>' +
+                    '</span>';
+  $('.card-panel').html(hypertyInfo);
 
   console.log('Observer Waiting!!');
-  let button = $('.search-btn');
-  button.removeClass('hide');
 
   let email = $('.email-input');
+  let domain = $('.domain-input');
   let observer = result.instance;
 
-  button.on('click', function(event) {
-    observer.discovery(email.val()).then(function(result) {
-      console.log('resultt', result[0]);
+  let searchForm = $('.search-form');
+  let discoveryEl = $('.discover');
+
+  discoveryEl.removeClass('hide');
+
+  searchForm.on('submit', function(event) {
+
+    event.preventDefault();
+
+    observer.discovery(email.val(), domain.val()).then(function(result) {
+      console.log('Result:', result[0]);
+
       let collection = $('.collection');
+      let collectionItem;
       collection.empty();
-      let collectionItem = '<li data-url="' + result[0].userID + '" class="collection-item avatar">' +
-      '<span class="title"><b>UserURL: </b>' + result[0].userID + '</span><p>&nbsp;</p>' +
-      '<p>' + result[0].descriptor + '<br>' + result[0].hypertyID + '</p>' +
-      '<a title="Subscribe to ' + result[0].userID + '" class="waves-effect waves-light btn subscribe-btn secondary-content"><i class="material-icons">import_export</i></a>' +
-      '</li>';
+
+      if (result[0].hasOwnProperty('userID')) {
+        collectionItem = '<li data-url="' + result[0].userID + '" class="collection-item">' +
+        '<span class="title"><b>UserURL: </b>' + result[0].userID + '</span>' +
+        '<a title="Subscribe to ' + result[0].userID + '" class="waves-effect waves-light btn subscribe-btn secondary-content"><i class="material-icons">import_export</i></a>' +
+        '<p><b>DescriptorURL: </b>' + result[0].descriptor + '<br><b>HypertyURL: </b>' + result[0].hypertyID +
+        '<br><b>Resources: </b>' + JSON.stringify(result[0].resources) +
+        '<br><b>DataSchemes: </b>' + JSON.stringify(result[0].dataSchemes) +
+        '</p></li>';
+      } else {
+        collectionItem = '<li class="collection-item">' +
+        '<span class="title">' + result[0] + '</span>' +
+        '</li>';
+      }
+
       collection.append(collectionItem);
+
       let subscribe = $('.subscribe-btn');
+
       subscribe.on('click', function(event) {
+        console.log('ON SUBSCRIBEE', event);
+
+        event.preventDefault();
+
         observer.connect(result[0].hypertyID).then(function(urlDataObject) {
           console.log('Subscribed', urlDataObject);
-          observer.ObserveBracelet(urlDataObject).then(observerDataObject => loadChart(observerDataObject.data.values[1].value));
+          observer.ObserveBracelet(urlDataObject).then(observerDataObject => loadChart(observerDataObject.data.values[observerDataObject.data.values.length - 1].value,observerDataObject.data.values[observerDataObject.data.values.length - 2].value));
         });
       });
-    });});
+    });
+
+  });
 
   Highcharts.setOptions({global: {useUTC: false}});
 
-  function loadChart(firstValue) {
+  function loadChart(firstValue,batteryVl) {
     $('#container').highcharts({
         chart: {
             type: 'spline',
@@ -45,15 +77,19 @@ function hypertyLoaded(result) {
             events: {
                 load: function() {
                     let series = this.series[0];
+                    let lblBattery = $('.bt-label');
+                    let chart = $('#container');
+                    let lblSteps = $('.steps-label');
+                    let stepValue = $('.value_step');
+                    let batteryValue = $('.value_battery');
+                    chart.removeClass('hide');
+                    lblBattery.removeClass('hide');
+                    lblSteps.removeClass('hide');
+                    batteryValue.text(batteryVl);
+                    series.addPoint([(new Date()).getTime(), firstValue], true, true);
+                    stepValue.text(firstValue);
+
                     observer.onChange(function(event) {
-                      let lblBattery = $('.bt-label');
-                      let chart = $('#container');
-                      chart.removeClass('hide');
-                      lblBattery.removeClass('hide');
-                      let lblSteps = $('.steps-label');
-                      lblSteps.removeClass('hide');
-                      let stepValue = $('.value_step');
-                      let batteryValue = $('.value_battery');
                       console.log('new event', event);
                       let type = event.data[0].type;
                       console.log('type', type);
@@ -62,7 +98,6 @@ function hypertyLoaded(result) {
                         console.log(event.data[0].value);
                       } else if (type === 'user_steps') {
                         let x = (new Date()).getTime();
-
                         series.addPoint([x, event.data[0].value], true, true);
                         console.log('series', series);
                         stepValue.text(event.data[0].value);
