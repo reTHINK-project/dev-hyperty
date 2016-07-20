@@ -28,9 +28,9 @@ import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
 import {divideURL} from '../utils/utils';
+import Search from '../utils/Search';
 
 // Internals
-import Search from './Search';
 import { communicationObject, CommunicationStatus } from './communication';
 import ChatController from './ChatController';
 
@@ -130,13 +130,19 @@ class GroupChatManager {
 
         console.info('searching ' + users + ' at domain ' + domains);
 
-        return _this.search.users(users, domains);
+        return _this.search.users(users, domains, ['comm'], ['chat']);
       }).then((hypertiesIDs) => {
 
         console.info(`Have ${hypertiesIDs.length} users;`);
         console.info('------------------------ Syncher Create ---------------------- \n');
 
-        return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject);
+        let selectedHyperties = hypertiesIDs.map((hyperty) => {
+          return hyperty.hypertyID;
+        });
+
+        console.log('Selected Hyperties: ', selectedHyperties);
+
+        return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject);
       }).catch((reason) => {
         console.log('Error:', reason);
       }).then(function(dataObjectReporter) {

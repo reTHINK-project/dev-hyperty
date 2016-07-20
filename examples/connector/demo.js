@@ -154,7 +154,7 @@ function discoverEmail(search) {
 
     console.log('searching for: ', email, ' at domain: ', domain);
 
-    search.users([email], domain).then(emailDiscovered).catch(emailDiscoveredError);
+    search.users([email], [domain], ['connection'], ['audio', 'video']).then(emailDiscovered).catch(emailDiscoveredError);
 
   });
 }

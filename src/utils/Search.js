@@ -1,6 +1,3 @@
-// TODO: optimize this process
-const DOMAINS = ['hybroker.rethink.ptinovacao.pt', 'rethink.quobis.com'];
-
 class Search {
 
   constructor(discovery, identityManager) {
@@ -35,15 +32,19 @@ class Search {
    * @param  {array<URL.userURL>}  users List of UserUR, like this format user://<ipddomain>/<user-identifier>
    * @return {Promise}
    */
-  users(usersURLs, providedDomains) {
+  users(usersURLs, providedDomains, schemes, resources) {
 
     if (!usersURLs) throw new Error('You need to provide a list of users');
+    if (!providedDomains) throw new Error('You need to provide a list of domains');
+    if (!resources) throw new Error('You need to provide a list of resources');
+    if (!schemes) throw new Error('You need to provide a list of schemes');
 
     let _this = this;
 
     return new Promise(function(resolve) {
 
-      console.log(usersURLs, usersURLs.length);
+      console.log('Users: ', usersURLs, usersURLs.length);
+      console.log('Domains: ', providedDomains, providedDomains.length);
 
       if (usersURLs.length === 0) {
         console.info('Don\'t have users to discovery');
@@ -52,15 +53,9 @@ class Search {
         let getUsers = [];
 
         usersURLs.forEach((userURL, index) => {
-          if (providedDomains) {
-            let currentDomain = providedDomains[index];
-            console.log('Search user ' + userURL + ' for provided domain:', currentDomain);
-            getUsers.push(_this.discovery.discoverHyperty(userURL, ['comm'], ['chat'], currentDomain));
-          } else {
-            DOMAINS.forEach((domain) => {
-              getUsers.push(_this.discovery.discoverHyperty(userURL, ['comm'], ['chat'], domain));
-            });
-          }
+          let currentDomain = providedDomains[index];
+          console.log('Search user ' + userURL + ' for provided domain:', currentDomain);
+          getUsers.push(_this.discovery.discoverHyperty(userURL, schemes, resources, currentDomain));
         });
 
         console.info('Requests promises: ', getUsers);
@@ -77,7 +72,7 @@ class Search {
               }
               return a;
             });
-            return hyperty[recent].hypertyID;
+            return hyperty[recent];
           });
 
           let clean = result.filter((hyperty) => {

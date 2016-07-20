@@ -34,7 +34,7 @@ import {divideURL} from '../utils/utils';
 // Internals
 import ConnectionController from './ConnectionController';
 import { connection } from './connection';
-import Search from './Search';
+import Search from '../utils/Search';
 
 /**
  *
@@ -190,18 +190,14 @@ class Connector {
         _this.connectionObject.owner = identity.hypertyURL;
         _this.connectionObject.peer = '';
 
-        console.log('connector searching: ', [userURL], `at domain `, domain);
+        console.log('connector searching: ', [userURL], `at domain `, [domain]);
 
-        return _this.search.users([userURL], domain);
+        return _this.search.users([userURL], [domain], ['connection'], ['audio', 'video']);
       })
-      .then(function(hyperties) {
-
-        let hypertiesURLs = hyperties.map(function(hyperty) {
-          return hyperty.hypertyID;
-        });
+      .then(function(hypertiesIDs) {
 
         // Only support one to one connection;*/
-        selectedHyperty = hypertiesURLs[0];
+        selectedHyperty = hypertiesIDs[0].hypertyID;
         console.info('Only support communication one to one, selected hyperty: ', selectedHyperty);
         return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject);
       })
