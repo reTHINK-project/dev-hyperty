@@ -228,6 +228,8 @@ function inviteParticipants(chatController) {
     event.preventDefault();
 
     let usersIDs = inviteModal.find('.input-emails').val();
+    let domains = inviteModal.find('.input-domains').val();
+
     let usersIDsParsed = [];
     if (usersIDs.includes(',')) {
       usersIDsParsed = usersIDs.split(', ');
@@ -235,7 +237,14 @@ function inviteParticipants(chatController) {
       usersIDsParsed.push(usersIDs);
     }
 
-    chatController.addUser(usersIDsParsed).then(function(result) {
+    let domainsParsed = [];
+    if (domains.includes(',')) {
+      domainsParsed = domains.split(', ');
+    } else {
+      domainsParsed.push(domains);
+    }
+
+    chatController.addUser(usersIDsParsed, domainsParsed).then(function(result) {
       console.log('Invite emails', result);
     }).catch(function(reason) {
       console.log('Error:', reason);

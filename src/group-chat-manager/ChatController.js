@@ -246,15 +246,19 @@ class ChatController {
    * @param {URL.UserURL}  users  User to be invited to join the Group Chat that is identified with reTHINK User URL.
    * @return {Promise<boolean>}   It returns as a Promise true if successfully invited or false otherwise.
    */
-  addUser(users) {
+  addUser(users, domains) {
 
     let _this = this;
 
     return new Promise(function(resolve, reject) {
 
       console.info('----------------------- Inviting users -------------------- \n');
-      _this.search.users(users)
-      .then((hypertiesIDs) => { return _this.dataObject.inviteObservers(hypertiesIDs); })
+      console.info('Users: ', users, '\nDomains:', domains);
+      _this.search.users(users, domains, ['comm'], ['chat'])
+      .then((hyperties) => {
+        let hypertiesIDs = hyperties.map(hyperty => hyperty.hypertyID);
+        return _this.dataObject.inviteObservers(hypertiesIDs);
+      })
       .then(function() {
         console.info('Are invited with success ' + users.length + ' users;');
         resolve(true);
