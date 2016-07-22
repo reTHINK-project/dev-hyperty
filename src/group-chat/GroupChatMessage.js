@@ -4,12 +4,11 @@ const GroupChatMessage = {
     }
 }
 
-export default function(dataObjectChild, isMe, identity){
+export default function({ message, startingTime }, isMe, identity){
     return Object.assign(Object.create(GroupChatMessage),{
-        _dataObjectChild: dataObjectChild,
         isMe: isMe,
-        text: dataObjectChild.data?dataObjectChild.data.message:dataObjectChild.value.message,
-        startingTime: dataObjectChild.data?dataObjectChild.data.startingTime:dataObjectChild.value.startingTime,
+        text: message,
+        startingTime: startingTime,
         identity: identity
     })
 }

@@ -14,7 +14,7 @@ describe('Notification Observer', ()=>{
             observer.instance.onNotification((notification)=>{
                 done()
             })
-            callback({schema: 'hyperty-catalogue://test.com/.well-known/dataschemas/Communication'})
+            callback({schema: 'hyperty-catalogue://catalogue.test.com/.well-known/dataschema/Communication'})
         })
     })
 })

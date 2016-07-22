@@ -1,5 +1,6 @@
 import {Syncher} from 'service-framework/dist/Syncher';
 import {divideURL} from '../utils/utils';
+import persistenceManager from 'service-framework/dist/PersistenceManager';
 
 class BraceletSensorReporter {
 
@@ -14,11 +15,17 @@ class BraceletSensorReporter {
 
     _this._domain = divideURL(hypertyURL).domain;
 
-    _this._objectDescURL = 'hyperty-catalogue://' + _this._domain + '/.well-known/dataschema/Context';
+    _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Context';
 
     console.log('Init BraceletSensorReporter: ', hypertyURL);
     _this._syncher = new Syncher(hypertyURL, bus, configuration);
+    _this._persistenceManager = persistenceManager;
+    console.log('PM', _this._persistenceManager);
+  }
 
+  getLastDevice() {
+    let _this = this;
+    if (_this._onConnect) _this._onConnect(_this._persistenceManager.get('btLEAddress'));
   }
 
   Discover() {
@@ -89,6 +96,7 @@ class BraceletSensorReporter {
       let discoverSuccess = function(status) {
         console.log('discover success', status);
         console.log('flag', _this.firstTime);
+        _this._persistenceManager.set('btLEAddress', 0, id);
         if (_this.firstTime) {
           console.log('first true');
           _this.readBattery(id).then(function(battery) {
@@ -186,14 +194,19 @@ class BraceletSensorReporter {
           }
         }
       };
-      if (_this.reconnecting) {
-        console.log('Still Reconnecting, resolve reconnecting..');
-        let statusChanged = { connection: 'reconnecting', address: id };
-        if (_this._onStatusChange) _this._onStatusChange(statusChanged);
-      } else {
-        console.log('Connecting');
-        bluetoothle.connect(connectSuccess, connectError, params);
-      }
+      bluetoothle.initialize((a) => {
+        if (_this.reconnecting) {
+          console.log('Still Reconnecting, resolve reconnecting..');
+          let statusChanged = { connection: 'reconnecting', address: id };
+          if (_this._onStatusChange) _this._onStatusChange(statusChanged);
+        } else {
+          console.log('Connecting');
+          bluetoothle.connect(connectSuccess, connectError, params);
+        }
+      }, function(b) {
+        console.log(b);
+      });
+
     });
   }
 
@@ -290,6 +303,11 @@ class BraceletSensorReporter {
   onStatusChange(callback) {
     let _this = this;
     _this._onStatusChange = callback;
+  }
+
+  onConnect(callback) {
+    let _this = this;
+    _this._onConnect = callback;
   }
 }
 

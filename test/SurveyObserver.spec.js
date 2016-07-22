@@ -22,7 +22,7 @@ describe('Survey Observer', ()=>{
                 expect(survey).to.exist
                 done()
             })
-            callback({schema: 'hyperty-catalogue://test.com/.well-known/dataschemas/Communication'})
+            callback({schema: 'hyperty-catalogue://catalogue.test.com/.well-known/dataschema/Communication'})
         })
 
         it('should launch a notification', (done)=>{
@@ -32,7 +32,7 @@ describe('Survey Observer', ()=>{
             let observer = activate('http://test.com', {}, {})
             observer.instance.onRequest(()=>{})
             notifications.prototype.callback = ()=> done()
-            callback({schema: 'hyperty-catalogue://test.com/.well-known/dataschemas/Communication'})
+            callback({schema: 'hyperty-catalogue://catalogue.test.com/.well-known/dataschema/Communication'})
         })
     })
 })
@@ -49,7 +49,7 @@ describe('Survey', ()=>{
             observer.instance.onRequest((survey)=>{
                 survey.answer({}) 
             })
-            callback({schema: 'hyperty-catalogue://test.com/.well-known/dataschemas/Communication'})
+            callback({schema: 'hyperty-catalogue://catalogue.test.com/.well-known/dataschema/Communication'})
         })
     })
 })

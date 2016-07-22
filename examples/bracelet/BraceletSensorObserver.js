@@ -15,6 +15,7 @@ function hypertyLoaded(result) {
   console.log('Observer Waiting!!');
 
   let email = $('.email-input');
+  let domain = $('.domain-input');
   let observer = result.instance;
 
   let searchForm = $('.search-form');
@@ -26,7 +27,7 @@ function hypertyLoaded(result) {
 
     event.preventDefault();
 
-    observer.discovery(email.val()).then(function(result) {
+    observer.discovery(email.val(), domain.val()).then(function(result) {
       console.log('Result:', result[0]);
 
       let collection = $('.collection');
@@ -52,12 +53,13 @@ function hypertyLoaded(result) {
       let subscribe = $('.subscribe-btn');
 
       subscribe.on('click', function(event) {
+        console.log('ON SUBSCRIBEE', event);
 
         event.preventDefault();
 
         observer.connect(result[0].hypertyID).then(function(urlDataObject) {
           console.log('Subscribed', urlDataObject);
-          observer.ObserveBracelet(urlDataObject).then(observerDataObject => loadChart(observerDataObject.data.values[1].value));
+          observer.ObserveBracelet(urlDataObject).then(observerDataObject => loadChart(observerDataObject.data.values[observerDataObject.data.values.length - 1].value,observerDataObject.data.values[observerDataObject.data.values.length - 2].value));
         });
       });
     });
@@ -66,7 +68,7 @@ function hypertyLoaded(result) {
 
   Highcharts.setOptions({global: {useUTC: false}});
 
-  function loadChart(firstValue) {
+  function loadChart(firstValue,batteryVl) {
     $('#container').highcharts({
         chart: {
             type: 'spline',
@@ -75,15 +77,19 @@ function hypertyLoaded(result) {
             events: {
                 load: function() {
                     let series = this.series[0];
+                    let lblBattery = $('.bt-label');
+                    let chart = $('#container');
+                    let lblSteps = $('.steps-label');
+                    let stepValue = $('.value_step');
+                    let batteryValue = $('.value_battery');
+                    chart.removeClass('hide');
+                    lblBattery.removeClass('hide');
+                    lblSteps.removeClass('hide');
+                    batteryValue.text(batteryVl);
+                    series.addPoint([(new Date()).getTime(), firstValue], true, true);
+                    stepValue.text(firstValue);
+
                     observer.onChange(function(event) {
-                      let lblBattery = $('.bt-label');
-                      let chart = $('#container');
-                      chart.removeClass('hide');
-                      lblBattery.removeClass('hide');
-                      let lblSteps = $('.steps-label');
-                      lblSteps.removeClass('hide');
-                      let stepValue = $('.value_step');
-                      let batteryValue = $('.value_battery');
                       console.log('new event', event);
                       let type = event.data[0].type;
                       console.log('type', type);
@@ -92,7 +98,6 @@ function hypertyLoaded(result) {
                         console.log(event.data[0].value);
                       } else if (type === 'user_steps') {
                         let x = (new Date()).getTime();
-
                         series.addPoint([x, event.data[0].value], true, true);
                         console.log('series', series);
                         stepValue.text(event.data[0].value);
