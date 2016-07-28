@@ -1,3 +1,4 @@
+import GroupChatFile from './GroupChatFile'
 import PeerConnection from './peer-connection'
 
 export const SendData = {

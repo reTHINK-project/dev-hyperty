@@ -1,5 +1,4 @@
 import GroupChatMessage from './GroupChatMessage'
-import GroupChatFile from './GroupChatFile'
 import { Position, Area } from './gps'
 import { SendData, addSendDataIfSupported } from './send-data'
 
@@ -51,6 +50,7 @@ export default function(id, addChild, onAddChild, { name, startingTime, particip
         receivedSize: 0
     }
 
+    console.log('juas')
     let chat = Object.assign(Object.create(GroupChat), initialData)
 	chat = addSendDataIfSupported(chat)
 
