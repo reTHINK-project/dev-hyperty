@@ -149,8 +149,8 @@ function chatManagerReady(chatGroup) {
     let message = object.message;
     let distance= object.nearest?20:undefined
     if(document.getElementById('input').files[0]){
-        chatGroup.sendFile(document.getElementById('input').files[0]) 
-            return
+        //chatGroup.sendFile(document.getElementById('input').files[0]) 
+        //    return
     }
     chatGroup.sendMessage(message, distance).then(function(result) {
       console.log('message sent', result);

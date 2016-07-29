@@ -17,8 +17,8 @@ const GroupChat = {
     },
 
     _processTextMessages(message, identity, callback){
-        if(message.type != 'TEXT')
-            return
+//        if(message.type != 'TEXT')
+//            return
 
         let myPosition = Position(this.position)
         let area = Area(message.position, message.distance) 
@@ -52,7 +52,7 @@ export default function(id, addChild, onAddChild, { name, startingTime, particip
 
     console.log('juas')
     let chat = Object.assign(Object.create(GroupChat), initialData)
-	chat = addSendDataIfSupported(chat)
+	//chat = addSendDataIfSupported(chat)
 
     return chat
 }
