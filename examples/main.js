@@ -1,7 +1,7 @@
 // jshint browser:true, jquery: true
 // jshint varstmt: true
 
-import {getTemplate, serialize} from '../src/utils/utils';
+import {getTemplate, serialize} from './utils';
 
 let loading = false;
 
