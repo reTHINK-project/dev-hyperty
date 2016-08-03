@@ -1,0 +1,11 @@
+{
+  "language": "javascript",
+  "signature": "",
+  "configuration": {},
+  "hypertyType": [
+    "chat"
+  ],
+  "dataObjects": [
+    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Communication"
+  ]
+}

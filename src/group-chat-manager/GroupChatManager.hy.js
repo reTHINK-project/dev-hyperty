@@ -133,14 +133,15 @@ class GroupChatManager {
         return _this.search.users(users, domains, ['comm'], ['chat']);
       }).then((hypertiesIDs) => {
 
-        console.info(`Have ${hypertiesIDs.length} users;`);
-        console.info('------------------------ Syncher Create ---------------------- \n');
-
-        let selectedHyperties = hypertiesIDs.map((hyperty) => {
+        let selectedHyperties = hypertiesIDs.filter((hyperty) => {
+          return hyperty.hasOwnProperty('hypertyID');
+        }).map((hyperty) => {
           return hyperty.hypertyID;
         });
 
-        console.log('Selected Hyperties: ', selectedHyperties);
+        console.info('------------------------ Syncher Create ---------------------- \n');
+        console.info('Selected Hyperties: ', selectedHyperties);
+        console.info(`Have ${selectedHyperties.length} users;`);
 
         return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject);
       }).catch((reason) => {
