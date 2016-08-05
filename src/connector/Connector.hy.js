@@ -145,6 +145,7 @@ class Connector {
       connectionController.dataObjectObserver = dataObjectObserver;
       _this._controllers[event.from] = connectionController;
 
+      // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
       if (_this._onInvitation) _this._onInvitation(connectionController, event.identity.userProfile);
 
       console.info('------------------------ END ---------------------- \n');
@@ -165,6 +166,8 @@ class Connector {
     // TODO: CHange the hypertyURL for a list of URLS
     let _this = this;
     let syncher = _this._syncher;
+    let scheme = ['connection'];
+    let resource = ['audio', 'video'];
 
     console.log('connecting: ', userURL);
 
@@ -181,18 +184,18 @@ class Connector {
 
       _this.search.myIdentity().then(function(identity) {
 
-        console.log('identity: ', identity, _this.connectionObject);
-
         // Initial data
         _this.connectionObject.name = connectionName;
         _this.connectionObject.scheme = 'connection';
-        _this.connectionObject.status = '';
-        _this.connectionObject.owner = identity.hypertyURL;
+        _this.connectionObject.owner = _this._hypertyURL;
         _this.connectionObject.peer = '';
+        _this.connectionObject.status = '';
 
         console.log('connector searching: ', [userURL], `at domain `, [domain]);
 
-        return _this.search.users([userURL], [domain], ['connection'], ['audio', 'video']);
+        console.log('identity: ', identity, _this.connectionObject);
+
+        return _this.search.users([userURL], [domain], scheme, resource);
       })
       .then(function(hypertiesIDs) {
 

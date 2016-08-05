@@ -91,6 +91,8 @@ class GroupChatManager {
         _this.communicationObject.startingTime = '';
         _this.communicationObject.lastModified = '';
         _this.communicationObject.participants = [];
+        _this.communicationObject.resources = ['chat'];
+        _this.communicationObject.children = [];
 
         if (_this.chatController) {
           _this.chatController.closeEvent(event);
@@ -119,6 +121,8 @@ class GroupChatManager {
       _this.communicationObject.owner = _this._hypertyURL;
       _this.communicationObject.name = name;
       _this.communicationObject.id = name;
+      _this.communicationObject.resources = ['chat'];
+      _this.communicationObject.children = [];
       _this.communicationObject.status = CommunicationStatus.OPEN;
       _this.communicationObject.startingTime = new Date().toJSON();
       _this.communicationObject.lastModified = _this.communicationObject.startingTime;
