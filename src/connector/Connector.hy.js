@@ -177,22 +177,9 @@ class Connector {
       let selectedHyperty;
       console.info('------------------------ Syncher Create ---------------------- \n');
 
-      let connectionName = 'Connection';
-      if (name) {
-        connectionName = name;
-      }
-
       _this.search.myIdentity().then(function(identity) {
 
-        // Initial data
-        _this.connectionObject.name = connectionName;
-        _this.connectionObject.scheme = 'connection';
-        _this.connectionObject.owner = _this._hypertyURL;
-        _this.connectionObject.peer = '';
-        _this.connectionObject.status = '';
-
         console.log('connector searching: ', [userURL], `at domain `, [domain]);
-
         console.log('identity: ', identity, _this.connectionObject);
 
         return _this.search.users([userURL], [domain], scheme, resource);
@@ -202,6 +189,19 @@ class Connector {
         // Only support one to one connection;*/
         selectedHyperty = hypertiesIDs[0].hypertyID;
         console.info('Only support communication one to one, selected hyperty: ', selectedHyperty);
+
+        let connectionName = 'Connection';
+        if (name) {
+          connectionName = name;
+        }
+
+        // Initial data
+        _this.connectionObject.name = connectionName;
+        _this.connectionObject.scheme = 'connection';
+        _this.connectionObject.owner = _this._hypertyURL;
+        _this.connectionObject.peer = selectedHyperty;
+        _this.connectionObject.status = '';
+
         return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject);
       })
       .catch(function(reason) {
