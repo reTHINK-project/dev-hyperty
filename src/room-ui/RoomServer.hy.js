@@ -108,16 +108,16 @@ class RoomServer {
     }
 
     polling() {
-        l.d("starting polling");
+        // l.d("starting polling");
         this.getRooms().then((roomsArray) => {
+            // l.d("parsing rooms ", JSON.stringify(roomsArray, null, 2));
             var dateMap = {};
             roomsArray.forEach((room) => {
-                l.d("parsing room ", room.name);
                 room.devices.forEach((device) => {
                     for (var key in device.lastValues) {
                         device.lastValues[key].forEach((devObj) => {
                             var oldTimestamp = dateMap[room.name];
-                            l.d("comparing timestamps:", [oldTimestamp, devObj.timestamp]);
+                            // l.d("comparing timestamps:", [oldTimestamp, devObj.timestamp]);
                             if (!oldTimestamp || oldTimestamp < devObj.timestamp) {
                                 dateMap[room.name] = devObj.timestamp;
                             }
@@ -126,17 +126,21 @@ class RoomServer {
                 });
 
                 l.d("final timestamp for room " + room.name + ": ", dateMap[room.name]);
-                l.d("current roomMap:", this.roomMap);
-                l.d("room in roomMap? ", room.name in this.roomMap);
+                // l.d("current roomMap:", this.roomMap);
+                // l.d("room in roomMap? ", room.name in this.roomMap);
                 var oldRoomDate = this.lastDateMap[room.name];
 
                 if (!oldRoomDate && !(room.name in this.roomMap)) {
                     // room doesn't exist yet
+                    l.d("CREATING ROOM ", room.name);
                     this.setUpRoomSyncherObject(room)
                 } else if (oldRoomDate < dateMap[room.name]) {
                     // room must be updated
+                    l.d("UPDATING ROOM ", room.name);
+                    console.log(this.roomMap[room.name]);
                     try {
-                        this.roomMap[room.name].data = this.createRoomContext(room);
+                        // this.roomMap[room.name].data = this.createRoomContext(room);
+                        this.roomMap[room.name].data.values = this.createRoomContext(room).values;
                     } catch (e) {
                         l.e("Unable to update room " + room.name, e);
                     }
@@ -144,6 +148,8 @@ class RoomServer {
                     // no update, do nothing
                 }
             });
+
+            this.lastDateMap = dateMap;
         });
     }
 
