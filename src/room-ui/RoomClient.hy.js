@@ -203,11 +203,11 @@ class RoomClient extends EventEmitter {
             room.onChange('*', (event) => {
                 l.d('onChange received:', event);
                 l.d("current room state:", room);
-                this.trigger('changedRoom', room);
+                this.trigger('changedRoom', room.data);
             });
 
             // trigger the newRoom event
-            this.trigger('newRoom', room);
+            this.trigger('newRoom', room.data);
 
             // make it available for addChild test
             this.room = room;
