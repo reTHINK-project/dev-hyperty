@@ -95,6 +95,8 @@ class RoomServer {
                             l.d("function " + func.name + " returned:", result);
                             this.sendResponse(msg, result);
                         }
+                        // invoke polling manually so changes get reflected on client side faster
+                        this.polling();
                     } catch (e) {
                         l.w("invoking function " + func.name + " with parameters " + msg.body.params + " failed:", e);
                         this.sendResponse(msg, e, 500);
