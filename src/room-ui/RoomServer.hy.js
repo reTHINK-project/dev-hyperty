@@ -301,6 +301,7 @@ class RoomServer {
      * @returns {Promise} - Promise that fulfills with parsed JSON response
      */
     makeRequest(json) {
+        l.d("makeRequest:", arguments);
         return new Promise((resolve, reject) => {
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open('POST', url, true);

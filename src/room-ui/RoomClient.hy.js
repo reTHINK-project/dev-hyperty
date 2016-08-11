@@ -165,6 +165,7 @@ class RoomClient extends EventEmitter {
      * @returns {Promise} - fulfills with the result of the remote function call
      */
     executeOnRemote(remoteHypertyURL, method, params) {
+        l.d("executeOnRemote:", arguments);
         return new Promise((resolve, reject) => {
             if (!remoteHypertyURL || !method) {
                 reject("hyperty URL (" + remoteHypertyURL + ") and method (" + method + ") are mandatory!");
