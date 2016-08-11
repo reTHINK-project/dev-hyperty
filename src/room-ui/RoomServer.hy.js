@@ -110,7 +110,7 @@ class RoomServer {
     }
 
     polling() {
-        // l.d("starting polling");
+        l.d("starting polling");
         this.getRooms().then((roomsArray) => {
             // l.d("parsing rooms ", JSON.stringify(roomsArray, null, 2));
             var dateMap = {};
@@ -127,7 +127,7 @@ class RoomServer {
                     }
                 });
 
-                l.d("final timestamp for room " + room.name + ": ", dateMap[room.name]);
+                // l.d("final timestamp for room " + room.name + ": ", dateMap[room.name]);
                 // l.d("current roomMap:", this.roomMap);
                 // l.d("room in roomMap? ", room.name in this.roomMap);
                 var oldRoomDate = this.lastDateMap[room.name];
@@ -312,7 +312,9 @@ class RoomServer {
                 if (xmlHttp.readyState === 4) {
                     if (xmlHttp.status === 200) {
                         try {
-                            resolve(JSON.parse(xmlHttp.responseText));
+                            var responseJson = JSON.parse(xmlHttp.responseText);
+                            l.d("makeRequest returns:", responseJson);
+                            resolve(responseJson);
                         } catch (e) {
                             l.e("json parsing failed! raw:", xmlHttp.responseText);
                             l.e(e);
