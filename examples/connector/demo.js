@@ -170,6 +170,14 @@ function emailDiscovered(result) {
   var loader = collection.find('li.item-loader');
   loader.remove();
 
+  if (result.length === 0) {
+    collectionItem = '<li class="collection-item orange lighten-3">' +
+      '<span class="title">Hyperty not found</span>' +
+      '</li>';
+
+    collection.append(collectionItem);
+  }
+
   result.forEach((hyperty) => {
 
     var itemsFound = collection.find('li[data-url="' + hyperty.userID + '"]');
@@ -187,7 +195,7 @@ function emailDiscovered(result) {
       '</p></li>';
     } else {
       collectionItem = '<li class="collection-item orange lighten-3">' +
-      '<span class="title">' + hyperty + '</span>' +
+      '<span class="title">Hyperty not found</span>' +
       '</li>';
     }
 

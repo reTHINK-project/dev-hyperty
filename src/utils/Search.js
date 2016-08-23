@@ -48,6 +48,7 @@ class Search {
 
       if (usersURLs.length === 0) {
         console.info('Don\'t have users to discovery');
+
         resolve(usersURLs);
       } else {
         let getUsers = [];
@@ -60,7 +61,11 @@ class Search {
 
         console.info('Requests promises: ', getUsers);
 
-        Promise.all(getUsers).then((hyperties) => {
+        Promise.all(getUsers.map((promise) => {
+          return promise.then((hyperty) => { return hyperty; }, (error) => { return error; });
+        })).then((hyperties) => {
+
+          console.log('Hyperties', hyperties);
 
           let result = hyperties.map(function(hyperty) {
 
@@ -76,10 +81,11 @@ class Search {
           });
 
           let clean = result.filter((hyperty) => {
-            return hyperty;
+            return hyperty.hasOwnProperty('hypertyID');
           });
 
           console.info('Requests result: ', clean);
+
           resolve(clean);
 
         }).catch((reason) => {

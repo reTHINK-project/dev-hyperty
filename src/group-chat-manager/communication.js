@@ -38,6 +38,5 @@ export let communicationObject = {
   lastModified: '',
   duration: '',
   status: '',
-  qos: '',
   participants: []
 };

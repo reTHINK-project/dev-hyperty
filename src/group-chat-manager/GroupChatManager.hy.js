@@ -117,7 +117,6 @@ class GroupChatManager {
     return new Promise(function(resolve, reject) {
 
       // Create owner participant
-      // TODO: create all information to communication;
       _this.communicationObject.owner = _this._hypertyURL;
       _this.communicationObject.name = name;
       _this.communicationObject.id = name;
@@ -137,9 +136,7 @@ class GroupChatManager {
         return _this.search.users(users, domains, ['comm'], ['chat']);
       }).then((hypertiesIDs) => {
 
-        let selectedHyperties = hypertiesIDs.filter((hyperty) => {
-          return hyperty.hasOwnProperty('hypertyID');
-        }).map((hyperty) => {
+        let selectedHyperties = hypertiesIDs.map((hyperty) => {
           return hyperty.hypertyID;
         });
 
