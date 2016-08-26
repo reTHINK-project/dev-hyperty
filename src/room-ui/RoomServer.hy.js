@@ -1,13 +1,10 @@
 /* jshint undef: true */
 
-import {Syncher} from 'service-framework/dist/Syncher';
-import Discovery from 'service-framework/dist/Discovery';
-import IdentityManager from 'service-framework/dist/IdentityManager';
-import Logger from './Logger';
-
-import {divideURL} from '../utils/utils';
-import roomJson from './roomJson';
-import EventEmitter from '../utils/EventEmitter';
+import {Syncher} from "service-framework/dist/Syncher";
+import Discovery from "service-framework/dist/Discovery";
+import Logger from "./Logger";
+import {divideURL} from "../utils/utils";
+import roomJson from "./roomJson";
 
 var l = new Logger("ROOMUI");
 
@@ -37,6 +34,10 @@ class RoomServer {
         this.bus = bus;
         this.configuration = configuration;
 
+        //setup some variables
+        this.roomMap = {};
+        this.lastDateMap = {};
+
         // create Context Schema URL
         this.contextSchemaURL = 'hyperty-catalogue://' + divideURL(hypertyURL).domain + '/.well-known/dataschema/Context';
 
@@ -46,24 +47,17 @@ class RoomServer {
         // syncher
         this.syncher = new Syncher(hypertyURL, bus, configuration);
 
-        // 1. set up the rooms
-        // 2. add them to roomMap
-        // 3. trigger roomMap event
-        this.setUpRooms().then((roomSyncObjects) => {
-            l.d("setUpdRooms done, objects:", roomSyncObjects);
-
-            let roomMap = {};
-            roomSyncObjects.forEach((roomSyncObject) => {
-                l.d("adding to room map:", roomSyncObject.data.name);
-                roomMap[roomSyncObject.data.name] = roomSyncObject
-            });
-            this.roomMap = roomMap;
-        });
-
         l.d("Setting up functions for remote");
         this.setupRemoteFunctionCallAbility();
-        this.addFunctionForRemote(this.getRooms);
+        this.addFunctionForRemote(this.getRoomsForRemote, "getRooms");
         this.addFunctionForRemote(this.makeRequest, "action");
+
+        // start polling
+        let _this = this;
+        _this.polling();
+        setInterval(function () {
+            _this.polling()
+        }, 5000);
     }
 
     /**
@@ -115,6 +109,52 @@ class RoomServer {
         });
     }
 
+    polling() {
+        l.d("starting polling");
+        this.getRooms().then((roomsArray) => {
+            // l.d("parsing rooms ", JSON.stringify(roomsArray, null, 2));
+            var dateMap = {};
+            roomsArray.forEach((room) => {
+                room.devices.forEach((device) => {
+                    for (var key in device.lastValues) {
+                        device.lastValues[key].forEach((devObj) => {
+                            var oldTimestamp = dateMap[room.name];
+                            // l.d("comparing timestamps:", [oldTimestamp, devObj.timestamp]);
+                            if (!oldTimestamp || oldTimestamp < devObj.timestamp) {
+                                dateMap[room.name] = devObj.timestamp;
+                            }
+                        })
+                    }
+                });
+
+                // l.d("final timestamp for room " + room.name + ": ", dateMap[room.name]);
+                // l.d("current roomMap:", this.roomMap);
+                // l.d("room in roomMap? ", room.name in this.roomMap);
+                var oldRoomDate = this.lastDateMap[room.name];
+
+                if (!oldRoomDate && !(room.name in this.roomMap)) {
+                    // room doesn't exist yet
+                    l.d("CREATING ROOM ", room.name);
+                    this.setUpRoomSyncherObject(room)
+                } else if (oldRoomDate < dateMap[room.name]) {
+                    // room must be updated
+                    l.d("UPDATING ROOM ", room.name);
+                    console.log(this.roomMap[room.name]);
+                    try {
+                        // this.roomMap[room.name].data = this.createRoomContext(room);
+                        this.roomMap[room.name].data.values = this.createRoomContext(room).values;
+                    } catch (e) {
+                        l.e("Unable to update room " + room.name, e);
+                    }
+                } else {
+                    // no update, do nothing
+                }
+            });
+
+            this.lastDateMap = dateMap;
+        });
+    }
+
     /**
      * Add a function to be callable by remote endpoints
      * @param {function} func - function to be called
@@ -146,6 +186,9 @@ class RoomServer {
             to: requestMsg.from,
             body: {code: code, value: response}
         });
+
+        // invoke polling manually so changes get reflected on client side faster
+        this.polling();
     }
 
     /**
@@ -165,7 +208,7 @@ class RoomServer {
      * @param {String} user - user identity that is associated to the requesting hyperty
      * @returns {Array} - list of object URLs
      */
-    getRooms(user) {
+    getRoomsForRemote(user) {
         l.d("getRoooms:", arguments);
         let urls = [];
         // iterate through rooms and extract their URLs
@@ -182,60 +225,50 @@ class RoomServer {
      * Requests the room list from the LWM2M server and sets up the syncObjects that represent them
      * @returns {Promise} - Promise that returns the array of rooms as SyncObjects
      */
-    setUpRooms() {
-        l.d("setUpRooms");
+    getRooms() {
         if (useExampleRoomJson) {
             l.d("setUpRooms uses roomJson:", roomJson);
-            return this.setUpRoomSyncherObjects(roomJson.data);
+            return new Promise((resolve) => {
+                resolve(roomJson.data);
+            });
         } else {
             let json = {"mode": "read", "room": null};
             return this.makeRequest(json).then((respJson) => {
-                return this.setUpRoomSyncherObjects(respJson.data)
+                return respJson.data;
             });
         }
     }
 
     /**
-     * Sets up the syncher objects that represent rooms included in this json
-     * @param {Array} roomArray - array of room objects as received from LWM2MServer
-     * @returns {Promise} - Promise that returns the array of rooms as SyncObjects
+     * Sets up the syncher object that represent room included in this json
+     * @param {JSON} roomJson - array of room objects as received from LWM2MServer
+     * @returns {Promise} - Promise that returns the room as SyncObject
      */
-    setUpRoomSyncherObjects(roomArray) {
-        l.d("setUpRoomSyncherObjects:", arguments);
-        let contexts = [];
-        roomArray.forEach((room) => {
-            contexts.push(this.createRoomContext(room))
-        });
-        l.d("context JSONs created:", contexts);
+    setUpRoomSyncherObject(roomJson) {
+        l.d("setUpRoomSyncherObject:", arguments);
+        let context = this.createRoomContext(roomJson);
+        l.d("context JSON created:", context);
+        return this.syncher.create(this.contextSchemaURL, [this.hypertyURL], context).then((synchRoom) => {
+            l.d('SyncObject for room ' + context.name + ' created:', synchRoom);
 
-        let promises = [];
-        contexts.forEach((roomContext) => {
-            l.d("creating syncher object for:", roomContext);
-            promises.push(this.syncher.create(this.contextSchemaURL, [this.hypertyURL], roomContext).then(function (synchRoom) {
-                l.d('SyncObject for room ' + roomContext.name + ' created:', synchRoom);
+            // react to added children
+            synchRoom.onAddChild((child) => {
+                l.d("onAddChild:", child);
+                let childData = child.data ? child.data : child.value;
+                l.d("child data:", childData);
+            });
 
-                // react to added children
-                synchRoom.onAddChild((child) => {
-                    l.d("onAddChild:", child);
-                    let childData = child.data ? child.data : child.value;
-                    l.d("child data:", childData);
-                });
+            // react to subscription requests
+            synchRoom.onSubscription((event) => {
+                l.d('onSubscription:', event);
 
-                // react to subscription requests
-                synchRoom.onSubscription((event) => {
-                    l.d('onSubscription:', event);
+                // accept
+                event.accept();
+            });
 
-                    // accept
-                    event.accept();
-                });
+            this.roomMap[context.name] = synchRoom;
 
-                return synchRoom;
-            }));
-        });
-
-        return Promise.all(promises).then((synchObjects) => {
-            l.d("all promises done: ", synchObjects);
-            return synchObjects;
+            return synchRoom;
         });
     }
 
@@ -273,6 +306,7 @@ class RoomServer {
      * @returns {Promise} - Promise that fulfills with parsed JSON response
      */
     makeRequest(json) {
+        l.d("makeRequest:", arguments);
         return new Promise((resolve, reject) => {
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open('POST', url, true);
@@ -281,7 +315,9 @@ class RoomServer {
                 if (xmlHttp.readyState === 4) {
                     if (xmlHttp.status === 200) {
                         try {
-                            resolve(JSON.parse(xmlHttp.responseText));
+                            var responseJson = JSON.parse(xmlHttp.responseText);
+                            l.d("makeRequest returns:", responseJson);
+                            resolve(responseJson);
                         } catch (e) {
                             l.e("json parsing failed! raw:", xmlHttp.responseText);
                             l.e(e);

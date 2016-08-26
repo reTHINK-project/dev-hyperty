@@ -1,12 +1,11 @@
 /* jshint undef: true */
 
-import {Syncher} from 'service-framework/dist/Syncher';
-import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery';
-import IdentityManager from 'service-framework/dist/IdentityManager';
-
-import {divideURL} from '../utils/utils';
-import EventEmitter from '../utils/EventEmitter';
-import Logger from './Logger';
+import {Syncher} from "service-framework/dist/Syncher";
+import Discovery from "service-framework/dist/Discovery";
+import IdentityManager from "service-framework/dist/IdentityManager";
+import {divideURL} from "../utils/utils";
+import EventEmitter from "../utils/EventEmitter";
+import Logger from "./Logger";
 
 var l = new Logger("ROOMUI");
 var roomServerIdentity = "openidtest10@gmail.com";
@@ -41,7 +40,7 @@ class RoomClient extends EventEmitter {
         this.contextSchemaURL = 'hyperty-catalogue://' + divideURL(hypertyURL).domain + '/.well-known/dataschema/Context';
 
         // discovery stuff
-        this.hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus);
+        this.discovery = new Discovery(hypertyURL, bus);
         this.identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
 
         // Syncher
@@ -100,7 +99,7 @@ class RoomClient extends EventEmitter {
      */
     getRoomServerHypertyURL(roomServerURL) {
         l.d("getRoomServerHypertyURL:", [roomServerURL]);
-        return this.hypertyDiscovery.discoverHypertiesPerUser(roomServerURL, null).then((hyperties) => {
+        return this.discovery.discoverHypertiesPerUser(roomServerURL, null).then((hyperties) => {
             //l.d("found hyperties: ", hyperties);
             let latestRoomServerHyperty;
             let latestDate;
