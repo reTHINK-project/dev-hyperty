@@ -1,12 +1,10 @@
 import GroupChatMessage from './GroupChatMessage'
-import GroupChatFile from './GroupChatFile'
 import { Position, Area } from './gps'
-import { SendData, addSendDataIfSupported } from './send-data'
 
 const GroupChat = {
 
     sendMessage(message, distance){
-        return this.addChild({ type: 'TEXT', message: message, distance: distance, position: this.position, startingTime:Date.now()})
+        return this.addChild({ message: message, distance: distance, position: this.position, startingTime:Date.now()})
             .then((child)=>{
                 this.messages.push(GroupChatMessage(child.data, true, this.identity))
                 return this.messages[this.messages.length-1]
@@ -18,9 +16,6 @@ const GroupChat = {
     },
 
     _processTextMessages(message, identity, callback){
-        if(message.type != 'TEXT')
-            return
-
         let myPosition = Position(this.position)
         let area = Area(message.position, message.distance) 
 
@@ -51,8 +46,5 @@ export default function(id, addChild, onAddChild, { name, startingTime, particip
         receivedSize: 0
     }
 
-    let chat = Object.assign(Object.create(GroupChat), initialData)
-	chat = addSendDataIfSupported(chat)
-
-    return chat
+    return Object.assign(Object.create(GroupChat), initialData)
 }
