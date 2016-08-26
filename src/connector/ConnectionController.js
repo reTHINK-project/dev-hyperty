@@ -93,7 +93,7 @@ class ConnectionController {
       if (_this.mode === 'offer') {
         data.ownerPeer.iceCandidates.push(icecandidate);
       } else {
-        data.peer.iceCandidates.push(icecandidate);
+        data.Peer.iceCandidates.push(icecandidate);
       }
 
     });
@@ -240,7 +240,7 @@ class ConnectionController {
     let data = dataObjectObserver.data;
     let isOwner = data.hasOwnProperty('ownerPeer');
 
-    let peerData = isOwner ? data.ownerPeer : data.peer;
+    let peerData = isOwner ? data.ownerPeer : data.Peer;
 
     console.info('Peer Data:', JSON.stringify(peerData));
 
@@ -320,7 +320,7 @@ class ConnectionController {
       if (_this.mode === 'offer') {
         data.ownerPeer.connectionDescription = sdpConnection;
       } else {
-        data.peer.connectionDescription = sdpConnection;
+        data.Peer.connectionDescription = sdpConnection;
       }
 
     }, _this._infoError);

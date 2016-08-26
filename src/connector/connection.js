@@ -49,6 +49,7 @@
 
 export let connection = {
   name: '',
+  scheme: '',
   status: '',
   owner: '',
   peer: '',

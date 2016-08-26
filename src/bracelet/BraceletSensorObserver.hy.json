@@ -1,0 +1,12 @@
+{
+  "configuration": {},
+  "hypertyType": [
+    "heart_rate",
+    "sleep"
+  ],
+  "language": "javascript",
+  "signature": "",
+  "dataObjects": [
+    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Context"
+  ]
+}

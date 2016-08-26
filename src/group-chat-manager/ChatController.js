@@ -44,13 +44,14 @@ class ChatController {
 
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
 
-    syncher.onNotification(function(event) {
+    // syncher.onNotification(function(event) {
+    //
+    //   if (event.type === 'delete') {
+    //     if (_this._onClose) _this._onClose(event);
+    //   }
+    //
+    // });
 
-      if (event.type === 'delete') {
-        if (_this._onClose) _this._onClose(event);
-      }
-
-    });
   }
 
   set dataObjectReporter(dataObjectReporter) {
@@ -62,9 +63,9 @@ class ChatController {
       event.accept();
 
       console.log('New user has subscribe this object: ', event.identity);
-      dataObjectReporter.data.participants.push(event.identity);
+      dataObjectReporter.data.participants.push(event.identity.userProfile);
 
-      if (_this._onUserAdded) _this._onUserAdded(event.identity);
+      if (_this._onUserAdded) _this._onUserAdded(event.identity.userProfile);
     });
 
     dataObjectReporter.onAddChild(function(child) {
@@ -86,26 +87,23 @@ class ChatController {
 
     _this._dataObjectObserver = dataObjectObserver;
 
-    if (_this._onChange) {
-      dataObjectObserver.onChange(_this._onChange);
-    }
-
     dataObjectObserver.onChange('*', function(event) {
       console.info('Observer - onChange', event);
-      if (_this._onChange) _this._onChange(event);
-    });
 
-    dataObjectObserver.onChange('participants.*', function(event) {
+      if (event.field.includes('participants')) {
+        switch (event.cType) {
+          case 'add':
+            if (_this._onUserAdded) _this._onUserAdded(event);
+            break;
 
-      switch (event.cType) {
-        case 'add':
-          if (_this._onUserAdded) _this._onUserAdded(event);
-          break;
-
-        case 'remove':
-          if (_this._onUserRemoved) _this._onUserRemoved(event);
-          break;
+          case 'remove':
+            if (_this._onUserRemoved) _this._onUserRemoved(event);
+            break;
+        }
       }
+
+      if (_this._onChange) _this._onChange(event);
+
     });
 
     dataObjectObserver.onAddChild(function(child) {
@@ -125,6 +123,18 @@ class ChatController {
     return _this._dataObjectReporter ? _this.dataObjectReporter : _this.dataObjectObserver;
   }
 
+  set closeEvent(event) {
+    let _this = this;
+    _this._closeEvent = event;
+
+    if (_this._onClose) _this._onClose(event);
+  }
+
+  get closeEvent() {
+    let _this = this;
+    return _this._closeEvent;
+  }
+
   /**
    * This function is used to send a chat message.
    * @param  {string}     message                        Is the ChatMessage to be sent.
@@ -139,6 +149,9 @@ class ChatController {
 
       let _dataObjectChild;
 
+      // TODO: change chatmessages to resource - chat, file
+      // TODO: change message to hypertyResource - https://github.com/reTHINK-project/dev-service-framework/tree/develop/docs/datamodel/data-objects/hyperty-resource
+      // TODO: handle with multiple resources - if the "message" will be different for each type of resources
       dataObject.addChild('chatmessages', {message: message})
       .then(function(dataObjectChild) {
 
@@ -236,15 +249,19 @@ class ChatController {
    * @param {URL.UserURL}  users  User to be invited to join the Group Chat that is identified with reTHINK User URL.
    * @return {Promise<boolean>}   It returns as a Promise true if successfully invited or false otherwise.
    */
-  addUser(users) {
+  addUser(users, domains) {
 
     let _this = this;
 
     return new Promise(function(resolve, reject) {
 
       console.info('----------------------- Inviting users -------------------- \n');
-      _this.search.users(users)
-      .then((hypertiesIDs) => { return _this.dataObject.inviteObservers(hypertiesIDs); })
+      console.info('Users: ', users, '\nDomains:', domains);
+      _this.search.users(users, domains, ['comm'], ['chat'])
+      .then((hyperties) => {
+        let hypertiesIDs = hyperties.map(hyperty => hyperty.hypertyID);
+        return _this.dataObject.inviteObservers(hypertiesIDs);
+      })
       .then(function() {
         console.info('Are invited with success ' + users.length + ' users;');
         resolve(true);

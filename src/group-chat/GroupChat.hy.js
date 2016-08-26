@@ -33,7 +33,7 @@ let GroupChatHyperty = {
 
     create (name, participants) {
         return this._getHyFor(participants)
-            .then((hyperties)=>this.syncher.create(this.objectDescURL, hyperties, buildComm(name, hyperties.concat([this.hypertyURL]))))
+            .then((hyperties)=>this.syncher.create(this.objectDescURL, hyperties, buildComm(name, this.hypertyURL, hyperties.concat([this.hypertyURL]))))
             .then((dataObjectReporter) => {
                 dataObjectReporter.onSubscription((event)=>event.accept())
                 return this.identityManagerService.discoverUserRegistered()
@@ -93,6 +93,7 @@ let groupChatFactory = function(hypertyURL, bus, config){
 }
 
 export default function activate(hypertyURL, bus, config){
+    console.log('jus')
     return {
         name: 'GroupChat',
         instance: groupChatFactory(hypertyURL, bus, config)

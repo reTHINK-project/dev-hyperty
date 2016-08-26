@@ -28,9 +28,9 @@ import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
 import {divideURL} from '../utils/utils';
+import Search from '../utils/Search';
 
 // Internals
-import Search from './Search';
 import { communicationObject, CommunicationStatus } from './communication';
 import ChatController from './ChatController';
 
@@ -89,8 +89,14 @@ class GroupChatManager {
         _this.communicationObject.id = '';
         _this.communicationObject.status = '';
         _this.communicationObject.startingTime = '';
-        _this.communicationObject.lastModifed = '';
+        _this.communicationObject.lastModified = '';
         _this.communicationObject.participants = [];
+        _this.communicationObject.resources = ['chat'];
+        _this.communicationObject.children = [];
+
+        if (_this.chatController) {
+          _this.chatController.closeEvent(event);
+        }
       }
 
     });
@@ -103,7 +109,7 @@ class GroupChatManager {
    * @param  {array<URL.userURL>}         users Array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL, like this format user://<ipddomain>/<user-identifier>
    * @return {<Promise>ChatController}    A ChatController object as a Promise.
    */
-  create(name, users, domain) {
+  create(name, users, domains) {
 
     let _this = this;
     let syncher = _this._syncher;
@@ -111,28 +117,34 @@ class GroupChatManager {
     return new Promise(function(resolve, reject) {
 
       // Create owner participant
-      // TODO: create all information to communication;
       _this.communicationObject.owner = _this._hypertyURL;
       _this.communicationObject.name = name;
       _this.communicationObject.id = name;
+      _this.communicationObject.resources = ['chat'];
+      _this.communicationObject.children = [];
       _this.communicationObject.status = CommunicationStatus.OPEN;
       _this.communicationObject.startingTime = new Date().toJSON();
-      _this.communicationObject.lastModifed = _this.communicationObject.startingTime;
+      _this.communicationObject.lastModified = _this.communicationObject.startingTime;
 
       _this.search.myIdentity().then((identity) => {
 
         // Add my identity
         _this.communicationObject.participants.push(identity);
 
-        console.info(`searching ${users[0]} at domain `, domain);
+        console.info('searching ' + users + ' at domain ' + domains);
 
-        return _this.search.users(users, domain);
+        return _this.search.users(users, domains, ['comm'], ['chat']);
       }).then((hypertiesIDs) => {
 
-        console.info(`Have ${hypertiesIDs.length} users;`);
-        console.info('------------------------ Syncher Create ---------------------- \n');
+        let selectedHyperties = hypertiesIDs.map((hyperty) => {
+          return hyperty.hypertyID;
+        });
 
-        return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject);
+        console.info('------------------------ Syncher Create ---------------------- \n');
+        console.info('Selected Hyperties: ', selectedHyperties);
+        console.info(`Have ${selectedHyperties.length} users;`);
+
+        return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject);
       }).catch((reason) => {
         console.log('Error:', reason);
       }).then(function(dataObjectReporter) {

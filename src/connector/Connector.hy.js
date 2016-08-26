@@ -34,7 +34,7 @@ import {divideURL} from '../utils/utils';
 // Internals
 import ConnectionController from './ConnectionController';
 import { connection } from './connection';
-import Search from './Search';
+import Search from '../utils/Search';
 
 /**
  *
@@ -83,7 +83,7 @@ class Connector {
 
       if (event.type === 'create') {
         console.info('------------ Acknowledges the Reporter - Create ------------ \n');
-        event.ack();
+        event.ack(200);
 
         if (_this._controllers[event.from]) {
           _this._autoSubscribe(event);
@@ -145,7 +145,8 @@ class Connector {
       connectionController.dataObjectObserver = dataObjectObserver;
       _this._controllers[event.from] = connectionController;
 
-      if (_this._onInvitation) _this._onInvitation(connectionController, event.identity);
+      // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
+      if (_this._onInvitation) _this._onInvitation(connectionController, event.identity.userProfile);
 
       console.info('------------------------ END ---------------------- \n');
     }).catch(function(reason) {
@@ -160,13 +161,15 @@ class Connector {
    * @param  {string}             name         is a string to identify the connection.
    * @return {<Promise>ConnectionController}   A ConnectionController object as a Promise.
    */
-  connect(hypertyURL, stream, name) {
+  connect(userURL, stream, name, domain) {
     // TODO: Pass argument options as a stream, because is specific of implementation;
     // TODO: CHange the hypertyURL for a list of URLS
     let _this = this;
     let syncher = _this._syncher;
+    let scheme = ['connection'];
+    let resource = ['audio', 'video'];
 
-    console.log('connecting: ', hypertyURL );
+    console.log('connecting: ', userURL);
 
     return new Promise(function(resolve, reject) {
 
@@ -174,35 +177,31 @@ class Connector {
       let selectedHyperty;
       console.info('------------------------ Syncher Create ---------------------- \n');
 
-      let connectionName = 'Connection';
-      if (name) {
-        connectionName = name;
-      }
-
       _this.search.myIdentity().then(function(identity) {
 
+        console.log('connector searching: ', [userURL], `at domain `, [domain]);
         console.log('identity: ', identity, _this.connectionObject);
+
+        return _this.search.users([userURL], [domain], scheme, resource);
+      })
+      .then(function(hypertiesIDs) {
+
+        // Only support one to one connection;*/
+        selectedHyperty = hypertiesIDs[0].hypertyID;
+        console.info('Only support communication one to one, selected hyperty: ', selectedHyperty);
+
+        let connectionName = 'Connection';
+        if (name) {
+          connectionName = name;
+        }
 
         // Initial data
         _this.connectionObject.name = connectionName;
         _this.connectionObject.scheme = 'connection';
+        _this.connectionObject.owner = _this._hypertyURL;
+        _this.connectionObject.peer = selectedHyperty;
         _this.connectionObject.status = '';
-        _this.connectionObject.owner = identity.hypertyURL;
-        _this.connectionObject.peer = '';
 
-      /*  console.log('connector searching: ', [userURL], `at domain `, domain);
-
-        return _this.search.users([userURL], domain);
-      })
-      .then(function(hyperties) {
-
-        let hypertiesURLs = hyperties.map(function(hyperty) {
-          return hyperty.hypertyID;
-        });
-
-        // Only support one to one connection;*/
-        selectedHyperty = hypertyURL;
-        console.info('Only support communication one to one, selected hyperty: ', selectedHyperty);
         return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject);
       })
       .catch(function(reason) {

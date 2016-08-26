@@ -148,10 +148,6 @@ function chatManagerReady(chatGroup) {
     let object = $(this).serializeObject();
     let message = object.message;
     let distance= object.nearest?20:undefined
-    if(document.getElementById('input').files[0]){
-        //chatGroup.sendFile(document.getElementById('input').files[0]) 
-        //    return
-    }
     chatGroup.sendMessage(message, distance).then(function(result) {
       console.log('message sent', result);
       messageForm[0].reset();
@@ -184,11 +180,10 @@ function processMessage(message) {
   let chatSection = $('.chat-section');
   let messagesList = chatSection.find('.messages .collection');
 
-  let msg = !!message.file?message.file:message.text.replace(/\n/g, '<br>')  
   let list = `<li class="collection-item avatar">
     <img src="` + avatar + `" alt="" class="circle">
     <span class="title">` + message.identity.username + `</span>
-    <p>` + msg + `</p>
+    <p>` + message.text.replace(/\n/g, '<br>') + `</p>
   </li>`;
 
   messagesList.append(list);
