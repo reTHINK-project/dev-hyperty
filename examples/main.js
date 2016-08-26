@@ -117,19 +117,6 @@ export function hypertyFail(reason) {
   notification(reason, 'error');
 }
 
-function addLoader(el) {
-
-  let html = '<div class="preloader preloader-wrapper small active">' +
-      '<div class="spinner-layer spinner-blue-only">' +
-      '<div class="circle-clipper left">' +
-      '<div class="circle"></div></div><div class="gap-patch"><div class="circle"></div>' +
-      '</div><div class="circle-clipper right">' +
-      '<div class="circle"></div></div></div></div>';
-
-  el.addClass('center');
-  el.append(html);
-}
-
 function removeLoader(el) {
   el.find('.preloader').remove();
   el.removeClass('center');
