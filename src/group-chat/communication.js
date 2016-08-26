@@ -1,14 +1,17 @@
-export default function communication(name, participants){
+export default function communication(name, url, participants){
+    let date = new Date().toJSON()
+
     return{
-        id:'',
+        id: name,
         name: name,
-        owner: '',
+        owner: url,
         scheme: 'comm',
-        startingTime: '',
-        lastModified: '',
+        resources: ['chat'],
+        children: [],
+        startingTime: date,
+        lastModified: date,
         duration: '',
-        status: '',
-        qos: '',
+        status: 'open',
         participants: participants
     }
 }
