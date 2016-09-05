@@ -1,5 +1,5 @@
 import URI from 'urijs'
-import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery'
+import HypertyDiscovery from 'service-framework/dist/Discovery'
 import { Syncher} from 'service-framework/dist/Syncher'
 
 let Survey = {

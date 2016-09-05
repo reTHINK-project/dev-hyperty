@@ -1,4 +1,4 @@
-import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery'
+import HypertyDiscovery from 'service-framework/dist/Discovery'
 import URI from 'urijs'
 import { Syncher} from 'service-framework/dist/Syncher'
 import NotificationsTrigger from './notifications-trigger'
