@@ -36,8 +36,10 @@ class RoomClient extends EventEmitter {
         this.bus = bus;
         this.configuration = configuration;
 
+        // l.test(this);
+
         // create Context Schema URL
-        this.contextSchemaURL = 'hyperty-catalogue://' + divideURL(hypertyURL).domain + '/.well-known/dataschema/Context';
+        this.contextSchemaURL = 'hyperty-catalogue://catalogue.' + divideURL(hypertyURL).domain + '/.well-known/dataschema/Context';
 
         // discovery stuff
         this.discovery = new Discovery(hypertyURL, bus);
@@ -62,6 +64,7 @@ class RoomClient extends EventEmitter {
             .then((syncRooms) => {
                 l.d("Initialization done, room SyncObjects:", syncRooms);
             });
+
     }
 
     /**
@@ -169,11 +172,12 @@ class RoomClient extends EventEmitter {
                 reject("hyperty URL (" + remoteHypertyURL + ") and method (" + method + ") are mandatory!");
                 return;
             }
-            // creat execute message
+            // create execute message
             let msg = {
                 type: 'execute', from: this.hypertyURL, to: remoteHypertyURL,
                 body: {method: method, params: params}
             };
+            // let msg = this.messageFactory.createExecuteMessageRequest(this.hypertyURL, remoteHypertyURL, method, params);
             // send message, resolve on reply
             this.bus.postMessage(msg, (reply) => {
                 l.d("got " + method + " reply!", reply);
@@ -202,11 +206,11 @@ class RoomClient extends EventEmitter {
             room.onChange('*', (event) => {
                 l.d('onChange received:', event);
                 l.d("current room state:", room);
-                this.trigger('changedRoom', room);
+                this.trigger('changedRoom', room.data);
             });
 
             // trigger the newRoom event
-            this.trigger('newRoom', room);
+            this.trigger('newRoom', room.data);
 
             // make it available for addChild test
             this.room = room;

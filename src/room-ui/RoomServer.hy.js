@@ -39,7 +39,7 @@ class RoomServer {
         this.lastDateMap = {};
 
         // create Context Schema URL
-        this.contextSchemaURL = 'hyperty-catalogue://' + divideURL(hypertyURL).domain + '/.well-known/dataschema/Context';
+        this.contextSchemaURL = 'hyperty-catalogue://catalogue.' + divideURL(hypertyURL).domain + '/.well-known/dataschema/Context';
 
         // make hyperty discoverable
         this.discovery = new Discovery(hypertyURL, bus);
@@ -55,9 +55,12 @@ class RoomServer {
         // start polling
         let _this = this;
         _this.polling();
-        setInterval(function () {
-            _this.polling()
-        }, 5000);
+
+        if (!useExampleRoomJson) {
+            setInterval(function () {
+                _this.polling()
+            }, 5000);
+        }
     }
 
     /**
