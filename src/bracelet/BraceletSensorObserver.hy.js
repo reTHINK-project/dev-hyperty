@@ -2,7 +2,7 @@ import IdentityManager from 'service-framework/dist/IdentityManager';
 import {Syncher} from 'service-framework/dist/Syncher';
 import Discovery from 'service-framework/dist/Discovery';
 import {divideURL} from '../utils/utils';
-import Search from './Search';
+import Search from '../utils/Search';
 
 class BraceletSensorObserver {
 
@@ -29,7 +29,8 @@ class BraceletSensorObserver {
   {
     let _this = this;
     return new Promise(function(resolve,reject) {
-      _this.search.users([email], domain).then(function(a) {
+      _this.search.users([email], [domain], ['context'], ['steps', 'battery']).then(function(a) {
+        console.log('result search users->', a);
         resolve(a);
       });
     });
