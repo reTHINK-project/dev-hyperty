@@ -332,7 +332,7 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
   }
 
   disconnect() {
-    console.log('>>>lets disconnect', this);
+    console.log('[DTWebRTC]>>>lets disconnect', this);
     return new Promise( (resolve, reject) => {
       try {
         if (this.objReporter) {
@@ -349,7 +349,26 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
       }
     });
   }
+  switchLocalAudio(newState) {
+    console.log('[DTWebRTC] --> setting local audio to: ' + newState);
+    try {
+      this.mediaStream.getAudioTracks()[0].enabled = newState;
+    }
+    catch (x) {
+      console.err("error while (un)muting local audio state!")
+    }
+  }
+  switchLocalVideo(newState) {
+    console.log('[DTWebRTC] --> setting local video to: ' + newState);
+    try {
+      this.mediaStream.getVideoTracks()[0].enabled = newState;
+    }
+    catch (x) {
+      console.err("error while (un)muting local video state!")
+    }
+  }
 }
+
 
 export default function activate(hypertyURL, bus, configuration) {
   return {
