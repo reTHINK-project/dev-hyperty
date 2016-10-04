@@ -85,15 +85,11 @@ class Connector {
         console.info('------------ Acknowledges the Reporter - Create ------------ \n');
         event.ack(200);
 
-        setTimeout(function(){
-
-          if (_this._controllers[event.from]) {
-            _this._autoSubscribe(event);
-          } else {
-            _this._autoAccept(event);
-          }
-        }, 1000);
-
+        if (_this._controllers[event.from]) {
+          _this._autoSubscribe(event);
+        } else {
+          _this._autoAccept(event);
+        }
 
         console.info('------------------------ End Create ---------------------- \n');
 
