@@ -2,7 +2,7 @@
 
 // "use strict";
 
-var hyperty
+var hyperty;
 
 function hypertyLoaded(result) {
 
@@ -32,13 +32,13 @@ function hypertyLoaded(result) {
 
 function sayHello(event) {
 
-event.preventDefault();
+  event.preventDefault();
 
-let toHypertyForm = $(event.currentTarget);
+  let toHypertyForm = $(event.currentTarget);
 
-let toHyperty = toHypertyForm.find('.to-hyperty-input').val();
+  let toHyperty = toHypertyForm.find('.to-hyperty-input').val();
 
-console.log(toHyperty);
+  console.log(toHyperty);
 
   hyperty.hello(toHyperty).then(function(helloObject) {
 
@@ -50,13 +50,14 @@ console.log(toHyperty);
 
     let bye = $('.bye-panel');
 
-    let sayByeTo = '<button class="say-bye">Say Bye</button>';
+    bye.removeClass("hide");
 
-    bye.append(helloUrl);
+    bye.prepend(helloUrl);
 
-    bye.append(sayByeTo);
+    $('.say-bye').on('submit', sayBye);
 
-    $('.bye-panel').on('click', sayBye);
+    $('.say-bye').remove();
+
   }).catch(function(reason) {
     console.error(reason);
   });
@@ -65,7 +66,13 @@ console.log(toHyperty);
 
 function sayBye() {
 
-  hyperty.bye();
+  event.preventDefault();
+
+  let byeForm = $(event.currentTarget);
+
+  let message = byeForm.find('.message-input').val();
+
+  hyperty.bye(message);
 
 }
 
