@@ -50,13 +50,14 @@ function sayHello(event) {
 
     let bye = $('.bye-panel');
 
-    bye.removeClass("hide");
+    let msgPanel = $('.msg-panel');
 
-    bye.prepend(helloUrl);
+    msgPanel.append(helloUrl);
+
+    bye.removeClass('hide');
 
     $('.say-bye').on('submit', sayBye);
 
-    $('.say-bye').remove();
 
   }).catch(function(reason) {
     console.error(reason);
@@ -73,6 +74,14 @@ function sayBye() {
   let message = byeForm.find('.message-input').val();
 
   hyperty.bye(message);
+
+  let msgPanel = $('.msg-panel');
+
+  msgPanel.append('Bye Msg: ', message);
+
+  let bye = $('.bye-panel');
+
+  bye.addClass('hide');
 
 }
 
