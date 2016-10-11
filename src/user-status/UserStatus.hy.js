@@ -22,7 +22,7 @@
 **/
 
 // Service Framework
-import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery';
+import Discovery from 'service-framework/dist/HypertyDiscovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
@@ -48,7 +48,7 @@ class UserStatus extends EventEmitter {
 
     this._syncher = new Syncher(hypertyURL, bus, configuration);
 
-    this._hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus);
+    this._discovery = new Discovery(hypertyURL, bus);
 
     this._userStatusDescURL = 'hyperty-catalogue://' + (new URI(hypertyURL)).hostname() + '/.well-known/dataschemas/Context';
 
@@ -226,7 +226,7 @@ class UserStatus extends EventEmitter {
         console.log(user);
         if (user.email.length) {
           console.info('------------------------ _mappingUser ----------------------', userList);
-          return this._hypertyDiscovery.discoverHypertyPerUser(user.email, user.domain).then(activeUsers).catch(inactiveUsers);
+          return this._discovery.discoverHypertyPerUser(user.email, user.domain).then(activeUsers).catch(inactiveUsers);
         }
       });
 
