@@ -1,13 +1,14 @@
 /* jshint undef: true */
 import Discovery from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
+import IdentityManager from 'service-framework/dist/IdentityManager';
 import {divideURL} from '../utils/utils';
 import EventEmitter from '../utils/EventEmitter'; // for receiving
 import iceconfig from './stunTurnserverConfig';
 import config from '../../config.json';
-import IdentityManager from '../IdentityManager';
 import { connection } from './connection';
 
+import 'webrtc-adapter-test';
 
 class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to recieve events
 
@@ -344,6 +345,7 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
         this.cleanupPC();
 
         this.trigger('disconnected');
+        resolve();
       } catch (e) {
         reject(e);
       }

@@ -22,7 +22,7 @@
 **/
 
 // Service Framework
-import Discovery from 'service-framework/dist/HypertyDiscovery';
+import Discovery from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
