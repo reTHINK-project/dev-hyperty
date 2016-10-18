@@ -32,7 +32,6 @@ class HelloWorldReporter {
 
     _this._syncher = syncher;
 
-
   }
 
   /**
@@ -45,7 +44,6 @@ class HelloWorldReporter {
     let syncher = _this._syncher;
 
     return new Promise(function(resolve, reject) {
-
 
       syncher.create(_this._objectDescURL, [hypertyURL], hello).then(function(helloObjtReporter) {
         console.info('1. Return Created Hello World Data Object Reporter', helloObjtReporter);

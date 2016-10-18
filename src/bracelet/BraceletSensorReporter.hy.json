@@ -5,7 +5,7 @@
     "sleep"
   ],
   "constraints": {
-    "browser": true
+    "browser": false
   },
   "language": "javascript",
   "signature": "",

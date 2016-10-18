@@ -5,6 +5,9 @@
   "hypertyType": [
     "chat"
   ],
+  "constraints": {
+    "browser": true
+  },
   "dataObjects": [
     "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Communication"
   ]
