@@ -137,7 +137,7 @@ class Connector {
 
     console.info('---------------- Syncher Subscribe (Auto Accept) ---------------- \n');
     console.info('Subscribe URL Object ', event);
-    syncher.subscribe(_this._objectDescURL, event.url + '/subscription').then(function(dataObjectObserver) {
+    syncher.subscribe(_this._objectDescURL, event.url ).then(function(dataObjectObserver) {
       console.info('1. Return Subscribe Data Object Observer', dataObjectObserver);
 
       let connectionController = new ConnectionController(syncher, _this._domain, _this._configuration);
