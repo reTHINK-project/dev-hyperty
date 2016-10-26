@@ -6,9 +6,9 @@
     "browser": true
   },
   "hypertyType": [
-    "chat"
+    "hello"
   ],
   "dataObjects": [
-    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Communication"
+    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/HelloWorldDataSchema"
   ]
 }
