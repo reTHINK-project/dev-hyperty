@@ -26,7 +26,7 @@
 /* globals RTCSessionDescription */
 /* globals RTCIceCandidate */
 
-import 'webrtc-adapter-test';
+import 'webrtc-adapter';
 
 import peer from './peer';
 
