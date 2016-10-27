@@ -1,0 +1,10 @@
+{
+  "configuration": {},
+  "constraints": {
+    "browser": true
+  },
+  "hypertyType": ["audio", "video"],
+  "dataObjects": [
+    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Connection"
+  ]
+}

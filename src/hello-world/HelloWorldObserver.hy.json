@@ -4,7 +4,7 @@
   "configuration": {},
   "constraints": {
     "browser": true,
-    "node": true
+    "node": false
   },
   "hypertyType": [
     "hello"
