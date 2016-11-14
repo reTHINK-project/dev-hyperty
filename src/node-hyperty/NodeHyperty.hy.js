@@ -49,6 +49,27 @@ class NodeHyperty {
     let syncher = new Syncher(hypertyURL, bus, configuration);
     this.syncher = syncher;
 
+    syncher.create(this._objectDescURL, [], {}).then((helloObjtReporter) => {
+        console.info('1. Return Created Hello World Data Object Reporter', helloObjtReporter);
+
+        this.helloObjtReporter = helloObjtReporter;
+
+        helloObjtReporter.onSubscription(function(event) {
+          console.info('-------- Hello World Reporter received subscription request --------- \n');
+
+          // All subscription requested are accepted
+
+          event.accept();
+        });
+
+        resolve(helloObjtReporter);
+
+      })
+      .catch(function(reason) {
+        console.error(reason);
+        reject(reason);
+      });
+
   }
 
 }

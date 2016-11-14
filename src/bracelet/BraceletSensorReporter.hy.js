@@ -1,6 +1,6 @@
 import {Syncher} from 'service-framework/dist/Syncher';
 import {divideURL} from '../utils/utils';
-import persistenceManager from 'service-framework/dist/PersistenceManager';
+import PersistenceManager from 'service-framework/dist/PersistenceManager';
 
 class BraceletSensorReporter {
 
@@ -19,7 +19,7 @@ class BraceletSensorReporter {
 
     console.log('Init BraceletSensorReporter: ', hypertyURL);
     _this._syncher = new Syncher(hypertyURL, bus, configuration);
-    _this._persistenceManager = persistenceManager;
+    _this._persistenceManager = new PersistenceManager(window.localStorage);
     console.log('PM', _this._persistenceManager);
   }
 
