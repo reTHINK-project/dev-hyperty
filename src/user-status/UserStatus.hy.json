@@ -1,12 +1,15 @@
 {
-  "configuration": {},
-  "hypertyType": "DataSchema",
-  "constraints": {
-    "browser": true
-  },
-  "language": "javascript",
-  "signature": "",
-  "dataObjects": [
-    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Context"
-  ]
+   "configuration": {},
+   "hypertyType": [
+     "heart_rate",
+     "sleep"
+   ],
+   "constraints": {
+     "browser": true
+   },
+   "language": "javascript",
+   "signature": "",
+   "dataObjects": [
+     "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Context"
+   ]
 }
