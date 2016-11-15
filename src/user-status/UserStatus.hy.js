@@ -27,7 +27,7 @@ import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
 import EventEmitter from '../utils/EventEmitter.js';
-// import {divideURL} from '../utils/utils.js';
+import {divideURL} from '../utils/utils.js';
 import URI from 'urijs';
 
 import availability from './availability.js';
