@@ -24,6 +24,7 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
     this.identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
     this.objObserver;
     this.objReporter;
+    this.callerIdentity;
 
     this.constraints = {
       'audio': true,
@@ -49,14 +50,15 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
     if (this.sender == null) {
       this.sender = false;
     }
-    console.info('[DTWebRTC]: Event Received: ', event);
+    console.info('[DTWebRTC]: Event Received: ', event)
     switch (event.type) {
       case "create":
         // ensure that a PC is existing
         this.createPC();
 
         // the peer has created an object and we are requested to subscribe for changes to this remote object
-        this.trigger('invitation', event.identity);
+        // this.trigger('invitation', event.identity);
+        this.callerIdentity = event.identity;
 
         console.info("[DTWebRTC]: [_onNotification] sending event.ack() ");
         let result = event.ack(); // Acknowledge reporter about the Invitation was received
@@ -73,7 +75,7 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
             if (! this.sender) {
               this.partner = event.from;
               console.log('got invite');
-              this.trigger('incomingcall');
+              this.trigger('incomingcall', this.callerIdentity);
             }
 
             this.handleObserverObject(objObserver);
@@ -142,7 +144,7 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
   invite() {
     this.createPC();
     return new Promise((resolve, reject) => {
-      console.log('>>>Constrains', this.constraints);
+      console.log('>>>Constraints', this.constraints);
       navigator.mediaDevices.getUserMedia(this.constraints).then((stream) =>{
           console.log("[DTWebRTC]: localviodeo")
           this.trigger('localvideo', stream);
@@ -165,7 +167,7 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
   }
 
   // calle accepted the invitation
-  invitationAccepted() {
+  acceptCall() {
     let offer = this.objObserver.data ? this.objObserver.data.connectionDescription : null;
     if ( ! offer ) {
       console.log("[DTWebRTC]: offer was't set in the invitation - data: ", data);
