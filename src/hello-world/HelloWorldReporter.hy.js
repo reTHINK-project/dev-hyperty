@@ -58,6 +58,10 @@ class HelloWorldReporter {
           event.accept();
         });
 
+        helloObjtReporter.onRead((event) => {
+          event.accept();
+        });
+
         resolve(helloObjtReporter);
 
       })

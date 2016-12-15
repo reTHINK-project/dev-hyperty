@@ -50,27 +50,39 @@ class NodeHyperty {
     this.syncher = syncher;
 
     syncher.create(this._objectDescURL, [], {}).then((helloObjtReporter) => {
-        console.info('1. Return Created Hello World Data Object Reporter', helloObjtReporter);
+      console.info('1. Return Created Hello World Data Object Reporter', helloObjtReporter);
+    }).catch((error) => {
+      console.log('Error: ', error);
+    });
 
-        this.helloObjtReporter = helloObjtReporter;
-
-        helloObjtReporter.onSubscription(function(event) {
-          console.info('-------- Hello World Reporter received subscription request --------- \n');
-
-          // All subscription requested are accepted
-
-          event.accept();
-        });
-
-        resolve(helloObjtReporter);
-
-      })
-      .catch(function(reason) {
-        console.error(reason);
-        reject(reason);
-      });
+    // syncher.onNotification((event) => {
+    //   this._onNotification(event);
+    // });
 
   }
+
+  // _onNotification(event) {
+  //
+  //     let _this = this;
+  //
+  //     console.info( 'Event Received: ', event);
+  //
+  //     // Acknowledge reporter about the Invitation was received
+  //     event.ack();
+  //
+  //     // Subscribe Hello World Object
+  //     this.syncher.subscribe(_this._objectDescURL, event.url).then(function(helloObjtObserver) {
+  //       // Hello World Object was subscribed
+  //       console.info( helloObjtObserver);
+  //       helloObjtObserver.onChange('*', function(event) {
+  //         // Hello World Object was changed
+  //         console.info('message received:', event);
+  //       });
+  //
+  //     }).catch(function(reason) {
+  //       console.error(reason);
+  //     });
+  //   }
 
 }
 
