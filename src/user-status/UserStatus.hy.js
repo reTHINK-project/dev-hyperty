@@ -49,9 +49,9 @@ class UserStatus extends EventEmitter {
     this._syncher = new Syncher(hypertyURL, bus, configuration);
 
     this._discovery = new Discovery(hypertyURL, bus);
-    this._domian = divideURL(hypertyURL).domain;
+    this._domain = divideURL(hypertyURL).domain;
 
-    this._userStatusDescURL = 'hyperty-catalogue://catalogue.' + this._domian + '/.well-known/dataschemas/Context';
+    this._userStatusDescURL = 'hyperty-catalogue://catalogue.' + this._domain + '/.well-known/dataschema/Context';
 
     this._heartbeat = [];
 
