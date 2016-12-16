@@ -52,7 +52,7 @@ class UserStatus extends EventEmitter {
 
     this._domain = divideURL(hypertyURL).domain;
 
-    this._userStatusDescURL = 'hyperty-catalogue://catalogue.' + this._domain + '/.well-known/dataschemas/Context';
+    this._userStatusDescURL = 'hyperty-catalogue://catalogue.' + this._domain + '/.well-known/dataschema/Context';
 
     this._heartbeat = [];
 
