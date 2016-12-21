@@ -35,6 +35,8 @@ class HelloWorldObserver extends EventEmitter {
     });
 
     syncher.resumeObservers().then((helloObjtObserver) => {
+
+      if (!helloObjtObserver) return;
       // lets now observe any changes done in Hello World Object
       console.log('[hyperty syncher resume] - dataObject', helloObjtObserver);
 
@@ -58,7 +60,7 @@ class HelloWorldObserver extends EventEmitter {
     event.ack();
 
     // Subscribe Hello World Object
-    _this._syncher.subscribe(_this._objectDescURL, event.url).then(function(helloObjtObserver) {
+    _this._syncher.subscribe(_this._objectDescURL, event.url, true, false).then(function(helloObjtObserver) {
 
       // Hello World Object was subscribed
       console.info(helloObjtObserver);
