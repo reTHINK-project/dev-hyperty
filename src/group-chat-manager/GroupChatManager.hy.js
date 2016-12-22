@@ -69,6 +69,15 @@ class GroupChatManager {
     console.log('Discover: ', discovery);
     console.log('Identity Manager: ', identityManager);
 
+    syncher.resumeObservers({}).then((dataObjectObserver) => {
+      console.log('RESULT:', dataObjectObserver, _this, _this._onResume);
+
+      let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
+      chatController.dataObjectObserver = dataObjectObserver;
+
+      if (_this._onResume) _this._onResume(chatController);
+    });
+
     syncher.onNotification(function(event) {
 
       if (event.type === 'create') {
@@ -171,6 +180,11 @@ class GroupChatManager {
     _this._onInvitation = callback;
   }
 
+  onResume(callback) {
+    let _this = this;
+    _this._onResume = callback;
+  }
+
   /**
    * This function is used to join a Group Chat.
    * @param  {URL.CommunicationURL} invitationURL  The Communication URL of the Group Chat to join that is provided in the invitation event
@@ -185,7 +199,7 @@ class GroupChatManager {
       console.info('------------------------ Syncher subscribe ---------------------- \n');
       console.info(invitationURL);
 
-      syncher.subscribe(_this._objectDescURL, invitationURL).then(function(dataObjectObserver) {
+      syncher.subscribe(_this._objectDescURL, invitationURL, true, false).then(function(dataObjectObserver) {
         console.info('Data Object Observer: ', dataObjectObserver);
         let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
         resolve(chatController);
