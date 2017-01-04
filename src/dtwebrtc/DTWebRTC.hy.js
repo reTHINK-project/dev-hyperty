@@ -3,9 +3,11 @@ import Discovery from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 import {divideURL} from '../utils/utils';
 import EventEmitter from '../utils/EventEmitter'; // for receiving
+import Search from '../utils/Search';
 import iceconfig from './stunTurnserverConfig';
 import config from '../../config.json';
 import IdentityManager from 'service-framework/dist/IdentityManager';
+
 
 import 'webrtc-adapter-test';
 
@@ -20,8 +22,9 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
     this._domain = divideURL(hypertyURL).domain;
     this._objectDescURL = 'hyperty-catalogue://catalogue.' + this._domain + '/.well-known/dataschema/Connection';
     this._syncher = new Syncher(hypertyURL, bus, configuration);
-    this.discovery = new Discovery(hypertyURL, bus);
-    this.identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
+    let discovery = new Discovery(hypertyURL, bus);
+    let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
+    this.search = new Search(discovery, identityManager);
     this.objObserver;
     this.objReporter;
     this.callerIdentity;
