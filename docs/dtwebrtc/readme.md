@@ -72,23 +72,19 @@ hyperty.addEventListener('invitation', (identity) => {
 ```
 
 
-#### invitationAccepted
+#### acceptCall
 
-This function is used to accept an incoming call request received by the `incomingcall(data)` event.
+This function is used to accept an incoming call request received by the `incomingcall()` event.
 
-`invitationAccepted(data)`
-
-**parameters**
-
-*data* - the data that was received in the `incomingcall` event
+`acceptCall()`
 
 
 **How to use it**
 
 ```javascript
-hyperty.addEventListener('incomingcall', (data) => {
+hyperty.addEventListener('incomingcall', () => {
   $('#myModal').find('#btn-accept').on('click', () => {
-    hyperty.invitationAccepted(data);
+    hyperty.acceptCall();
   });
 ```
 
@@ -175,41 +171,20 @@ hyperty.disconnect().then(() => {
 
 ### Hyperty events
 
-#### invitation
-
-This event is emitted when the hyperty receives an invitation to subscribe as observer for a remotely created dataObject. It is an "early phase notification" before the synchronization path between calling and called hyperty is established. It carries the identity of the inviting peer user as parameter.
-
-`invitation(identity)`
-
-**parameters**
-
-*identity* ... the identity of the caller (with several fields describing the caller)
-
-**How to use it**
-
-```javascript
-hyperty.addEventListener('invitation', (identity) => {
-  console.log('incomingcall event received from:', identity);
-  // prepare a dialog with the given identity info
-}
-```
-
 #### incomingcall
 
-This event is emitted when the hyperty received an invitation and has established the synchronization path between itself and the calling hyperty. It carries the WebRTC offer as parameter.
+This event is emitted when the hyperty received an invitation and has established the synchronization path between itself and the calling hyperty.  It carries the identity of the inviting peer user as parameter.
 
-`incomingcall(data)`
+`incomingcall(identity)`
 
-**parameters**
-
-*data* ... invitation data that must be passed to invitationAccepted (This will change in future versions.)
 
 **How to use it**
 
 ```javascript
-hyperty.addEventListener('incomingcall', (data) => {
+hyperty.addEventListener('incomingcall', (identity) => {
+  // display caller identity and present a modal dialog
   $('#myModal').find('#btn-accept').on('click', () => {
-    hyperty.invitationAccepted(data);
+    hyperty.acceptCall();
   });
   // show notification dialog
 }

@@ -89,6 +89,10 @@ export function hypertyDeployed(hyperty) {
       script = 'bracelet/BraceletSensorObserver.js';
       break;
 
+    case 'DTWebRTC':
+      template = 'dtwebrtc/dtwebrtc';
+      script = 'dtwebrtc/dtwebrtc.js';
+      break;
   }
 
   if (!template) {
