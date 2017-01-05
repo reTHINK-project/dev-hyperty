@@ -133,8 +133,11 @@ class GroupChatManager {
 
         console.info('searching ' + users + ' at domain ' + domains);
 
-        return _this.search.users(users, domains, ['comm'], ['chat']);
+        let usersSearch = _this.search.users(users, domains, ['comm'], ['chat']);
+        console.log('usersSearch->', usersSearch);
+        return usersSearch;
       }).then((hypertiesIDs) => {
+        console.log('hypertiesIDS',hypertiesIDs);
 
         let selectedHyperties = hypertiesIDs.map((hyperty) => {
           return hyperty.hypertyID;
@@ -144,7 +147,7 @@ class GroupChatManager {
         console.info('Selected Hyperties: ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
 
-        return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject);
+        return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject);
       }).catch((reason) => {
         console.log('Error:', reason);
       }).then(function(dataObjectReporter) {

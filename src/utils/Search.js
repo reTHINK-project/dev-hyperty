@@ -86,7 +86,7 @@ class Search {
 
           console.info('Requests result: ', clean);
 
-          resolve(clean);
+          resolve(hyperties);
 
         }).catch((reason) => {
           console.error(reason);
