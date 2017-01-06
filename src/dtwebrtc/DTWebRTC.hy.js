@@ -181,7 +181,7 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
       this.trigger('localvideo', stream);
       this.mediaStream = stream;
       this.pc.addStream(stream); // add the stream to the peer connection so the other peer can receive it later
-      this.pc.setRemoteDescription(new RTCSessionDescription(offer), () => {
+      // this.pc.setRemoteDescription(new RTCSessionDescription(offer), () => {
         // connect to the other hyperty now
         this.connect(this.partner).then( (objReporter) => {
           console.log("[DTWebRTC]: objReporter created successfully: ", objReporter);
@@ -191,10 +191,14 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
             this.objReporter.data.connectionDescription = answer;
             this.pc.setLocalDescription(new RTCSessionDescription(answer), () => {
               console.log("[DTWebRTC]: localDescription (answer) successfully set: ", answer);
+            }, (err) => {
+              console.log("Error in setLocalDescription: " + err);
             });
           });
         });
-      });
+      // }, (err) => {
+      //   console.log("Error in setRemoteDescription: " + err);
+      // });
     });
   }
 
@@ -283,9 +287,9 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
       console.info('[DTWebRTC]: Process Connection Description: ', data);
       this.pc.setRemoteDescription(new RTCSessionDescription(data)).then(() => {
         console.log("[DTWebRTC]: remote success")
-      })
-      .catch((e) => {
-        console.log("[DTWebRTC]: remote error: ", e)
+      },
+      (err) => {
+        console.log("[DTWebRTC]: setRemoteDescription error: ", err)
       });
     }
 
@@ -299,12 +303,16 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
 
   cleanupPC() {
     this.sender = null;
-    if ( this.mediaStream ) {
+    if ( this.mediaStream && this.pc) {
+      // removeStream is deprecated --> using removeTrack instead
       let tracks = this.mediaStream.getTracks();
-      tracks.forEach((track) => { track.stop() } );
-      if ( this.pc ) {
-        this.pc.removeStream(this.mediaStream);
-      }
+      tracks.forEach((track) => {
+        track.stop()
+        // this.pc.removeTrack(track);
+      } );
+      // if ( this.pc ) {
+      //   this.pc.removeStream(this.mediaStream);
+      // }
     }
     if ( this.pc ) this.pc.close();
     this.pc = null;

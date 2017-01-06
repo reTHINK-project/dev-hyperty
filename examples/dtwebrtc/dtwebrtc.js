@@ -28,7 +28,7 @@ function hypertyLoaded(result) {
   hyperty.myUrl = result.runtimeHypertyURL;
   // init some click handlers
   $('#gosearch').on('click', discoverEmail);
-  $('#settings').on('submit', saveProfile);
+  $('#settings').on('submit', () => { saveProfile() });
   $('#settings').on('submit', toggleSettings);
 
   fillResoultionSelector();
@@ -254,7 +254,6 @@ function getIceServers() {
 }
 
 function saveProfile() {
-  event.preventDefault();
   var profile = {};
   console.log("[DTWebRTC.main]:save profile " + PROFILE_KEY);
   // transfer all values from all text-inputs of the settings div to profile
