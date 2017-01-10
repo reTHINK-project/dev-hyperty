@@ -1,6 +1,6 @@
 # User-Status hyperty
 
-## 1. Location hyperty functionality description.
+## 1. User-Status hyperty functionality description.
 
 The UserStatus is an hyperty that allows send its status to a list of users (contacts) and subscribe the the status from other users.
 UserStatus hyperty defines a "connected" and "disconnected" status but the application can define other status if needed.
