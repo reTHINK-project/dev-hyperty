@@ -144,10 +144,17 @@ class GroupChatManager {
         });
 
         console.info('------------------------ Syncher Create ---------------------- \n');
-        console.info('Selected Hyperties: ', selectedHyperties);
+        console.info('Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
 
-        return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject);
+        if(typeof(hypertiesIDs[0]) !== 'object' && hypertiesIDs[0].split('@').length > 1) {
+          console.log('here');
+          return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject);
+        } else {
+          console.log('here2');
+          return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject);
+        }
+
       }).catch((reason) => {
         console.log('Error:', reason);
       }).then(function(dataObjectReporter) {

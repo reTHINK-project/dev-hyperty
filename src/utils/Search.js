@@ -84,9 +84,12 @@ class Search {
             return hyperty.hasOwnProperty('hypertyID');
           });
 
-          console.info('Requests result: ', clean);
-
-          resolve(hyperties);
+          console.log('Requests result: ', clean);
+          if (Object.keys(clean).length === 0) {
+            resolve(hyperties);
+          } else {
+            resolve(clean);
+          }
 
         }).catch((reason) => {
           console.error(reason);
