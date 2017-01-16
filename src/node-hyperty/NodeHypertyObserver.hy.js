@@ -40,6 +40,8 @@ class NodeHypertyObserver {
 
     let syncher = new Syncher(hypertyURL, bus, configuration);
 
+    console.log('HELLO: ', this._objectDescURL);
+
     syncher.onNotification((event) => {
       event.ack();
 

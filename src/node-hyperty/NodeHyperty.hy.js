@@ -26,6 +26,14 @@ export function divideURL(url) {
 
 }
 
+function bytesToSize(bytes) {
+   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+   if (bytes == 0) return '0 Byte';
+   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+};
+
+
 /**
 * Hyperty Connector;
 * @author Paulo Chainho [paulo-g-chainho@telecom.pt]
@@ -52,15 +60,15 @@ class NodeHyperty {
     let syncher = new Syncher(hypertyURL, bus, configuration);
     this.syncher = syncher;
 
-    var mbTotal = os.totalmem();
-    var mbFree = os.freemem();
+    let mbTotal = bytesToSize(os.totalmem());
+    let mbFree = bytesToSize(os.freemem());
 
     let initialData = {
       name: 'Node Hyperty',
       description: 'Should send information related with operating system',
       time: new Date().toISOString(),
       os: {
-        arch: os.type(),
+        arch: os.arch(),
         image: 'https://placekitten.com/g/200/300',
         plataform: os.platform(),
         totalMemory: mbTotal,
@@ -68,7 +76,6 @@ class NodeHyperty {
         hostname: os.hostname()
       }
     };
-
 
     syncher.onNotification((event) => {
 

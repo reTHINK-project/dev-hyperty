@@ -6,6 +6,6 @@
   },
   "hypertyType": ["audio", "video"],
   "dataObjects": [
-    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Connection"
+    "https://catalogue.localhost/.well-known/dataschema/Connection"
   ]
 }
