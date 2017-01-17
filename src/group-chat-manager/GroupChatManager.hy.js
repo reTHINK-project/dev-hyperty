@@ -69,6 +69,15 @@ class GroupChatManager {
     console.log('Discover: ', discovery);
     console.log('Identity Manager: ', identityManager);
 
+    syncher.resumeReporters({}).then((dataObjectReporter) => {
+      console.log('RESULT:', dataObjectReporter, _this, _this._onResume);
+
+      let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
+      chatController.dataObjectReporter = dataObjectReporter;
+
+      if (_this._onResume) _this._onResume(chatController);
+    });
+
     syncher.resumeObservers({}).then((dataObjectObserver) => {
       console.log('RESULT:', dataObjectObserver, _this, _this._onResume);
 
