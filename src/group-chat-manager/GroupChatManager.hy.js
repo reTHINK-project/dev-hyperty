@@ -147,7 +147,7 @@ class GroupChatManager {
         console.info('Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
 
-        if(typeof(hypertiesIDs[0]) !== 'object' && hypertiesIDs[0].split('@').length > 1) {
+        if(hypertiesIDs[0] && typeof(hypertiesIDs[0]) !== 'object' &&  hypertiesIDs[0].split('@').length > 1) {
           console.log('here');
           return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject);
         } else {
