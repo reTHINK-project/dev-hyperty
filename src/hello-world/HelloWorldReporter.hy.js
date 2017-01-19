@@ -32,6 +32,14 @@ class HelloWorldReporter {
 
     _this._syncher = syncher;
 
+/*    _this._syncher.resumeReporters({}).then((helloObjtReporter) => {
+
+      console.log('helloObjtReporter: ', helloObjtReporter);
+
+      helloObjtReporter.data.hello = 'REPORTER RESUMED';
+
+    });*/
+
   }
 
   /**
@@ -45,7 +53,7 @@ class HelloWorldReporter {
 
     return new Promise(function(resolve, reject) {
 
-      syncher.create(_this._objectDescURL, [hypertyURL], hello).then(function(helloObjtReporter) {
+      syncher.create(_this._objectDescURL, [hypertyURL], hello, true, false).then(function(helloObjtReporter) {
         console.info('1. Return Created Hello World Data Object Reporter', helloObjtReporter);
 
         _this.helloObjtReporter = helloObjtReporter;
@@ -55,6 +63,10 @@ class HelloWorldReporter {
 
           // All subscription requested are accepted
 
+          event.accept();
+        });
+
+        helloObjtReporter.onRead((event) => {
           event.accept();
         });
 

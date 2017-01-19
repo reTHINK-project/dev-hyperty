@@ -143,12 +143,8 @@ class ConnectionController {
     });
 
     if (_this.mode === 'offer') {
-
       _this._createOffer();
     } else {
-      let data = dataObjectReporter.data;
-      data.peer = peer;
-
       _this._createAnswer();
     }
 
@@ -312,6 +308,7 @@ class ConnectionController {
     _this.peerConnection.setLocalDescription(description, function() {
 
       let data = _this.dataObjectReporter.data;
+
       let sdpConnection = {
         sdp: description.sdp,
         type: description.type

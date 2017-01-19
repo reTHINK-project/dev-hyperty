@@ -40,6 +40,10 @@ function hypertyReady(result, identity) {
     onInvitation(event);
   });
 
+  chatGroupManager.onResume((chatController) => {
+    prepareChat(chatController);
+  });
+
   let messageChat = $('.chat');
   messageChat.removeClass('hide');
 
