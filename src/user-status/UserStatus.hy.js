@@ -27,7 +27,7 @@ import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
 import EventEmitter from '../utils/EventEmitter.js';
-// import {divideURL} from '../utils/utils.js';
+import {divideURL} from '../utils/utils.js';
 import URI from 'urijs';
 
 import availability from './availability.js';
@@ -49,8 +49,9 @@ class UserStatus extends EventEmitter {
     this._syncher = new Syncher(hypertyURL, bus, configuration);
 
     this._discovery = new Discovery(hypertyURL, bus);
+    this._domain = divideURL(hypertyURL).domain;
 
-    this._userStatusDescURL = 'hyperty-catalogue://' + (new URI(hypertyURL)).hostname() + '/.well-known/dataschemas/Context';
+    this._userStatusDescURL = 'hyperty-catalogue://catalogue.' + this._domain + '/.well-known/dataschema/Context';
 
     this._heartbeat = [];
 

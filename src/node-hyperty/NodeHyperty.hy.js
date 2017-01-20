@@ -1,5 +1,6 @@
 /* jshint undef: true */
 
+import os from 'os';
 import {Syncher} from 'service-framework/dist/Syncher';
 
 export function divideURL(url) {
@@ -25,6 +26,14 @@ export function divideURL(url) {
 
 }
 
+function bytesToSize(bytes) {
+   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+   if (bytes == 0) return '0 Byte';
+   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+};
+
+
 /**
 * Hyperty Connector;
 * @author Paulo Chainho [paulo-g-chainho@telecom.pt]
@@ -44,45 +53,65 @@ class NodeHyperty {
 
     let domain = divideURL(hypertyURL).domain;
     this._domain = domain;
-    this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/HelloWorldDataSchema';
+    this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Connection';
+
+    this._interval;
 
     let syncher = new Syncher(hypertyURL, bus, configuration);
     this.syncher = syncher;
 
-    syncher.create(this._objectDescURL, [], {}).then((helloObjtReporter) => {
-      console.info('1. Return Created Hello World Data Object Reporter', helloObjtReporter);
+    let mbTotal = bytesToSize(os.totalmem());
+    let mbFree = bytesToSize(os.freemem());
+
+    let initialData = {
+      name: 'Node Hyperty',
+      description: 'Should send information related with operating system',
+      time: new Date().toISOString(),
+      os: {
+        arch: os.arch(),
+        image: 'https://placekitten.com/g/200/300',
+        plataform: os.platform(),
+        totalMemory: mbTotal,
+        freeMemory: mbFree,
+        hostname: os.hostname()
+      }
+    };
+
+    syncher.onNotification((event) => {
+
+      console.log('Notification:', event);
+
+      if (event.type === 'delete') {
+        console.log('Delete: ', event);
+        clearInterval(this._interval);
+      }
+
+    });
+
+    syncher.create(this._objectDescURL, [], initialData).then((helloObjtReporter) => {
+      console.info('1. Return Created Node Hyperty Data Object Reporter', helloObjtReporter);
+
+      helloObjtReporter.onSubscription((event) => {
+        event.accept();
+      });
+
+      this.generateData(helloObjtReporter);
+
     }).catch((error) => {
       console.log('Error: ', error);
     });
-
-    // syncher.onNotification((event) => {
-    //   this._onNotification(event);
-    // });
-
   }
 
-  // _onNotification(event) {
-  //
-  //     let _this = this;
-  //
-  //     console.info( 'Event Received: ', event);
-  //
-  //     // Acknowledge reporter about the Invitation was received
-  //     event.ack();
-  //
-  //     // Subscribe Hello World Object
-  //     this.syncher.subscribe(_this._objectDescURL, event.url).then(function(helloObjtObserver) {
-  //       // Hello World Object was subscribed
-  //       console.info( helloObjtObserver);
-  //       helloObjtObserver.onChange('*', function(event) {
-  //         // Hello World Object was changed
-  //         console.info('message received:', event);
-  //       });
-  //
-  //     }).catch(function(reason) {
-  //       console.error(reason);
-  //     });
-  //   }
+  generateData(dataObjectReporter) {
+
+    this._interval = setInterval(() => {
+
+      dataObjectReporter.data.time = new Date().toISOString();
+      console.log('UPDATE DATA:', dataObjectReporter.data);
+
+    }, 1000);
+
+  };
 
 }
 

@@ -48,23 +48,28 @@ class RoomClient extends EventEmitter {
         // Syncher
         this.syncher = new Syncher(hypertyURL, bus, configuration);
 
+    }
+
+    start(token) {
+        // this.token = configuration.token;
+        this.token = token;
+        l.d("token:", this.token);
+
         // this promise chain represents the complete setup process
         // 1. (a) discover the associated identity and (b) get the URL of the RoomServer hyperty
         // 2. get SyncObject URLs of rooms this identity is allowed to subscribe to from the RoomServer hyperty
         // 3. subscribe to those objects
-        Promise.all([this.discoverIdentity(), this.getRoomServerHypertyURL(roomServerIdentity)])
-            .then(([identity, hypertyURL]) => {
-                this.roomServerURL = hypertyURL;
-                this.identity = identity;
-                return this.requestRoomURLs(identity, hypertyURL);
-            })
-            .then((urls) => {
-                return this.subscribeToRooms(urls)
-            })
-            .then((syncRooms) => {
-                l.d("Initialization done, room SyncObjects:", syncRooms);
-            });
-
+        this.getRoomServerHypertyURL(roomServerIdentity).then((hypertyURL) => {
+            this.roomServerURL = hypertyURL;
+            return this.requestRoomURLs(this.token, hypertyURL);
+        }).then((urls) => {
+            return this.subscribeToRooms(urls)
+        }).then((syncRooms) => {
+            l.d("Initialization done, room SyncObjects:", syncRooms);
+        }).catch((error) => {
+            l.e(error);
+            this.trigger("error", error);
+        });
     }
 
     /**
@@ -127,7 +132,7 @@ class RoomClient extends EventEmitter {
                 return latestRoomServerHyperty.hypertyID;
             } else {
                 l.e("Unable to find RoomServer hyperty!");
-                throw new Error()
+                throw new Error("Unable to find RoomServer hyperty!");
             }
         });
     }
@@ -150,13 +155,13 @@ class RoomClient extends EventEmitter {
     /**
      * Requests a list of URLs of SyncObjects representing rooms from the desired remote hyperty
      * that the given identity is allowed to monitor & control
-     * @param {string} identity - identity provided to the remote hyperty to decide which URLs it will return (access control)
+     * @param {string} token - token provided to the remote hyperty to decide which URLs it will return (access control)
      * @param {string} remoteHypertyURL - hyperty URL pointing to the remote (RoomServer) hyperty
      * @returns {Promise} - fulfills with an array of SyncObject URLs
      */
-    requestRoomURLs(identity, remoteHypertyURL) {
-        l.d("requestRoomURLs:", [identity, remoteHypertyURL]);
-        return this.executeOnRemote(remoteHypertyURL, "getRooms", [identity]);
+    requestRoomURLs(token, remoteHypertyURL) {
+        l.d("requestRoomURLs:", [token, remoteHypertyURL]);
+        return this.executeOnRemote(remoteHypertyURL, "getRooms", [token]);
     }
 
     /**

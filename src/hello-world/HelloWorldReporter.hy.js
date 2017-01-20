@@ -32,13 +32,13 @@ class HelloWorldReporter {
 
     _this._syncher = syncher;
 
-    _this._syncher.resumeReporters({}).then((helloObjtReporter) => {
+/*    _this._syncher.resumeReporters({}).then((helloObjtReporter) => {
 
       console.log('helloObjtReporter: ', helloObjtReporter);
 
       helloObjtReporter.data.hello = 'REPORTER RESUMED';
 
-    });
+    });*/
 
   }
 
