@@ -152,8 +152,7 @@ class ChatController {
       // TODO: change chatmessages to resource - chat, file
       // TODO: change message to hypertyResource - https://github.com/reTHINK-project/dev-service-framework/tree/develop/docs/datamodel/data-objects/hyperty-resource
       // TODO: handle with multiple resources - if the "message" will be different for each type of resources
-      dataObject.addChild('chatmessages', {message: message})
-      .then(function(dataObjectChild) {
+      dataObject.addChild('chatmessages', {message: message}).then(function(dataObjectChild) {
 
         console.log('[addChild - Chat Message]: ', dataObjectChild);
         _dataObjectChild = dataObjectChild;
@@ -172,7 +171,9 @@ class ChatController {
 
       }).then((myIdentity) => {
 
-        console.log('My Identity: ', myIdentity);
+        console.log('[Chat Controller] - My Identity: ', myIdentity);
+
+        console.log('[Chat Controller] - dataObjectChild: ', _dataObjectChild);
 
         let msg = {
           childId: _dataObjectChild._childId,
