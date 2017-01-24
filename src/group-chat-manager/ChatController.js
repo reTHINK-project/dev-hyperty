@@ -258,9 +258,26 @@ class ChatController {
       console.info('----------------------- Inviting users -------------------- \n');
       console.info('Users: ', users, '\nDomains:', domains);
       _this.search.users(users, domains, ['comm'], ['chat'])
-      .then((hyperties) => {
-        let hypertiesIDs = hyperties.map(hyperty => hyperty.hypertyID);
-        return _this.dataObject.inviteObservers(hypertiesIDs);
+      .then((hypertiesIDs) => {
+
+        let selectedHyperties = hypertiesIDs.map((hyperty) => {
+          return hyperty.hypertyID;
+        });
+
+        console.info('------------------------ Syncher Create ---------------------- \n');
+        console.info('Selected Hyperties: !!! ', selectedHyperties);
+        console.info(`Have ${selectedHyperties.length} users;`);
+
+        if (typeof (hypertiesIDs[0]) !== 'object' && hypertiesIDs[0].split('@').length > 1) {
+          console.log('here');
+          return _this.dataObject.inviteObservers(hypertiesIDs);
+        } else {
+          console.log('here2');
+          return _this.dataObject.inviteObservers(selectedHyperties);
+        }
+
+
+
       })
       .then(function() {
         console.info('Are invited with success ' + users.length + ' users;');
