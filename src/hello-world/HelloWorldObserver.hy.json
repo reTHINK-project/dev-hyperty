@@ -10,6 +10,6 @@
     "hello"
   ],
   "dataObjects": [
-    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/HelloWorldDataSchema"
+    "https://%domain%/.well-known/dataschema/HelloWorldDataSchema"
   ]
 }
