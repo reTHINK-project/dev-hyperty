@@ -195,8 +195,6 @@ class GroupChatManager {
       console.info('[GroupChatManager] ------------------------ Syncher subscribe ---------------------- \n');
       console.info(invitationURL);
 
-      debugger;
-
       syncher.subscribe(_this._objectDescURL, invitationURL).then(function(dataObjectObserver) {
         console.info('[GroupChatManager] Data Object Observer: ', dataObjectObserver);
         let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
