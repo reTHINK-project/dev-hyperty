@@ -41,7 +41,7 @@ class Search {
 
     let _this = this;
 
-    return new Promise(function(resolve) {
+    return new Promise(function(resolve, reject) {
 
       console.log('Users: ', usersURLs, usersURLs.length);
       console.log('Domains: ', providedDomains, providedDomains.length);
@@ -85,7 +85,10 @@ class Search {
           });
 
           console.log('Requests result: ', clean);
-          if (Object.keys(clean).length === 0) {
+          if (hyperties[0] === 'No Hyperty was found') {
+            console.log('[Search - Users] ON reject');
+            reject('No Hyperty was found');
+          } else if (Object.keys(clean).length === 0) {
             resolve(hyperties);
           } else {
             resolve(clean);

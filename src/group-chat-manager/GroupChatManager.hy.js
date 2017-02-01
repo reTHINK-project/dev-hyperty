@@ -156,7 +156,8 @@ class GroupChatManager {
         }
 
       }).catch((reason) => {
-        console.log('Error:', reason);
+        console.log('[GroupChatManager] MyIdentity Error:', reason);
+        return reject(reason);
       }).then(function(dataObjectReporter) {
         console.info('3. Return Create Data Object Reporter', dataObjectReporter);
 
