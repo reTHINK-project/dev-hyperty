@@ -43,8 +43,8 @@ class Search {
 
     return new Promise(function(resolve, reject) {
 
-      console.log('Users: ', usersURLs, usersURLs.length);
-      console.log('Domains: ', providedDomains, providedDomains.length);
+      console.info('[Search] Users: ', usersURLs, usersURLs.length);
+      console.info('[Search] Domains: ', providedDomains, providedDomains.length);
 
       if (usersURLs.length === 0) {
         console.info('Don\'t have users to discovery');
@@ -55,7 +55,7 @@ class Search {
 
         usersURLs.forEach((userURL, index) => {
           let currentDomain = providedDomains[index];
-          console.log('Search user ' + userURL + ' for provided domain:', currentDomain);
+          console.info('[Search] Search user ' + userURL + ' for provided domain:', currentDomain);
           getUsers.push(_this.discovery.discoverHyperty(userURL, schemes, resources, currentDomain));
         });
 
@@ -65,7 +65,7 @@ class Search {
           return promise.then((hyperty) => { return hyperty; }, (error) => { return error; });
         })).then((hyperties) => {
 
-          console.log('Hyperties', hyperties);
+          console.info('[Search] Hyperties', hyperties);
 
           let result = hyperties.map(function(hyperty) {
 

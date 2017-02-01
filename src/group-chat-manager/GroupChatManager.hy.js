@@ -131,7 +131,7 @@ class GroupChatManager {
         // Add my identity
         _this.communicationObject.participants.push(identity);
 
-        console.info('searching ' + users + ' at domain ' + domains);
+        console.info('[GroupChatManager] searching ' + users + ' at domain ' + domains);
 
         let usersSearch = _this.search.users(users, domains, ['comm'], ['chat']);
         console.log('usersSearch->', usersSearch);
@@ -143,8 +143,8 @@ class GroupChatManager {
           return hyperty.hypertyID;
         });
 
-        console.info('------------------------ Syncher Create ---------------------- \n');
-        console.info('Selected Hyperties: !!! ', selectedHyperties);
+        console.info('[GroupChatManager] ------------------------ Syncher Create ---------------------- \n');
+        console.info('[GroupChatManager] Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
 
         if(hypertiesIDs[0] && typeof(hypertiesIDs[0]) !== 'object' &&  hypertiesIDs[0].split('@').length > 1) {
@@ -159,7 +159,7 @@ class GroupChatManager {
         console.log('[GroupChatManager] MyIdentity Error:', reason);
         return reject(reason);
       }).then(function(dataObjectReporter) {
-        console.info('3. Return Create Data Object Reporter', dataObjectReporter);
+        console.info('[GroupChatManager] 3. Return Create Data Object Reporter', dataObjectReporter);
 
         let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
         chatController.dataObjectReporter = dataObjectReporter;
@@ -193,11 +193,11 @@ class GroupChatManager {
 
     return new Promise(function(resolve, reject) {
 
-      console.info('------------------------ Syncher subscribe ---------------------- \n');
+      console.info('[GroupChatManager] ------------------------ Syncher subscribe ---------------------- \n');
       console.info(invitationURL);
 
       syncher.subscribe(_this._objectDescURL, invitationURL).then(function(dataObjectObserver) {
-        console.info('Data Object Observer: ', dataObjectObserver);
+        console.info('[GroupChatManager] Data Object Observer: ', dataObjectObserver);
         let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
         resolve(chatController);
 
