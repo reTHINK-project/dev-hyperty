@@ -9,6 +9,6 @@
     "hello"
   ],
   "dataObjects": [
-    "https://catalogue.localhost/.well-known/dataschema/HelloWorldDataSchema"
+    "https://%domain%/.well-known/dataschema/HelloWorldDataSchema"
   ]
 }

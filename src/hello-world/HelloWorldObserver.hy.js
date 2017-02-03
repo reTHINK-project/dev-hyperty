@@ -34,52 +34,68 @@ class HelloWorldObserver extends EventEmitter {
       _this._onNotification(event);
     });
 
+    syncher.resumeObservers().then((helloObjtObserver) => {
+
+      if (!helloObjtObserver) return;
+      // lets now observe any changes done in Hello World Object
+      console.log('[hyperty syncher resume] - dataObject', helloObjtObserver);
+
+      _this._changes(helloObjtObserver);
+    }).catch((reason) => {
+      console.log('[hyperty syncher resume] - ', reason);
+    });
+
     _this._syncher = syncher;
   }
 
   _onNotification(event) {
 
-      let _this = this;
+    let _this = this;
 
-      console.info( 'Event Received: ', event);
+    console.info('Event Received: ', event);
 
-      _this.trigger('invitation', event.identity);
+    _this.trigger('invitation', event.identity);
 
-      // Acknowledge reporter about the Invitation was received
-      event.ack();
+    // Acknowledge reporter about the Invitation was received
+    event.ack();
 
-      // Subscribe Hello World Object
-      _this._syncher.subscribe(_this._objectDescURL, event.url).then(function(helloObjtObserver) {
+    // Subscribe Hello World Object
+    _this._syncher.subscribe(_this._objectDescURL, event.url, true, false).then(function(helloObjtObserver) {
 
-        // Hello World Object was subscribed
-        console.info( helloObjtObserver);
+      // Hello World Object was subscribed
+      console.info(helloObjtObserver);
 
-        // lets notify the App the subscription was accepted with the mnost updated version of Hello World Object
+      // lets now observe any changes done in Hello World Object
+      console.log('[hyperty syncher subscribe] - dataObject', helloObjtObserver);
 
-        _this.trigger('hello', helloObjtObserver.data);
+      _this._changes(helloObjtObserver);
 
-        // lets now observe any changes done in Hello World Object
-
-        helloObjtObserver.onChange('*', function(event) {
-
-          // Hello World Object was changed
-          console.info('message received:',event);
-
-          // lets notify the App about the change
-          _this.trigger('hello', helloObjtObserver.data);
-
-        });
-
-      }).catch(function(reason) {
-        console.error(reason);
-      });
-
-
-    }
-
-
+    }).catch(function(reason) {
+      console.error(reason);
+    });
   }
 
+  _changes(dataObject) {
+
+    console.log('[hyperty syncher] - dataObject', dataObject);
+
+    // lets notify the App the subscription was accepted with the mnost updated version of Hello World Object
+    this.trigger('hello', dataObject.data);
+
+    dataObject.onChange('*', (event) => {
+
+      // Hello World Object was changed
+      console.info('message received:', event);
+
+      if (event.field === 'hello') {
+        // lets notify the App about the change
+        this.trigger('hello', dataObject.data);
+      }
+
+    });
+  }
+
+}
 
 export default function activate(hypertyURL, bus, configuration) {
 

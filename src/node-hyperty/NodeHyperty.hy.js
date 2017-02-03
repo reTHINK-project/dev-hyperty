@@ -1,5 +1,6 @@
 /* jshint undef: true */
 
+import os from 'os';
 import {Syncher} from 'service-framework/dist/Syncher';
 
 export function divideURL(url) {
@@ -25,6 +26,14 @@ export function divideURL(url) {
 
 }
 
+function bytesToSize(bytes) {
+   var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+   if (bytes == 0) return '0 Byte';
+   var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+};
+
+
 /**
 * Hyperty Connector;
 * @author Paulo Chainho [paulo-g-chainho@telecom.pt]
@@ -44,33 +53,65 @@ class NodeHyperty {
 
     let domain = divideURL(hypertyURL).domain;
     this._domain = domain;
-    this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/HelloWorldDataSchema';
+    this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Connection';
+
+    this._interval;
 
     let syncher = new Syncher(hypertyURL, bus, configuration);
     this.syncher = syncher;
 
-    syncher.create(this._objectDescURL, [], {}).then((helloObjtReporter) => {
-        console.info('1. Return Created Hello World Data Object Reporter', helloObjtReporter);
+    let mbTotal = bytesToSize(os.totalmem());
+    let mbFree = bytesToSize(os.freemem());
 
-        this.helloObjtReporter = helloObjtReporter;
+    let initialData = {
+      name: 'Node Hyperty',
+      description: 'Should send information related with operating system',
+      time: new Date().toISOString(),
+      os: {
+        arch: os.arch(),
+        image: 'https://placekitten.com/g/200/300',
+        plataform: os.platform(),
+        totalMemory: mbTotal,
+        freeMemory: mbFree,
+        hostname: os.hostname()
+      }
+    };
 
-        helloObjtReporter.onSubscription(function(event) {
-          console.info('-------- Hello World Reporter received subscription request --------- \n');
+    syncher.onNotification((event) => {
 
-          // All subscription requested are accepted
+      console.log('Notification:', event);
 
-          event.accept();
-        });
+      if (event.type === 'delete') {
+        console.log('Delete: ', event);
+        clearInterval(this._interval);
+      }
 
-        resolve(helloObjtReporter);
+    });
 
-      })
-      .catch(function(reason) {
-        console.error(reason);
-        reject(reason);
+    syncher.create(this._objectDescURL, [], initialData).then((helloObjtReporter) => {
+      console.info('1. Return Created Node Hyperty Data Object Reporter', helloObjtReporter);
+
+      helloObjtReporter.onSubscription((event) => {
+        event.accept();
       });
 
+      this.generateData(helloObjtReporter);
+
+    }).catch((error) => {
+      console.log('Error: ', error);
+    });
   }
+
+  generateData(dataObjectReporter) {
+
+    this._interval = setInterval(() => {
+
+      dataObjectReporter.data.time = new Date().toISOString();
+      console.log('UPDATE DATA:', dataObjectReporter.data);
+
+    }, 1000);
+
+  };
 
 }
 
