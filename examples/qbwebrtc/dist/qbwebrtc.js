@@ -18,10 +18,10 @@ function ActionsCall(_ref) {
         { className: "row" },
         React.createElement(
             "form",
-            { className: "form-inline" },
+            { className: "col s12" },
             React.createElement(
                 "div",
-                { className: "form-group" },
+                { className: "input-field col s6" },
                 React.createElement(
                     "label",
                     { className: "sr-only", htmlFor: "address" },
@@ -31,7 +31,7 @@ function ActionsCall(_ref) {
             ),
             React.createElement(
                 "div",
-                { className: "form-group" },
+                { className: "input-field col s6" },
                 React.createElement(
                     "label",
                     { className: "sr-only", htmlFor: "domain" },
@@ -41,13 +41,22 @@ function ActionsCall(_ref) {
             ),
             React.createElement(
                 "a",
-                { href: "#", onClick: call, className: "btn btn-default" },
-                "Call"
+                { href: "#", onClick: call, className: "btn-floating btn-large waves-effect waves-light red" },
+                React.createElement(
+                    "i",
+                    { className: "material-icons" },
+                    "phone"
+                )
             ),
+            "  ",
             React.createElement(
                 "a",
-                { href: "#", onClick: videoCall, className: "btn btn-default" },
-                "VideoCall"
+                { href: "#", onClick: videoCall, className: "btn-floating btn-large waves-effect waves-light red" },
+                React.createElement(
+                    "i",
+                    { className: "material-icons" },
+                    "videocam"
+                )
             )
         )
     );
@@ -71,8 +80,12 @@ var ActionsHangup = function ActionsHangup(_ref) {
             { className: "form-inline" },
             React.createElement(
                 "a",
-                { href: "#", onClick: hangup, className: "btn btn-default" },
-                "HANGUP"
+                { href: "#", onClick: hangup, className: "btn-floating btn-large waves-effect waves-light red" },
+                React.createElement(
+                    "i",
+                    { className: "material-icons" },
+                    "call_end"
+                )
             )
         )
     );
@@ -96,16 +109,25 @@ var ActionsIncomingCall = function ActionsIncomingCall(_ref) {
         { className: "row" },
         React.createElement(
             "form",
-            { className: "form-inline" },
+            { className: "col s12" },
             React.createElement(
                 "a",
-                { href: "#", onClick: acceptCall, className: "btn btn-default" },
-                "ACCEPT"
+                { href: "#", onClick: acceptCall, className: "btn-floating btn-large waves-effect waves-light red" },
+                React.createElement(
+                    "i",
+                    { className: "material-icons" },
+                    "phone"
+                )
             ),
+            "  ",
             React.createElement(
                 "a",
-                { href: "#", onClick: rejectCall, className: "btn btn-default" },
-                "REJECT"
+                { href: "#", onClick: rejectCall, className: "btn-floating btn-large waves-effect waves-light red" },
+                React.createElement(
+                    "i",
+                    { className: "material-icons" },
+                    "call_end"
+                )
             )
         )
     );
@@ -190,18 +212,27 @@ var HypertyInfo = function HypertyInfo(_ref) {
         { className: "row" },
         React.createElement(
             "div",
-            { className: "col-xs-12" },
+            { className: "panel panel-info" },
             React.createElement(
                 "div",
-                { className: "row" },
+                { className: "panel-heading" },
+                React.createElement(
+                    "h3",
+                    { className: "panel-title" },
+                    "Hyperty info"
+                )
+            ),
+            React.createElement(
+                "div",
+                { className: "panel-body" },
                 React.createElement(
                     "div",
-                    { className: "col-xs-4" },
-                    React.createElement("img", { src: avatar })
+                    { className: "col-xs-2" },
+                    React.createElement("img", { src: avatar, className: "img-rounded img-responsive" })
                 ),
                 React.createElement(
                     "div",
-                    { className: "col-xs-8" },
+                    { className: "col-xs-10" },
                     React.createElement(
                         "div",
                         { className: "row" },
@@ -244,7 +275,7 @@ var Logo = function Logo(_ref) {
         React.createElement(
             "div",
             { className: "col-xs-4" },
-            "Logo"
+            React.createElement("img", { src: "qbwebrtc/assets/logo_quobis_claim.png", className: "img-responsive", alt: "Logo Quobis" })
         )
     );
 };
@@ -253,74 +284,6 @@ exports.default = Logo;
 module.exports = exports["default"];
 
 },{}],7:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-var StatusPanel = function StatusPanel(_ref) {
-    var state = _ref.state,
-        address = _ref.address;
-
-    return React.createElement(
-        "div",
-        { className: "row" },
-        React.createElement(
-            "div",
-            { className: "col-xs-10 col-xs-offset-2" },
-            React.createElement(
-                "strong",
-                null,
-                address
-            ),
-            React.createElement(
-                "strong",
-                null,
-                "...",
-                state
-            )
-        )
-    );
-};
-
-exports.default = StatusPanel;
-module.exports = exports["default"];
-
-},{}],8:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-var VideoPanel = function VideoPanel(_ref) {
-    var remoteVideo = _ref.remoteVideo,
-        localVideo = _ref.localVideo;
-
-    var content = void 0;
-    if (remoteVideo) {
-        return React.createElement(
-            'div',
-            { className: 'row' },
-            React.createElement(
-                'div',
-                { className: 'col-xs-2' },
-                React.createElement('video', { autoPlay: true, muted: 'true', src: localVideo ? URL.createObjectURL(localVideo) : '' })
-            ),
-            React.createElement(
-                'div',
-                { className: 'col-xs-10' },
-                React.createElement('video', { autoPlay: true, src: URL.createObjectURL(remoteVideo) })
-            )
-        );
-    }
-
-    return React.createElement('div', null);
-};
-
-exports.default = VideoPanel;
-module.exports = exports['default'];
-
-},{}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -328,8 +291,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-exports.default = hypertyLoaded;
 
 var _ActionPanel = require('./ActionPanel');
 
@@ -416,21 +377,134 @@ var Main = React.createClass({
             'div',
             { className: 'container-fluid' },
             React.createElement(_Logo2.default, null),
-            React.createElement(_HypertyInfo2.default, hypertyProps),
-            React.createElement(_ActionPanel2.default, actionProps),
-            React.createElement(_VideoPanel2.default, { remoteVideo: this.state.remoteVideo, localVideo: this.state.localVideo }),
-            React.createElement(_StatusPanel2.default, { state: this.state.callStatus, address: this.state.address })
+            React.createElement(
+                'div',
+                { className: 'row' },
+                React.createElement(
+                    'div',
+                    { className: 'col-md-8 col-sm-12' },
+                    React.createElement(
+                        'div',
+                        { className: 'panel panel-primary' },
+                        React.createElement(
+                            'div',
+                            { className: 'panel-body' },
+                            React.createElement(_ActionPanel2.default, actionProps),
+                            React.createElement(_StatusPanel2.default, { state: this.state.callStatus, address: this.state.address }),
+                            React.createElement(_VideoPanel2.default, { remoteVideo: this.state.remoteVideo, localVideo: this.state.localVideo })
+                        )
+                    )
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'col-md-4 col-sm-12' },
+                    React.createElement(_HypertyInfo2.default, hypertyProps)
+                )
+            )
         );
     }
 });
 
+exports.default = Main;
+module.exports = exports['default'];
+
+},{"./ActionPanel":4,"./HypertyInfo":5,"./Logo":6,"./StatusPanel":8,"./VideoPanel":9}],8:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var StatusPanel = function StatusPanel(_ref) {
+    var state = _ref.state,
+        address = _ref.address;
+
+    return React.createElement(
+        "div",
+        { className: "row" },
+        React.createElement(
+            "div",
+            { className: "col-xs-10 col-xs-offset-2" },
+            React.createElement(
+                "h5",
+                null,
+                address,
+                " ",
+                React.createElement(
+                    "span",
+                    { className: "label label-info" },
+                    state
+                )
+            )
+        )
+    );
+};
+
+exports.default = StatusPanel;
+module.exports = exports["default"];
+
+},{}],9:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var VideoPanel = function VideoPanel(_ref) {
+    var remoteVideo = _ref.remoteVideo,
+        localVideo = _ref.localVideo;
+
+    var content = void 0;
+    if (remoteVideo) {
+        return React.createElement(
+            "div",
+            { className: "row" },
+            React.createElement(
+                "div",
+                { className: "col-xs-2" },
+                React.createElement(
+                    "div",
+                    { className: "embed-responsive embed-responsive-4by3" },
+                    React.createElement("video", { className: "embed-responsive-item", autoPlay: true, muted: "true", src: localVideo ? URL.createObjectURL(localVideo) : '' })
+                )
+            ),
+            React.createElement(
+                "div",
+                { className: "col-xs-10" },
+                React.createElement(
+                    "div",
+                    { className: "embed-responsive embed-responsive-4by3" },
+                    React.createElement("video", { className: "embed-responsive-item", autoPlay: true, src: URL.createObjectURL(remoteVideo) })
+                )
+            )
+        );
+    }
+
+    return React.createElement("div", null);
+};
+
+exports.default = VideoPanel;
+module.exports = exports["default"];
+
+},{}],10:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = hypertyLoaded;
+
+var _Main = require('./Main');
+
+var _Main2 = _interopRequireDefault(_Main);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function hypertyLoaded(result) {
     result.instance.identityManager.discoverUserRegistered().then(function (identity) {
-        var element = React.createElement(Main, { identity: identity, runtimeHypertyURL: result.runtimeHypertyURL, hyperty: result.instance });
+        var element = React.createElement(_Main2.default, { identity: identity, runtimeHypertyURL: result.runtimeHypertyURL, hyperty: result.instance });
         ReactDOM.render(element, document.getElementById('root'));
     }).catch(console.error);
 }
 module.exports = exports['default'];
 
-},{"./ActionPanel":4,"./HypertyInfo":5,"./Logo":6,"./StatusPanel":7,"./VideoPanel":8}]},{},[9])(9)
+},{"./Main":7}]},{},[10])(10)
 });

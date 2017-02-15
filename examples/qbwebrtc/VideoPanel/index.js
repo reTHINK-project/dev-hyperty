@@ -3,10 +3,14 @@ const VideoPanel = ({remoteVideo, localVideo}) => {
     if(remoteVideo) {
         return(<div className="row">
                         <div className='col-xs-2'>
-                            <video autoPlay muted='true' src={localVideo?URL.createObjectURL(localVideo):''}/>
+                            <div className="embed-responsive embed-responsive-4by3">
+                                <video className="embed-responsive-item" autoPlay muted='true' src={localVideo?URL.createObjectURL(localVideo):''}/>
+                            </div>
                         </div>
                         <div className="col-xs-10">
-                            <video autoPlay src={URL.createObjectURL(remoteVideo)}/>
+                            <div className="embed-responsive embed-responsive-4by3">
+                                <video className="embed-responsive-item" autoPlay src={URL.createObjectURL(remoteVideo)}/>
+                            </div>
                         </div>
                     </div>);
     }
