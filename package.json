@@ -22,6 +22,7 @@
   "homepage": "https://github.com/reTHINK-project/dev-hyperty#readme",
   "devDependencies": {
     "babel-core": "6.10.4",
+    "babel-plugin-add-module-exports": "0.2.1",
     "babel-plugin-rewire": "1.0.0-rc-4",
     "babel-plugin-transform-object-rest-spread": "6.22.0",
     "babel-preset-es2015": "6.9.0",
