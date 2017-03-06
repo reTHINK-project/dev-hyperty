@@ -1,0 +1,10 @@
+{
+  "configuration": {},
+  "constraints": {
+    "browser": true
+  },
+  "hypertyType": ["users"],
+  "dataObjects": [
+    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Context"
+  ]
+}

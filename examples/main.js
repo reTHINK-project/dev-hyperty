@@ -19,6 +19,11 @@ export function hypertyDeployed(hyperty) {
   let script = '';
 
   switch (hyperty.name) {
+    case 'Discovery':
+      template = 'discovery/discovery';
+      script = 'discovery/dist/discovery.js';
+      break;
+
     case 'QBWebRTC':
       template = 'qbwebrtc/qbwebrtc';
       script = 'qbwebrtc/dist/qbwebrtc.js';
