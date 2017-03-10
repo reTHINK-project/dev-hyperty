@@ -1,21 +1,16 @@
-function create(identityManager, users) {
+function create(users) {
     console.log('users collection',users)
-    function add(hyperty) {
-        return identityManager.discoverUserRegistered(undefined, hyperty)
-            .then(u => create(identityManager, users.concat(u)))
-    }
-
-    function addCollection(hyperties) {
-        return Promise.all(hyperties.map(h=>identityManager.discoverUserRegistered(undefined, h).catch(()=>{})))
-            .then(u => create(identityManager, users.concat(u.filter(d => d !== undefined))))
+    function add(profile) {
+        return  create(users.concat(profile))
     }
 
     function query(criteria) {
+        return users
     }
 
-    return { add: add, addCollection: addCollection, queryUsers: query }    
+    return { add: add, queryUsers: query }    
 }
 
-export default function newConnectedUsersCollection(identityManager) {
-    return create(identityManager, [])
+export default function newConnectedUsersCollection() {
+    return create([])
 }

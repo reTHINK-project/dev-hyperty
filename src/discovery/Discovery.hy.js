@@ -13,11 +13,11 @@ class DiscoveryHyperty {
         if (!configuration) throw new Error('The configuration is a needed parameter');
 
         console.log('[DiscoveryHyperty]', hypertyURL)
-        this._identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
         this._domain = divideURL(hypertyURL).domain;
         this._objectDescURL = 'hyperty-catalogue://catalogue.' + this._domain + '/.well-known/dataschema/Context';
         this._syncher = new Syncher(hypertyURL, bus, configuration);
         this._discovery = new Discovery(hypertyURL, bus);
+        this._users = newUserCollection()
 
         // receiving starts here
         this._syncher.onNotification((event) => {
@@ -32,7 +32,7 @@ class DiscoveryHyperty {
     }
 
     queryUsers(criteria) {
-        return new Promise((resolve)=>resolve(this._users))
+        return new Promise((resolve)=>resolve(this._users.queryUsers()))
     }
 
     _onNotification(event) {
@@ -42,9 +42,8 @@ class DiscoveryHyperty {
         switch (event.type) {
             case "create":
                 this._syncher.subscribe(this._objectDescURL, event.url).then((objObserver) => {
-                    return this._users
-                        .add(event.from)
-                        .then(this._newUser())
+                    this._users = this._users.add(event.identity.userProfile)
+                    this._newUser()
                 }).catch((reason) => {
                     console.error(reason);
                 });
@@ -76,15 +75,14 @@ class DiscoveryHyperty {
             resources: ["users"]
         }
         console.log('synchers', hyperties)
-        this._users = newUserCollection(this._identityManager)
-        this._users.addCollection(hyperties)
-            .then(users=>this._users = users)
-            .then(()=>this._syncher.create(this._objectDescURL, hyperties, dataObject))
+        this._syncher.create(this._objectDescURL, hyperties, dataObject)
             .then((objReporter) => {
                 console.log('[DiscoveryHy _syncher created]', hyperties)
-                objReporter.onSubscription(function(event) {
+                objReporter.onSubscription((event) => {
                     console.log('[Discovery onSubscription]', event)
                     event.accept(); // all subscription requested are accepted
+                    this._users = this._users.add(event.identity.userProfile)
+                    this._newUser()
                 });
             })
             .catch(function(reason) {
