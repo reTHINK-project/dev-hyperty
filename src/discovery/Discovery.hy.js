@@ -3,7 +3,7 @@ import Discovery from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 import IdentityManager from 'service-framework/dist/IdentityManager';
 import {divideURL} from '../utils/utils';
-import newUserCollection from './ConnectedUsers'
+import newUserCollection from './QueryableCollection'
 
 class DiscoveryHyperty { 
 
@@ -31,8 +31,8 @@ class DiscoveryHyperty {
         this._newUser = callback
     }
 
-    queryUsers(criteria) {
-        return new Promise((resolve)=>resolve(this._users.queryUsers()))
+    queryUsers(filters) {
+        return new Promise((resolve)=>resolve(this._users.query(filters)))
     }
 
     _onNotification(event) {

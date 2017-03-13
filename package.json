@@ -41,8 +41,10 @@
     "watchify": "3.7.0"
   },
   "dependencies": {
-    "urijs": "1.18.1",
+    "deep-equal": "1.0.1",
     "runtime-browser": "github:rethink-project/dev-runtime-browser#master",
-    "service-framework": "github:rethink-project/dev-service-framework#develop"
+    "searchjs": "0.8.0",
+    "service-framework": "github:rethink-project/dev-service-framework#develop",
+    "urijs": "1.18.1"
   }
 }
