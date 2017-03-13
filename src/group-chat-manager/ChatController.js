@@ -62,7 +62,7 @@ class ChatController {
     dataObjectReporter.onSubscription(function(event) {
       event.accept();
 
-      console.log('New user has subscribe this object: ', event.identity);
+      console.log('New user has subscribe this object: ', dataObjectReporter.data, event.identity);
       dataObjectReporter.data.participants.push(event.identity.userProfile);
 
       if (_this._onUserAdded) _this._onUserAdded(event.identity.userProfile);

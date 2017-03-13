@@ -361,21 +361,15 @@ function processNewUser(event) {
 
   let section = $('.conversations');
   let collection = section.find('.participant-list');
+  let user;
 
   if (event.hasOwnProperty('data') && event.data) {
-
-    let users = event.data;
-
-    users.map(function(user) {
-      collection.append('<li class="chip" data-name="' + user.userURL + '"><img src="' + user.avatar + '" alt="Contact Person">' + user.cn + '<i class="material-icons close">close</i></li>');
-    });
-
+    user = event.data;
   } else {
-    let user = event;
-    console.log('Add User:', user);
-    collection.append('<li class="chip" data-name="' + user.userURL + '"><img src="' + user.avatar + '" alt="Contact Person">' + user.cn + '<i class="material-icons close">close</i></li>');
+    user = event;
   }
 
+  collection.append('<li class="chip" data-name="' + user.userURL + '"><img src="' + user.avatar + '" alt="Contact Person">' + user.cn + '<i class="material-icons close">close</i></li>');
   collection.removeClass('center-align');
 
   let closeBtn = collection.find('.close');

@@ -69,22 +69,27 @@ class GroupChatManager {
     console.log('Discover: ', discovery);
     console.log('Identity Manager: ', identityManager);
 
+    let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
+
     syncher.resumeReporters({}).then((dataObjectReporter) => {
       console.log('RESULT:', dataObjectReporter, _this, _this._onResume);
 
-      let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
       chatController.dataObjectReporter = dataObjectReporter;
 
       if (_this._onResume) _this._onResume(chatController);
+
+    }).catch((reason) => {
+      console.info('Resume Reporter | ', reason);
     });
 
     syncher.resumeObservers({}).then((dataObjectObserver) => {
       console.log('RESULT:', dataObjectObserver, _this, _this._onResume);
 
-      let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
       chatController.dataObjectObserver = dataObjectObserver;
 
       if (_this._onResume) _this._onResume(chatController);
+    }).catch((reason) => {
+      console.info('Resume Observer | ', reason);
     });
 
     syncher.onNotification(function(event) {
@@ -155,7 +160,7 @@ class GroupChatManager {
         console.log('usersSearch->', usersSearch);
         return usersSearch;
       }).then((hypertiesIDs) => {
-        console.log('hypertiesIDS',hypertiesIDs);
+        console.log('hypertiesIDS', hypertiesIDs);
 
         let selectedHyperties = hypertiesIDs.map((hyperty) => {
           return hyperty.hypertyID;
@@ -165,12 +170,12 @@ class GroupChatManager {
         console.info('[GroupChatManager] Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
 
-        if(hypertiesIDs[0] && typeof(hypertiesIDs[0]) !== 'object' &&  hypertiesIDs[0].split('@').length > 1) {
+        if (hypertiesIDs[0] && typeof hypertiesIDs[0] !== 'object' &&  hypertiesIDs[0].split('@').length > 1) {
           console.log('here');
-          return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject);
+          return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject, true, false);
         } else {
           console.log('here2');
-          return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject);
+          return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false);
         }
 
       }).catch((reason) => {
