@@ -2,6 +2,7 @@
 
 let hyperty;
 
+
 function hypertyLoaded(result) {
   console.log('hypertyLoaded', result);
 
@@ -28,6 +29,7 @@ function hypertyLoaded(result) {
     $('.btn-change-state').on('click', function() {
       hyperty.setStatus($(this).attr('rel'));
     });
+    
     hyperty.create(participants).then(function(res) {
       console.info(res);
     }).catch(function(reason) {
@@ -36,8 +38,8 @@ function hypertyLoaded(result) {
   });
 
   hyperty.addEventListener('statusChange', function(event) {
-    console.log('handle statusChange event for', event);
-    let email = (typeof event !== 'undefined' && typeof event.identity !== 'undefined') ? event.identity.email : 'none';
+    console.debug('handle statusChange event for', event);
+    let email = (typeof event !== 'undefined' && typeof event.identity !== 'undefined') ? event.identity.userProfile.username : 'none';
     $('#user-list').children('[rel="' + email + '"]').removeClass('state-available state-unavailable state-busy state-away').addClass('state-' + event.status);
   });
 }
