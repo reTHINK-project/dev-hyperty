@@ -1,8 +1,7 @@
 {
   "configuration": {},
   "constraints": {
-    "node": true,
-    "browser": false
+    "node": true
   },
   "hypertyType": ["audio", "video"],
   "dataObjects": [

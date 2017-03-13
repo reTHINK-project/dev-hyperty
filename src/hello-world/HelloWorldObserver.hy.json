@@ -3,8 +3,7 @@
   "signature": "",
   "configuration": {},
   "constraints": {
-    "browser": true,
-    "node": false
+    "browser": true
   },
   "hypertyType": [
     "hello"
