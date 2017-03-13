@@ -32,7 +32,7 @@ class DiscoveryHyperty {
     }
 
     queryUsers(filters) {
-        return new Promise((resolve)=>resolve(this._users.query(filters)))
+        return this._users.query(filters)
     }
 
     _onNotification(event) {
