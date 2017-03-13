@@ -43,7 +43,7 @@
     }
   },
   "constraints": {
-    "browser": true
+    "browser":true,"windowSandbox":true,"mic":true,"camera":true
   },
   "hypertyType": ["audio", "video"],
   "dataObjects": [
