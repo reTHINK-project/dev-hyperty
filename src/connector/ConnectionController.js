@@ -272,7 +272,7 @@ class ConnectionController {
   _processPeerInformation(data) {
     let _this = this;
 
-    console.info('[Connector.ConnectionController processPeerInformation] 'JSON.stringify(data));
+    console.info('[Connector.ConnectionController processPeerInformation ]', JSON.stringify(data));
 
     if (data.type === 'offer' || data.type === 'answer') {
       console.info('[Connector.ConnectionController processPeerInformation]Process Connection Description: ', data.sdp);
