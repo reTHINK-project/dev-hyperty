@@ -56,6 +56,7 @@ class GroupChatManager {
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
 
     _this._hypertyURL = hypertyURL;
+    _this._bus = bus;
     _this._syncher = syncher;
     _this._domain = domain;
 
@@ -66,15 +67,18 @@ class GroupChatManager {
 
     _this.communicationObject = communicationObject;
 
-    console.log('Discover: ', discovery);
-    console.log('Identity Manager: ', identityManager);
+    console.log('[GroupChatManager] Discover: ', discovery);
+    console.log('[GroupChatManager] Identity Manager: ', identityManager);
 
     let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
 
     syncher.resumeReporters({}).then((dataObjectReporter) => {
-      console.log('RESULT:', dataObjectReporter, _this, _this._onResume);
+
+      console.log('[GroupChatManager] RESULT:', dataObjectReporter, _this, _this._onResume);
 
       chatController.dataObjectReporter = dataObjectReporter;
+
+      _this._resumeInterworking(chatController.dataObjectReporter.data);
 
       if (_this._onResume) _this._onResume(chatController);
 
@@ -83,7 +87,7 @@ class GroupChatManager {
     });
 
     syncher.resumeObservers({}).then((dataObjectObserver) => {
-      console.log('RESULT:', dataObjectObserver, _this, _this._onResume);
+      console.log('[GroupChatManager] RESULT:', dataObjectObserver, _this, _this._onResume);
 
       chatController.dataObjectObserver = dataObjectObserver;
 
@@ -127,6 +131,44 @@ class GroupChatManager {
   }
 
   /**
+   * This function is used to resume interworking Stubs for participants from legacy chat services
+   * @param  {Communication}              communication Communication data object
+   */
+
+  _resumeInterworking(participants) {
+
+    let _this = this;
+
+    if (participants) {
+
+      console.log('[GroupChatManager._resumeInterworking for] ', participants);
+
+      // Hack while the resume of reporterDataObject.data.participants array is not fixed
+
+      let length = participants['participants.length'];
+      let part;
+      for (part = 1; part < length; part++) {
+        let user = participants['participants.' + part].userURL.split('://');
+
+        // check if participat user URL is from a legacy domain
+        if (user[0] !== 'user') {
+
+          console.log('[GroupChatManager._resumeInterworking for] ', participants['participants.' + part]);
+
+          user = user[0] + '://' + user[1].split('/')[1];
+
+          let msg = {
+              type: 'init', from: _this._hypertyURL, to: user
+            };
+
+          _this._bus.postMessage(msg, () => {
+          });
+        }
+      }
+    }
+  }
+
+  /**
    * This function is used to create a new Group Chat providing the name and the identifiers of users to be invited.
    * @param  {string}                     name  Is a string to identify the Group Chat
    * @param  {array<URL.userURL>}         users Array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL, like this format user://<ipddomain>/<user-identifier>
@@ -157,10 +199,10 @@ class GroupChatManager {
         console.info('[GroupChatManager] searching ' + users + ' at domain ' + domains);
 
         let usersSearch = _this.search.users(users, domains, ['comm'], ['chat']);
-        console.log('usersSearch->', usersSearch);
+        console.log('[GroupChatManager] usersSearch->', usersSearch);
         return usersSearch;
       }).then((hypertiesIDs) => {
-        console.log('hypertiesIDS', hypertiesIDs);
+        console.log('[GroupChatManager] hypertiesIDS', hypertiesIDs);
 
         let selectedHyperties = hypertiesIDs.map((hyperty) => {
           return hyperty.hypertyID;
@@ -171,10 +213,10 @@ class GroupChatManager {
         console.info(`Have ${selectedHyperties.length} users;`);
 
         if (hypertiesIDs[0] && typeof hypertiesIDs[0] !== 'object' &&  hypertiesIDs[0].split('@').length > 1) {
-          console.log('here');
+          console.log('[GroupChatManager] here');
           return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject, true, false);
         } else {
-          console.log('here2');
+          console.log('[GroupChatManager] here2');
           return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false);
         }
 
