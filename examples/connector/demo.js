@@ -5,6 +5,7 @@
 // import {getTemplate, getUserMedia} from '../../utils/utils';
 
 var connector;
+let controllerExist = false;
 
 function getUserMedia(constraints) {
 
@@ -54,12 +55,14 @@ function hypertyReady(result, identity) {
   connector = result.instance;
 
   connector.onInvitation(function(controller, identity) {
-    console.log('On Invitation: ', controller, identity);
-    notificationHandler(controller, identity);
+    console.debug('On Invitation: ', controller, identity); 
+      notificationHandler(controller, identity);
+      
   });
 }
 
 function notificationHandler(controller, identity) {
+  console.info('---------------- ---- notificationHandler ----------------------------------')
 
   var calleeInfo = identity;
   var incoming = $('.modal-call');
@@ -68,6 +71,7 @@ function notificationHandler(controller, identity) {
   var informationHolder = incoming.find('.information');
 
   showVideo(controller);
+  controllerExist = true;
 
   acceptBtn.on('click', function(e) {
 
@@ -237,13 +241,14 @@ function openVideo(hyperty, domain) {
   console.log('connecting hyperty: ', hyperty);
 
   var toHyperty = hyperty;
+  let roomID = document.getElementById('roomName').value;
   var localMediaStream;
 
   var options = options || {video: true, audio: true};
   getUserMedia(options).then(function(mediaStream) {
     console.info('recived media stream: ', mediaStream);
     localMediaStream = mediaStream;
-    return connector.connect(toHyperty, mediaStream, '', domain);
+    return connector.connect(toHyperty, mediaStream, roomID, domain);
   })
   .then(function(controller) {
     showVideo(controller);
@@ -265,6 +270,7 @@ function processVideo(event) {
 
 }
 
+//
 function processLocalVideo(mediaStream) {
   console.log('Process Local Video: ', mediaStream);
 

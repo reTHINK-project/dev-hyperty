@@ -25,13 +25,56 @@
   <div class="loader"></div>
 
   <div class="col s12">
-    <ul class="collection hide">
+    <ul class="collection hide">  
       <li class="collection-header"><h4>User Hyperty</h4></li>
     </ul>
+     <div class="input-field col s12">
+        <input class="input-roomName" name="roomName" id="roomName" type="text">
+        <label for="roomName">roomName</label>
+  </div> 
+  
   </div>
 
 </section>
-
+	<div id="container">
+		<div id="wrapper">
+      <div id="acceptcall" class="modal" role="dialog">
+         <div class="modal-dialog modal-sm" >
+           <div class="modal-header">
+             <h3>Accept call ?</h3>
+            </div>
+            <div class="modal-body"></div>
+             <div class="modal-footer">
+               <button class="btn btn-primary" onclick="acceptCall()">Accept</button>
+               <button class="btn btn-warning" onclick="rejectCall()">Reject</button>
+            </div>
+        </div>
+      </div>
+      <div id="inviteusers" class="modal" role="dialog">
+        <div class="modal-dialog modal-lg" >
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3>Invite Users to join the call</h3></div>
+      <div class="modal-body" id="userlist"></div>
+      <div class="modal-footer">
+    <button class="btn btn-primary" onclick="inviteUsers()">Invite Users </button>
+    <button class="btn btn-warning" onclick="hideInviteUsersDialog()">Close</button>
+      </div>
+      </div>
+    </div>
+  </div>
+ <!-- list of all available conferencing rooms -->
+             <table style="width: 100%;" id="userlist"></table>
+               <!-- local/remote videos container -->
+            <div id="videos-container"></div>
+			<div id="room" style="display: none;">
+				<h2 id="room-header"></h2>
+				<div id="participants"></div>
+				<input type="button" id="button-leave" onmouseup="leaveRoom();"
+					value="Leave room">
+			</div>
+		</div>
+	</div>
 <section class="video-holder col s12 hide" style="position: relative;">
 
   <video class="my-video responsive-video" muted style="background-color: black; position: absolute; top: 10px; right: 10px; with: 80px; height: 80px;" autoplay></video>
