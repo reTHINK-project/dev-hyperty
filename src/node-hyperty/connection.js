@@ -21,34 +21,40 @@
 * limitations under the License.
 **/
 
-
-// export default function communication(name, url, participants){
-//     let date = new Date().toJSON()
-
-//     return{
-//         id: name,
-//         name: name,
-//         owner: url,
-//         scheme: 'comm',
-//         resources: [''],
-//         children: [],
-//         startingTime: date,
-//         lastModified: date,
-//         duration: '',
-//         status: 'open',
-//         participants: participants
-//     }
-// }
-
+// dataObjectReporter.data = {
+//    status : "connected",
+//    owner : "hyperty://example.com/alicehy",
+//    peer : "connection://example.com/alice/bob27012016",
+//    ownerPeer : {
+//          connectionDescription: {
+//             sdp: 's4dfaf1sa3f1asd5f4sdafa',
+//             type: 'offer'
+//          },
+//          iceCandidates: [{
+//              type: 'candidate',
+//              candidate: event.candidate.candidate,
+//              sdpMid: event.candidate.sdpMid,
+//              sdpMLineIndex: event.candidate.sdpMLineIndex
+//            },
+//            {
+//              type: 'candidate',
+//              candidate: event.candidate.candidate,
+//              sdpMid: event.candidate.sdpMid,
+//              sdpMLineIndex: event.candidate.sdpMLineIndex
+//            },
+//            .....
+//        ]
+//      }
+//  }
 
 export let connection = {
   name: '',
-  roomName :'',
   // id:{},
+  roomName :'',
   scheme: '',
   status: '',
   owner: '',
-  peer: '',
+  Peer: '',
   ownerPeer: {
     connectionDescription: {},
     iceCandidates: []

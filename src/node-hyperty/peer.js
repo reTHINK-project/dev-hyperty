@@ -8,7 +8,7 @@
 * Copyright 2016 Apizee
 * Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
 *
-* Licensed under the Apache License, Version 2.0 (the ''License");
+* Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
 *
@@ -21,13 +21,16 @@
 * limitations under the License.
 **/
 
-export let connection = {
+let peer = {
   name: '',
   status: '',
   owner: '',
+  scheme: '',
   peer: '',
   ownerPeer: {
     connectionDescription: {},
     iceCandidates: []
   }
 };
+
+export default peer;

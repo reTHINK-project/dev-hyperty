@@ -52,23 +52,29 @@ class Connector {
     if (!configuration) throw new Error('The configuration is a needed parameter');
 
     let _this = this;
-    _this._hypertyURL = hypertyURL;
-    _this._bus = bus;
-    _this._configuration = configuration;
-    _this._domain = divideURL(hypertyURL).domain;
+    this.hypertyURL = hypertyURL;
+    this.bus = bus;
+    this.configuration = configuration;
+    this.domain = divideURL(hypertyURL).domain;
 
-    _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Connection';
+    // _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Connection';
+      _this.objectDescURL = 'hyperty-catalogue://catalogue.' + this.domain +'/.well-known/dataschema/Connection'
 
-    _this._controllers = {};
-    _this.connectionObject = connection;
+    this.controllers = {};
+    this.scheme = ['connection'];
+    this.resources = ['audio', 'video'];
+    this.connectionObject = connection;
+    this.participants = {};
+    this.myId = {};
 
     let discovery = new Discovery(hypertyURL, bus);
     let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
 
-    _this.discovery = discovery;
-    _this.identityManager = identityManager;
 
-    _this.search = new Search(discovery, identityManager);
+    this.discovery = discovery;
+    this.identityManager = identityManager;
+
+    this.search = new Search(discovery, identityManager);
 
     console.log('Discover: ', discovery);
     console.log('Identity Manager: ', identityManager);
@@ -76,79 +82,87 @@ class Connector {
     let syncher = new Syncher(hypertyURL, bus, configuration);
 
     syncher.onNotification((event) => {
-
       let _this = this;
-
-      console.log('On Notification: ', event);
+      console.debug('---------------------------------------------------- On Notification: ', event);
 
       if (event.type === 'create') {
-        console.info('------------ Acknowledges the Reporter - Create ------------ \n');
+        console.debug('------------ Acknowledges the Reporter - Create ------------ \n');
         event.ack(200);
-
-        if (_this._controllers[event.from]) {
-          _this._autoSubscribe(event);
+        if (_this.controllers[event.from]) {
+          _this.autoSubscribe(event);
         } else {
-          _this._autoAccept(event);
+          _this.autoAccept(event);
         }
 
-        console.info('------------------------ End Create ---------------------- \n');
+        if((event.value.data.id === 'receiveVideoAnswer') || (event.value.data.id === 'iceCandidate')) {
+          _this.controllers[event.from]._processPeerInformation(event.value.data);
+        }
 
+        console.debug('------------------------ End Create ---------------------- \n');
       }
 
       if (event.type === 'delete') {
         console.info('------------ Acknowledges the Reporter - Delete ------------ \n');
         event.ack(200);
+        console.debug(_this.controllers);
+        if (_this.controllers) {
+          Object.keys(_this.controllers).forEach((controller) => {
+            _this.controllers[controller].deleteEvent = event;
+            delete _this.controllers[controller];
 
-        console.log(_this._controllers);
-        if (_this._controllers) {
-          Object.keys(_this._controllers).forEach((controller) => {
-            _this._controllers[controller].deleteEvent = event;
-            delete _this._controllers[controller];
-
-            console.log('Controllers:', _this._controllers);
+            console.debug('Controllers:', _this.controllers);
           });
         }
-
         console.info('------------------------ End Create ---------------------- \n');
       }
-
     });
-
-    _this._syncher = syncher;
+    _this.syncher = syncher;
   }
 
-  _autoSubscribe(event) {
+  autoSubscribe(event) {
     let _this = this;
-    let syncher = _this._syncher;
+    let syncher = _this.syncher;
+    console.debug(' this is:', _this)
 
-    console.info('---------------- Syncher Subscribe (Auto Subscribe) ---------------- \n');
-    console.info('Subscribe URL Object ', event);
-    syncher.subscribe(_this._objectDescURL, event.url).then(function(dataObjectObserver) {
-      console.info('1. Return Subscribe Data Object Observer', dataObjectObserver);
-      _this._controllers[event.from].dataObjectObserver = dataObjectObserver;
+    console.debug('---------------- Syncher Subscribe (Auto Subscribe) ---------------- \n');
+    console.debug('Subscribe URL Object ', event);
+
+    syncher.subscribe(_this.objectDescURL, event.url).then(function(dataObjectObserver) {
+      console.debug('1. Return Subscribe Data Object Observer', dataObjectObserver);
+      _this.controllers[event.from].dataObjectObserver = dataObjectObserver;
+      console.debug('******************  _this.controllers[event.from] :',  _this.controllers[event.from])
+       // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
+        
+      // if((event.value.data.id === 'existingParticipants') || (event.value.data.id === 'iceCandidate')) {
+      //    _this.controllers[event.from]._processPeerInformation(event.value.data);
+      // }    
     }).catch(function(reason) {
       console.error(reason);
     });
   }
 
-  _autoAccept(event) {
+  autoAccept(event) {
     let _this = this;
-    let syncher = _this._syncher;
+    let syncher = _this.syncher;
+    
+    console.debug('---------------- Syncher Subscribe (Auto Accept) ---------------- \n');
+    console.debug('Subscribe URL Object of the other peer : ', event);
 
-    console.info('---------------- Syncher Subscribe (Auto Accept) ---------------- \n');
-    console.info('Subscribe URL Object ', event);
-    syncher.subscribe(_this._objectDescURL, event.url ).then(function(dataObjectObserver) {
-      console.info('1. Return Subscribe Data Object Observer', dataObjectObserver);
+    syncher.subscribe(_this.objectDescURL, event.url ).then(function(dataObjectObserver) {
+      console.debug('1. Return Subscribe Data Object Observer', dataObjectObserver);
 
-      let connectionController = new ConnectionController(syncher, _this._domain, _this._configuration);
+      let connectionController = new ConnectionController(syncher, _this.domain, _this.configuration);
       connectionController.connectionEvent = event;
+      // we get the sdp offer
       connectionController.dataObjectObserver = dataObjectObserver;
-      _this._controllers[event.from] = connectionController;
+
+      _this.controllers[event.from] = connectionController;
+
 
       // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
-      if (_this._onInvitation) _this._onInvitation(connectionController, event.identity.userProfile);
+      if (_this.onInvitation) _this.onInvitation(connectionController, event.identity.userProfile);
 
-      console.info('------------------------ END ---------------------- \n');
+      console.debug('------------------------ END ---------------------- \n');
     }).catch(function(reason) {
       console.error(reason);
     });
@@ -161,17 +175,18 @@ class Connector {
    * @param  {string}             name         is a string to identify the connection.
    * @return {<Promise>ConnectionController}   A ConnectionController object as a Promise.
    */
-  connect(userURL, stream, name, domain) {
+  connect(userURL, stream, roomID, domain) {
     // TODO: Pass argument options as a stream, because is specific of implementation;
     // TODO: CHange the hypertyURL for a list of URLS
     let _this = this;
-    let syncher = _this._syncher;
+    let syncher = _this.syncher;
     let scheme = ['connection'];
     let resource = ['audio', 'video'];
 
-    console.log('connecting: ', userURL);
+    console.debug('connecting to user : ', userURL);
+    console.debug('roomID is :', roomID);
 
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
 
       let connectionController;
       let selectedHyperty;
@@ -179,48 +194,52 @@ class Connector {
 
       _this.search.myIdentity().then(function(identity) {
 
-        console.log('connector searching: ', [userURL], `at domain `, [domain]);
-        console.log('identity: ', identity, _this.connectionObject);
+        console.debug('connector searching: ', [userURL], `at domain `, [domain]);
+        console.debug('identity: ', identity, _this.connectionObject);
+        _this.myId = identity;
 
         return _this.search.users([userURL], [domain], scheme, resource);
-      })
-      .then(function(hypertiesIDs) {
+      }).then((hypertiesIDs) => {
 
-        // Only support one to one connection;*/
         selectedHyperty = hypertiesIDs[0].hypertyID;
-        console.info('Only support communication one to one, selected hyperty: ', selectedHyperty);
+        // selectedHyperty = hypertiesIDs;
+        console.debug('Only support communication one to one, selected hyperty: ', selectedHyperty);
 
-        let connectionName = 'Connection';
-        if (name) {
-          connectionName = name;
-        }
+        let roomName = roomID;
+        // if (roomID) {
+        //   connectionName = 'connection';
+        // }
 
         // Initial data
-        _this.connectionObject.name = connectionName;
+        // _this.connectionObject.usename = _this.myId;
+        _this.connectionObject.name = 'connection';
+        _this.connectionObject.roomName = roomID;
         _this.connectionObject.scheme = 'connection';
-        _this.connectionObject.owner = _this._hypertyURL;
+        _this.connectionObject.owner = _this.hypertyURL;
         _this.connectionObject.peer = selectedHyperty;
         _this.connectionObject.status = '';
+        console.debug('---------------_this.objectDescURL, [selectedHyperty], _this.connectionObject: ', _this.objectDescURL, [selectedHyperty], _this.connectionObject)
 
-        return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject);
-      })
-      .catch(function(reason) {
+        return syncher.create(_this.objectDescURL, [selectedHyperty], _this.connectionObject);
+      }).catch((reason) => {
         console.error(reason);
         reject(reason);
-      })
-      .then(function(dataObjectReporter) {
-        console.info('1. Return Create Data Object Reporter', dataObjectReporter);
+      }).then((dataObjectReporter) => {
+        console.debug('1. Return Create Data Object Reporter', dataObjectReporter);
+        console.debug('2. Return syncher', syncher);
 
-        connectionController = new ConnectionController(syncher, _this._domain, _this._configuration);
+        connectionController = new ConnectionController(syncher, _this.domain, _this.configuration, _this.myId.username);
+        
+        console.debug('_this.myId is:', _this.myId)
+        connectionController.username = _this.myId.username;
         connectionController.mediaStream = stream;
         connectionController.dataObjectReporter = dataObjectReporter;
 
-        _this._controllers[selectedHyperty] = connectionController;
-
+        _this.controllers[selectedHyperty] = connectionController;
+        console.debug('--------------------------------------');
         resolve(connectionController);
         console.info('--------------------------- END --------------------------- \n');
-      })
-      .catch(function(reason) {
+      }).catch((reason) => {
         console.error(reason);
         reject(reason);
       });
@@ -235,10 +254,10 @@ class Connector {
    */
   onInvitation(callback) {
     let _this = this;
-    _this._onInvitation = callback;
+    _this.onInvitation = callback;
   }
-
 }
+
 
 /**
  * Function will activate the hyperty on the runtime
