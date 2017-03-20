@@ -55,6 +55,9 @@ class GroupChatManager {
 
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
 
+    _this._reportersControllers = {};
+    _this._observersControllers = {};
+
     _this._hypertyURL = hypertyURL;
     _this._syncher = syncher;
     _this._domain = domain;
@@ -69,25 +72,42 @@ class GroupChatManager {
     console.log('Discover: ', discovery);
     console.log('Identity Manager: ', identityManager);
 
-    let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
+    syncher.resumeReporters({}).then((reporters) => {
+      console.log('RESULT:', reporters, _this, _this._onResume);
 
-    syncher.resumeReporters({}).then((dataObjectReporter) => {
-      console.log('RESULT:', dataObjectReporter, _this, _this._onResume);
+      Object.keys(reporters).forEach((dataObjectReporterURL) => {
 
-      chatController.dataObjectReporter = dataObjectReporter;
+        // create a new chatController
+        let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
+        chatController.dataObjectReporter = reporters[dataObjectReporterURL];
 
-      if (_this._onResume) _this._onResume(chatController);
+        // Save the chat controllers by dataObjectReporterURL
+        this._reportersControllers[dataObjectReporterURL] = chatController;
+
+      })
+
+      if (_this._onResume) _this._onResume(this._reportersControllers);
 
     }).catch((reason) => {
       console.info('Resume Reporter | ', reason);
     });
 
-    syncher.resumeObservers({}).then((dataObjectObserver) => {
-      console.log('RESULT:', dataObjectObserver, _this, _this._onResume);
+    syncher.resumeObservers({}).then((observers) => {
+      console.log('RESULT:', observers, _this, _this._onResume);
 
-      chatController.dataObjectObserver = dataObjectObserver;
+      Object.keys(observers).forEach((dataObjectObserverURL) => {
 
-      if (_this._onResume) _this._onResume(chatController);
+        // create a new chatController
+        let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
+        chatController.dataObjectObserver = observers[dataObjectObserverURL];
+
+        // Save the chat controllers by dataObjectReporterURL
+        this._observersControllers[dataObjectObserverURL] = chatController;
+
+      })
+
+      if (_this._onResume) _this._onResume(this._observersControllers);
+
     }).catch((reason) => {
       console.info('Resume Observer | ', reason);
     });
@@ -117,9 +137,14 @@ class GroupChatManager {
         _this.communicationObject.resources = ['chat'];
         _this.communicationObject.children = [];
 
-        if (_this.chatController) {
-          _this.chatController.closeEvent(event);
+        for (let url in this._reportersControllers) {
+          this._reportersControllers[url].closeEvent(event)
         }
+
+        for (let url in this._observersControllers) {
+          this._observersControllers[url].closeEvent(event)
+        }
+
       }
 
     });
@@ -186,7 +211,9 @@ class GroupChatManager {
 
         let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
         chatController.dataObjectReporter = dataObjectReporter;
-        _this.chatController = chatController;
+
+        _this._reportersControllers[dataObjectReporter.url] = chatController;
+
         resolve(chatController);
 
       }).catch(function(reason) {
@@ -230,6 +257,8 @@ class GroupChatManager {
         resolve(chatController);
 
         chatController.dataObjectObserver = dataObjectObserver;
+
+        _this._observersControllers[dataObjectObserver.url] = chatController;
 
       }).catch(function(reason) {
         reject(reason);

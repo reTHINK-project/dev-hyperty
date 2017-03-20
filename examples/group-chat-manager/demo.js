@@ -40,8 +40,14 @@ function hypertyReady(result, identity) {
     onInvitation(event);
   });
 
-  chatGroupManager.onResume((chatController) => {
-    prepareChat(chatController);
+  chatGroupManager.onResume((chatControllers) => {
+
+    Object.values(chatControllers).forEach((chatController) => {
+
+      prepareChat(chatController);
+
+    });
+
   });
 
   let messageChat = $('.chat');

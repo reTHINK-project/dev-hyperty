@@ -27,8 +27,21 @@ function hypertyLoaded(result) {
   hello.append(sayHelloTo);
 
   $('.say-hello').on('submit', sayHello);
+
+  hyperty.onReporterResume((helloObject) => {
+    console.log('REPORTER:', helloObject);
+    resumeReporters(helloObject);
+  });
+
 }
 
+function resumeReporters(helloObject) {
+
+  console.log('AQUI:', hyperty);
+
+  prepareHyperty(helloObject);
+
+}
 
 function sayHello(event) {
 
@@ -41,27 +54,30 @@ function sayHello(event) {
   console.log(toHyperty);
 
   hyperty.hello(toHyperty).then(function(helloObject) {
-
-    console.log('helloUrl: ', helloObject);
-
-    $('.hello-panel').hide();
-
-    var helloUrl = '<p>Hello URL: '+ helloObject.url + '</p>';
-
-    let bye = $('.bye-panel');
-
-    let msgPanel = $('.msg-panel');
-
-    msgPanel.append(helloUrl);
-
-    bye.removeClass('hide');
-
-    $('.say-bye').on('submit', sayBye);
-
-
+    prepareHyperty(helloObject);
   }).catch(function(reason) {
     console.error(reason);
   });
+
+}
+
+function prepareHyperty(helloObject) {
+
+  console.log('helloUrl: ', helloObject);
+
+  $('.hello-panel').hide();
+
+  var helloUrl = '<p>Hello URL: '+ helloObject.url + '</p>';
+
+  let bye = $('.bye-panel');
+
+  let msgPanel = $('.msg-panel');
+
+  msgPanel.append(helloUrl);
+
+  bye.removeClass('hide');
+
+  $('.say-bye').on('submit', sayBye);
 
 }
 
