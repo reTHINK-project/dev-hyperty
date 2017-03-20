@@ -85,6 +85,8 @@ class GroupChatManager {
         // Save the chat controllers by dataObjectReporterURL
         this._reportersControllers[dataObjectReporterURL] = chatController;
 
+        _this._resumeInterworking(chatController.dataObjectReporter.data);
+
       })
 
       if (_this._onResume) _this._onResume(this._reportersControllers);
