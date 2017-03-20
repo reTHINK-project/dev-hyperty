@@ -62,14 +62,20 @@ class ChatController {
     dataObjectReporter.onSubscription(function(event) {
       event.accept();
 
-      console.log('New user has subscribe this object: ', dataObjectReporter.data, event.identity);
-      dataObjectReporter.data.participants.push(event.identity.userProfile);
+      console.log('[GroupChatManager.ChatController]New user has subscribe this object: ', dataObjectReporter.data, event.identity);
 
-      if (_this._onUserAdded) _this._onUserAdded(event.identity.userProfile);
+      let participant = event.identity.userProfile;
+
+      if (event.identity.legacy)
+        participant.legacy = event.identity.legacy;
+
+      dataObjectReporter.data.participants.push(participant);
+
+      if (_this._onUserAdded) _this._onUserAdded(participant);
     });
 
     dataObjectReporter.onAddChild(function(child) {
-      console.info('Reporter - Add Child: ', child);
+      console.info('[GroupChatManager.ChatController]Reporter - Add Child: ', child);
       dataObjectReporter.data.lastModified = new Date().toJSON();
       if (_this._onMessage) _this._onMessage(child);
     });
@@ -88,7 +94,7 @@ class ChatController {
     _this._dataObjectObserver = dataObjectObserver;
 
     dataObjectObserver.onChange('*', function(event) {
-      console.info('Observer - onChange', event);
+      console.info('[GroupChatManager.ChatController]Observer - onChange', event);
 
       if (event.field.includes('participants')) {
         switch (event.cType) {
@@ -107,7 +113,7 @@ class ChatController {
     });
 
     dataObjectObserver.onAddChild(function(child) {
-      console.info('Observer - Add Child: ', child);
+      console.info('[GroupChatManager.ChatController]Observer - Add Child: ', child);
       if (_this._onMessage) _this._onMessage(child);
     });
 
@@ -154,7 +160,7 @@ class ChatController {
       // TODO: handle with multiple resources - if the "message" will be different for each type of resources
       dataObject.addChild('chatmessages', {message: message}).then(function(dataObjectChild) {
 
-        console.log('[addChild - Chat Message]: ', dataObjectChild);
+        console.log('[GroupChatManager.ChatController][addChild - Chat Message]: ', dataObjectChild);
         _dataObjectChild = dataObjectChild;
 
         let identity = _this.myIdentity;
@@ -256,8 +262,8 @@ class ChatController {
 
     return new Promise(function(resolve, reject) {
 
-      console.info('----------------------- Inviting users -------------------- \n');
-      console.info('Users: ', users, '\nDomains:', domains);
+      console.info('[GroupChatManager.ChatController]----------------------- Inviting users -------------------- \n');
+      console.info('[GroupChatManager.ChatController]Users: ', users, '\nDomains:', domains);
       _this.search.users(users, domains, ['comm'], ['chat'])
       .then((hypertiesIDs) => {
 
@@ -265,15 +271,15 @@ class ChatController {
           return hyperty.hypertyID;
         });
 
-        console.info('------------------------ Syncher Create ---------------------- \n');
-        console.info('Selected Hyperties: !!! ', selectedHyperties);
+        console.info('[GroupChatManager.ChatController]------------------------ Syncher Create ---------------------- \n');
+        console.info('[GroupChatManager.ChatController]Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
 
         if (typeof (hypertiesIDs[0]) !== 'object' && hypertiesIDs[0].split('@').length > 1) {
-          console.log('here');
+          console.log('[GroupChatManager.ChatController]here');
           return _this.dataObject.inviteObservers(hypertiesIDs);
         } else {
-          console.log('here2');
+          console.log('[GroupChatManager.ChatController]here2');
           return _this.dataObject.inviteObservers(selectedHyperties);
         }
 
@@ -281,7 +287,7 @@ class ChatController {
 
       })
       .then(function() {
-        console.info('Are invited with success ' + users.length + ' users;');
+        console.info('[GroupChatManager.ChatController]Are invited with success ' + users.length + ' users;');
         resolve(true);
       }).catch(function(reason) {
         console.error('An error occurred when trying to invite users;\n', reason);
@@ -307,7 +313,7 @@ class ChatController {
   removeUser(user) {
 
     // TODO: implement the removeUser;
-    console.log('Not yet implemented: ', user);
+    console.log('[GroupChatManager.ChatController]Not yet implemented: ', user);
 
   }
 

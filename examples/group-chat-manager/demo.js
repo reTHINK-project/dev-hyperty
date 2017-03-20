@@ -184,28 +184,28 @@ function joinRoom(event) {
 
 function prepareChat(chatController, isOwner) {
 
-  console.log('Chat Group Controller: ', chatController);
+  console.log('[GroupChatManagerDemo prepareChat] Chat Group Controller: ', chatController);
 
   chatController.onMessage(function(message) {
-    console.info('new message recived: ', message);
+    console.info('[GroupChatManagerDemo ] new message received: ', message);
     processMessage(message);
   });
 
   chatController.onChange(function(event) {
-    console.log('App - OnChange Event:', event);
+    console.log('[GroupChatManagerDemo ] OnChange Event:', event);
   });
 
   chatController.onUserAdded(function(event) {
-    console.log('App - onUserAdded Event:', event);
+    console.log('[GroupChatManagerDemo ] onUserAdded Event:', event);
     processNewUser(event);
   });
 
   chatController.onUserRemoved(function(event) {
-    console.log('App - onUserRemoved Event:', event);
+    console.log('[GroupChatManagerDemo ] onUserRemoved Event:', event);
   });
 
   chatController.onClose(function(event) {
-    console.log('App - onClose Event:', event);
+    console.log('[GroupChatManagerDemo ] onClose Event:', event);
 
     $('.chat-section').remove();
   });
@@ -363,7 +363,7 @@ function processMessage(message) {
 
 function processNewUser(event) {
 
-  console.log('ADD PARTICIPANT: ', event);
+  console.log('[GroupChatManager.demo.processNewUser] ', event);
 
   let section = $('.conversations');
   let collection = section.find('.participant-list');

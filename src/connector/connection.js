@@ -52,9 +52,6 @@ export let connection = {
   scheme: '',
   status: '',
   owner: '',
-  peer: '',
-  ownerPeer: {
-    connectionDescription: {},
-    iceCandidates: []
-  }
+  connectionDescription: {},
+  iceCandidates: []
 };
