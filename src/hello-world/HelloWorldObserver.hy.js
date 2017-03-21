@@ -34,13 +34,16 @@ class HelloWorldObserver extends EventEmitter {
       _this._onNotification(event);
     });
 
-    syncher.resumeObservers().then((helloObjtObserver) => {
+    syncher.resumeObservers({}).then((resumedObservers) => {
 
-      if (!helloObjtObserver) return;
+      if (!resumedObservers) return;
       // lets now observe any changes done in Hello World Object
-      console.log('[hyperty syncher resume] - dataObject', helloObjtObserver);
+      console.log('[hyperty syncher resume] - dataObject', resumedObservers);
 
-      _this._changes(helloObjtObserver);
+      Object.values(resumedObservers).forEach((helloObjtObserver) => {
+        _this._changes(helloObjtObserver);
+      })
+
     }).catch((reason) => {
       console.log('[hyperty syncher resume] - ', reason);
     });
