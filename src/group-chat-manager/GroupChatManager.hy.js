@@ -71,7 +71,7 @@ class GroupChatManager {
     _this.communicationObject = communicationObject;
 
     console.log('[GroupChatManager] Discover: ', discovery);
-    console.log('[GroupChatManager] Identity Manager: ', identityManager);
+    console.log('[GroupChatManager] Identity Manager : ', identityManager);
 
     syncher.resumeReporters({}).then((reporters) => {
       console.log('RESULT:', reporters, _this, _this._onResume);
@@ -85,9 +85,9 @@ class GroupChatManager {
         // Save the chat controllers by dataObjectReporterURL
         this._reportersControllers[dataObjectReporterURL] = chatController;
 
-        _this._resumeInterworking(chatController.dataObjectReporter.data);
+        _this._resumeInterworking(chatController.dataObjectReporter);
 
-      })
+      });
 
       if (_this._onResume) _this._onResume(this._reportersControllers);
 
@@ -159,33 +159,33 @@ class GroupChatManager {
    * @param  {Communication}              communication Communication data object
    */
 
-  _resumeInterworking(participants) {
+  _resumeInterworking(communication) {
 
     let _this = this;
 
-    if (participants) {
+    if (communication.data.participants) {
+
+      let participants = communication.data.participants;
+      let objectUrl = communication.url;
+      let schemaUrl = communication.schema;
+      let name = communication.data.name;
 
       console.log('[GroupChatManager._resumeInterworking for] ', participants);
 
-      // Hack while the resume of reporterDataObject.data.participants array is not fixed
-
-      /*let length = participants['participants.length'];
-      let part;
-      for (part = 1; part < length; part++) {*/
       participants.forEach((participant)=> {
-        //let user = participants['participants.' + part].userURL.split('://');
 
         let user = participant.userURL.split('://');
 
         // check if participat user URL is from a legacy domain
         if (user[0] !== 'user') {
 
-          console.log('[GroupChatManager._resumeInterworking for] ', participants['participants.' + part]);
+          console.log('[GroupChatManager._resumeInterworking for] ', participant);
 
           user = user[0] + '://' + user[1].split('/')[1];
 
           let msg = {
-              type: 'init', from: _this._hypertyURL, to: user
+              type: 'create', from: _this._hypertyURL, to: user,
+              body: { resource: objectUrl, schema: schemaUrl, value: {name: name} }
             };
 
           _this._bus.postMessage(msg, () => {
