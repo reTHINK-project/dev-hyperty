@@ -145,10 +145,13 @@ class GroupChatManager {
 
       // Hack while the resume of reporterDataObject.data.participants array is not fixed
 
-      let length = participants['participants.length'];
+      /*let length = participants['participants.length'];
       let part;
-      for (part = 1; part < length; part++) {
-        let user = participants['participants.' + part].userURL.split('://');
+      for (part = 1; part < length; part++) {*/
+      participants.forEach((participant)=> {
+        //let user = participants['participants.' + part].userURL.split('://');
+
+        let user = participant.userURL.split('://');
 
         // check if participat user URL is from a legacy domain
         if (user[0] !== 'user') {
@@ -164,7 +167,7 @@ class GroupChatManager {
           _this._bus.postMessage(msg, () => {
           });
         }
-      }
+      });
     }
   }
 
@@ -208,7 +211,7 @@ class GroupChatManager {
           return hyperty.hypertyID;
         });
 
-        console.info('[GroupChatManager] ------------------------ Syncher Create ---------------------- \n');
+        console.info('[GroupChatManager] ---------------------- Syncher Create ---------------------- \n');
         console.info('[GroupChatManager] Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
 
