@@ -20,17 +20,17 @@ function hypertyLoaded(result) {
       ['openidtest20@gmail.com', 'localhost']
   ];
 
-  let participants = [];
+  let contacts = [];
   Handlebars.getTemplate('user-status/user-card').then(function(template) {
     $.each(userDirectory, function(i, v) {
       $('.user-list').append(template({email: v[0]}));
-      participants.push({email: v[0], domain: v[1]});
+      contacts.push({email: v[0], domain: v[1]});
     });
     $('.btn-change-state').on('click', function() {
       hyperty.setStatus($(this).attr('rel'));
     });
     
-    hyperty.create(participants).then(function(res) {
+    hyperty.create(contacts).then(function(res) {
       console.info(res);
     }).catch(function(reason) {
       console.error(reason);
