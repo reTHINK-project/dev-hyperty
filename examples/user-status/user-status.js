@@ -1,6 +1,6 @@
 /* global $, Handlebars */
 
-let hyperty;
+let userStatusHy;
 
 
 function hypertyLoaded(result) {
@@ -14,7 +14,7 @@ function hypertyLoaded(result) {
 
   $('.card-panel').html(hypertyInfo);
 
-  hyperty = result.instance;
+  userStatusHy = result.instance;
   let userDirectory = [
       ['openidtest10@gmail.com', 'localhost'],
       ['openidtest20@gmail.com', 'localhost']
@@ -27,17 +27,17 @@ function hypertyLoaded(result) {
       contacts.push({email: v[0], domain: v[1]});
     });
     $('.btn-change-state').on('click', function() {
-      hyperty.setStatus($(this).attr('rel'));
+      userStatusHy.setStatus($(this).attr('rel'));
     });
     
-    hyperty.create(contacts).then(function(res) {
+    userStatusHy.create(contacts).then(function(res) {
       console.info(res);
     }).catch(function(reason) {
       console.error(reason);
     });
   });
 
-  hyperty.addEventListener('statusChange', function(event) {
+  userStatusHy.addEventListener('statusChange', function(event) {
     console.debug('handle statusChange event for', event);
     let email = (typeof event !== 'undefined' && typeof event.identity !== 'undefined') ? event.identity.userProfile.username : 'none';
     $('#user-list').children('[rel="' + email + '"]').removeClass('state-available state-unavailable state-busy state-away').addClass('state-' + event.status);
