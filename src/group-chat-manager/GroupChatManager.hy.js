@@ -96,7 +96,7 @@ class GroupChatManager {
     });
 
     syncher.resumeObservers({}).then((observers) => {
-      console.log('RESULT:', observers, _this, _this._onResume);
+      console.log('[GroupChatManager] resuming observers : ', observers, _this, _this._onResume);
 
       Object.keys(observers).forEach((dataObjectObserverURL) => {
 

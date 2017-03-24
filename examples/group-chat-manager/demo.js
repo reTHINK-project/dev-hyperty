@@ -75,11 +75,9 @@ function onInvitation(event) {
       users.forEach((user) => {
         processNewUser(user);
       });
-
     }, 500);
-
   }).catch(function(reason) {
-    console.error('Error connectin to', reason);
+    console.error('Error connecting to', reason);
   });
 
 }
@@ -175,7 +173,6 @@ function joinRoom(event) {
     }).catch(function(reason) {
       console.error(reason);
     });
-
   });
 
   joinModal.openModal();
@@ -187,7 +184,7 @@ function prepareChat(chatController, isOwner) {
   console.log('[GroupChatManagerDemo prepareChat] Chat Group Controller: ', chatController);
 
   chatController.onMessage(function(message) {
-    console.info('[GroupChatManagerDemo ] new message received: ', message);
+    console.info('[GroupChatManagerDemo] new message received: ', message);
     processMessage(message);
   });
 
