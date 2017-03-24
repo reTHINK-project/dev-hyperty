@@ -74,7 +74,6 @@ class GroupChatManager {
     console.log('[GroupChatManager] Identity Manager : ', identityManager);
 
     syncher.resumeReporters({}).then((reporters) => {
-      console.log('RESULT:', reporters, _this, _this._onResume);
 
       Object.keys(reporters).forEach((dataObjectReporterURL) => {
 
@@ -96,7 +95,6 @@ class GroupChatManager {
     });
 
     syncher.resumeObservers({}).then((observers) => {
-      console.log('RESULT:', observers, _this, _this._onResume);
 
       Object.keys(observers).forEach((dataObjectObserverURL) => {
 
@@ -106,9 +104,9 @@ class GroupChatManager {
 
         // Save the chat controllers by dataObjectReporterURL
         this._observersControllers[dataObjectObserverURL] = chatController;
-
       })
 
+      console.log('AQUI:', this._observersControllers);
       if (_this._onResume) _this._onResume(this._observersControllers);
 
     }).catch((reason) => {
@@ -241,10 +239,10 @@ class GroupChatManager {
 
         if (hypertiesIDs[0] && typeof hypertiesIDs[0] !== 'object' &&  hypertiesIDs[0].split('@').length > 1) {
           console.log('[GroupChatManager] here');
-          return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject, true, false);
+          return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject, false, false);
         } else {
           console.log('[GroupChatManager] here2');
-          return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false);
+          return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, false, false);
         }
 
       }).catch((reason) => {
@@ -295,7 +293,7 @@ class GroupChatManager {
       console.info('[GroupChatManager] ------------------------ Syncher subscribe ---------------------- \n');
       console.info(invitationURL);
 
-      syncher.subscribe(_this._objectDescURL, invitationURL, true, false).then(function(dataObjectObserver) {
+      syncher.subscribe(_this._objectDescURL, invitationURL, false, false).then(function(dataObjectObserver) {
         console.info('Data Object Observer: ', dataObjectObserver);
         let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
         resolve(chatController);

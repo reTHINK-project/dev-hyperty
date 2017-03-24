@@ -66,18 +66,36 @@ class ChatController {
 
       let participant = event.identity.userProfile;
 
-      if (event.identity.legacy)
+      if (event.identity.legacy) {
         participant.legacy = event.identity.legacy;
+      }
 
-      dataObjectReporter.data.participants.push(participant);
+      let found = dataObjectReporter.data.participants.find((user) => {
+        return user.userURL === participant.userURL;
+      });
 
-      if (_this._onUserAdded) _this._onUserAdded(participant);
+      if (found <= 0) {
+        dataObjectReporter.data.participants.push(participant);
+        if (_this._onUserAdded) _this._onUserAdded(participant);
+      }
+
     });
 
     dataObjectReporter.onAddChild(function(child) {
       console.info('[GroupChatManager.ChatController]Reporter - Add Child: ', child);
       dataObjectReporter.data.lastModified = new Date().toJSON();
       if (_this._onMessage) _this._onMessage(child);
+    });
+
+    setTimeout(() => {
+      let childrens = dataObjectReporter.childrens;
+      Object.keys(childrens).forEach((child) => {
+        if (_this._onMessage) _this._onMessage({
+          childId: child,
+          identity: childrens[child].identity,
+          value: childrens[child].data
+        });
+      })
     });
 
     _this._dataObjectReporter = dataObjectReporter;
@@ -115,6 +133,17 @@ class ChatController {
     dataObjectObserver.onAddChild(function(child) {
       console.info('[GroupChatManager.ChatController]Observer - Add Child: ', child);
       if (_this._onMessage) _this._onMessage(child);
+    });
+
+    setTimeout(() => {
+      let childrens = dataObjectObserver.childrens;
+      Object.keys(childrens).forEach((child) => {
+        if (_this._onMessage) _this._onMessage({
+          childId: child,
+          identity: childrens[child].identity,
+          value: childrens[child].data
+        });
+      })
     });
 
   }

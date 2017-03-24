@@ -188,7 +188,10 @@ function prepareChat(chatController, isOwner) {
 
   chatController.onMessage(function(message) {
     console.info('[GroupChatManagerDemo ] new message received: ', message);
-    processMessage(message);
+    setTimeout(() => {
+      processMessage(message);
+    })
+
   });
 
   chatController.onChange(function(event) {
@@ -357,6 +360,8 @@ function processMessage(message) {
     <span class="title">` + from + `</span>
     <p>` + message.value.message.replace(/\n/g, '<br>') + `</p>
   </li>`;
+
+  console.log('[GroupChatManager - processMessage] - ', messagesList, message, list);
 
   messagesList.append(list);
 }
