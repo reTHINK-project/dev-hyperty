@@ -72,9 +72,13 @@ function onInvitation(event) {
     setTimeout(() => {
       let users = event.value.participants;
 
-      users.forEach((user) => {
-        processNewUser(user);
+      Object.keys(users).map(function(objectKey, index) {
+        var user = users[objectKey];
+        processNewUser(user.identity);
       });
+      /*users.forEach((user) => {
+        processNewUser(user);
+      });*/
     }, 500);
   }).catch(function(reason) {
     console.error('Error connecting to', reason);
@@ -367,11 +371,13 @@ function processNewUser(event) {
   let user;
 
   if (event.hasOwnProperty('data') && event.data) {
-    user = event.data;
+    user = event.data.identity;
   } else {
     user = event;
   }
+  console.log('[GroupChatManager.demo.processNewUser]user', user);
 
+  //debugger;
   collection.append('<li class="chip" data-name="' + user.userURL + '"><img src="' + user.avatar + '" alt="Contact Person">' + user.cn + '<i class="material-icons close">close</i></li>');
   collection.removeClass('center-align');
 

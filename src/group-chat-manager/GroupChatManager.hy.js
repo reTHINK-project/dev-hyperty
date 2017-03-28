@@ -106,8 +106,7 @@ class GroupChatManager {
 
         // Save the chat controllers by dataObjectReporterURL
         this._observersControllers[dataObjectObserverURL] = chatController;
-
-      })
+      });
 
       if (_this._onResume) _this._onResume(this._observersControllers);
 
@@ -130,6 +129,7 @@ class GroupChatManager {
         event.ack(200);
 
         //Reset all the parameters
+        /*
         _this.communicationObject.owner = '';
         _this.communicationObject.name = '';
         _this.communicationObject.id = '';
@@ -139,13 +139,25 @@ class GroupChatManager {
         _this.communicationObject.participants = [];
         _this.communicationObject.resources = ['chat'];
         _this.communicationObject.children = [];
+        */
+        _this.communicationObject.url = '';
+        _this.communicationObject.cseq = '';
+        _this.communicationObject.reporter =  '';
+        _this.communicationObject.schema = '';
+        _this.communicationObject.name = '';
+        _this.communicationObject.created =  '';
+        _this.communicationObject.startingTime = '';
+        _this.communicationObject.lastModified = '';
+        _this.communicationObject.status =  '';
+        _this.communicationObject.children = [];
+        _this.communicationObject.participants = {};
 
         for (let url in this._reportersControllers) {
-          this._reportersControllers[url].closeEvent(event)
+          this._reportersControllers[url].closeEvent(event);
         }
 
         for (let url in this._observersControllers) {
-          this._observersControllers[url].closeEvent(event)
+          this._observersControllers[url].closeEvent(event);
         }
 
       }
@@ -209,6 +221,7 @@ class GroupChatManager {
     return new Promise(function(resolve, reject) {
 
       // Create owner participant
+      /*
       _this.communicationObject.owner = _this._hypertyURL;
       _this.communicationObject.name = name;
       _this.communicationObject.id = name;
@@ -217,11 +230,29 @@ class GroupChatManager {
       _this.communicationObject.status = CommunicationStatus.OPEN;
       _this.communicationObject.startingTime = new Date().toJSON();
       _this.communicationObject.lastModified = _this.communicationObject.startingTime;
+      */
+
+      _this.communicationObject.url = '';
+      _this.communicationObject.cseq = 1;
+      _this.communicationObject.reporter =  _this._hypertyURL;
+      _this.communicationObject.schema = _this._objectDescURL;
+      _this.communicationObject.name = name;
+      _this.communicationObject.created =  new Date().toJSON();
+      _this.communicationObject.startingTime = _this.communicationObject.created;
+      _this.communicationObject.lastModified = _this.communicationObject.created;
+      _this.communicationObject.status =  CommunicationStatus.OPEN;
+      _this.communicationObject.children = _this.communicationObject.children.push({parent: 'communication', listener:'resource', type:'chat'});
+      _this.communicationObject.participants = {};
 
       _this.search.myIdentity().then((identity) => {
 
+        console.log('Identity', identity);
+        let url = _this.communicationObject.reporter;
+
         // Add my identity
-        _this.communicationObject.participants.push(identity);
+        _this.communicationObject.participants[url] = { identity: identity };
+
+        console.log('participants obj', _this.communicationObject.participants);
 
         console.info('[GroupChatManager] searching ' + users + ' at domain ' + domains);
 
@@ -239,12 +270,14 @@ class GroupChatManager {
         console.info('[GroupChatManager] Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
 
+        //TODO: merge hypertisIDs and selectedHyperties, for when we have more than user for invite and they are a merge between interworking and "normal" domains
+
         if (hypertiesIDs[0] && typeof hypertiesIDs[0] !== 'object' &&  hypertiesIDs[0].split('@').length > 1) {
           console.log('[GroupChatManager] here');
-          return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject, true, false);
+          return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject, false, false);
         } else {
           console.log('[GroupChatManager] here2');
-          return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false);
+          return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, false, false);
         }
 
       }).catch((reason) => {
@@ -293,9 +326,9 @@ class GroupChatManager {
     return new Promise(function(resolve, reject) {
 
       console.info('[GroupChatManager] ------------------------ Syncher subscribe ---------------------- \n');
-      console.info(invitationURL);
+      console.info('invitationURL', invitationURL);
 
-      syncher.subscribe(_this._objectDescURL, invitationURL, true, false).then(function(dataObjectObserver) {
+      syncher.subscribe(_this._objectDescURL, invitationURL, false, false).then(function(dataObjectObserver) {
         console.info('Data Object Observer: ', dataObjectObserver);
         let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
         resolve(chatController);

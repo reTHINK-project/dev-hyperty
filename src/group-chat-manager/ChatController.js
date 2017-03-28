@@ -61,7 +61,7 @@ class ChatController {
 
     dataObjectReporter.onSubscription(function(event) {
       event.accept();
-
+      console.log('[GroupChatManager.ChatController] event', event);
       console.log('[GroupChatManager.ChatController]New user has subscribe this object: ', dataObjectReporter.data, event.identity);
 
       let participant = event.identity.userProfile;
@@ -69,7 +69,9 @@ class ChatController {
       if (event.identity.legacy)
         participant.legacy = event.identity.legacy;
 
-      dataObjectReporter.data.participants.push(participant);
+      dataObjectReporter.data.participants[event.url] = { identity: participant };
+      dataObjectReporter.data.cseq += 1;
+      console.log('communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
 
       if (_this._onUserAdded) _this._onUserAdded(participant);
     });
@@ -97,6 +99,7 @@ class ChatController {
       console.info('[GroupChatManager.ChatController]Observer - onChange', event);
 
       if (event.field.includes('participants')) {
+        console.log('When field includes participants');
         switch (event.cType) {
           case 'add':
             if (_this._onUserAdded) _this._onUserAdded(event);
@@ -282,8 +285,6 @@ class ChatController {
           console.log('[GroupChatManager.ChatController]here2');
           return _this.dataObject.inviteObservers(selectedHyperties);
         }
-
-
 
       })
       .then(function() {

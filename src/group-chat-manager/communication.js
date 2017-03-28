@@ -30,6 +30,21 @@ export const CommunicationStatus = {
 };
 
 export let communicationObject = {
+  url: '',
+  cseq: '',
+  reporter: '',
+  schema: '',
+  name: '',
+  created: '',
+  startingTime: '',
+  lastModified: '',
+  status: '',
+  children: [],
+  participants: {}
+};
+
+/*
+export let communicationObject = {
   id: '',
   name: '',
   owner: '',
@@ -40,3 +55,4 @@ export let communicationObject = {
   status: '',
   participants: []
 };
+*/
