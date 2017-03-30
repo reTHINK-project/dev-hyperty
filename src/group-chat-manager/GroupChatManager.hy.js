@@ -241,7 +241,8 @@ class GroupChatManager {
       _this.communicationObject.startingTime = _this.communicationObject.created;
       _this.communicationObject.lastModified = _this.communicationObject.created;
       _this.communicationObject.status =  CommunicationStatus.OPEN;
-      _this.communicationObject.children = _this.communicationObject.children.push({parent: 'communication', listener:'resource', type:'chat'});
+      _this.communicationObject.children = [];
+      _this.communicationObject.children.push({parent: 'communication', listener:'resource', type:'chat'});
       _this.communicationObject.participants = {};
 
       _this.search.myIdentity().then((identity) => {
@@ -269,23 +270,20 @@ class GroupChatManager {
         console.info('[GroupChatManager] ---------------------- Syncher Create ---------------------- \n');
         console.info('[GroupChatManager] Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
+        console.info('[GroupChatManager] HypertiesIDs ', hypertiesIDs);
 
-        //TODO: merge hypertisIDs and selectedHyperties, for when we have more than user for invite and they are a merge between interworking and "normal" domains
-
-        if (hypertiesIDs[0] && typeof hypertiesIDs[0] !== 'object' &&  hypertiesIDs[0].split('@').length > 1) {
-          console.log('[GroupChatManager] here');
-          return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject, false, false);
-        } else {
-          console.log('[GroupChatManager] here2');
-          return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, false, false);
-        }
+        return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, false, false);
 
       }).catch((reason) => {
         console.log('[GroupChatManager] MyIdentity Error:', reason);
         return reject(reason);
       }).then(function(dataObjectReporter) {
-        console.info('[GroupChatManager] 3. Return Create Data Object Reporter', dataObjectReporter);
 
+        dataObjectReporter.data.url = dataObjectReporter.url;
+        dataObjectReporter.data.cseq += 1;
+        dataObjectReporter.lastModified = new Date().toJSON();
+
+        console.info('[GroupChatManager] 3. Return Create Data Object Reporter', dataObjectReporter);
         let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
         chatController.dataObjectReporter = dataObjectReporter;
 

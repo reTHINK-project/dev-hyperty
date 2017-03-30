@@ -94,11 +94,27 @@ function createRoom(event) {
 
   let createRoomModal = $('.create-chat');
   let createRoomBtn = createRoomModal.find('.btn-create');
+  let cancelRoomBtn = createRoomModal.find('.btn-cancel');
+
   let addParticipantBtn = createRoomModal.find('.btn-add');
 
   addParticipantBtn.on('click', addParticipantEvent);
   createRoomBtn.on('click', createRoomEvent);
   createRoomModal.openModal();
+  cancelRoomBtn.on('click', cancelRoomEvent);
+}
+
+function cancelRoomEvent(event) {
+  event.preventDefault();
+
+  let createRoomModal = $('.create-chat');
+  let createRoomBtn = createRoomModal.find('.btn-create');
+  let cancelRoomBtn = createRoomModal.find('.btn-cancel');
+  let addParticipantBtn = createRoomModal.find('.btn-add');
+
+  createRoomBtn.off('click');
+  cancelRoomBtn.off('click');
+  addParticipantBtn.off('click');
 }
 
 function addParticipantEvent(event) {
@@ -243,14 +259,14 @@ function inviteParticipants(chatController) {
 
     let usersIDsParsed = [];
     if (usersIDs.includes(',')) {
-      usersIDsParsed = usersIDs.split(', ');
+      usersIDsParsed = usersIDs.split(',');
     } else {
       usersIDsParsed.push(usersIDs);
     }
 
     let domainsParsed = [];
     if (domains.includes(',')) {
-      domainsParsed = domains.split(', ');
+      domainsParsed = domains.split(',');
     } else {
       domainsParsed.push(domains);
     }
@@ -260,6 +276,8 @@ function inviteParticipants(chatController) {
     }).catch(function(reason) {
       console.log('Error:', reason);
     });
+
+    inviteBtn.off('click')
 
   });
 

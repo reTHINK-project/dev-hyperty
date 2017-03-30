@@ -71,6 +71,8 @@ class ChatController {
 
       dataObjectReporter.data.participants[event.url] = { identity: participant };
       dataObjectReporter.data.cseq += 1;
+      dataObjectReporter.data.lastModified = new Date().toJSON();
+
       console.log('communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
 
       if (_this._onUserAdded) _this._onUserAdded(participant);
@@ -273,19 +275,12 @@ class ChatController {
         let selectedHyperties = hypertiesIDs.map((hyperty) => {
           return hyperty.hypertyID;
         });
-
         console.info('[GroupChatManager.ChatController]------------------------ Syncher Create ---------------------- \n');
         console.info('[GroupChatManager.ChatController]Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
+        console.info('[GroupChatManager] HypertiesIDs ', hypertiesIDs);
 
-        if (typeof (hypertiesIDs[0]) !== 'object' && hypertiesIDs[0].split('@').length > 1) {
-          console.log('[GroupChatManager.ChatController]here');
-          return _this.dataObject.inviteObservers(hypertiesIDs);
-        } else {
-          console.log('[GroupChatManager.ChatController]here2');
-          return _this.dataObject.inviteObservers(selectedHyperties);
-        }
-
+        return _this.dataObject.inviteObservers(selectedHyperties);
       })
       .then(function() {
         console.info('[GroupChatManager.ChatController]Are invited with success ' + users.length + ' users;');
