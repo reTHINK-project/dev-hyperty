@@ -184,7 +184,27 @@ class GroupChatManager {
 
       console.log('[GroupChatManager._resumeInterworking for] ', participants);
 
-      participants.forEach((participant)=> {
+      Object.keys(participants).forEach((participant) => {
+
+        let user = participants[participant].identity.userURL.split('://');
+
+        if (user[0] !== 'user') {
+
+          console.log('[GroupChatManager._resumeInterworking for] ', participant);
+
+          user = user[0] + '://' + user[1].split('/')[1];
+
+          let msg = {
+              type: 'create', from: _this._hypertyURL, to: user,
+              body: { resource: objectUrl, schema: schemaUrl, value: {name: name} }
+            };
+
+          _this._bus.postMessage(msg, () => {
+          });
+        }
+
+      });
+    /*  participants.forEach((participant)=> {
 
         let user = participant.userURL.split('://');
 
@@ -203,7 +223,7 @@ class GroupChatManager {
           _this._bus.postMessage(msg, () => {
           });
         }
-      });
+      });*/
     }
   }
 
