@@ -43,15 +43,6 @@ class ChatController {
     _this.myIdentity = null;
 
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
-
-    // syncher.onNotification(function(event) {
-    //
-    //   if (event.type === 'delete') {
-    //     if (_this._onClose) _this._onClose(event);
-    //   }
-    //
-    // });
-
   }
 
   set dataObjectReporter(dataObjectReporter) {
@@ -71,12 +62,18 @@ class ChatController {
       }
 
       // TODO: check why the data is empty when we resume;
-      let found = dataObjectReporter.data.participants.find((user) => {
+      let found = Object.values(dataObjectReporter.data.participants || {}).find((user) => {
         console.log('find: ', user, participant);
-        return user.userURL === participant.userURL;
+        return user.identity.userURL === participant.userURL;
       });
 
-      dataObjectReporter.data.participants[event.url] = { identity: participant };
+      console.log('[GroupChatManager.ChatController - onSubscription] ', found, participant);
+      if (!found) {
+        console.log('[GroupChatManager.ChatController - this._onUserAdded] ', this._onUserAdded);
+        dataObjectReporter.data.participants[event.url] = { identity: participant };
+        if (this._onUserAdded) this._onUserAdded(participant);
+      }
+
       dataObjectReporter.data.cseq += 1;
       dataObjectReporter.data.lastModified = new Date().toJSON();
 

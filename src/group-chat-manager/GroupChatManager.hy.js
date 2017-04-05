@@ -88,7 +88,7 @@ class GroupChatManager {
 
       });
 
-      if (_this._onResume) _this._onResume(this._reportersControllers);
+      if (_this._onResumeReporter) _this._onResumeReporter(this._reportersControllers);
 
     }).catch((reason) => {
       console.info('Resume Reporter | ', reason);
@@ -108,7 +108,7 @@ class GroupChatManager {
       });
 
       console.log('AQUI:', this._observersControllers);
-      if (_this._onResume) _this._onResume(this._observersControllers);
+      if (_this._onResumeObserver) _this._onResumeObserver(this._observersControllers);
 
     }).catch((reason) => {
       console.info('Resume Observer | ', reason);
@@ -204,26 +204,6 @@ class GroupChatManager {
         }
 
       });
-    /*  participants.forEach((participant)=> {
-
-        let user = participant.userURL.split('://');
-
-        // check if participat user URL is from a legacy domain
-        if (user[0] !== 'user') {
-
-          console.log('[GroupChatManager._resumeInterworking for] ', participant);
-
-          user = user[0] + '://' + user[1].split('/')[1];
-
-          let msg = {
-              type: 'create', from: _this._hypertyURL, to: user,
-              body: { resource: objectUrl, schema: schemaUrl, value: {name: name} }
-            };
-
-          _this._bus.postMessage(msg, () => {
-          });
-        }
-      });*/
     }
   }
 
@@ -292,7 +272,7 @@ class GroupChatManager {
         console.info(`Have ${selectedHyperties.length} users;`);
         console.info('[GroupChatManager] HypertiesIDs ', hypertiesIDs);
 
-        return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, false, false);
+        return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false);
 
       }).catch((reason) => {
         console.log('[GroupChatManager] MyIdentity Error:', reason);
@@ -327,9 +307,14 @@ class GroupChatManager {
     _this._onInvitation = callback;
   }
 
-  onResume(callback) {
+  onResumeReporter(callback) {
     let _this = this;
-    _this._onResume = callback;
+    _this._onResumeReporter = callback;
+  }
+
+  onResumeObserver(callback) {
+    let _this = this;
+    _this._onResumeObserver = callback;
   }
 
   /**
@@ -346,7 +331,7 @@ class GroupChatManager {
       console.info('[GroupChatManager] ------------------------ Syncher subscribe ---------------------- \n');
       console.info('invitationURL', invitationURL);
 
-      syncher.subscribe(_this._objectDescURL, invitationURL, false, false).then(function(dataObjectObserver) {
+      syncher.subscribe(_this._objectDescURL, invitationURL, true, false).then(function(dataObjectObserver) {
         console.info('Data Object Observer: ', dataObjectObserver);
         let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
         resolve(chatController);

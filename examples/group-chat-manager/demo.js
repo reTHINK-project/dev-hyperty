@@ -40,7 +40,17 @@ function hypertyReady(result, identity) {
     onInvitation(event);
   });
 
-  chatGroupManager.onResume((chatControllers) => {
+  chatGroupManager.onResumeObserver((chatControllers) => {
+
+    Object.values(chatControllers).forEach((chatController) => {
+
+      prepareChat(chatController);
+
+    });
+
+  });
+
+  chatGroupManager.onResumeReporter((chatControllers) => {
 
     Object.values(chatControllers).forEach((chatController) => {
 
