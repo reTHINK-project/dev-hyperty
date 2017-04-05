@@ -141,16 +141,14 @@ class ChatController {
       if (_this._onMessage) _this._onMessage(child);
     });
 
-    setTimeout(() => {
-      let childrens = dataObjectObserver.childrens;
-      Object.keys(childrens).forEach((child) => {
-        if (_this._onMessage) _this._onMessage({
-          childId: child,
-          identity: childrens[child].identity,
-          value: childrens[child].data
-        });
-      })
-    });
+    let childrens = dataObjectObserver.childrens;
+    Object.keys(childrens).forEach((child) => {
+      if (_this._onMessage) _this._onMessage({
+        childId: child,
+        identity: childrens[child].identity,
+        value: childrens[child].data
+      });
+    })
 
   }
 

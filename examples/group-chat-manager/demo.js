@@ -42,20 +42,31 @@ function hypertyReady(result, identity) {
 
   chatGroupManager.onResumeObserver((chatControllers) => {
 
-    Object.values(chatControllers).forEach((chatController) => {
 
-      prepareChat(chatController);
+    getSectionTpl().then(() => {
+      console.log('[GroupChatManagerDemo - on Resume observers] - Section Template ready:', chatControllers);
 
-    });
+      Object.values(chatControllers).forEach((chatController) => {
 
+        chatManagerReady(chatController, false);
+        prepareChat(chatController);
+
+      });
+
+    })
   });
 
   chatGroupManager.onResumeReporter((chatControllers) => {
 
-    Object.values(chatControllers).forEach((chatController) => {
+    getSectionTpl().then(() => {
+      console.log('[GroupChatManagerDemo - on Resume observers] - Section Template ready:', chatControllers);
 
-      prepareChat(chatController);
+      Object.values(chatControllers).forEach((chatController) => {
 
+        chatManagerReady(chatController, true);
+        prepareChat(chatController);
+
+      });
     });
 
   });
@@ -76,7 +87,11 @@ function hypertyReady(result, identity) {
 function onInvitation(event) {
   console.log('On Invitation: ', event);
 
-  chatGroupManager.join(event.url).then(function(chatController) {
+  getSectionTpl().then(() => {
+    console.log('[GroupChatManagerDemo - On Invitation] - Section Template ready', event);
+    return chatGroupManager.join(event.url)
+  }).then((chatController) => {
+    chatManagerReady(chatController, false);
     prepareChat(chatController);
   }).catch(function(reason) {
     console.error('Error connecting to', reason);
@@ -161,9 +176,13 @@ function createRoomEvent(event) {
 
   console.log('Participants: ', users, ' domain: ', domains);
 
-  chatGroupManager.create(name, users, domains).then(function(chatController) {
+  getSectionTpl().then(() => {
+    console.log('[GroupChatManagerDemo - Create Room] - Section Template ready:', name, users);
+    return chatGroupManager.create(name, users, domains);
+  }).then((chatController) => {
 
     let isOwner = true;
+    chatManagerReady(chatController, false);
     prepareChat(chatController, isOwner);
     participantsForm[0].reset();
 
@@ -186,7 +205,11 @@ function joinRoom(event) {
 
     let resource = joinModal.find('.input-name').val();
 
-    chatGroupManager.join(resource).then(function(chatController) {
+    getSectionTpl().then(() => {
+      console.log('[GroupChatManagerDemo - JoinRoom] - Section Template ready:', resource);
+      return chatGroupManager.join(resource)
+    }).then(function(chatController) {
+      chatManagerReady(chatController, false);
       prepareChat(chatController);
     }).catch(function(reason) {
       console.error(reason);
@@ -197,23 +220,51 @@ function joinRoom(event) {
 
 }
 
+function getSectionTpl() {
+
+  return new Promise((resolve, reject) => {
+
+    Handlebars.getTemplate('group-chat-manager/chat-section').then(function(html) {
+
+      $('.chat-section').append(html);
+
+      let inviteBtn = $('.invite-btn');
+      inviteBtn.on('click', function(event) {
+
+        event.preventDefault();
+
+        inviteParticipants(chatController);
+      });
+
+      resolve();
+
+    });
+
+  })
+
+}
+
 function prepareChat(chatController, isOwner) {
-
-  Handlebars.getTemplate('group-chat-manager/chat-section').then(function(html) {
-
-    $('.chat-section').append(html);
-
-    chatManagerReady(chatController, isOwner);
 
     console.log('[GroupChatManagerDemo prepareChat] Chat Group Controller: ', chatController);
 
     let dataObject = chatController.dataObjectObserver || chatController.dataObjectReporter || {};
-    console.log('[GroupChatManagerDemo prepareChat] - dataObject: ', dataObject.data.participants);
+    console.log('[GroupChatManagerDemo prepareChat] - dataObject: ', dataObject);
     let users = dataObject.data.participants || {};
+    let msgs = dataObject.childrens || {};
 
-    Object.keys(users).map(function(objectKey, index) {
+    Object.keys(users).forEach(function(objectKey, index) {
       var user = users[objectKey];
       processNewUser(user.identity);
+    });
+
+    Object.keys(msgs).forEach(function(objectKey, index) {
+      var msg = msgs[objectKey];
+      console.log('ProcessMessage: ', msg);
+      processMessage({
+        value: msgs[objectKey].data,
+        identity: msgs[objectKey].identity
+      });
     });
 
     chatController.onMessage(function(message) {
@@ -239,16 +290,6 @@ function prepareChat(chatController, isOwner) {
 
       $('.chat-section').remove();
     });
-
-    let inviteBtn = $('.invite-btn');
-    inviteBtn.on('click', function(event) {
-
-      event.preventDefault();
-
-      inviteParticipants(chatController);
-    });
-
-  });
 
 }
 
