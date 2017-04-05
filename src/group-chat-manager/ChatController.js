@@ -61,7 +61,7 @@ class ChatController {
 
     dataObjectReporter.onSubscription(function(event) {
       event.accept();
-
+      console.log('[GroupChatManager.ChatController] event', event);
       console.log('[GroupChatManager.ChatController]New user has subscribe this object: ', dataObjectReporter.data, event.identity);
 
       let participant = event.identity.userProfile;
@@ -76,10 +76,11 @@ class ChatController {
         return user.userURL === participant.userURL;
       });
 
-      if (!found) {
-        dataObjectReporter.data.participants.push(participant);
-        if (_this._onUserAdded) _this._onUserAdded(participant);
-      }
+      dataObjectReporter.data.participants[event.url] = { identity: participant };
+      dataObjectReporter.data.cseq += 1;
+      dataObjectReporter.data.lastModified = new Date().toJSON();
+
+      console.log('communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
 
     });
 
@@ -117,6 +118,7 @@ class ChatController {
       console.info('[GroupChatManager.ChatController]Observer - onChange', event);
 
       if (event.field.includes('participants')) {
+        console.log('When field includes participants');
         switch (event.cType) {
           case 'add':
             if (_this._onUserAdded) _this._onUserAdded(event);
@@ -301,21 +303,12 @@ class ChatController {
         let selectedHyperties = hypertiesIDs.map((hyperty) => {
           return hyperty.hypertyID;
         });
-
         console.info('[GroupChatManager.ChatController]------------------------ Syncher Create ---------------------- \n');
         console.info('[GroupChatManager.ChatController]Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
+        console.info('[GroupChatManager] HypertiesIDs ', hypertiesIDs);
 
-        if (typeof (hypertiesIDs[0]) !== 'object' && hypertiesIDs[0].split('@').length > 1) {
-          console.log('[GroupChatManager.ChatController]here');
-          return _this.dataObject.inviteObservers(hypertiesIDs);
-        } else {
-          console.log('[GroupChatManager.ChatController]here2');
-          return _this.dataObject.inviteObservers(selectedHyperties);
-        }
-
-
-
+        return _this.dataObject.inviteObservers(selectedHyperties);
       })
       .then(function() {
         console.info('[GroupChatManager.ChatController]Are invited with success ' + users.length + ' users;');

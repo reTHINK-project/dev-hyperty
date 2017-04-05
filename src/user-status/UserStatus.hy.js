@@ -101,15 +101,15 @@ class UserStatus extends EventEmitter {
 
   /**
    * This function is used to create a new status object syncher
-   * @param  {URL.UserURL} participants List of User allowed
+   * @param  {URL.UserURL} contacts List of Users 
    * @return {Promise}
    */
-  create(participants) {
+  create(contacts) {
     let _this = this;
 
     return new Promise((resolve, reject) => {
       console.info('----------------------- Mapping Particpants --------------------');
-      _this.mappingUser(participants)
+      _this.mappingUser(contacts)
       .then((hyperties) => _this.createSyncher(hyperties, availability()))
       .then((statusObjectReporter) => {
         _this.statusObjectReporter = statusObjectReporter;

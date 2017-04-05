@@ -45,10 +45,8 @@ class Search {
 
       console.info('[Search] Users: ', usersURLs, usersURLs.length);
       console.info('[Search] Domains: ', providedDomains, providedDomains.length);
-
       if (usersURLs.length === 0) {
         console.info('Don\'t have users to discovery');
-
         resolve(usersURLs);
       } else {
         let getUsers = [];
@@ -66,9 +64,10 @@ class Search {
         })).then((hyperties) => {
 
           console.info('[Search] Hyperties', hyperties);
-
           let result = hyperties.map(function(hyperty) {
 
+            if (hyperty.hasOwnProperty('hypertyID'))
+              return hyperty;
             let recent = Object.keys(hyperty).reduceRight(function(a, b) {
               let hypertyDate = new Date(hyperty[b].lastModified);
               let hypertyDateP = new Date(hyperty[a].lastModified);
@@ -77,6 +76,7 @@ class Search {
               }
               return a;
             });
+
             return hyperty[recent];
           });
 
@@ -85,14 +85,14 @@ class Search {
           });
 
           console.log('Requests result: ', clean);
-          if (hyperties[0] === 'No Hyperty was found') {
-            console.log('[Search - Users] ON reject');
-            reject('No Hyperty was found');
-          } else if (Object.keys(clean).length === 0) {
-            resolve(hyperties);
-          } else {
-            resolve(clean);
-          }
+
+          hyperties.forEach(function(entry) {
+            if (entry !== 'No Hyperty was found') {
+              return resolve(clean);
+            }
+          });
+
+          reject('No Hyperty was found');
 
         }).catch((reason) => {
           console.error(reason);

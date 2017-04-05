@@ -72,14 +72,16 @@ function onInvitation(event) {
     setTimeout(() => {
       let users = event.value.participants;
 
-      users.forEach((user) => {
-        processNewUser(user);
+      Object.keys(users).map(function(objectKey, index) {
+        var user = users[objectKey];
+        processNewUser(user.identity);
       });
-
+      /*users.forEach((user) => {
+        processNewUser(user);
+      });*/
     }, 500);
-
   }).catch(function(reason) {
-    console.error('Error connectin to', reason);
+    console.error('Error connecting to', reason);
   });
 
 }
@@ -92,11 +94,27 @@ function createRoom(event) {
 
   let createRoomModal = $('.create-chat');
   let createRoomBtn = createRoomModal.find('.btn-create');
+  let cancelRoomBtn = createRoomModal.find('.btn-cancel');
+
   let addParticipantBtn = createRoomModal.find('.btn-add');
 
   addParticipantBtn.on('click', addParticipantEvent);
   createRoomBtn.on('click', createRoomEvent);
   createRoomModal.openModal();
+  cancelRoomBtn.on('click', cancelRoomEvent);
+}
+
+function cancelRoomEvent(event) {
+  event.preventDefault();
+
+  let createRoomModal = $('.create-chat');
+  let createRoomBtn = createRoomModal.find('.btn-create');
+  let cancelRoomBtn = createRoomModal.find('.btn-cancel');
+  let addParticipantBtn = createRoomModal.find('.btn-add');
+
+  createRoomBtn.off('click');
+  cancelRoomBtn.off('click');
+  addParticipantBtn.off('click');
 }
 
 function addParticipantEvent(event) {
@@ -175,7 +193,6 @@ function joinRoom(event) {
     }).catch(function(reason) {
       console.error(reason);
     });
-
   });
 
   joinModal.openModal();
@@ -245,14 +262,14 @@ function inviteParticipants(chatController) {
 
     let usersIDsParsed = [];
     if (usersIDs.includes(',')) {
-      usersIDsParsed = usersIDs.split(', ');
+      usersIDsParsed = usersIDs.split(',');
     } else {
       usersIDsParsed.push(usersIDs);
     }
 
     let domainsParsed = [];
     if (domains.includes(',')) {
-      domainsParsed = domains.split(', ');
+      domainsParsed = domains.split(',');
     } else {
       domainsParsed.push(domains);
     }
@@ -262,6 +279,8 @@ function inviteParticipants(chatController) {
     }).catch(function(reason) {
       console.log('Error:', reason);
     });
+
+    inviteBtn.off('click')
 
   });
 
@@ -375,11 +394,13 @@ function processNewUser(event) {
   let user;
 
   if (event.hasOwnProperty('data') && event.data) {
-    user = event.data;
+    user = event.data.identity;
   } else {
     user = event;
   }
+  console.log('[GroupChatManager.demo.processNewUser]user', user);
 
+  //debugger;
   collection.append('<li class="chip" data-name="' + user.userURL + '"><img src="' + user.avatar + '" alt="Contact Person">' + user.cn + '<i class="material-icons close">close</i></li>');
   collection.removeClass('center-align');
 
