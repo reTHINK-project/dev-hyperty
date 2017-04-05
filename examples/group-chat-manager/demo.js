@@ -111,6 +111,10 @@ function cancelRoomEvent(event) {
   let createRoomBtn = createRoomModal.find('.btn-create');
   let cancelRoomBtn = createRoomModal.find('.btn-cancel');
   let addParticipantBtn = createRoomModal.find('.btn-add');
+  let participantsForm = createRoomModal.find('.participants-form');
+
+  participantsForm[0].reset();
+  createRoomModal.find('.input-name').val('');
 
   createRoomBtn.off('click');
   cancelRoomBtn.off('click');
@@ -148,13 +152,18 @@ function createRoomEvent(event) {
   let createRoomModal = $('.create-chat');
   let participantsForm = createRoomModal.find('.participants-form');
   let serializedObject = $(participantsForm).serializeArray();
+
+  let createRoomBtn = createRoomModal.find('.btn-create');
+  createRoomBtn.off('click');
+
   let users = [];
   let domains = [];
 
   if (serializedObject) {
-    let emailsObject = serializedObject.filter((field) => { return field.name === 'email';});
-    users = emailsObject.map((emailObject) => { return emailObject.value; });
-    let domainObject = serializedObject.filter((field) => { return field.name === 'domain';});
+
+    let emailsObject = serializedObject.filter((field) => { if (field.value !== '') return field.name === 'email';});
+    users = emailsObject.map((emailObject) => { return emailObject.value;});
+    let domainObject = serializedObject.filter((field) => { if (field.value !== '') return field.name === 'domain';});
     domains = domainObject.map((domainObject) => { return domainObject.value; });
   }
 
@@ -168,6 +177,11 @@ function createRoomEvent(event) {
     let isOwner = true;
     prepareChat(chatController, isOwner);
     participantsForm[0].reset();
+    createRoomModal.find('.input-name').val('');
+    let createBtn = $('.create-room-btn');
+    let joinBtn = $('.join-room-btn');
+    createBtn.addClass('hide');
+    joinBtn.addClass('hide');
 
   }).catch(function(reason) {
     console.error(reason);
@@ -224,11 +238,12 @@ function prepareChat(chatController, isOwner) {
   chatController.onClose(function(event) {
     console.log('[GroupChatManagerDemo ] onClose Event:', event);
 
-    $('.chat-section').remove();
+    $('.chat-section').html('');
   });
 
   Handlebars.getTemplate('group-chat-manager/chat-section').then(function(html) {
 
+    console.log('NewChatSection');
     $('.chat-section').append(html);
 
     chatManagerReady(chatController, isOwner);
@@ -277,7 +292,7 @@ function inviteParticipants(chatController) {
       console.log('Error:', reason);
     });
 
-    inviteBtn.off('click')
+    inviteBtn.off('click');
 
   });
 
@@ -426,8 +441,12 @@ function closeChat(chatController) {
 
     addParticipantBtn.off('click', addParticipantEvent);
     createRoomBtn.off('click', createRoomEvent);
+    let createBtn = $('.create-room-btn');
+    let joinBtn = $('.join-room-btn');
+    createBtn.removeClass('hide');
+    joinBtn.removeClass('hide');
 
-    $('.chat-section').remove();
+    $('.chat-section').html('');
   }).catch(function(reason) {
     console.log('An error occured:', reason);
   });
