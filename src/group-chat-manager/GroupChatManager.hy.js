@@ -261,8 +261,6 @@ class GroupChatManager {
         console.log('[GroupChatManager] usersSearch->', usersSearch);
         return usersSearch;
       }).then((hypertiesIDs) => {
-        console.log('[GroupChatManager] hypertiesIDS', hypertiesIDs);
-
         let selectedHyperties = hypertiesIDs.map((hyperty) => {
           return hyperty.hypertyID;
         });
@@ -270,7 +268,6 @@ class GroupChatManager {
         console.info('[GroupChatManager] ---------------------- Syncher Create ---------------------- \n');
         console.info('[GroupChatManager] Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
-        console.info('[GroupChatManager] HypertiesIDs ', hypertiesIDs);
 
         return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false);
 
@@ -279,17 +276,18 @@ class GroupChatManager {
         return reject(reason);
       }).then(function(dataObjectReporter) {
 
+        console.info('[GroupChatManager] 3. Return Create Data Object Reporter', dataObjectReporter);
+        let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
+
+        resolve(chatController);
+
         dataObjectReporter.data.url = dataObjectReporter.url;
         dataObjectReporter.data.cseq += 1;
         dataObjectReporter.lastModified = new Date().toJSON();
 
-        console.info('[GroupChatManager] 3. Return Create Data Object Reporter', dataObjectReporter);
-        let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
         chatController.dataObjectReporter = dataObjectReporter;
 
         _this._reportersControllers[dataObjectReporter.url] = chatController;
-
-        resolve(chatController);
 
       }).catch(function(reason) {
         reject(reason);

@@ -78,18 +78,6 @@ function onInvitation(event) {
 
   chatGroupManager.join(event.url).then(function(chatController) {
     prepareChat(chatController);
-
-    setTimeout(() => {
-      let users = event.value.participants;
-
-      Object.keys(users).map(function(objectKey, index) {
-        var user = users[objectKey];
-        processNewUser(user.identity);
-      });
-      /*users.forEach((user) => {
-        processNewUser(user);
-      });*/
-    }, 500);
   }).catch(function(reason) {
     console.error('Error connecting to', reason);
   });
@@ -211,40 +199,46 @@ function joinRoom(event) {
 
 function prepareChat(chatController, isOwner) {
 
-  console.log('[GroupChatManagerDemo prepareChat] Chat Group Controller: ', chatController);
-
-  chatController.onMessage(function(message) {
-    console.info('[GroupChatManagerDemo ] new message received: ', message);
-    setTimeout(() => {
-      processMessage(message);
-    })
-
-  });
-
-  chatController.onChange(function(event) {
-    console.log('[GroupChatManagerDemo ] OnChange Event:', event);
-  });
-
-  chatController.onUserAdded(function(event) {
-    console.log('[GroupChatManagerDemo ] onUserAdded Event:', event);
-    processNewUser(event);
-  });
-
-  chatController.onUserRemoved(function(event) {
-    console.log('[GroupChatManagerDemo ] onUserRemoved Event:', event);
-  });
-
-  chatController.onClose(function(event) {
-    console.log('[GroupChatManagerDemo ] onClose Event:', event);
-
-    $('.chat-section').remove();
-  });
-
   Handlebars.getTemplate('group-chat-manager/chat-section').then(function(html) {
 
     $('.chat-section').append(html);
 
     chatManagerReady(chatController, isOwner);
+
+    console.log('[GroupChatManagerDemo prepareChat] Chat Group Controller: ', chatController);
+
+    let dataObject = chatController.dataObjectObserver || chatController.dataObjectReporter || {};
+    console.log('[GroupChatManagerDemo prepareChat] - dataObject: ', dataObject.data.participants);
+    let users = dataObject.data.participants || {};
+
+    Object.keys(users).map(function(objectKey, index) {
+      var user = users[objectKey];
+      processNewUser(user.identity);
+    });
+
+    chatController.onMessage(function(message) {
+      console.info('[GroupChatManagerDemo ] new message received: ', message);
+      processMessage(message);
+    });
+
+    chatController.onChange(function(event) {
+      console.log('[GroupChatManagerDemo ] OnChange Event:', event);
+    });
+
+    chatController.onUserAdded(function(event) {
+      console.log('[GroupChatManagerDemo ] onUserAdded Event:', event);
+      processNewUser(event);
+    });
+
+    chatController.onUserRemoved(function(event) {
+      console.log('[GroupChatManagerDemo ] onUserRemoved Event:', event);
+    });
+
+    chatController.onClose(function(event) {
+      console.log('[GroupChatManagerDemo ] onClose Event:', event);
+
+      $('.chat-section').remove();
+    });
 
     let inviteBtn = $('.invite-btn');
     inviteBtn.on('click', function(event) {
@@ -408,7 +402,7 @@ function processNewUser(event) {
   } else {
     user = event;
   }
-  console.log('[GroupChatManager.demo.processNewUser]user', user);
+  console.log('[GroupChatManager.demo.processNewUser]user', user, collection);
 
   //debugger;
   collection.append('<li class="chip" data-name="' + user.userURL + '"><img src="' + user.avatar + '" alt="Contact Person">' + user.cn + '<i class="material-icons close">close</i></li>');
