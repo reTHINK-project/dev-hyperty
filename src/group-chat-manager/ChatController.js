@@ -70,11 +70,13 @@ class ChatController {
         participant.legacy = event.identity.legacy;
       }
 
+      // TODO: check why the data is empty when we resume;
       let found = dataObjectReporter.data.participants.find((user) => {
+        console.log('find: ', user, participant);
         return user.userURL === participant.userURL;
       });
 
-      if (found <= 0) {
+      if (!found) {
         dataObjectReporter.data.participants.push(participant);
         if (_this._onUserAdded) _this._onUserAdded(participant);
       }
@@ -83,7 +85,7 @@ class ChatController {
 
     dataObjectReporter.onAddChild(function(child) {
       console.info('[GroupChatManager.ChatController]Reporter - Add Child: ', child);
-      dataObjectReporter.data.lastModified = new Date().toJSON();
+      // dataObjectReporter.data.lastModified = new Date().toJSON();
       if (_this._onMessage) _this._onMessage(child);
     });
 

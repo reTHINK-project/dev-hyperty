@@ -239,10 +239,10 @@ class GroupChatManager {
 
         if (hypertiesIDs[0] && typeof hypertiesIDs[0] !== 'object' &&  hypertiesIDs[0].split('@').length > 1) {
           console.log('[GroupChatManager] here');
-          return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject, false, false);
+          return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject, true, false);
         } else {
           console.log('[GroupChatManager] here2');
-          return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, false, false);
+          return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false);
         }
 
       }).catch((reason) => {
@@ -293,7 +293,7 @@ class GroupChatManager {
       console.info('[GroupChatManager] ------------------------ Syncher subscribe ---------------------- \n');
       console.info(invitationURL);
 
-      syncher.subscribe(_this._objectDescURL, invitationURL, false, false).then(function(dataObjectObserver) {
+      syncher.subscribe(_this._objectDescURL, invitationURL, true, false).then(function(dataObjectObserver) {
         console.info('Data Object Observer: ', dataObjectObserver);
         let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
         resolve(chatController);

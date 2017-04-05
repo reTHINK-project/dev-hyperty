@@ -28,8 +28,7 @@
 
 import 'webrtc-adapter';
 
-import peer from './peer';
-import connection from './connection';
+import { connection } from './connection';
 
 class ConnectionController {
 
@@ -42,8 +41,6 @@ class ConnectionController {
     let _this = this;
 
     _this.mode = 'offer';
-    _this.peer = peer;
-    _this.connection = connection;
 
     // Private
     _this._syncher = syncher;
@@ -92,6 +89,8 @@ class ConnectionController {
 
       let data = _this.dataObjectReporter.data;
 
+      console.log('[Connector.ConnectionController] - push iceCandidates: ', data, data.iceCandidates);
+
       // new model
       data.iceCandidates.push(icecandidate);
 
@@ -107,7 +106,7 @@ class ConnectionController {
 
     // Add stream to PeerConnection
     peerConnection.addEventListener('addstream', function(event) {
-      console.info('[Connector.ConnectionController ]Add Stream: ', event);
+      console.info('[Connector.ConnectionController ]Add Stream: ', event, _this._onAddStream);
 
       if (_this._onAddStream) _this._onAddStream(event);
     });
@@ -378,16 +377,25 @@ class ConnectionController {
   accept(stream) {
 
     let _this = this;
-    let syncher = _this._syncher;
-
-    console.log('Remote Peer Information: ', _this.dataObjectObserver.data);
-    let remotePeer = _this.dataObjectObserver.data.reporter;
 
     return new Promise(function(resolve, reject) {
 
+      let syncher = _this._syncher;
+      let remoteData = _this.dataObjectObserver.data;
+      let remotePeer = remoteData.owner;
+
+      _this.connectionObject = connection;
+      console.log('[ConnectionController - Accept] - Remote Peer Information: ', remoteData);
+
+      _this.connectionObject.name = remoteData.name;
+      _this.connectionObject.scheme = 'connection';
+      _this.connectionObject.owner = remoteData.owner;
+      _this.connectionObject.peer = remoteData.peer;
+      _this.connectionObject.status = '';
+
       try {
         console.info('[Connector.ConnectionController ]------------------------ Syncher Create ---------------------- \n');
-        syncher.create(_this._objectDescURL, [remotePeer], _this.peer)
+        syncher.create(_this._objectDescURL, [remotePeer], _this.connectionObject)
         .then(function(dataObjectReporter) {
           console.info('[Connector.ConnectionController ]2. Return the Data Object Reporter ', dataObjectReporter);
 
