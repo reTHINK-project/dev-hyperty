@@ -128,29 +128,7 @@ class GroupChatManager {
         // TODO: replace the 200 for Message.Response
         event.ack(200);
 
-        //Reset all the parameters
-        /*
-        _this.communicationObject.owner = '';
-        _this.communicationObject.name = '';
-        _this.communicationObject.id = '';
-        _this.communicationObject.status = '';
-        _this.communicationObject.startingTime = '';
-        _this.communicationObject.lastModified = '';
-        _this.communicationObject.participants = [];
-        _this.communicationObject.resources = ['chat'];
-        _this.communicationObject.children = [];
-        */
-        _this.communicationObject.url = '';
-        _this.communicationObject.cseq = '';
-        _this.communicationObject.reporter =  '';
-        _this.communicationObject.schema = '';
-        _this.communicationObject.name = '';
-        _this.communicationObject.created =  '';
-        _this.communicationObject.startingTime = '';
-        _this.communicationObject.lastModified = '';
-        _this.communicationObject.status =  '';
-        _this.communicationObject.children = [];
-        _this.communicationObject.participants = {};
+        _this._resetCommunicationObject();
 
         for (let url in this._reportersControllers) {
           this._reportersControllers[url].closeEvent(event);
@@ -163,6 +141,24 @@ class GroupChatManager {
       }
 
     });
+
+  }
+
+  _resetCommunicationObject() {
+
+    let _this = this;
+    console.log('[GroupChatManager._resetCommunicationObject]');
+    _this.communicationObject.url = '';
+    _this.communicationObject.cseq = '';
+    _this.communicationObject.reporter =  '';
+    _this.communicationObject.schema = '';
+    _this.communicationObject.name = '';
+    _this.communicationObject.created =  '';
+    _this.communicationObject.startingTime = '';
+    _this.communicationObject.lastModified = '';
+    _this.communicationObject.status =  '';
+    _this.communicationObject.children = [];
+    _this.communicationObject.participants = {};
 
   }
 
@@ -231,7 +227,7 @@ class GroupChatManager {
       _this.communicationObject.startingTime = new Date().toJSON();
       _this.communicationObject.lastModified = _this.communicationObject.startingTime;
       */
-
+      _this._resetCommunicationObject();
       _this.communicationObject.url = '';
       _this.communicationObject.cseq = 1;
       _this.communicationObject.reporter =  _this._hypertyURL;
@@ -253,7 +249,8 @@ class GroupChatManager {
         // Add my identity
         _this.communicationObject.participants[url] = { identity: identity };
 
-        console.log('participants obj', _this.communicationObject.participants);
+        console.log('[GroupChatManager] communicationObject', _this.communicationObject);
+        console.log('[GroupChatManager] participants obj', _this.communicationObject.participants);
 
         console.info('[GroupChatManager] searching ' + users + ' at domain ' + domains);
 

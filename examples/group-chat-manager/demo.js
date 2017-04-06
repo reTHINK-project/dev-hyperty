@@ -124,6 +124,10 @@ function cancelRoomEvent(event) {
   let createRoomBtn = createRoomModal.find('.btn-create');
   let cancelRoomBtn = createRoomModal.find('.btn-cancel');
   let addParticipantBtn = createRoomModal.find('.btn-add');
+  let participantsForm = createRoomModal.find('.participants-form');
+
+  participantsForm[0].reset();
+  createRoomModal.find('.input-name').val('');
 
   createRoomBtn.off('click');
   cancelRoomBtn.off('click');
@@ -161,13 +165,18 @@ function createRoomEvent(event) {
   let createRoomModal = $('.create-chat');
   let participantsForm = createRoomModal.find('.participants-form');
   let serializedObject = $(participantsForm).serializeArray();
+
+  let createRoomBtn = createRoomModal.find('.btn-create');
+  createRoomBtn.off('click');
+
   let users = [];
   let domains = [];
 
   if (serializedObject) {
-    let emailsObject = serializedObject.filter((field) => { return field.name === 'email';});
-    users = emailsObject.map((emailObject) => { return emailObject.value; });
-    let domainObject = serializedObject.filter((field) => { return field.name === 'domain';});
+
+    let emailsObject = serializedObject.filter((field) => { if (field.value !== '') return field.name === 'email';});
+    users = emailsObject.map((emailObject) => { return emailObject.value;});
+    let domainObject = serializedObject.filter((field) => { if (field.value !== '') return field.name === 'domain';});
     domains = domainObject.map((domainObject) => { return domainObject.value; });
   }
 
@@ -182,9 +191,14 @@ function createRoomEvent(event) {
   }).then((chatController) => {
 
     let isOwner = true;
-    chatManagerReady(chatController, false);
+    chatManagerReady(chatController, isOwner);
     prepareChat(chatController, isOwner);
     participantsForm[0].reset();
+    createRoomModal.find('.input-name').val('');
+    let createBtn = $('.create-room-btn');
+    let joinBtn = $('.join-room-btn');
+    createBtn.addClass('hide');
+    joinBtn.addClass('hide');
 
   }).catch(function(reason) {
     console.error(reason);
@@ -238,54 +252,52 @@ function getSectionTpl() {
 
 function prepareChat(chatController, isOwner) {
 
-    console.log('[GroupChatManagerDemo prepareChat] Chat Group Controller: ', chatController);
+  console.log('[GroupChatManagerDemo prepareChat] Chat Group Controller: ', chatController);
 
-    let dataObject = chatController.dataObjectObserver || chatController.dataObjectReporter || {};
-    console.log('[GroupChatManagerDemo prepareChat] - dataObject: ', dataObject);
-    let users = dataObject.data.participants || {};
-    let msgs = dataObject.childrens || {};
+  let dataObject = chatController.dataObjectObserver || chatController.dataObjectReporter || {};
+  console.log('[GroupChatManagerDemo prepareChat] - dataObject: ', dataObject);
+  let users = dataObject.data.participants || {};
+  let msgs = dataObject.childrens || {};
 
-    Object.keys(users).forEach(function(objectKey, index) {
-      var user = users[objectKey];
-      processNewUser(user.identity);
+  Object.keys(users).forEach(function(objectKey, index) {
+    var user = users[objectKey];
+    processNewUser(user.identity);
+  });
+
+  Object.keys(msgs).forEach(function(objectKey, index) {
+    var msg = msgs[objectKey];
+    console.log('ProcessMessage: ', msg);
+    processMessage({
+      value: msgs[objectKey].data,
+      identity: msgs[objectKey].identity
     });
+  });
 
-    Object.keys(msgs).forEach(function(objectKey, index) {
-      var msg = msgs[objectKey];
-      console.log('ProcessMessage: ', msg);
-      processMessage({
-        value: msgs[objectKey].data,
-        identity: msgs[objectKey].identity
-      });
-    });
+  chatController.onMessage(function(message) {
+    console.info('[GroupChatManagerDemo ] new message received: ', message);
+    processMessage(message);
+  });
 
-    chatController.onMessage(function(message) {
-      console.info('[GroupChatManagerDemo ] new message received: ', message);
-      processMessage(message);
-    });
+  chatController.onChange(function(event) {
+    console.log('[GroupChatManagerDemo ] OnChange Event:', event);
+  });
 
-    chatController.onChange(function(event) {
-      console.log('[GroupChatManagerDemo ] OnChange Event:', event);
-    });
+  chatController.onUserAdded(function(event) {
+    console.log('[GroupChatManagerDemo ] onUserAdded Event:', event);
+    processNewUser(event);
+  });
 
-    chatController.onUserAdded(function(event) {
-      console.log('[GroupChatManagerDemo ] onUserAdded Event:', event);
-      processNewUser(event);
-    });
+  chatController.onUserRemoved(function(event) {
+    console.log('[GroupChatManagerDemo ] onUserRemoved Event:', event);
+  });
 
-    chatController.onUserRemoved(function(event) {
-      console.log('[GroupChatManagerDemo ] onUserRemoved Event:', event);
-    });
+  chatController.onClose(function(event) {
+    console.log('[GroupChatManagerDemo ] onClose Event:', event);
+    $('.chat-section').html('');
+  });
 
-    chatController.onClose(function(event) {
-      console.log('[GroupChatManagerDemo ] onClose Event:', event);
-
-      $('.chat-section').remove();
-    });
-
-
-    let inviteBtn = $('.invite-btn');
-    inviteBtn.on('click', function(event) {
+  let inviteBtn = $('.invite-btn');
+  inviteBtn.on('click', function(event) {
 
       event.preventDefault();
 
@@ -326,7 +338,7 @@ function inviteParticipants(chatController) {
       console.log('Error:', reason);
     });
 
-    inviteBtn.off('click')
+    inviteBtn.off('click');
 
   });
 
@@ -477,8 +489,12 @@ function closeChat(chatController) {
 
     addParticipantBtn.off('click', addParticipantEvent);
     createRoomBtn.off('click', createRoomEvent);
+    let createBtn = $('.create-room-btn');
+    let joinBtn = $('.join-room-btn');
+    createBtn.removeClass('hide');
+    joinBtn.removeClass('hide');
 
-    $('.chat-section').remove();
+    $('.chat-section').html('');
   }).catch(function(reason) {
     console.log('An error occured:', reason);
   });
