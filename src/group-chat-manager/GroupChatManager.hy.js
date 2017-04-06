@@ -73,7 +73,7 @@ class GroupChatManager {
     console.log('[GroupChatManager] Discover: ', discovery);
     console.log('[GroupChatManager] Identity Manager : ', identityManager);
 
-    syncher.resumeReporters({}).then((reporters) => {
+    syncher.resumeReporters({store: true}).then((reporters) => {
 
       Object.keys(reporters).forEach((dataObjectReporterURL) => {
 
@@ -94,7 +94,7 @@ class GroupChatManager {
       console.info('Resume Reporter | ', reason);
     });
 
-    syncher.resumeObservers({}).then((observers) => {
+    syncher.resumeObservers({store: true}).then((observers) => {
       console.log('[GroupChatManager] resuming observers : ', observers, _this, _this._onResume);
 
       Object.keys(observers).forEach((dataObjectObserverURL) => {

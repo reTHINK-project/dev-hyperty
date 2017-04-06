@@ -228,14 +228,6 @@ function getSectionTpl() {
 
       $('.chat-section').append(html);
 
-      let inviteBtn = $('.invite-btn');
-      inviteBtn.on('click', function(event) {
-
-        event.preventDefault();
-
-        inviteParticipants(chatController);
-      });
-
       resolve();
 
     });
@@ -289,6 +281,15 @@ function prepareChat(chatController, isOwner) {
       console.log('[GroupChatManagerDemo ] onClose Event:', event);
 
       $('.chat-section').remove();
+    });
+
+
+    let inviteBtn = $('.invite-btn');
+    inviteBtn.on('click', function(event) {
+
+      event.preventDefault();
+
+      inviteParticipants(chatController);
     });
 
 }
