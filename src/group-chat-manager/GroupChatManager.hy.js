@@ -247,7 +247,7 @@ class GroupChatManager {
         let url = _this.communicationObject.reporter;
 
         // Add my identity
-        _this.communicationObject.participants[url] = { identity: identity };
+        _this.communicationObject.participants[identity.userURL] = { identity: identity };
 
         console.log('[GroupChatManager] communicationObject', _this.communicationObject);
         console.log('[GroupChatManager] participants obj', _this.communicationObject.participants);

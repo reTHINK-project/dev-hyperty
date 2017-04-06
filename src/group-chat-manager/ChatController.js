@@ -74,13 +74,7 @@ class ChatController {
       dataObjectReporter.data.cseq += 1;
       dataObjectReporter.data.lastModified = new Date().toJSON();
 
-
-      if (event.url.startsWith('hyperty://')) {
-        dataObjectReporter.data.participants[event.url] = { identity: participant };
-      } else {
-        dataObjectReporter.data.participants[participant.userURL] = { identity: participant };
-      }
-
+      dataObjectReporter.data.participants[participant.userURL] = { identity: participant };
 
       console.log('communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
 
