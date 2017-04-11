@@ -29,10 +29,14 @@ function hypertyLoaded(result) {
   // init some click handlers
   $('#gosearch').on('click', discoverEmail);
 <<<<<<< HEAD
+<<<<<<< HEAD
   $('#settings').on('submit', saveProfile);
 =======
   $('#settings').on('submit', () => { saveProfile() });
 >>>>>>> develop
+=======
+  $('#settings').on('submit', saveProfile);
+>>>>>>> cd3f36a3f421da50f8e44d80296a2729ced25569
   $('#settings').on('submit', toggleSettings);
 
   fillResoultionSelector();
@@ -67,10 +71,14 @@ function hypertyLoaded(result) {
 
   // get registered user
 <<<<<<< HEAD
+<<<<<<< HEAD
   hyperty.identityManager.discoverUserRegistered().then((identity) => {
 =======
 	hyperty.search.myIdentity().then(function(identity) {
 >>>>>>> develop
+=======
+  hyperty.identityManager.discoverUserRegistered().then((identity) => {
+>>>>>>> cd3f36a3f421da50f8e44d80296a2729ced25569
     console.log("[DTWebRTC.main]: registered user is: ", identity);
     hyperty.myIdentity = identity;
      let info = "Authenticated as:</br>" + identity.cn + ",  " + identity.username + '<img src="' + hyperty.myIdentity.avatar + '" class="logo" /></br>' +
@@ -138,38 +146,55 @@ function fillmodal(calleeInfo) {
 function initListeners() {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   hyperty.addEventListener('invitation', (identity) => {
     // preparing the modal dialog with the given identity info
 =======
   hyperty.addEventListener('incomingcall', (identity) => {
 		// preparing the modal dialog with the given identity info
 >>>>>>> develop
+=======
+  hyperty.addEventListener('invitation', (identity) => {
+    // preparing the modal dialog with the given identity info
+>>>>>>> cd3f36a3f421da50f8e44d80296a2729ced25569
     console.log('incomingcall event received from:', identity);
     $('.invitation-panel').html('<p> Invitation received from:\n ' + identity.email ? identity.email : identity.username + '</p>');
     fillmodal(identity);
     prepareMediaOptions();
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> cd3f36a3f421da50f8e44d80296a2729ced25569
   });
 
   hyperty.addEventListener('incomingcall', (data) => {
     $('#myModal').find('#btn-accept').on('click', () => {
       hyperty.invitationAccepted(data);
+<<<<<<< HEAD
 =======
 
     $('#myModal').find('#btn-accept').on('click', () => {
       hyperty.acceptCall();
 >>>>>>> develop
+=======
+>>>>>>> cd3f36a3f421da50f8e44d80296a2729ced25569
     });
     $('#myModal').find('#btn-reject').on('click', () => {
       hangup();
     });
     $('#myModal').modal('show');
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     // if (!confirm('Incoming call. Answer?')) return false;
     // hyperty.invitationAccepted(data);
 =======
 >>>>>>> develop
+=======
+
+    // if (!confirm('Incoming call. Answer?')) return false;
+    // hyperty.invitationAccepted(data);
+>>>>>>> cd3f36a3f421da50f8e44d80296a2729ced25569
   });
 
   hyperty.addEventListener('localvideo', (stream) => {
@@ -224,6 +249,9 @@ function discoverEmail(event) {
   $('.send-panel').html(msg);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> cd3f36a3f421da50f8e44d80296a2729ced25569
   hyperty.discovery.discoverHypertyPerUser(email, domain).then( (result) => {
       $('.send-panel').html(
         '<br><form class="webrtcconnect">' +
@@ -239,6 +267,7 @@ function discoverEmail(event) {
       );
       console.error('Email Discovered Error: ', err);
     });
+<<<<<<< HEAD
 =======
 	hyperty.search.users([email], [domain], ['connection'], ['audio', 'video']).then( (result) => {
 		if ( result.length == 0 ) {
@@ -263,6 +292,8 @@ function discoverEmail(event) {
     console.error('Email Discovered Error: ', err);
   });
 >>>>>>> develop
+=======
+>>>>>>> cd3f36a3f421da50f8e44d80296a2729ced25569
 }
 
 // ###################################################################################################################
@@ -300,9 +331,13 @@ function getIceServers() {
 
 function saveProfile() {
 <<<<<<< HEAD
+<<<<<<< HEAD
   event.preventDefault();
 =======
 >>>>>>> develop
+=======
+  event.preventDefault();
+>>>>>>> cd3f36a3f421da50f8e44d80296a2729ced25569
   var profile = {};
   console.log("[DTWebRTC.main]:save profile " + PROFILE_KEY);
   // transfer all values from all text-inputs of the settings div to profile
