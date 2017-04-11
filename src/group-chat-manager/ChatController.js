@@ -41,17 +41,9 @@ class ChatController {
     _this.discovery = discovery;
     _this.search = search;
     _this.myIdentity = null;
+    _this.controllerMode = 'reporter';
 
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
-
-    // syncher.onNotification(function(event) {
-    //
-    //   if (event.type === 'delete') {
-    //     if (_this._onClose) _this._onClose(event);
-    //   }
-    //
-    // });
-
   }
 
   set dataObjectReporter(dataObjectReporter) {
@@ -59,25 +51,56 @@ class ChatController {
     if (!dataObjectReporter) throw new Error('The data object reporter is necessary parameter');
     let _this = this;
 
+    _this.controllerMode = 'reporter';
+
     dataObjectReporter.onSubscription(function(event) {
       event.accept();
-
+      console.log('[GroupChatManager.ChatController] event', event);
       console.log('[GroupChatManager.ChatController]New user has subscribe this object: ', dataObjectReporter.data, event.identity);
 
       let participant = event.identity.userProfile;
 
-      if (event.identity.legacy)
+      console.log('[GroupChatManager.ChatController] new participant', participant);
+      if (event.identity.legacy) {
         participant.legacy = event.identity.legacy;
+      }
 
-      dataObjectReporter.data.participants.push(participant);
+      // TODO: check why the data is empty when we resume;
+      let found = Object.values(dataObjectReporter.data.participants || {}).find((user) => {
+        console.log('find: ', user.identity.userURL, participant.userURL);
+        return user.identity.userURL === participant.userURL;
+      });
 
-      if (_this._onUserAdded) _this._onUserAdded(participant);
+      dataObjectReporter.data.cseq += 1;
+      dataObjectReporter.data.lastModified = new Date().toJSON();
+
+      dataObjectReporter.data.participants[participant.userURL] = { identity: participant };
+
+      console.log('communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
+
+      console.log('[GroupChatManager.ChatController - onSubscription] ', found, participant);
+      if (!found) {
+        console.log('[GroupChatManager.ChatController - this._onUserAdded] ', _this._onUserAdded);
+        if (_this._onUserAdded) _this._onUserAdded(participant);
+      }
+
     });
 
     dataObjectReporter.onAddChild(function(child) {
       console.info('[GroupChatManager.ChatController]Reporter - Add Child: ', child);
-      dataObjectReporter.data.lastModified = new Date().toJSON();
+      // dataObjectReporter.data.lastModified = new Date().toJSON();
       if (_this._onMessage) _this._onMessage(child);
+    });
+
+    setTimeout(() => {
+      let childrens = dataObjectReporter.childrens;
+      Object.keys(childrens).forEach((child) => {
+        if (_this._onMessage) _this._onMessage({
+          childId: child,
+          identity: childrens[child].identity,
+          value: childrens[child].data
+        });
+      })
     });
 
     _this._dataObjectReporter = dataObjectReporter;
@@ -91,12 +114,15 @@ class ChatController {
   set dataObjectObserver(dataObjectObserver) {
     let _this = this;
 
+    _this.controllerMode = 'observer';
+
     _this._dataObjectObserver = dataObjectObserver;
 
     dataObjectObserver.onChange('*', function(event) {
       console.info('[GroupChatManager.ChatController]Observer - onChange', event);
 
       if (event.field.includes('participants')) {
+        console.log('When field includes participants');
         switch (event.cType) {
           case 'add':
             if (_this._onUserAdded) _this._onUserAdded(event);
@@ -117,6 +143,15 @@ class ChatController {
       if (_this._onMessage) _this._onMessage(child);
     });
 
+    let childrens = dataObjectObserver.childrens;
+    Object.keys(childrens).forEach((child) => {
+      if (_this._onMessage) _this._onMessage({
+        childId: child,
+        identity: childrens[child].identity,
+        value: childrens[child].data
+      });
+    })
+
   }
 
   get dataObjectObserver() {
@@ -125,8 +160,7 @@ class ChatController {
   }
 
   get dataObject() {
-    let _this = this;
-    return _this._dataObjectReporter ? _this.dataObjectReporter : _this.dataObjectObserver;
+    return this.controllerMode === 'reporter' ? this.dataObjectReporter : this.dataObjectObserver;
   }
 
   set closeEvent(event) {
@@ -149,7 +183,8 @@ class ChatController {
   send(message) {
 
     let _this = this;
-    let dataObject = _this.dataObjectReporter ? _this.dataObjectReporter : _this.dataObjectObserver;
+    let mode = _this.controllerMode;
+    let dataObject = mode === 'reporter' ? _this.dataObjectReporter : _this.dataObjectObserver;
 
     return new Promise(function(resolve, reject) {
 
@@ -270,20 +305,13 @@ class ChatController {
         let selectedHyperties = hypertiesIDs.map((hyperty) => {
           return hyperty.hypertyID;
         });
-
         console.info('[GroupChatManager.ChatController]------------------------ Syncher Create ---------------------- \n');
         console.info('[GroupChatManager.ChatController]Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
+        console.info('[GroupChatManager] HypertiesIDs ', hypertiesIDs);
 
-        if (typeof (hypertiesIDs[0]) !== 'object' && hypertiesIDs[0].split('@').length > 1) {
-          console.log('[GroupChatManager.ChatController]here');
-          return _this.dataObject.inviteObservers(hypertiesIDs);
-        } else {
-          console.log('[GroupChatManager.ChatController]here2');
-          return _this.dataObject.inviteObservers(selectedHyperties);
-        }
-
-
+        let dataObject = _this.controllerMode === 'reporter' ? _this.dataObjectReporter : _this.dataObjectObserver;
+        return dataObject.inviteObservers(selectedHyperties);
 
       })
       .then(function() {

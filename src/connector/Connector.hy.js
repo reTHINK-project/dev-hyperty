@@ -62,7 +62,7 @@ class Connector {
     _this._controllers = {};
     _this.connectionObject = connection;
 
-    let discovery = new Discovery(hypertyURL, bus);
+    let discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
     let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
 
     _this.discovery = discovery;
@@ -175,7 +175,7 @@ class Connector {
 
       let connectionController;
       let selectedHyperty;
-      console.info('------------------------ Syncher Create ---------------------- \n');
+      console.info('------------------------ Syncher Create ----------------------  \n');
 
       _this.search.myIdentity().then(function(identity) {
 

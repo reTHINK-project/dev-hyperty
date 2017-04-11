@@ -50,7 +50,7 @@ class GroupChatManager {
     let syncher = new Syncher(hypertyURL, bus, configuration);
 
     let domain = divideURL(hypertyURL).domain;
-    let discovery = new Discovery(hypertyURL, bus);
+    let discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
     let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
 
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
@@ -73,8 +73,7 @@ class GroupChatManager {
     console.log('[GroupChatManager] Discover: ', discovery);
     console.log('[GroupChatManager] Identity Manager : ', identityManager);
 
-    syncher.resumeReporters({}).then((reporters) => {
-      console.log('RESULT:', reporters, _this, _this._onResume);
+    syncher.resumeReporters({store: true}).then((reporters) => {
 
       Object.keys(reporters).forEach((dataObjectReporterURL) => {
 
@@ -89,13 +88,13 @@ class GroupChatManager {
 
       });
 
-      if (_this._onResume) _this._onResume(this._reportersControllers);
+      if (_this._onResumeReporter) _this._onResumeReporter(this._reportersControllers);
 
     }).catch((reason) => {
       console.info('Resume Reporter | ', reason);
     });
 
-    syncher.resumeObservers({}).then((observers) => {
+    syncher.resumeObservers({store: true}).then((observers) => {
       console.log('[GroupChatManager] resuming observers : ', observers, _this, _this._onResume);
 
       Object.keys(observers).forEach((dataObjectObserverURL) => {
@@ -106,10 +105,10 @@ class GroupChatManager {
 
         // Save the chat controllers by dataObjectReporterURL
         this._observersControllers[dataObjectObserverURL] = chatController;
+      });
 
-      })
-
-      if (_this._onResume) _this._onResume(this._observersControllers);
+      console.log('AQUI:', this._observersControllers);
+      if (_this._onResumeObserver) _this._onResumeObserver(this._observersControllers);
 
     }).catch((reason) => {
       console.info('Resume Observer | ', reason);
@@ -129,28 +128,37 @@ class GroupChatManager {
         // TODO: replace the 200 for Message.Response
         event.ack(200);
 
-        //Reset all the parameters
-        _this.communicationObject.owner = '';
-        _this.communicationObject.name = '';
-        _this.communicationObject.id = '';
-        _this.communicationObject.status = '';
-        _this.communicationObject.startingTime = '';
-        _this.communicationObject.lastModified = '';
-        _this.communicationObject.participants = [];
-        _this.communicationObject.resources = ['chat'];
-        _this.communicationObject.children = [];
+        _this._resetCommunicationObject();
 
         for (let url in this._reportersControllers) {
-          this._reportersControllers[url].closeEvent(event)
+          this._reportersControllers[url].closeEvent(event);
         }
 
         for (let url in this._observersControllers) {
-          this._observersControllers[url].closeEvent(event)
+          this._observersControllers[url].closeEvent(event);
         }
 
       }
 
     });
+
+  }
+
+  _resetCommunicationObject() {
+
+    let _this = this;
+    console.log('[GroupChatManager._resetCommunicationObject]');
+    _this.communicationObject.url = '';
+    _this.communicationObject.cseq = '';
+    _this.communicationObject.reporter =  '';
+    _this.communicationObject.schema = '';
+    _this.communicationObject.name = '';
+    _this.communicationObject.created =  '';
+    _this.communicationObject.startingTime = '';
+    _this.communicationObject.lastModified = '';
+    _this.communicationObject.status =  '';
+    _this.communicationObject.children = [];
+    _this.communicationObject.participants = {};
 
   }
 
@@ -172,11 +180,10 @@ class GroupChatManager {
 
       console.log('[GroupChatManager._resumeInterworking for] ', participants);
 
-      participants.forEach((participant)=> {
+      Object.keys(participants).forEach((participant) => {
 
-        let user = participant.userURL.split('://');
+        let user = participants[participant].identity.userURL.split('://');
 
-        // check if participat user URL is from a legacy domain
         if (user[0] !== 'user') {
 
           console.log('[GroupChatManager._resumeInterworking for] ', participant);
@@ -191,6 +198,7 @@ class GroupChatManager {
           _this._bus.postMessage(msg, () => {
           });
         }
+
       });
     }
   }
@@ -209,6 +217,7 @@ class GroupChatManager {
     return new Promise(function(resolve, reject) {
 
       // Create owner participant
+      /*
       _this.communicationObject.owner = _this._hypertyURL;
       _this.communicationObject.name = name;
       _this.communicationObject.id = name;
@@ -217,11 +226,31 @@ class GroupChatManager {
       _this.communicationObject.status = CommunicationStatus.OPEN;
       _this.communicationObject.startingTime = new Date().toJSON();
       _this.communicationObject.lastModified = _this.communicationObject.startingTime;
+      */
+      _this._resetCommunicationObject();
+      _this.communicationObject.url = '';
+      _this.communicationObject.cseq = 1;
+      _this.communicationObject.reporter =  _this._hypertyURL;
+      _this.communicationObject.schema = _this._objectDescURL;
+      _this.communicationObject.name = name;
+      _this.communicationObject.created =  new Date().toJSON();
+      _this.communicationObject.startingTime = _this.communicationObject.created;
+      _this.communicationObject.lastModified = _this.communicationObject.created;
+      _this.communicationObject.status =  CommunicationStatus.OPEN;
+      _this.communicationObject.children = [];
+      _this.communicationObject.children.push({parent: 'communication', listener:'resource', type:'chat'});
+      _this.communicationObject.participants = {};
 
       _this.search.myIdentity().then((identity) => {
 
+        console.log('Identity', identity);
+        let url = _this.communicationObject.reporter;
+
         // Add my identity
-        _this.communicationObject.participants.push(identity);
+        _this.communicationObject.participants[identity.userURL] = { identity: identity };
+
+        console.log('[GroupChatManager] communicationObject', _this.communicationObject);
+        console.log('[GroupChatManager] participants obj', _this.communicationObject.participants);
 
         console.info('[GroupChatManager] searching ' + users + ' at domain ' + domains);
 
@@ -229,8 +258,6 @@ class GroupChatManager {
         console.log('[GroupChatManager] usersSearch->', usersSearch);
         return usersSearch;
       }).then((hypertiesIDs) => {
-        console.log('[GroupChatManager] hypertiesIDS', hypertiesIDs);
-
         let selectedHyperties = hypertiesIDs.map((hyperty) => {
           return hyperty.hypertyID;
         });
@@ -239,26 +266,25 @@ class GroupChatManager {
         console.info('[GroupChatManager] Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
 
-        if (hypertiesIDs[0] && typeof hypertiesIDs[0] !== 'object' &&  hypertiesIDs[0].split('@').length > 1) {
-          console.log('[GroupChatManager] here');
-          return syncher.create(_this._objectDescURL, hypertiesIDs, _this.communicationObject, true, false);
-        } else {
-          console.log('[GroupChatManager] here2');
-          return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false);
-        }
+        return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false);
 
       }).catch((reason) => {
         console.log('[GroupChatManager] MyIdentity Error:', reason);
         return reject(reason);
       }).then(function(dataObjectReporter) {
-        console.info('[GroupChatManager] 3. Return Create Data Object Reporter', dataObjectReporter);
 
+        console.info('[GroupChatManager] 3. Return Create Data Object Reporter', dataObjectReporter);
         let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
+
+        resolve(chatController);
+
+        dataObjectReporter.data.url = dataObjectReporter.url;
+        dataObjectReporter.data.cseq += 1;
+        dataObjectReporter.lastModified = new Date().toJSON();
+
         chatController.dataObjectReporter = dataObjectReporter;
 
         _this._reportersControllers[dataObjectReporter.url] = chatController;
-
-        resolve(chatController);
 
       }).catch(function(reason) {
         reject(reason);
@@ -276,9 +302,14 @@ class GroupChatManager {
     _this._onInvitation = callback;
   }
 
-  onResume(callback) {
+  onResumeReporter(callback) {
     let _this = this;
-    _this._onResume = callback;
+    _this._onResumeReporter = callback;
+  }
+
+  onResumeObserver(callback) {
+    let _this = this;
+    _this._onResumeObserver = callback;
   }
 
   /**
@@ -293,7 +324,7 @@ class GroupChatManager {
     return new Promise(function(resolve, reject) {
 
       console.info('[GroupChatManager] ------------------------ Syncher subscribe ---------------------- \n');
-      console.info(invitationURL);
+      console.info('invitationURL', invitationURL);
 
       syncher.subscribe(_this._objectDescURL, invitationURL, true, false).then(function(dataObjectObserver) {
         console.info('Data Object Observer: ', dataObjectObserver);
