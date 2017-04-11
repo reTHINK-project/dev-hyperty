@@ -73,7 +73,7 @@ class ChatController {
       dataObjectReporter.data.cseq += 1;
       dataObjectReporter.data.lastModified = new Date().toJSON();
 
-      console.log('communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
+      console.log('[GroupChatManager.ChatController] communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
 
       if (_this._onUserAdded) _this._onUserAdded(participant);
     });
@@ -101,7 +101,6 @@ class ChatController {
       console.info('[GroupChatManager.ChatController]Observer - onChange', event);
 
       if (event.field.includes('participants')) {
-        console.log('When field includes participants');
         switch (event.cType) {
           case 'add':
             if (_this._onUserAdded) _this._onUserAdded(event);
@@ -160,13 +159,23 @@ class ChatController {
 
       let _dataObjectChild;
 
+      let msg = {
+        created : new Date().toJSON(),
+        type : "chat",
+        content : message
+      }
+
+
       // TODO: change chatmessages to resource - chat, file
       // TODO: change message to hypertyResource - https://github.com/reTHINK-project/dev-service-framework/tree/develop/docs/datamodel/data-objects/hyperty-resource
       // TODO: handle with multiple resources - if the "message" will be different for each type of resources
-      dataObject.addChild('chatmessages', {message: message}).then(function(dataObjectChild) {
+      dataObject.addChild('resources', msg).then(function(dataObjectChild) {
 
         console.log('[GroupChatManager.ChatController][addChild - Chat Message]: ', dataObjectChild);
-        _dataObjectChild = dataObjectChild;
+
+        resolve(dataObjectChild);
+
+        /*_dataObjectChild = dataObjectChild;
 
         let identity = _this.myIdentity;
 
@@ -196,7 +205,7 @@ class ChatController {
           }
         };
 
-        resolve(msg);
+        resolve(msg);*/
       }).catch(function(reason) {
         console.error('Reason:', reason);
         reject(reason);

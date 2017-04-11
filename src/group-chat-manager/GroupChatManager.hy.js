@@ -31,7 +31,7 @@ import {divideURL} from '../utils/utils';
 import Search from '../utils/Search';
 
 // Internals
-import { communicationObject, CommunicationStatus } from './communication';
+import { communicationObject, CommunicationStatus, communicationChildren } from './communication';
 import ChatController from './ChatController';
 
 /**
@@ -70,11 +70,13 @@ class GroupChatManager {
 
     _this.communicationObject = communicationObject;
 
+    _this.communicationChildren = communicationChildren;
+
     console.log('[GroupChatManager] Discover: ', discovery);
     console.log('[GroupChatManager] Identity Manager : ', identityManager);
 
     syncher.resumeReporters({}).then((reporters) => {
-      console.log('RESULT:', reporters, _this, _this._onResume);
+      console.log('[GroupChatManager] reporters to be resumed:', reporters, _this, _this._onResume);
 
       Object.keys(reporters).forEach((dataObjectReporterURL) => {
 
@@ -128,6 +130,9 @@ class GroupChatManager {
         // TODO: replace the 200 for Message.Response
         event.ack(200);
 
+        _this.communicationObject = communicationObject;
+
+
         //Reset all the parameters
         /*
         _this.communicationObject.owner = '';
@@ -139,7 +144,7 @@ class GroupChatManager {
         _this.communicationObject.participants = [];
         _this.communicationObject.resources = ['chat'];
         _this.communicationObject.children = [];
-        */
+
         _this.communicationObject.url = '';
         _this.communicationObject.cseq = '';
         _this.communicationObject.reporter =  '';
@@ -150,7 +155,7 @@ class GroupChatManager {
         _this.communicationObject.lastModified = '';
         _this.communicationObject.status =  '';
         _this.communicationObject.children = [];
-        _this.communicationObject.participants = {};
+        _this.communicationObject.participants = {};*/
 
         for (let url in this._reportersControllers) {
           this._reportersControllers[url].closeEvent(event);
@@ -252,7 +257,7 @@ class GroupChatManager {
       _this.communicationObject.lastModified = _this.communicationObject.startingTime;
       */
 
-      _this.communicationObject.url = '';
+      //_this.communicationObject.url = '';
       _this.communicationObject.cseq = 1;
       _this.communicationObject.reporter =  _this._hypertyURL;
       _this.communicationObject.schema = _this._objectDescURL;
@@ -261,21 +266,21 @@ class GroupChatManager {
       _this.communicationObject.startingTime = _this.communicationObject.created;
       _this.communicationObject.lastModified = _this.communicationObject.created;
       _this.communicationObject.status =  CommunicationStatus.OPEN;
-      _this.communicationObject.children = [];
+      /*_this.communicationObject.children = [];
       _this.communicationObject.children.push({parent: 'communication', listener:'resource', type:'chat'});
-      _this.communicationObject.participants = {};
+      _this.communicationObject.participants = {};*/
 
       _this.search.myIdentity().then((identity) => {
 
-        console.log('Identity', identity);
+        console.log('[GroupChatManager.create ] My Identity', identity);
         let url = _this.communicationObject.reporter;
 
         // Add my identity
         _this.communicationObject.participants[url] = { identity: identity };
 
-        console.log('participants obj', _this.communicationObject.participants);
+        console.log('[GroupChatManager.create ] participants: ', _this.communicationObject.participants);
 
-        console.info('[GroupChatManager] searching ' + users + ' at domain ' + domains);
+        console.info('[GroupChatManager.create] searching ' + users + ' at domain ' + domains);
 
         let usersSearch = _this.search.users(users, domains, ['comm'], ['chat']);
         console.log('[GroupChatManager] usersSearch->', usersSearch);
@@ -292,7 +297,7 @@ class GroupChatManager {
         console.info(`Have ${selectedHyperties.length} users;`);
         console.info('[GroupChatManager] HypertiesIDs ', hypertiesIDs);
 
-        return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, false, false);
+        return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false);
 
       }).catch((reason) => {
         console.log('[GroupChatManager] MyIdentity Error:', reason);
@@ -303,7 +308,7 @@ class GroupChatManager {
         dataObjectReporter.data.cseq += 1;
         dataObjectReporter.lastModified = new Date().toJSON();
 
-        console.info('[GroupChatManager] 3. Return Create Data Object Reporter', dataObjectReporter);
+        console.info('[GroupChatManager.create] Returned Data Object Reporter', dataObjectReporter);
         let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
         chatController.dataObjectReporter = dataObjectReporter;
 
