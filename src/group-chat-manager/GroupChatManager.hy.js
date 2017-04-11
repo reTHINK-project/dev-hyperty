@@ -128,7 +128,7 @@ class GroupChatManager {
 
       if (event.type === 'delete') {
         // TODO: replace the 200 for Message.Response
-        event.ack(200);
+        event.ack(200); 
 
         _this.communicationObject = communicationObject;
 
@@ -209,26 +209,6 @@ class GroupChatManager {
         }
 
       });
-    /*  participants.forEach((participant)=> {
-
-        let user = participant.userURL.split('://');
-
-        // check if participat user URL is from a legacy domain
-        if (user[0] !== 'user') {
-
-          console.log('[GroupChatManager._resumeInterworking for] ', participant);
-
-          user = user[0] + '://' + user[1].split('/')[1];
-
-          let msg = {
-              type: 'create', from: _this._hypertyURL, to: user,
-              body: { resource: objectUrl, schema: schemaUrl, value: {name: name} }
-            };
-
-          _this._bus.postMessage(msg, () => {
-          });
-        }
-      });*/
     }
   }
 
@@ -256,7 +236,7 @@ class GroupChatManager {
       _this.communicationObject.startingTime = new Date().toJSON();
       _this.communicationObject.lastModified = _this.communicationObject.startingTime;
       */
-
+      _this._resetCommunicationObject();
       //_this.communicationObject.url = '';
       _this.communicationObject.cseq = 1;
       _this.communicationObject.reporter =  _this._hypertyURL;
