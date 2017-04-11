@@ -32,7 +32,7 @@ class Search {
    * @param  {array<URL.userURL>}  users List of UserUR, like this format user://<ipddomain>/<user-identifier>
    * @return {Promise}
    */
-  users(usersURLs, providedDomains, schemes, resources) {
+  users(usersURLs, providedDomains, schemes, resources, globalFlag) {
 
     if (!usersURLs) throw new Error('You need to provide a list of users');
     if (!providedDomains) throw new Error('You need to provide a list of domains');
@@ -54,7 +54,12 @@ class Search {
         usersURLs.forEach((userURL, index) => {
           let currentDomain = providedDomains[index];
           console.info('[Search] Search user ' + userURL + ' for provided domain:', currentDomain);
-          getUsers.push(_this.discovery.discoverHyperties(userURL, schemes, resources, currentDomain));
+          if (!globalFlag) {
+            getUsers.push(_this.discovery.discoverHyperties(userURL, schemes, resources, currentDomain));
+          } else {
+            getUsers.push(_this.discovery.discoverHypertiesPerUserProfileData(userURL, schemes, resources));
+          }
+
         });
 
         console.info('Requests promises: ', getUsers);
@@ -65,7 +70,7 @@ class Search {
 
           console.info('[Search] Hyperties from new Discovery', hyperties);
           let result = hyperties.map(function(hyperty) {
-
+          
             if (hyperty.hasOwnProperty('hypertyID'))
               return hyperty;
             let recent = Object.keys(hyperty).reduceRight(function(a, b) {
