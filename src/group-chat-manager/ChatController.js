@@ -80,8 +80,8 @@ class ChatController {
 
       console.log('[GroupChatManager.ChatController - onSubscription] ', found, participant);
       if (!found) {
-        console.log('[GroupChatManager.ChatController - this._onUserAdded] ', this._onUserAdded);
-        if (this._onUserAdded) this._onUserAdded(participant);
+        console.log('[GroupChatManager.ChatController - this._onUserAdded] ', _this._onUserAdded);
+        if (_this._onUserAdded) _this._onUserAdded(participant);
       }
 
     });
