@@ -42,7 +42,7 @@ export function divideURL(url) {
 
 
 
-class NodeHyperty extends EventEmitter {
+class ServerConference extends EventEmitter {
 
   /**
   * Create a new roomDataObjectReporter
@@ -70,7 +70,7 @@ class NodeHyperty extends EventEmitter {
     this.objReporter = {};
     this.roomsObj = {};// holds room Object by roomName. this.roomsObj[roomName]
     this.roomController = {};
-    this.scheme = ['comm'];
+    this.scheme = ['connection'];
     this.resources = ['audio', 'video'];
     this.connectionObject = connection;
     this.callerIdentity;
@@ -175,7 +175,7 @@ class NodeHyperty extends EventEmitter {
     return new Promise((resolve, reject) => {
       
       let dataObject = {
-        name : 'communication',
+        name : 'connection',
         id: message.id,
         type: "response",
         from: _this.myUrl,
@@ -184,7 +184,7 @@ class NodeHyperty extends EventEmitter {
         data : message
       };
        // Initial data
-        _this.connectionObject.name = 'connection';
+        // _this.connectionObject.name = 'connection';
         _this.connectionObject.scheme = 'connection';
         _this.connectionObject.owner = _this.myUrl;
         _this.connectionObject.data = dataObject.data;
@@ -237,8 +237,8 @@ class NodeHyperty extends EventEmitter {
 export default function activate(hypertyURL, bus, configuration) {
 
   return {
-    name: 'NodeHyperty',
-    instance: new NodeHyperty(hypertyURL, bus, configuration)
+    name: 'ServerConference',
+    instance: new ServerConference(hypertyURL, bus, configuration)
   };
 
 }

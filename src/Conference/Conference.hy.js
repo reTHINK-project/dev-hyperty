@@ -32,14 +32,14 @@ import {Syncher} from 'service-framework/dist/Syncher';
 import {divideURL} from '../utils/utils';
 
 // Internals
-import ConnectionController from './ConnectionController';
+import ConferenceController from './ConferenceController';
 import { connection } from './connection';
 import Search from '../utils/Search';
 
 /**
  *
  */
-class Connector {
+class Conference {
 
   /**
   * Create a new Hyperty Connector
@@ -61,8 +61,8 @@ class Connector {
       _this.objectDescURL = 'hyperty-catalogue://catalogue.' + this.domain +'/.well-known/dataschema/Connection'
 
     this.controllers = {};
-    this.scheme = ['connection'];
-    this.resources = ['audio', 'video'];
+    // this.scheme = ['connection'];
+    // this.resources = ['audio', 'video'];
     this.connectionObject = connection;
     this.participants = {};
     this.myId = {};
@@ -93,10 +93,15 @@ class Connector {
         } else {
           _this.autoAccept(event);
         }
-
-        if((event.value.data.id === 'receiveVideoAnswer') || (event.value.data.id === 'iceCandidate')) {
-          _this.controllers[event.from]._processPeerInformation(event.value.data);
-        }
+        
+         /**
+         * @param  {nodejsRuntime}         
+         **/
+        // console.debug('event.value.data is:',event.value.data )
+        // if((event.value.data.id === 'receiveVideoAnswer') || (event.value.data.id === 'iceCandidate')) {
+          // console.debug('event.value.data is:',event.value )
+          // _this.controllers[event.from]._processPeerInformation(event);
+        // }
 
         console.debug('------------------------ End Create ---------------------- \n');
       }
@@ -132,10 +137,22 @@ class Connector {
       _this.controllers[event.from].dataObjectObserver = dataObjectObserver;
       console.debug('******************  _this.controllers[event.from] :',  _this.controllers[event.from])
        // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
+         /**
+         * @param  {nodejsRuntime}         
+         **/
+        dataObjectObserver.onChange('*', function(e) {
+          console.debug('************************************* on change', e.data)
+           if((e.data.id === 'receiveVideoAnswer') || (e.data.id === 'IceCandidate') || (e.data.id === 'existingParticipants') || (e.data.id === 'newParticipantArrived')) {
+          console.debug('event.value.data is:', e.data,  _this.controllers[event.from]  );
+          _this.controllers[event.from]._processPeerInformation(e.data);
+        }
+      });
         
-      // if((event.value.data.id === 'existingParticipants') || (event.value.data.id === 'iceCandidate')) {
-      //    _this.controllers[event.from]._processPeerInformation(event.value.data);
-      // }    
+      
+      if((event.value.data.id === 'existingParticipants') || (event.value.data.id === 'iceCandidate')) {
+           console.debug('event.value.data is:', event );
+         _this.controllers[event.from]._processPeerInformation(event.value.data);
+      }    
     }).catch(function(reason) {
       console.error(reason);
     });
@@ -151,16 +168,16 @@ class Connector {
     syncher.subscribe(_this.objectDescURL, event.url ).then(function(dataObjectObserver) {
       console.debug('1. Return Subscribe Data Object Observer', dataObjectObserver);
 
-      let connectionController = new ConnectionController(syncher, _this.domain, _this.configuration);
-      connectionController.connectionEvent = event;
+      let conferenceController = new ConferenceController(syncher, _this.domain, _this.configuration);
+      conferenceController.connectionEvent = event;
       // we get the sdp offer
-      connectionController.dataObjectObserver = dataObjectObserver;
+      conferenceController.dataObjectObserver = dataObjectObserver;
 
-      _this.controllers[event.from] = connectionController;
+      _this.controllers[event.from] = conferenceController;
 
 
       // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
-      if (_this.onInvitation) _this.onInvitation(connectionController, event.identity.userProfile);
+      if (_this.onInvitation) _this.onInvitation(conferenceController, event.identity.userProfile);
 
       console.debug('------------------------ END ---------------------- \n');
     }).catch(function(reason) {
@@ -173,7 +190,7 @@ class Connector {
    * @param  {URL.UserURL}        userURL      user to be invited that is identified with reTHINK User URL.
    * @param  {MediaStream}        stream       WebRTC local MediaStream retrieved by the Application
    * @param  {string}             name         is a string to identify the connection.
-   * @return {<Promise>ConnectionController}   A ConnectionController object as a Promise.
+   * @return {<Promise>conferenceController}   A conferenceController object as a Promise.
    */
   connect(userURL, stream, roomID, domain) {
     // TODO: Pass argument options as a stream, because is specific of implementation;
@@ -188,7 +205,7 @@ class Connector {
 
     return new Promise((resolve, reject) => {
 
-      let connectionController;
+      let conferenceController;
       let selectedHyperty;
       console.info('------------------------ Syncher Create ---------------------- \n');
 
@@ -203,22 +220,31 @@ class Connector {
 
         selectedHyperty = hypertiesIDs[0].hypertyID;
         // selectedHyperty = hypertiesIDs;
-        console.debug('Only support communication one to one, selected hyperty: ', selectedHyperty);
-
+       
         let roomName = roomID;
+
+        console.info('It supports  group communication, selected hyperty: ', selectedHyperty);
+
+        let connectionName = 'Connection';
+        if (roomID) {
+          connectionName = roomID;
+        }
+
+        
         // if (roomID) {
         //   connectionName = 'connection';
         // }
 
         // Initial data
         // _this.connectionObject.usename = _this.myId;
-        _this.connectionObject.name = 'connection';
+        _this.connectionObject.name = connectionName;
         _this.connectionObject.roomName = roomID;
         _this.connectionObject.scheme = 'connection';
         _this.connectionObject.owner = _this.hypertyURL;
-        _this.connectionObject.peer = selectedHyperty;
+        // _this.connectionObject.peer = selectedHyperty;
         _this.connectionObject.status = '';
-        console.debug('---------------_this.objectDescURL, [selectedHyperty], _this.connectionObject: ', _this.objectDescURL, [selectedHyperty], _this.connectionObject)
+
+        // console.debug('---------------_this.objectDescURL, [selectedHyperty], _this.connectionObject: ', _this.objectDescURL, [selectedHyperty], _this.connectionObject)
 
         return syncher.create(_this.objectDescURL, [selectedHyperty], _this.connectionObject);
       }).catch((reason) => {
@@ -228,16 +254,16 @@ class Connector {
         console.debug('1. Return Create Data Object Reporter', dataObjectReporter);
         console.debug('2. Return syncher', syncher);
 
-        connectionController = new ConnectionController(syncher, _this.domain, _this.configuration, _this.myId.username);
+        conferenceController = new ConferenceController(syncher, _this.domain, _this.configuration, _this.myId.username);
         
-        console.debug('_this.myId is:', _this.myId)
-        connectionController.username = _this.myId.username;
-        connectionController.mediaStream = stream;
-        connectionController.dataObjectReporter = dataObjectReporter;
+        console.debug('_this.myId is:', _this.myId);
+        conferenceController.username = _this.myId.username;
+        conferenceController.mediaStream = stream;
+        conferenceController.dataObjectReporter = dataObjectReporter;
 
-        _this.controllers[selectedHyperty] = connectionController;
+        _this.controllers[selectedHyperty] = conferenceController;
         console.debug('--------------------------------------');
-        resolve(connectionController);
+        resolve(conferenceController);
         console.info('--------------------------- END --------------------------- \n');
       }).catch((reason) => {
         console.error(reason);
@@ -268,8 +294,8 @@ class Connector {
 export default function activate(hypertyURL, bus, configuration) {
 
   return {
-    name: 'Connector',
-    instance: new Connector(hypertyURL, bus, configuration)
+    name: 'Conference',
+    instance: new Conference(hypertyURL, bus, configuration)
   };
 
 }

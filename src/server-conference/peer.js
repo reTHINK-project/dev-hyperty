@@ -8,7 +8,7 @@
 * Copyright 2016 Apizee
 * Copyright 2016 TECHNISCHE UNIVERSITAT BERLIN
 *
-* Licensed under the Apache License, Version 2.0 (the ''License");
+* Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
 *
@@ -21,36 +21,16 @@
 * limitations under the License.
 **/
 
-
-// export default function communication(name, url, participants){
-//     let date = new Date().toJSON()
-
-//     return{
-//         id: name,
-//         name: name,
-//         owner: url,
-//         scheme: 'comm',
-//         resources: [''],
-//         children: [],
-//         startingTime: date,
-//         lastModified: date,
-//         duration: '',
-//         status: 'open',
-//         participants: participants
-//     }
-// }
-
-
-export let connection = {
+let peer = {
   name: '',
-  roomName :'',
-  // id:{},
-  scheme: '',
   status: '',
   owner: '',
+  scheme: '',
   peer: '',
   ownerPeer: {
     connectionDescription: {},
     iceCandidates: []
   }
 };
+
+export default peer;

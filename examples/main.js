@@ -19,9 +19,9 @@ export function hypertyDeployed(hyperty) {
   let script = '';
 
   switch (hyperty.name) {
-    case 'Connector':
-      template = 'connector/Connector';
-      script = 'connector/demo.js';
+    case 'Conference':
+      template = 'Conference/Conference';
+      script = 'Conference/demo.js';
       break;
 
     case 'GroupChatManager':
