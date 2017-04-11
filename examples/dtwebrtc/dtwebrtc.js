@@ -28,7 +28,11 @@ function hypertyLoaded(result) {
   hyperty.myUrl = result.runtimeHypertyURL;
   // init some click handlers
   $('#gosearch').on('click', discoverEmail);
+<<<<<<< HEAD
   $('#settings').on('submit', saveProfile);
+=======
+  $('#settings').on('submit', () => { saveProfile() });
+>>>>>>> develop
   $('#settings').on('submit', toggleSettings);
 
   fillResoultionSelector();
@@ -62,7 +66,11 @@ function hypertyLoaded(result) {
 
 
   // get registered user
+<<<<<<< HEAD
   hyperty.identityManager.discoverUserRegistered().then((identity) => {
+=======
+	hyperty.search.myIdentity().then(function(identity) {
+>>>>>>> develop
     console.log("[DTWebRTC.main]: registered user is: ", identity);
     hyperty.myIdentity = identity;
      let info = "Authenticated as:</br>" + identity.cn + ",  " + identity.username + '<img src="' + hyperty.myIdentity.avatar + '" class="logo" /></br>' +
@@ -129,25 +137,39 @@ function fillmodal(calleeInfo) {
 // receiving code here
 function initListeners() {
 
+<<<<<<< HEAD
   hyperty.addEventListener('invitation', (identity) => {
     // preparing the modal dialog with the given identity info
+=======
+  hyperty.addEventListener('incomingcall', (identity) => {
+		// preparing the modal dialog with the given identity info
+>>>>>>> develop
     console.log('incomingcall event received from:', identity);
     $('.invitation-panel').html('<p> Invitation received from:\n ' + identity.email ? identity.email : identity.username + '</p>');
     fillmodal(identity);
     prepareMediaOptions();
+<<<<<<< HEAD
   });
 
   hyperty.addEventListener('incomingcall', (data) => {
     $('#myModal').find('#btn-accept').on('click', () => {
       hyperty.invitationAccepted(data);
+=======
+
+    $('#myModal').find('#btn-accept').on('click', () => {
+      hyperty.acceptCall();
+>>>>>>> develop
     });
     $('#myModal').find('#btn-reject').on('click', () => {
       hangup();
     });
     $('#myModal').modal('show');
+<<<<<<< HEAD
 
     // if (!confirm('Incoming call. Answer?')) return false;
     // hyperty.invitationAccepted(data);
+=======
+>>>>>>> develop
   });
 
   hyperty.addEventListener('localvideo', (stream) => {
@@ -201,6 +223,7 @@ function discoverEmail(event) {
 
   $('.send-panel').html(msg);
 
+<<<<<<< HEAD
   hyperty.discovery.discoverHypertyPerUser(email, domain).then( (result) => {
       $('.send-panel').html(
         '<br><form class="webrtcconnect">' +
@@ -216,6 +239,30 @@ function discoverEmail(event) {
       );
       console.error('Email Discovered Error: ', err);
     });
+=======
+	hyperty.search.users([email], [domain], ['connection'], ['audio', 'video']).then( (result) => {
+		if ( result.length == 0 ) {
+			$('.send-panel').html(
+	      '<div>No hyperty found!</div>'
+	    );
+		}
+		else {
+			$('.send-panel').html(
+				'<br><form class="webrtcconnect">' +
+				'<input type="text" class="webrtc-hyperty-input form-control " style="font-size: 18px; font-size: bold;">' +
+				'<button type="submit" class="btn btn-default btn-sm btn-block ">webRTC to Hyperty </button>' +
+				'</form><br>');
+				$('.send-panel').find('.webrtc-hyperty-input').val(result[0].hypertyID);
+				$('.webrtcconnect').on('submit', webrtcconnectToHyperty);
+				$('.webrtcconnect').find("button").focus();
+		}
+  }).catch((err) => {
+    $('.send-panel').html(
+      '<div>No hyperty found!</div>'
+    );
+    console.error('Email Discovered Error: ', err);
+  });
+>>>>>>> develop
 }
 
 // ###################################################################################################################
@@ -252,7 +299,10 @@ function getIceServers() {
 }
 
 function saveProfile() {
+<<<<<<< HEAD
   event.preventDefault();
+=======
+>>>>>>> develop
   var profile = {};
   console.log("[DTWebRTC.main]:save profile " + PROFILE_KEY);
   // transfer all values from all text-inputs of the settings div to profile

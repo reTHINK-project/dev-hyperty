@@ -3,11 +3,13 @@ import Discovery from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 import {divideURL} from '../utils/utils';
 import EventEmitter from '../utils/EventEmitter'; // for receiving
+import Search from '../utils/Search';
 import iceconfig from './stunTurnserverConfig';
 import config from '../../config.json';
-import IdentityManager from '../IdentityManager';
-import { connection } from './connection';
+import IdentityManager from 'service-framework/dist/IdentityManager';
 
+
+import 'webrtc-adapter-test';
 
 class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to recieve events
 
@@ -20,10 +22,12 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
     this._domain = divideURL(hypertyURL).domain;
     this._objectDescURL = 'hyperty-catalogue://catalogue.' + this._domain + '/.well-known/dataschema/Connection';
     this._syncher = new Syncher(hypertyURL, bus, configuration);
-    this.discovery = new Discovery(hypertyURL, bus);
-    this.identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
+    let discovery = new Discovery(hypertyURL, bus);
+    let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
+    this.search = new Search(discovery, identityManager);
     this.objObserver;
     this.objReporter;
+    this.callerIdentity;
 
     this.constraints = {
       'audio': true,
@@ -49,14 +53,15 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
     if (this.sender == null) {
       this.sender = false;
     }
-    console.info('[DTWebRTC]: Event Received: ', event);
+    console.info('[DTWebRTC]: Event Received: ', event)
     switch (event.type) {
       case "create":
         // ensure that a PC is existing
         this.createPC();
 
         // the peer has created an object and we are requested to subscribe for changes to this remote object
-        this.trigger('invitation', event.identity);
+        // this.trigger('invitation', event.identity);
+        this.callerIdentity = event.identity;
 
         console.info("[DTWebRTC]: [_onNotification] sending event.ack() ");
         let result = event.ack(); // Acknowledge reporter about the Invitation was received
@@ -73,10 +78,10 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
             if (! this.sender) {
               this.partner = event.from;
               console.log('got invite');
-              this.trigger('incomingcall', objObserver.data);
+              this.trigger('incomingcall', this.callerIdentity);
             }
 
-            this.changePeerInformation(objObserver);
+            this.handleObserverObject(objObserver);
           }).catch((reason) => {
             console.error(reason);
           });
@@ -102,18 +107,12 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
 
     return new Promise((resolve, reject) => {
       // initial data for sync object
-      let dataObject = connection;
-      // prepare dataObject for offer or answer
-      if (this.sender) {  // offer
-            dataObject.name = "Connection";
-            dataObject.status = "";
-            dataObject.owner = this.myUrl;
-            dataObject.peer = this.partner;
-      } else {  // answer
-        dataObject.Peer = {
-          connectionDescription: {},
-          iceCandidates: []
-        };
+      let dataObject = {
+        name : "Connection",
+        status : "",
+        owner : this.myUrl,
+        connectionDescription : {},
+        iceCandidates : []
       }
 
       // ensure this the objReporter object is created before we create the offer
@@ -122,11 +121,8 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
           this.objReporter = objReporter;
           if (this.sender) {  // offer
             this.invite().then( (offer) => {
-                this.objReporter.data.ownerPeer = {
-                  connectionDescription: offer,
-                  iceCandidates: []
-                };
-              });
+              this.objReporter.data.connectionDescription = offer;
+            });
           }
 
           objReporter.onSubscription(function(event) {
@@ -151,7 +147,7 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
   invite() {
     this.createPC();
     return new Promise((resolve, reject) => {
-      console.log('>>>Constrains', this.constraints);
+      console.log('>>>Constraints', this.constraints);
       navigator.mediaDevices.getUserMedia(this.constraints).then((stream) =>{
           console.log("[DTWebRTC]: localviodeo")
           this.trigger('localvideo', stream);
@@ -174,34 +170,35 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
   }
 
   // calle accepted the invitation
-  invitationAccepted(data) {
-    let offer;
-    if (data.ownerPeer.connectionDescription.type == "offer") {
-      console.log("[DTWebRTC]: OFFER RECEIVED: ", data)
-      offer = data.ownerPeer.connectionDescription;
-    } else {
+  acceptCall() {
+    let offer = this.objObserver.data ? this.objObserver.data.connectionDescription : null;
+    if ( ! offer ) {
       console.log("[DTWebRTC]: offer was't set in the invitation - data: ", data);
       return;
     }
-    console.log('>>>Constraints', this.constraints);
+    console.log("[DTWebRTC]: >>>Constraints", this.constraints);
     navigator.mediaDevices.getUserMedia(this.constraints).then( (stream) => {
       this.trigger('localvideo', stream);
       this.mediaStream = stream;
       this.pc.addStream(stream); // add the stream to the peer connection so the other peer can receive it later
-      this.pc.setRemoteDescription(new RTCSessionDescription(offer), () => {
+      // this.pc.setRemoteDescription(new RTCSessionDescription(offer), () => {
         // connect to the other hyperty now
         this.connect(this.partner).then( (objReporter) => {
           console.log("[DTWebRTC]: objReporter created successfully: ", objReporter);
           this.objReporter = objReporter;
 
           this.pc.createAnswer().then( (answer) => {
-            this.objReporter.data.Peer.connectionDescription = answer;
+            this.objReporter.data.connectionDescription = answer;
             this.pc.setLocalDescription(new RTCSessionDescription(answer), () => {
               console.log("[DTWebRTC]: localDescription (answer) successfully set: ", answer);
+            }, (err) => {
+              console.log("Error in setLocalDescription: " + err);
             });
           });
         });
-      });
+      // }, (err) => {
+      //   console.log("Error in setRemoteDescription: " + err);
+      // });
     });
   }
 
@@ -236,16 +233,7 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
         sdpMid: e.candidate.sdpMid,
         sdpMLineIndex: e.candidate.sdpMLineIndex
       };
-
-      if (! this.objReporter ) {
-        console.log("[DTWebRTC]: got  iceCandidate before objReporter ... skipping");
-        return;
-      }
-      if (this.sender) {
-        this.objReporter.data.ownerPeer.iceCandidates.push(icecandidate);
-      } else {
-        this.objReporter.data.Peer.iceCandidates.push(icecandidate);
-      }
+      this.objReporter.data.iceCandidates.push(icecandidate);
     }
 
     // unfortunately onremovestream() didn't recognizes the remove of a stream
@@ -256,13 +244,10 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
   }
 
   ////////////////////////////////////
-
   // HypertyConnector functions
-  changePeerInformation(dataObjectObserver) {
-    let data = dataObjectObserver.data;
-    console.log("[DTWebRTC]: changePeerInformation: data", data);
-    let peerData = data.Peer ? data.Peer : data.ownerPeer;
-    console.info("[DTWebRTC]: Peer Data:", peerData);
+  handleObserverObject(dataObjectObserver) {
+    let peerData = dataObjectObserver.data;
+    console.info("[DTWebRTC]: handleObserverObject Peer Data:", peerData);
 
     if (peerData.hasOwnProperty('connectionDescription')) {
       this.processPeerInformation(peerData.connectionDescription);
@@ -270,14 +255,13 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
 
     if (peerData.hasOwnProperty('iceCandidates')) {
       peerData.iceCandidates.forEach( (ice) => {
-        console.log("[DTWebRTC]: changePeerInformation for ice", ice);
+        console.log("[DTWebRTC]: handleObserverObject for ice", ice);
         this.processPeerInformation(ice);
       });
     }
 
     dataObjectObserver.onChange('*', (event) => {
-      console.info('[DTWebRTC]: Observer on change message: ', event);
-
+      console.debug('[DTWebRTC]: Observer on change message: ', event);
       // this event also includes the answer from the callee so we need to
       // process the answer from event.data and the candidates which might trickle
       // from event.data[0]
@@ -300,13 +284,12 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
     }
 
     if (data.type === 'offer' || data.type === 'answer') {
-      // if (data.type === 'answer') {
       console.info('[DTWebRTC]: Process Connection Description: ', data);
       this.pc.setRemoteDescription(new RTCSessionDescription(data)).then(() => {
         console.log("[DTWebRTC]: remote success")
-      })
-      .catch((e) => {
-        console.log("[DTWebRTC]: remote error: ", e)
+      },
+      (err) => {
+        console.log("[DTWebRTC]: setRemoteDescription error: ", err)
       });
     }
 
@@ -320,12 +303,16 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
 
   cleanupPC() {
     this.sender = null;
-    if ( this.mediaStream ) {
+    if ( this.mediaStream && this.pc) {
+      // removeStream is deprecated --> using removeTrack instead
       let tracks = this.mediaStream.getTracks();
-      tracks.forEach((track) => { track.stop() } );
-      if ( this.pc ) {
-        this.pc.removeStream(this.mediaStream);
-      }
+      tracks.forEach((track) => {
+        track.stop()
+        // this.pc.removeTrack(track);
+      } );
+      // if ( this.pc ) {
+      //   this.pc.removeStream(this.mediaStream);
+      // }
     }
     if ( this.pc ) this.pc.close();
     this.pc = null;
@@ -344,6 +331,7 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
         this.cleanupPC();
 
         this.trigger('disconnected');
+        resolve();
       } catch (e) {
         reject(e);
       }

@@ -5,6 +5,7 @@
 // import {getTemplate, getUserMedia} from '../../utils/utils';
 
 var connector;
+let controllerExist = false;
 
 function getUserMedia(constraints) {
 
@@ -54,12 +55,14 @@ function hypertyReady(result, identity) {
   connector = result.instance;
 
   connector.onInvitation(function(controller, identity) {
-    console.log('On Invitation: ', controller, identity);
-    notificationHandler(controller, identity);
+    console.debug('On Invitation: ', controller, identity); 
+      notificationHandler(controller, identity);
+      
   });
 }
 
 function notificationHandler(controller, identity) {
+  console.info('---------------- ---- notificationHandler ----------------------------------')
 
   var calleeInfo = identity;
   var incoming = $('.modal-call');
@@ -68,6 +71,7 @@ function notificationHandler(controller, identity) {
   var informationHolder = incoming.find('.information');
 
   showVideo(controller);
+  controllerExist = true;
 
   acceptBtn.on('click', function(e) {
 
@@ -81,7 +85,7 @@ function notificationHandler(controller, identity) {
       return controller.accept(mediaStream);
     })
     .then(function(result) {
-      console.log(result);
+      console.debug('result : ', result);
     }).catch(function(reason) {
       console.error(reason);
     });
@@ -237,13 +241,14 @@ function openVideo(hyperty, domain) {
   console.log('connecting hyperty: ', hyperty);
 
   var toHyperty = hyperty;
+  let roomID = document.getElementById('roomName').value;
   var localMediaStream;
 
   var options = options || {video: true, audio: true};
   getUserMedia(options).then(function(mediaStream) {
     console.info('recived media stream: ', mediaStream);
     localMediaStream = mediaStream;
-    return connector.connect(toHyperty, mediaStream, '', domain);
+    return connector.connect(toHyperty, mediaStream, roomID, domain);
   })
   .then(function(controller) {
     showVideo(controller);
@@ -255,16 +260,39 @@ function openVideo(hyperty, domain) {
   });
 }
 
-function processVideo(event) {
+function processVideo(event, user) {
 
   console.log('Process Video: ', event);
+ // working for 1- 1
+  // var videoHolder = $('.video-holder');
+  // var video = videoHolder.find('.video');
 
-  var videoHolder = $('.video-holder');
-  var video = videoHolder.find('.video');
-  video[0].src = URL.createObjectURL(event.stream);
+  // var videoHolder = document.getElementById('video-container')
+  // var video = document.createElement('video');
+//   video.id = user;
+ 
+//   // videoHolder.appendChild(video);
+//  console.debug('videoHolder is ', videoHolder )
+
+//   video[0].src = URL.createObjectURL(event.stream);
+//   console.debug('video[0] is ', video[0])
+
+    console.log('Remote stream added.', event.stream);
+    //remoteVideo.src = window.URL.createObjectURL(event.stream);
+    console.log('Dynamically creating video');
+    let remoteVideo = document.createElement("video");
+    remoteVideo.id = user;
+    remoteVideo.autoplay = true;
+    remoteVideo.src = URL.createObjectURL(event.stream);
+    // remoteVideo = event.stream;
+    $('#video-container').append(remoteVideo);
+   console.log('Creation complete!');
 
 }
 
+
+
+//
 function processLocalVideo(mediaStream) {
   console.log('Process Local Video: ', mediaStream);
 
@@ -285,6 +313,7 @@ function disconnecting() {
 }
 
 function showVideo(controller) {
+  console.debug('showVideo controller:  ', controller)
   var videoHolder = $('.video-holder');
   videoHolder.removeClass('hide');
 
@@ -293,10 +322,9 @@ function showVideo(controller) {
   var btnMic = videoHolder.find('.mic');
   var btnHangout = videoHolder.find('.hangout');
 
-  console.log(controller);
-
-  controller.onAddStream(function(event) {
-    processVideo(event);
+  controller.onAddStream(function(event, user) {
+    console.debug(' controller.onAddStream : ', controller, event, user);
+    processVideo(event, user);
   });
 
   controller.onDisconnect(function(identity) {

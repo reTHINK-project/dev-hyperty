@@ -19,9 +19,9 @@ export function hypertyDeployed(hyperty) {
   let script = '';
 
   switch (hyperty.name) {
-    case 'Connector':
-      template = 'connector/Connector';
-      script = 'connector/demo.js';
+    case 'Conference':
+      template = 'Conference/Conference';
+      script = 'Conference/demo.js';
       break;
 
     case 'GroupChatManager':
@@ -89,6 +89,15 @@ export function hypertyDeployed(hyperty) {
       script = 'bracelet/BraceletSensorObserver.js';
       break;
 
+    case 'DTWebRTC':
+      template = 'dtwebrtc/dtwebrtc';
+      script = 'dtwebrtc/dtwebrtc.js';
+      break;
+
+    case 'NodeHypertyObserver':
+      template = 'node-hyperty/NodeHyperty';
+      script = 'node-hyperty/NodeHypertyObserver.js';
+      break;
   }
 
   if (!template) {
