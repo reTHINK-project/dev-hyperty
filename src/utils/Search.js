@@ -54,7 +54,7 @@ class Search {
         usersURLs.forEach((userURL, index) => {
           let currentDomain = providedDomains[index];
           console.info('[Search] Search user ' + userURL + ' for provided domain:', currentDomain);
-          getUsers.push(_this.discovery.discoverHyperty(userURL, schemes, resources, currentDomain));
+          getUsers.push(_this.discovery.discoverHyperties(userURL, schemes, resources, currentDomain));
         });
 
         console.info('Requests promises: ', getUsers);
@@ -63,7 +63,7 @@ class Search {
           return promise.then((hyperty) => { return hyperty; }, (error) => { return error; });
         })).then((hyperties) => {
 
-          console.info('[Search] Hyperties', hyperties);
+          console.info('[Search] Hyperties from new Discovery', hyperties);
           let result = hyperties.map(function(hyperty) {
 
             if (hyperty.hasOwnProperty('hypertyID'))
