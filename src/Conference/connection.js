@@ -45,7 +45,6 @@ export let connection = {
   name: '',
   scheme: '',
   status: '',
-  id:'',
   owner: '',
   connectionDescription: {},
   iceCandidates: []

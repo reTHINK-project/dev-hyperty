@@ -67,7 +67,7 @@ class Conference {
     this.participants = {};
     this.myId = {};
 
-    let discovery = new Discovery(hypertyURL, bus);
+    let discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
     let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
 
 

@@ -286,7 +286,7 @@ function processVideo(event, user) {
     remoteVideo.src = URL.createObjectURL(event.stream);
     // remoteVideo = event.stream;
     $('#video-container').append(remoteVideo);
-   console.log('Creation complete!');
+   console.debug('Creation complete!');
 
 }
 

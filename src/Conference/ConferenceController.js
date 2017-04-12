@@ -324,8 +324,8 @@ class ConferenceController {
     else if (data.id === 'receiveVideoAnswer') {
       console.debug('Process Connection Descriptionn , receiveAnswer: ', data.sdpAnswer, _this._username, data.name, newPeerConncection);
        newPeerConncection[data.name].setRemoteDescription(new RTCSessionDescription({type: 'answer', sdp: data.sdpAnswer}), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
-      //   _this.setRemoteVideo(data.name);
-      //  console.debug('SDP answer received, setting remote description ',  newPeerConncection[data.name].getRemoteStreams()[0]);
+      
+       console.debug('SDP answer received, setting remote description ',  newPeerConncection[data.name].getRemoteStreams()[0]);
     }
     
     if (data.type === 'candidate') {
@@ -428,11 +428,10 @@ class ConferenceController {
         // Add stream to PeerConnection
         newPeerConncection[senderName].addEventListener('addstream', function(event) {
           console.debug('Add Stream: ', event);
-          console.debug('_this._onAddStream: ', _this._onAddStream);
          
           // newPeerConncection[senderName].addStream(_this._mediaStream);
 
-          if (_this._onAddStream)  _this._onAddStream(event, senderName);
+          if (_this._onAddStream) _this._onAddStream(event, senderName);
         });
 
         newPeerConncection[senderName].onremovestream = function(event) {
