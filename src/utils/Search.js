@@ -32,7 +32,7 @@ class Search {
    * @param  {array<URL.userURL>}  users List of UserUR, like this format user://<ipddomain>/<user-identifier>
    * @return {Promise}
    */
-  users(usersURLs, providedDomains, schemes, resources, globalFlag) {
+  users(usersURLs, providedDomains, schemes, resources, globalFlag = false) {
 
     if (!usersURLs) throw new Error('You need to provide a list of users');
     if (!providedDomains) throw new Error('You need to provide a list of domains');
@@ -70,7 +70,7 @@ class Search {
 
           console.info('[Search] Hyperties from new Discovery', hyperties);
           let result = hyperties.map(function(hyperty) {
-          
+
             if (hyperty.hasOwnProperty('hypertyID'))
               return hyperty;
             let recent = Object.keys(hyperty).reduceRight(function(a, b) {
