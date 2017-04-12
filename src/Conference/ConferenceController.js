@@ -56,7 +56,7 @@ class ConferenceController {
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Connection';
 
     // Prepare the PeerConnection
-    newPeerConncection[username] = new RTCPeerConnection(_this._configuration);
+    newPeerConncection[username] = new RTCPeerConnection(_this._configuration.webrtc);
     console.debug('_this._username is :', _this.user, username);
 
     newPeerConncection[username].addEventListener('signalingstatechange', function(event) {
@@ -107,10 +107,10 @@ class ConferenceController {
       // } else {
       //   data.Peer.iceCandidates.push(icecandidate);
       // }
-    
-      
+
+
   /**
-   * @param  {nodejsRuntime}         
+   * @param  {nodejsRuntime}
    **/
   // new model
       data.iceCandidates.push(icecandidate);
@@ -180,7 +180,7 @@ class ConferenceController {
     // }
 
   /**
-   * @param  {nodejsRuntime}         
+   * @param  {nodejsRuntime}
    **/
 
     if (_this.mode === 'offer') {
@@ -307,7 +307,7 @@ class ConferenceController {
   }
 
   /**
-   * @param  {nodejsRuntime}         
+   * @param  {nodejsRuntime}
    **/
   _processPeerInformation(data) {
     let _this = this;
@@ -324,10 +324,10 @@ class ConferenceController {
     else if (data.id === 'receiveVideoAnswer') {
       console.debug('Process Connection Descriptionn , receiveAnswer: ', data.sdpAnswer, _this._username, data.name, newPeerConncection);
        newPeerConncection[data.name].setRemoteDescription(new RTCSessionDescription({type: 'answer', sdp: data.sdpAnswer}), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
-      
+
        console.debug('SDP answer received, setting remote description ',  newPeerConncection[data.name].getRemoteStreams()[0]);
     }
-    
+
     if (data.type === 'candidate') {
       console.info('[Connector.ConnectionController ]Process Ice Candidate: ', data);
       _this.peerConnection.addIceCandidate(new RTCIceCandidate({candidate: data.candidate}), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
@@ -375,7 +375,7 @@ class ConferenceController {
     console.debug('conferenceroom::receiveVideo', senderName);
     return new Promise(function(resolve, reject) {
       try {
-        newPeerConncection[senderName] = new RTCPeerConnection(_this._configuration);
+        newPeerConncection[senderName] = new RTCPeerConnection(_this._configuration.webrtc);
         console.debug('_this._username is :', _this.user, username);
 
         newPeerConncection[senderName].addEventListener('signalingstatechange', function(event) {
@@ -428,7 +428,7 @@ class ConferenceController {
         // Add stream to PeerConnection
         newPeerConncection[senderName].addEventListener('addstream', function(event) {
           console.debug('Add Stream: ', event);
-         
+
           // newPeerConncection[senderName].addStream(_this._mediaStream);
 
           if (_this._onAddStream) _this._onAddStream(event, senderName);
@@ -437,7 +437,7 @@ class ConferenceController {
         newPeerConncection[senderName].onremovestream = function(event) {
           console.info('Stream removed: ', event);
         };
-        
+
      } catch (e) {
         reject('error accepting connection');
       }
@@ -519,7 +519,7 @@ class ConferenceController {
         data.connectionDescription = sdpConnection;
 
       //  data.ownerPeer.connectionDescription = sdpConnection;
- 
+
 
       }, _this._infoError);
     } else {
@@ -540,7 +540,7 @@ class ConferenceController {
 
         console.debug('message is : ', msg)
          // send message to conference client Hyperty
-       
+
          data.id = msg;
 
         }, _this._infoError);
