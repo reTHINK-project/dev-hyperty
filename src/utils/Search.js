@@ -41,57 +41,63 @@ class Search {
 
     let _this = this;
 
-    return new Promise(function(resolve) {
+    return new Promise(function(resolve, reject) {
 
-      console.log('Users: ', usersURLs, usersURLs.length);
-      console.log('Domains: ', providedDomains, providedDomains.length);
-
+      console.info('[Search] Users: ', usersURLs, usersURLs.length);
+      console.info('[Search] Domains: ', providedDomains, providedDomains.length);
       if (usersURLs.length === 0) {
         console.info('Don\'t have users to discovery');
-
         resolve(usersURLs);
       } else {
         let getUsers = [];
 
         usersURLs.forEach((userURL, index) => {
           let currentDomain = providedDomains[index];
-          console.log('Search user ' + userURL + ' for provided domain:', currentDomain);
-          getUsers.push(_this.discovery.discoverHyperty(userURL, schemes, resources, currentDomain));
+          console.info('[Search] Search user ' + userURL + ' for provided domain:', currentDomain);
+          getUsers.push(_this.discovery.discoverHyperties(userURL, schemes, resources, currentDomain));
         });
 
         console.info('Requests promises: ', getUsers);
 
-        Promise.all(getUsers.map((promise) => {
-          return promise.then((hyperty) => { return hyperty; }, (error) => { return error; });
-        })).then((hyperties) => {
-
-          console.log('Hyperties', hyperties);
-
-          let result = hyperties.map(function(hyperty) {
-
-            let recent = Object.keys(hyperty).reduceRight(function(a, b) {
-              let hypertyDate = new Date(hyperty[b].lastModified);
-              let hypertyDateP = new Date(hyperty[a].lastModified);
-              if (hypertyDateP.getTime() < hypertyDate.getTime()) {
-                return b;
-              }
-              return a;
-            });
-            return hyperty[recent];
-          });
-
-          let clean = result.filter((hyperty) => {
-            return hyperty.hasOwnProperty('hypertyID');
-          });
-
-          console.info('Requests result: ', clean);
-
-          resolve(clean);
-
-        }).catch((reason) => {
-          console.error(reason);
-          resolve(usersURLs);
-        });
+        // Promise.all(getUsers.map((promise) => {
+        //   return promise.then((hyperty) => { return hyperty; }, (error) => { return error; });
+        // })).then((hyperties) => {
+        //
+        //   console.info('[Search] Hyperties from new Discovery', hyperties);
+        //   let result = hyperties.map(function(hyperty) {
+        //
+        //     if (hyperty.hasOwnProperty('hypertyID'))
+        //       return hyperty;
+        //     let recent = Object.keys(hyperty).reduceRight(function(a, b) {
+        //       let hypertyDate = new Date(hyperty[b].lastModified);
+        //       let hypertyDateP = new Date(hyperty[a].lastModified);
+        //       if (hypertyDateP.getTime() < hypertyDate.getTime()) {
+        //         return b;
+        //       }
+        //       return a;
+        //     });
+        //
+        //     return hyperty[recent];
+        //   });
+        //
+        //   let clean = result.filter((hyperty) => {
+        //     return hyperty.hasOwnProperty('hypertyID');
+        //   });
+        //
+        //   console.log('Requests result: ', clean);
+        //
+        //   hyperties.forEach(function(entry) {
+        //     if (entry !== 'No Hyperty was found') {
+        //       return resolve(clean);
+        //     }
+        //   });
+        //
+        //   reject('No Hyperty was found');
+        //
+        // }).catch((reason) => {
+        //   console.error(reason);
+        //   resolve(usersURLs);
+        // });
       }
     });
   }
