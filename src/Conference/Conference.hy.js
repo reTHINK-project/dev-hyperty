@@ -93,9 +93,9 @@ class Conference {
         } else {
           _this.autoAccept(event);
         }
-        
+
          /**
-         * @param  {nodejsRuntime}         
+         * @param  {nodejsRuntime}
          **/
         // console.debug('event.value.data is:',event.value.data )
         // if((event.value.data.id === 'receiveVideoAnswer') || (event.value.data.id === 'iceCandidate')) {
@@ -138,7 +138,7 @@ class Conference {
       console.debug('******************  _this.controllers[event.from] :',  _this.controllers[event.from])
        // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
          /**
-         * @param  {nodejsRuntime}         
+         * @param  {nodejsRuntime}
          **/
         dataObjectObserver.onChange('*', function(e) {
           console.debug('************************************* on change', e.data)
@@ -147,12 +147,12 @@ class Conference {
           _this.controllers[event.from]._processPeerInformation(e.data);
         }
       });
-        
-      
+
+
       if((event.value.data.id === 'existingParticipants') || (event.value.data.id === 'iceCandidate')) {
            console.debug('event.value.data is:', event );
          _this.controllers[event.from]._processPeerInformation(event.value.data);
-      }    
+      }
     }).catch(function(reason) {
       console.error(reason);
     });
@@ -161,7 +161,7 @@ class Conference {
   autoAccept(event) {
     let _this = this;
     let syncher = _this.syncher;
-    
+
     console.debug('---------------- Syncher Subscribe (Auto Accept) ---------------- \n');
     console.debug('Subscribe URL Object of the other peer : ', event);
 
@@ -220,7 +220,7 @@ class Conference {
 
         selectedHyperty = hypertiesIDs[0].hypertyID;
         // selectedHyperty = hypertiesIDs;
-       
+
         let roomName = roomID;
 
         console.info('It supports  group communication, selected hyperty: ', selectedHyperty);
@@ -230,7 +230,7 @@ class Conference {
           connectionName = roomID;
         }
 
-        
+
         // if (roomID) {
         //   connectionName = 'connection';
         // }
@@ -255,7 +255,7 @@ class Conference {
         console.debug('2. Return syncher', syncher);
 
         conferenceController = new ConferenceController(syncher, _this.domain, _this.configuration, _this.myId.username);
-        
+
         console.debug('_this.myId is:', _this.myId);
         conferenceController.username = _this.myId.username;
         conferenceController.mediaStream = stream;
