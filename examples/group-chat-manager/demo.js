@@ -40,12 +40,33 @@ function hypertyReady(result, identity) {
     onInvitation(event);
   });
 
-  chatGroupManager.onResume((chatControllers) => {
+  chatGroupManager.onResumeObserver((chatControllers) => {
 
-    Object.values(chatControllers).forEach((chatController) => {
 
-      prepareChat(chatController);
+    getSectionTpl().then(() => {
+      console.log('[GroupChatManagerDemo - on Resume observers] - Section Template ready:', chatControllers);
 
+      Object.values(chatControllers).forEach((chatController) => {
+
+        chatManagerReady(chatController, false);
+        prepareChat(chatController);
+
+      });
+
+    })
+  });
+
+  chatGroupManager.onResumeReporter((chatControllers) => {
+
+    getSectionTpl().then(() => {
+      console.log('[GroupChatManagerDemo - on Resume observers] - Section Template ready:', chatControllers);
+
+      Object.values(chatControllers).forEach((chatController) => {
+
+        chatManagerReady(chatController, true);
+        prepareChat(chatController);
+
+      });
     });
 
   });
@@ -66,20 +87,12 @@ function hypertyReady(result, identity) {
 function onInvitation(event) {
   console.log('On Invitation: ', event);
 
-  chatGroupManager.join(event.url).then(function(chatController) {
+  getSectionTpl().then(() => {
+    console.log('[GroupChatManagerDemo - On Invitation] - Section Template ready', event);
+    return chatGroupManager.join(event.url)
+  }).then((chatController) => {
+    chatManagerReady(chatController, false);
     prepareChat(chatController);
-
-    setTimeout(() => {
-      let users = event.value.participants;
-
-      Object.keys(users).map(function(objectKey, index) {
-        var user = users[objectKey];
-        processNewUser(user.identity);
-      });
-      /*users.forEach((user) => {
-        processNewUser(user);
-      });*/
-    }, 500);
   }).catch(function(reason) {
     console.error('Error connecting to', reason);
   });
@@ -172,9 +185,13 @@ function createRoomEvent(event) {
 
   console.log('Participants: ', users, ' domain: ', domains);
 
-  chatGroupManager.create(name, users, domains).then(function(chatController) {
+  getSectionTpl().then(() => {
+    console.log('[GroupChatManagerDemo - Create Room] - Section Template ready:', name, users);
+    return chatGroupManager.create(name, users, domains);
+  }).then((chatController) => {
 
     let isOwner = true;
+    chatManagerReady(chatController, isOwner);
     prepareChat(chatController, isOwner);
     participantsForm[0].reset();
     createRoomModal.find('.input-name').val('');
@@ -202,7 +219,11 @@ function joinRoom(event) {
 
     let resource = joinModal.find('.input-name').val();
 
-    chatGroupManager.join(resource).then(function(chatController) {
+    getSectionTpl().then(() => {
+      console.log('[GroupChatManagerDemo - JoinRoom] - Section Template ready:', resource);
+      return chatGroupManager.join(resource)
+    }).then(function(chatController) {
+      chatManagerReady(chatController, false);
       prepareChat(chatController);
     }).catch(function(reason) {
       console.error(reason);
@@ -213,12 +234,47 @@ function joinRoom(event) {
 
 }
 
+function getSectionTpl() {
+
+  return new Promise((resolve, reject) => {
+
+    Handlebars.getTemplate('group-chat-manager/chat-section').then(function(html) {
+
+      $('.chat-section').append(html);
+
+      resolve();
+
+    });
+
+  })
+
+}
+
 function prepareChat(chatController, isOwner) {
 
   console.log('[GroupChatManagerDemo prepareChat] Chat Group Controller: ', chatController);
 
+  let dataObject = chatController.dataObjectObserver || chatController.dataObjectReporter || {};
+  console.log('[GroupChatManagerDemo prepareChat] - dataObject: ', dataObject);
+  let users = dataObject.data.participants || {};
+  let msgs = dataObject.childrens || {};
+
+  Object.keys(users).forEach(function(objectKey, index) {
+    var user = users[objectKey];
+    processNewUser(user.identity);
+  });
+
+  Object.keys(msgs).forEach(function(objectKey, index) {
+    var msg = msgs[objectKey];
+    console.log('ProcessMessage: ', msg);
+    processMessage({
+      value: msgs[objectKey].data,
+      identity: msgs[objectKey].identity
+    });
+  });
+
   chatController.onMessage(function(message) {
-    console.info('[GroupChatManagerDemo] new message received: ', message);
+    console.info('[GroupChatManagerDemo ] new message received: ', message);
     processMessage(message);
   });
 
@@ -237,26 +293,16 @@ function prepareChat(chatController, isOwner) {
 
   chatController.onClose(function(event) {
     console.log('[GroupChatManagerDemo ] onClose Event:', event);
-
     $('.chat-section').html('');
   });
 
-  Handlebars.getTemplate('group-chat-manager/chat-section').then(function(html) {
-
-    console.log('NewChatSection');
-    $('.chat-section').append(html);
-
-    chatManagerReady(chatController, isOwner);
-
-    let inviteBtn = $('.invite-btn');
-    inviteBtn.on('click', function(event) {
+  let inviteBtn = $('.invite-btn');
+  inviteBtn.on('click', function(event) {
 
       event.preventDefault();
 
       inviteParticipants(chatController);
     });
-
-  });
 
 }
 
@@ -376,6 +422,8 @@ function chatManagerReady(chatController, isOwner) {
 
 function processMessage(message) {
 
+  console.log('[GroupChatManager - processMessage] - msg ', message);
+
   let chatSection = $('.chat-section');
   let messagesList = chatSection.find('.messages .collection');
   let avatar = '';
@@ -391,6 +439,8 @@ function processMessage(message) {
     <span class="title">` + from + `</span>
     <p>` + message.value.content.replace(/\n/g, '<br>') + `</p>
   </li>`;
+
+  console.log('[GroupChatManager - processMessage] - ', messagesList, message, list);
 
   messagesList.append(list);
 }
@@ -408,7 +458,7 @@ function processNewUser(event) {
   } else {
     user = event;
   }
-  console.log('[GroupChatManager.demo.processNewUser]user', user);
+  console.log('[GroupChatManager.demo.processNewUser]user', user, collection);
 
   //debugger;
   collection.append('<li class="chip" data-name="' + user.userURL + '"><img src="' + user.avatar + '" alt="Contact Person">' + user.cn + '<i class="material-icons close">close</i></li>');

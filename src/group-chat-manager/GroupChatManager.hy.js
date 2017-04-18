@@ -50,7 +50,7 @@ class GroupChatManager {
     let syncher = new Syncher(hypertyURL, bus, configuration);
 
     let domain = divideURL(hypertyURL).domain;
-    let discovery = new Discovery(hypertyURL, bus);
+    let discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
     let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
 
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
@@ -75,9 +75,11 @@ class GroupChatManager {
     console.log('[GroupChatManager] Discover: ', discovery);
     console.log('[GroupChatManager] Identity Manager : ', identityManager);
 
-    syncher.resumeReporters({}).then((reporters) => {
-      console.log('[GroupChatManager] reporters to be resumed:', reporters, _this, _this._onResume);
 
+
+    syncher.resumeReporters({store: true}).then((reporters) => {
+
+      console.log('[GroupChatManager] reporters to be resumed:', reporters, _this, _this._onResume);
       Object.keys(reporters).forEach((dataObjectReporterURL) => {
 
         // create a new chatController
@@ -91,13 +93,13 @@ class GroupChatManager {
 
       });
 
-      if (_this._onResume) _this._onResume(this._reportersControllers);
+      if (_this._onResumeReporter) _this._onResumeReporter(this._reportersControllers);
 
     }).catch((reason) => {
       console.info('Resume Reporter | ', reason);
     });
 
-    syncher.resumeObservers({}).then((observers) => {
+    syncher.resumeObservers({store: true}).then((observers) => {
       console.log('[GroupChatManager] resuming observers : ', observers, _this, _this._onResume);
 
       Object.keys(observers).forEach((dataObjectObserverURL) => {
@@ -110,7 +112,8 @@ class GroupChatManager {
         this._observersControllers[dataObjectObserverURL] = chatController;
       });
 
-      if (_this._onResume) _this._onResume(this._observersControllers);
+      console.log('AQUI:', this._observersControllers);
+      if (_this._onResumeObserver) _this._onResumeObserver(this._observersControllers);
 
     }).catch((reason) => {
       console.info('Resume Observer | ', reason);
@@ -128,7 +131,7 @@ class GroupChatManager {
 
       if (event.type === 'delete') {
         // TODO: replace the 200 for Message.Response
-        event.ack(200); 
+        event.ack(200);
 
         _this.communicationObject = communicationObject;
 
@@ -236,8 +239,8 @@ class GroupChatManager {
       _this.communicationObject.startingTime = new Date().toJSON();
       _this.communicationObject.lastModified = _this.communicationObject.startingTime;
       */
-      _this._resetCommunicationObject();
-      //_this.communicationObject.url = '';
+
+      _this.communicationObject = communicationObject;
       _this.communicationObject.cseq = 1;
       _this.communicationObject.reporter =  _this._hypertyURL;
       _this.communicationObject.schema = _this._objectDescURL;
@@ -256,18 +259,16 @@ class GroupChatManager {
         let url = _this.communicationObject.reporter;
 
         // Add my identity
-        _this.communicationObject.participants[url] = { identity: identity };
+        _this.communicationObject.participants[identity.userURL] = { identity: identity };
 
         console.log('[GroupChatManager.create ] participants: ', _this.communicationObject.participants);
-
+        console.log('[GroupChatManager.create ] communicationObject', _this.communicationObject);
         console.info('[GroupChatManager.create] searching ' + users + ' at domain ' + domains);
 
         let usersSearch = _this.search.users(users, domains, ['comm'], ['chat']);
         console.log('[GroupChatManager] usersSearch->', usersSearch);
         return usersSearch;
       }).then((hypertiesIDs) => {
-        console.log('[GroupChatManager] hypertiesIDS', hypertiesIDs);
-
         let selectedHyperties = hypertiesIDs.map((hyperty) => {
           return hyperty.hypertyID;
         });
@@ -275,7 +276,6 @@ class GroupChatManager {
         console.info('[GroupChatManager] ---------------------- Syncher Create ---------------------- \n');
         console.info('[GroupChatManager] Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
-        console.info('[GroupChatManager] HypertiesIDs ', hypertiesIDs);
 
         return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false);
 
@@ -284,17 +284,18 @@ class GroupChatManager {
         return reject(reason);
       }).then(function(dataObjectReporter) {
 
+        console.info('[GroupChatManager] 3. Return Create Data Object Reporter', dataObjectReporter);
+        let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
+
+        resolve(chatController);
+
         dataObjectReporter.data.url = dataObjectReporter.url;
         dataObjectReporter.data.cseq += 1;
         dataObjectReporter.lastModified = new Date().toJSON();
 
-        console.info('[GroupChatManager.create] Returned Data Object Reporter', dataObjectReporter);
-        let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
         chatController.dataObjectReporter = dataObjectReporter;
 
         _this._reportersControllers[dataObjectReporter.url] = chatController;
-
-        resolve(chatController);
 
       }).catch(function(reason) {
         reject(reason);
@@ -312,9 +313,14 @@ class GroupChatManager {
     _this._onInvitation = callback;
   }
 
-  onResume(callback) {
+  onResumeReporter(callback) {
     let _this = this;
-    _this._onResume = callback;
+    _this._onResumeReporter = callback;
+  }
+
+  onResumeObserver(callback) {
+    let _this = this;
+    _this._onResumeObserver = callback;
   }
 
   /**
@@ -331,7 +337,7 @@ class GroupChatManager {
       console.info('[GroupChatManager] ------------------------ Syncher subscribe ---------------------- \n');
       console.info('invitationURL', invitationURL);
 
-      syncher.subscribe(_this._objectDescURL, invitationURL, false, false).then(function(dataObjectObserver) {
+      syncher.subscribe(_this._objectDescURL, invitationURL, true, false).then(function(dataObjectObserver) {
         console.info('Data Object Observer: ', dataObjectObserver);
         let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
         resolve(chatController);
