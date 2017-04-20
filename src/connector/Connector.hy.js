@@ -103,7 +103,7 @@ class Connector {
         if (_this._controllers) {
           Object.keys(_this._controllers).forEach((controller) => {
             _this._controllers[controller].deleteEvent = event;
-            delete _this._controllers[controller];
+            //delete _this._controllers[controller];
 
             console.log('Controllers:', _this._controllers);
           });
@@ -115,6 +115,18 @@ class Connector {
     });
 
     _this._syncher = syncher;
+  }
+
+  // callback when connection Controllers are disconnected
+
+  _removeController(controllers, controller) {
+    let _this = this;
+
+    if (controllers) {
+        delete controllers[controller];
+
+        console.log('[Connector] removed controller for ', controller);
+      }
   }
 
   _autoSubscribe(event) {
@@ -140,9 +152,10 @@ class Connector {
     syncher.subscribe(_this._objectDescURL, event.url ).then(function(dataObjectObserver) {
       console.info('1. Return Subscribe Data Object Observer', dataObjectObserver);
 
-      let connectionController = new ConnectionController(syncher, _this._domain, _this._configuration);
+      let connectionController = new ConnectionController(syncher, _this._domain, _this._configuration,  _this._removeController, _this, event.from);
       connectionController.connectionEvent = event;
       connectionController.dataObjectObserver = dataObjectObserver;
+
       _this._controllers[event.from] = connectionController;
 
       // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
@@ -211,7 +224,7 @@ class Connector {
       .then(function(dataObjectReporter) {
         console.info('1. Return Create Data Object Reporter', dataObjectReporter);
 
-        connectionController = new ConnectionController(syncher, _this._domain, _this._configuration);
+        connectionController = new ConnectionController(syncher, _this._domain, _this._configuration, _this._removeController, _this, selectedHyperty);
         connectionController.mediaStream = stream;
         connectionController.dataObjectReporter = dataObjectReporter;
 

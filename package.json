@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "deep-equal": "1.0.1",
+    "esdoc": "0.4.8",
     "runtime-browser": "github:rethink-project/dev-runtime-browser#master",
     "searchjs": "0.8.0",
     "service-framework": "github:rethink-project/dev-service-framework#develop",

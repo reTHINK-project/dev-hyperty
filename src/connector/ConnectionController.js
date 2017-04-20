@@ -32,7 +32,7 @@ import { connection } from './connection';
 
 class ConnectionController {
 
-  constructor(syncher, domain, configuration) {
+  constructor(syncher, domain, configuration, clean, connector, remoteHyperty) {
 
     if (!syncher) throw new Error('The syncher is a needed parameter');
     if (!domain) throw new Error('The domain is a needed parameter');
@@ -41,15 +41,18 @@ class ConnectionController {
     let _this = this;
 
     _this.mode = 'offer';
+    _this._connector = connector;
+    _this._remoteHyperty = remoteHyperty;
 
     // Private
     _this._syncher = syncher;
     _this._configuration = configuration.webrtc;
     _this._domain = domain;
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Connection';
+    _this._clean = clean;
 
     // Prepare the PeerConnection
-    let peerConnection = new RTCPeerConnection(_this._configuration);
+    let peerConnection = new RTCPeerConnection(_this._configuration.webrtc);
 
     peerConnection.addEventListener('signalingstatechange', function(event) {
 
@@ -213,6 +216,7 @@ class ConnectionController {
 
     _this._removeMediaStream();
     if (_this._onDisconnect) _this._onDisconnect(event.identity);
+    _this._clean(_this._connector._controllers, _this._remoteHyperty);
   }
 
   get deleteEvent() {
@@ -224,7 +228,7 @@ class ConnectionController {
     let _this = this;
     console.log(_this.mediaStream, _this.peerConnection);
 
-    if (_this.mediaStream) {
+    if (_this.mediaStream && _this.peerConnection) {
 
       let tracks = _this.mediaStream.getTracks();
 
@@ -233,8 +237,11 @@ class ConnectionController {
       });
     }
 
-    _this.peerConnection.removeStream(_this.mediaStream);
-    _this.peerConnection.close();
+    if (_this.peerConnection) {
+      /*_this.peerConnection.removeStream(_this.mediaStream);
+      _this.peerConnection.close();*/
+      _this.peerConnection = null;
+    }
   }
 
   _changePeerInformation(dataObjectObserver) {
@@ -442,6 +449,7 @@ class ConnectionController {
 
   }
 
+
   /**
    * This function is used to close an existing connection instance.
    * @return {<Promise> boolean} It returns as a Promise true if successfully disconnected or false otherwise.
@@ -467,6 +475,7 @@ class ConnectionController {
         }
 
         _this._removeMediaStream();
+        _this._clean(_this._connector._controllers, _this._remoteHyperty);
 
         resolve(true);
       } catch (e) {

@@ -32,10 +32,21 @@ let GroupChatHyperty = {
     },
 
     create (name, participants) {
+        console.log('createGC', participants)
         return this._getHyFor(participants)
-            .then((hyperties)=>this.syncher.create(this.objectDescURL, hyperties, buildComm(name, this.hypertyURL, hyperties.concat([this.hypertyURL]))))
-            .then((dataObjectReporter) => {
-                dataObjectReporter.onSubscription((event)=>event.accept())
+            .then(hyperties => {
+                let hys = {}
+                hyperties.forEach(h=>hys[h] = {})
+                hys[this.hypertyURL] = {}
+
+                return this.syncher.create(this.objectDescURL, hyperties, buildComm(name, this.hypertyURL, hys))
+            }).then((dataObjectReporter) => {
+                dataObjectReporter.onSubscription((event)=>{
+                    //console.log('antes', event)
+                    //dataObjectReporter.data.participants[event.reporter].identity = event.identity
+                    //console.log('despues', dataObjectReporter)
+                    event.accept()
+                })
                 return this.identityManagerService.discoverUserRegistered()
                     .then(identity=>GroupChat(dataObjectReporter.url, this._addChild(dataObjectReporter),
                                 this._onAddChild(dataObjectReporter), 
