@@ -29,7 +29,7 @@
 
 class ChatController {
 
-  constructor(syncher, discovery, domain, search) {
+  constructor(syncher, discovery, domain, search, identity) {
 
     if (!syncher) throw Error('Syncher is a necessary dependecy');
     if (!discovery) throw Error('Discover is a necessary dependecy');
@@ -40,7 +40,7 @@ class ChatController {
     _this._syncher = syncher;
     _this.discovery = discovery;
     _this.search = search;
-    _this.myIdentity = null;
+    _this.myIdentity = identity;
     _this.controllerMode = 'reporter';
     _this.child_cseq = 0;
 
@@ -61,7 +61,7 @@ class ChatController {
 
       let participant = event.identity.userProfile;
 
-      console.log('[GroupChatManager.ChatController] new participant', participant);
+      console.log('[GroupChatManager.ChatController]  new participant', participant);
       if (event.identity.legacy) {
         participant.legacy = event.identity.legacy;
       }
@@ -208,39 +208,19 @@ class ChatController {
       // TODO: handle with multiple resources - if the "message" will be different for each type of resources
       dataObject.addChild('resources', msg).then(function(dataObjectChild) {
         console.log('[GroupChatManager.ChatController][addChild - Chat Message]: ', dataObjectChild);
-        resolve(dataObjectChild);
-
-        /*_dataObjectChild = dataObjectChild;
-
-        let identity = _this.myIdentity;
-
-        if (!identity) {
-          return _this.search.myIdentity().then((identity) => {
-            return _this.myIdentity = identity;
-          }).catch((reason) => {
-            console.error('Add Child - Get my Identity fails', reason);
-          });
-        } else {
-          return identity;
-        }
-
-      }).then((myIdentity) => {
-
-        console.log('[Chat Controller] - My Identity: ', myIdentity);
-
-        console.log('[Chat Controller] - dataObjectChild: ', _dataObjectChild);
+        //resolve(dataObjectChild);
 
         let msg = {
-          childId: _dataObjectChild._childId,
-          from: _dataObjectChild._owner,
-          value: _dataObjectChild.data,
+          childId: dataObjectChild._childId,
+          from: dataObjectChild._owner,
+          value: dataObjectChild.data,
           type: 'create',
           identity: {
-            userProfile: myIdentity
+            userProfile: _this.myIdentity
           }
         };
+        resolve(msg);
 
-        resolve(msg);*/
       }).catch(function(reason) {
         console.error('Reason:', reason);
         reject(reason);
