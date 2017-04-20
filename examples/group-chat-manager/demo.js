@@ -264,6 +264,15 @@ function prepareChat(chatController, isOwner) {
     processNewUser(user.identity);
   });
 
+  Object.keys(msgs).forEach(function(objectKey, index) {
+    var msg = msgs[objectKey];
+    console.log('ProcessMessage: ', msg);
+    processMessage({
+      value: msgs[objectKey].data,
+      identity: msgs[objectKey].identity
+    });
+  });
+
   chatController.onMessage(function(message) {
     console.info('[GroupChatManagerDemo ] new message received: ', message);
     processMessage(message);

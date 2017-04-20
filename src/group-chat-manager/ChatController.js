@@ -88,20 +88,9 @@ class ChatController {
 
     dataObjectReporter.onAddChild(function(child) {
       _this.child_cseq +=1;
-      console.info('[GroupChatManager.ChatController]Reporter - Add Child: ', child);
+      console.info('[GroupChatManager.ChatController]Reporter - Add Child:', child);
       // dataObjectReporter.data.lastModified = new Date().toJSON();
       if (_this._onMessage) _this._onMessage(child);
-    });
-
-    setTimeout(() => {
-      let childrens = dataObjectReporter.childrens;
-      Object.keys(childrens).forEach((child) => {
-        if (_this._onMessage) _this._onMessage({
-          childId: child,
-          identity: childrens[child].identity,
-          value: childrens[child].data
-        });
-      })
     });
 
     _this._dataObjectReporter = dataObjectReporter;
@@ -208,7 +197,7 @@ class ChatController {
       // TODO: handle with multiple resources - if the "message" will be different for each type of resources
       dataObject.addChild('resources', msg).then(function(dataObjectChild) {
         console.log('[GroupChatManager.ChatController][addChild - Chat Message]: ', dataObjectChild);
-        //resolve(dataObjectChild); 
+        //resolve(dataObjectChild);
 
         let msg = {
           childId: dataObjectChild._childId,
