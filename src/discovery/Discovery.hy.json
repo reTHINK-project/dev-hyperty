@@ -5,6 +5,6 @@
   },
   "hypertyType": ["users"],
   "dataObjects": [
-    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Context"
+    "https://catalogue.localhost/.well-known/dataschema/Context"
   ]
 }

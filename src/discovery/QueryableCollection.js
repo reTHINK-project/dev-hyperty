@@ -10,6 +10,8 @@ function create(users) {
     }
 
     function query(criteria) {
+        console.log("query users ", users)
+        console.log("with criteria", criteria)
         return s.matchArray(users, criteria)
     }
 

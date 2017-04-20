@@ -11,6 +11,7 @@ let NotificationsObserver = {
                         dataObject.onAddChild((child)=>{
                             console.log('message received',child)
                             let childData = child.data?child.data:child.value
+                            childData.from = child.identity.userProfile
 
                             this.notifications.push(childData)
                             callback(this.notifications[this.notifications.length-1])

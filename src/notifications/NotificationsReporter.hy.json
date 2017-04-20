@@ -7,6 +7,6 @@
   "language": "javascript",
   "signature": "",
   "dataObjects": [
-    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Communication"
+    "https://catalogue.localhost/.well-known/dataschema/Communication"
   ]
 }
