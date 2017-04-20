@@ -208,7 +208,7 @@ class ChatController {
       // TODO: handle with multiple resources - if the "message" will be different for each type of resources
       dataObject.addChild('resources', msg).then(function(dataObjectChild) {
         console.log('[GroupChatManager.ChatController][addChild - Chat Message]: ', dataObjectChild);
-        //resolve(dataObjectChild);
+        //resolve(dataObjectChild); 
 
         let msg = {
           childId: dataObjectChild._childId,
