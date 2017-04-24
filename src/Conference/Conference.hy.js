@@ -57,12 +57,9 @@ class Conference {
     this.configuration = configuration;
     this.domain = divideURL(hypertyURL).domain;
 
-    // _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Connection';
       _this.objectDescURL = 'hyperty-catalogue://catalogue.' + this.domain +'/.well-known/dataschema/Connection'
 
     this.controllers = {};
-    // this.scheme = ['connection'];
-    // this.resources = ['audio', 'video'];
     this.connectionObject = connection;
     this.participants = {};
     this.myId = {};
@@ -93,16 +90,6 @@ class Conference {
         } else {
           _this.autoAccept(event);
         }
-
-         /**
-         * @param  {nodejsRuntime}
-         **/
-        // console.debug('event.value.data is:',event.value.data )
-        // if((event.value.data.id === 'receiveVideoAnswer') || (event.value.data.id === 'iceCandidate')) {
-          // console.debug('event.value.data is:',event.value )
-          // _this.controllers[event.from]._processPeerInformation(event);
-        // }
-
         console.debug('------------------------ End Create ---------------------- \n');
       }
 
@@ -114,8 +101,6 @@ class Conference {
           Object.keys(_this.controllers).forEach((controller) => {
             _this.controllers[controller].deleteEvent = event;
             delete _this.controllers[controller];
-
-            console.debug('Controllers:', _this.controllers);
           });
         }
         console.info('------------------------ End Create ---------------------- \n');
@@ -135,19 +120,6 @@ class Conference {
     syncher.subscribe(_this.objectDescURL, event.url).then(function(dataObjectObserver) {
       console.debug('1. Return Subscribe Data Object Observer', dataObjectObserver);
       _this.controllers[event.from].dataObjectObserver = dataObjectObserver;
-      console.debug('******************  _this.controllers[event.from] :',  _this.controllers[event.from])
-       // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
-         /**
-         * @param  {nodejsRuntime}
-         **/
-        dataObjectObserver.onChange('*', function(e) {
-          console.debug('************************************* on change', e.data)
-           if((e.data.id === 'receiveVideoAnswer') || (e.data.id === 'IceCandidate') || (e.data.id === 'existingParticipants') || (e.data.id === 'newParticipantArrived')) {
-          console.debug('event.value.data is:', e.data,  _this.controllers[event.from]  );
-          _this.controllers[event.from]._processPeerInformation(e.data);
-        }
-      });
-
 
       if((event.value.data.id === 'existingParticipants') || (event.value.data.id === 'iceCandidate')) {
            console.debug('event.value.data is:', event );
@@ -230,11 +202,6 @@ class Conference {
           connectionName = roomID;
         }
 
-
-        // if (roomID) {
-        //   connectionName = 'connection';
-        // }
-
         // Initial data
         // _this.connectionObject.usename = _this.myId;
         _this.connectionObject.name = connectionName;
@@ -243,9 +210,6 @@ class Conference {
         _this.connectionObject.owner = _this.hypertyURL;
         // _this.connectionObject.peer = selectedHyperty;
         _this.connectionObject.status = '';
-
-        // console.debug('---------------_this.objectDescURL, [selectedHyperty], _this.connectionObject: ', _this.objectDescURL, [selectedHyperty], _this.connectionObject)
-
         return syncher.create(_this.objectDescURL, [selectedHyperty], _this.connectionObject);
       }).catch((reason) => {
         console.error(reason);
@@ -262,7 +226,6 @@ class Conference {
         conferenceController.dataObjectReporter = dataObjectReporter;
 
         _this.controllers[selectedHyperty] = conferenceController;
-        console.debug('--------------------------------------');
         resolve(conferenceController);
         console.info('--------------------------- END --------------------------- \n');
       }).catch((reason) => {

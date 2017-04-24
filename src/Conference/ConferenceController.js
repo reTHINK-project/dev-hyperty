@@ -93,27 +93,20 @@ class ConferenceController {
         sdpMLineIndex: event.candidate.sdpMLineIndex
       };
 
-      // let message = {
-      //   id: 'onIceCandidate',
-      //   userName: _this.user,
-      //   senderName: _this.user,
-      //   icecandidate : icecandidate
-      // }
+      let message = {
+        id: 'onIceCandidate',
+        userName: _this.user,
+        senderName: _this.user,
+        icecandidate : icecandidate
+      }
 
       let data = _this.dataObjectReporter.data;
-
-      //  if (_this.mode === 'offer') {
-      //   data.ownerPeer.iceCandidates.push(icecandidate);
-      // } else {
-      //   data.Peer.iceCandidates.push(icecandidate);
-      // }
-
 
   /**
    * @param  {nodejsRuntime}
    **/
   // new model
-      data.iceCandidates.push(icecandidate);
+      data.iceCandidates.push(message);
       // if (_this.mode === 'offer') {
       //   data.ownerPeer.iceCandidates.push(message);
       // } else {
@@ -214,7 +207,7 @@ class ConferenceController {
     _this._dataObjectObserver = dataObjectObserver;
     console.debug('set data object observer: ', _this._dataObjectObserver );
 
-    // _this._changePeerInformation(dataObjectObserver);
+    _this._changePeerInformation(dataObjectObserver);
 
   }
 
@@ -222,10 +215,12 @@ class ConferenceController {
   * return the dataObject in the controller
   * @return {ConnectionDataObject} dataObject
   */
+
   get dataObjectObserver() {
     let _this = this;
     return _this._dataObjectObserver;
   }
+
 
   /**
    * Set the connection event to accept or reject
@@ -235,6 +230,7 @@ class ConferenceController {
     let _this = this;
     _this._connectionEvent = event;
   }
+
 
   /**
    * Get the connection event to accept or reject
@@ -300,7 +296,6 @@ class ConferenceController {
       }
 
       dataObjectObserver.onChange('*', function(event) {
-        // console.debug('Observer on change message: ', event);
         _this._processPeerInformation(event.data);
       });
     }
@@ -324,23 +319,19 @@ class ConferenceController {
     else if (data.id === 'receiveVideoAnswer') {
       console.debug('Process Connection Descriptionn , receiveAnswer: ', data.sdpAnswer, _this._username, data.name, newPeerConncection);
        newPeerConncection[data.name].setRemoteDescription(new RTCSessionDescription({type: 'answer', sdp: data.sdpAnswer}), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
-
-       console.debug('SDP answer received, setting remote description ',  newPeerConncection[data.name].getRemoteStreams()[0]);
     }
 
     if (data.type === 'candidate') {
-      console.info('[Connector.ConnectionController ]Process Ice Candidate: ', data);
-      _this.peerConnection.addIceCandidate(new RTCIceCandidate({candidate: data.candidate}), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
+      console.info('[Connector.ConnectionController ] Process Ice Candidate: ', data);
+         let parsedCandidate = {
+           type: 'candidate',
+           candidate:data.candidate,
+           sdpMid:data.sdpMid,
+           sdpMLineIndex:data.sdpMLineIndex
+         }
+        console.debug('parsedCandidate : ', parsedCandidate.candidate);
+       newPeerConncection[data.name].addIceCandidate(new RTCIceCandidate({candidate:parsedCandidate.candidate}), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
     }
-
-
-    if (data.id === 'IceCandidate') {
-      console.debug('Received message: ' , data.candidate, data.candidate.sdpMid,data.candidate.sdpMLineIndex );
-      // newPeerConncection[data.name] = _this.peerConnection;
-      console.debug('parsedMessage Ice Candidate: ', data.candidate.candidate);
-      newPeerConncection[data.name].addIceCandidate(new RTCIceCandidate({candidate: data.candidate.candidate, sdpMid:data.candidate.sdpMid,sdpMLineIndex:data.candidate.sdpMLineIndex}), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
-    }
-
     if(data.id  === 'newParticipantArrived') {
       console.debug('newParticipantArrived is :', data)
       _this.onNewParticipant(data);
@@ -352,8 +343,6 @@ class ConferenceController {
       }
     }
   }
-
-
   onExistingParticipants(msg) {
     let _this = this;
      console.debug("onExistingParticipants message", msg);
@@ -551,16 +540,6 @@ class ConferenceController {
     console.error(err.toString(), err);
   }
 
-  /**
-   * This function is used to receive all changes did to dataObjectObjserver.
-   * @param  {Function} callback callback function
-   * @return {ChangeEvent}       properties and type of changes;
-   */
-
-  // onChange(callback) {
-  //   let _this = this;
-  //   _this._onChange = callback;
-  // }
 
   /**
    * This function is used to handle the peer stream
