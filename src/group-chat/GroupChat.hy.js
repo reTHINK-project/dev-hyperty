@@ -12,14 +12,14 @@ let GroupChatHyperty = {
             console.log('participanrt', p)
             return this.hypertyDiscoveryService.discoverHyperties(p.email, this.scheme, this.resources, p.domain)
                 .then((hyperties)=>{
-                    let target = Object.keys(hyperties)
+                    let target = hyperties
                         .sort((a,b)=>(new Date(hyperties[a].lastModified)<new Date(hyperties[b].lastModified))?1:-1)
                         .shift()
 
                     if(!target)
                         throw new Error('Chat Hyperty not found', p)
 
-                    return target
+                    return target.hypertyID
                 })
         }))
     },
