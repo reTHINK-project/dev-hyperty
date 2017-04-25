@@ -16,7 +16,7 @@ class DiscoveryHyperty {
         this._domain = divideURL(hypertyURL).domain;
         this._objectDescURL = 'hyperty-catalogue://catalogue.' + this._domain + '/.well-known/dataschema/Context';
         this._syncher = new Syncher(hypertyURL, bus, configuration);
-        this._discovery = new Discovery(hypertyURL, undefined, bus);
+        this._discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
         this._users = newUserCollection()
 
         // receiving starts here

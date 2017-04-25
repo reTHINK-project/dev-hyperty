@@ -20,7 +20,7 @@ let GroupChatHyperty = {
                         throw new Error('Chat Hyperty not found', p)
 
                     return target
-                }).catch(console.error)
+                })
         }))
     },
 
@@ -52,7 +52,7 @@ let GroupChatHyperty = {
                     .then(identity=>GroupChat(dataObjectReporter.url, this._addChild(dataObjectReporter),
                                 this._onAddChild(dataObjectReporter), 
                                 dataObjectReporter.data, this._position.data, identity))
-            })
+            }).catch((err)=>console.error('[GROUPCHAT]', err))
     },
 
     onInvite (callback) {
@@ -79,10 +79,10 @@ let GroupChatHyperty = {
 }
 
 let groupChatFactory = function(hypertyURL, bus, config){
-    let syncher = new Syncher(hypertyURL, bus, config)
-    let hypertyDiscovery = new Discovery(hypertyURL, undefined, bus)
-    let identityManager = new IdentityManager(hypertyURL, config.runtimeURL, bus)
     let uri = new URI(hypertyURL)
+    let syncher = new Syncher(hypertyURL, bus, config)
+    let hypertyDiscovery = new Discovery(hypertyURL, config.runtimeURL, bus)
+    let identityManager = new IdentityManager(hypertyURL, config.runtimeURL, bus)
     //let notifications = NotificationsTrigger(uri.hostname(), syncher, hypertyDiscovery)
     let groupChatDS = 'Communication'
     let locationDS = 'Context'

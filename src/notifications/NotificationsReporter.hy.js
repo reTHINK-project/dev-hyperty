@@ -11,7 +11,7 @@ let NotificationsReporter = {
 
 let NotificationsReporterFactory = function(hypertyURL, bus, config){
     let uri = new URI(hypertyURL)
-    let hypertyDiscovery = new HypertyDiscovery(hypertyURL, undefined, bus)
+    let hypertyDiscovery = new HypertyDiscovery(hypertyURL, config.runtimeURL, bus)
     let syncher = new Syncher(hypertyURL, bus, config);
     let notifications = NotificationsTrigger(uri.hostname(), syncher, hypertyDiscovery)
     return Object.assign(Object.create(NotificationsReporter), {
