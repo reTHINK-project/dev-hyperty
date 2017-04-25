@@ -32,7 +32,7 @@ const LocationHypertyFactory = function(hypertyURL, bus, config){
 
 export default function activate(hypertyURL, bus, config){
     return {
-        name: 'Location',
+        name: 'LocationReporter',
         instance: LocationHypertyFactory(hypertyURL, bus, config)
     }
 }

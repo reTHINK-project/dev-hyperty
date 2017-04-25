@@ -5,9 +5,10 @@
 
 
 function hypertyLoaded(result) {
+    console.log("hyperty loaded")
     result.instance.getCurrentPosition()
            .then((position)=>{
-                console.log(position)
+                console.log("current position", position)
                 var map = new GMaps({
                     el: '#map',
                     lat: position.coords.latitude,
