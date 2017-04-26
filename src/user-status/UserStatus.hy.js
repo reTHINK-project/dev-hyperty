@@ -49,7 +49,8 @@ class UserStatus extends EventEmitter {
 
     this.syncher = new Syncher(hypertyURL, bus, configuration);
 
-    this.discovery = new Discovery(hypertyURL, bus);
+    this.discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
+
     this.domain = divideURL(hypertyURL).domain;
 
     this.userStatusDescURL = 'hyperty-catalogue://catalogue.' + this.domain + '/.well-known/dataschema/Context';
@@ -281,7 +282,7 @@ class UserStatus extends EventEmitter {
         console.log('user :', user);
         if (user.email.length) {
           console.info('------------------------ mappingUser ----------------------', userList);
-          return _this.discovery.discoverHypertiesPerUser(user.email, user.domain).then((activeUsers) => {
+          return _this.discovery.discoverHyperties(user.email,'','',user.domain).then((activeUsers) => {
 
            console.debug('discovered activeUsers are :', activeUsers);
            let size = Object.keys(activeUsers).length;
