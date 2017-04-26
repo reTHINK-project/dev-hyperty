@@ -6,32 +6,38 @@
 
 function hypertyLoaded(result) {
     console.log("hyperty loaded")
-    result.instance.getUsersPosition()
-           .then((positions)=>{
-                var map = new GMaps({
-                    el: '#map',
-                    lat: 0,
-                    lng:0
-                })
 
-                GMaps.geolocate({
-                    success: function (position) {
-                        map.setCenter(position.coords.latitude, position.coords.longitude)
-                    },
-                    error: function(error) {
-                        alert('Geolocation failed: '+error.message);
-                    },
-                    not_supported: function() {
-                        alert("Your browser does not support geolocation");
-                    }
-                })
+    setTimeout(()=>{
+        var map = new GMaps({
+            el: '#map',
+            lat: 0,
+            lng:0
+        })
 
-                map.setZoom(2)
+        GMaps.geolocate({
+            success: function (position) {
+                map.setCenter(position.coords.latitude, position.coords.longitude)
+            },
+            error: function(error) {
+                alert('Geolocation failed: '+error.message);
+            },
+            not_supported: function() {
+                alert("Your browser does not support geolocation");
+            }
+        })
 
-                positions.forEach(position=> map.addMarker({
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                        title: 'Your position'
-                    }))
-            })
+        map.setZoom(2)
+
+        result.instance.watchUsersPosition((positions)=>{
+            map.removeMarkers()
+            positions.forEach(position=> map.addMarker({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+                title: position.username,
+                infoWindow: {
+                    content: `<p>${position.username}</p>`
+                }
+            }))
+        })
+    }, 1000)
 }

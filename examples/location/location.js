@@ -9,16 +9,18 @@ function hypertyLoaded(result) {
     result.instance.getCurrentPosition()
            .then((position)=>{
                 console.log("current position", position)
-                var map = new GMaps({
-                    el: '#map',
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                })
+               setTimeout(()=>{
+                   var map = new GMaps({
+                       el: '#map',
+                       lat: position.coords.latitude,
+                       lng: position.coords.longitude
+                   })
 
-                map.addMarker({
-                  lat: position.coords.latitude,
-                  lng: position.coords.longitude,
-                  title: 'Your position'
-                });
+                   map.addMarker({
+                       lat: position.coords.latitude,
+                       lng: position.coords.longitude,
+                       title: 'Your position'
+                   });
+               }, 1000)
             })
 }
