@@ -105,7 +105,6 @@ let groupChatFactory = function(hypertyURL, bus, config){
 }
 
 export default function activate(hypertyURL, bus, config){
-    console.log('jus')
     return {
         name: 'GroupChat',
         instance: groupChatFactory(hypertyURL, bus, config)
