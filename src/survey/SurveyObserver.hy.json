@@ -1,15 +1,15 @@
 {
+  "language": "javascript",
+  "signature": "",
   "configuration": {},
-  "hypertyType": [
-    "heart_rate",
-    "sleep"
-  ],
   "constraints": {
     "browser": true
   },
-  "language": "javascript",
-  "signature": "",
+  "hypertyType": [
+    "location"
+  ],
   "dataObjects": [
-    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Context"
+    "https://catalogue.localhost/.well-known/dataschema/Communication"
   ]
 }
+
