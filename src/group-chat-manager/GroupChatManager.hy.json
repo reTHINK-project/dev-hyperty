@@ -9,6 +9,6 @@
     "browser": true
   },
   "dataObjects": [
-    "https://catalogue.localhost/.well-known/dataschema/Communication"
+    "https://catalogue.%domain%/.well-known/dataschema/Communication"
   ]
 }

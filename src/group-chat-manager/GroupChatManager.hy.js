@@ -91,10 +91,10 @@ class GroupChatManager {
           this._reportersControllers[dataObjectReporterURL] = chatController;
 
           _this._resumeInterworking(chatController.dataObjectReporter);
+
+          if (_this._onResumeReporter) _this._onResumeReporter(this._reportersControllers);
         });
       });
-
-      if (_this._onResumeReporter) _this._onResumeReporter(this._reportersControllers);
 
     }).catch((reason) => {
       console.info('Resume Reporter | ', reason);
@@ -112,12 +112,10 @@ class GroupChatManager {
 
           // Save the chat controllers by dataObjectReporterURL
           this._observersControllers[dataObjectObserverURL] = chatController;
+
+          if (_this._onResumeObserver) _this._onResumeObserver(this._observersControllers);
         });
       });
-
-      console.log('AQUI:', this._observersControllers);
-      if (_this._onResumeObserver) _this._onResumeObserver(this._observersControllers);
-
     }).catch((reason) => {
       console.info('Resume Observer | ', reason);
     });
