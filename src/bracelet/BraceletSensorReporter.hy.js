@@ -74,7 +74,7 @@ class BraceletSensorReporter {
   Connect(id, options) {
     let _this = this;
     return new Promise(function(resolve,reject) {
-      let data = {scheme:'context', id: id, time: new Date().getTime(), values: [] };
+      let data = {scheme:'context', resources: ['steps', 'battery'], id: id, time: new Date().getTime(), values: [] };
 
       let params =  {
         address: id
