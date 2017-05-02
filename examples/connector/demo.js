@@ -5,7 +5,6 @@
 // import {getTemplate, getUserMedia} from '../../utils/utils';
 
 var connector;
-let controllerExist = false;
 
 function getUserMedia(constraints) {
 
@@ -55,89 +54,12 @@ function hypertyReady(result, identity) {
   connector = result.instance;
 
   connector.onInvitation(function(controller, identity) {
-    console.debug('On Invitation: ', controller, identity); 
-      notificationHandler(controller, identity);
-      
+    console.log('On Invitation: ', controller, identity);
+    notificationHandler(controller, identity);
   });
-
-  let createBtn = $('.create-room-btn');
-  let joinBtn = $('.join-room-btn');
-
-  createBtn.on('click', createRoom);
-  // joinBtn.on('click', joinRoom);
 }
-
-/*
-  Create Room actions
- */
-function createRoom(event) {
-  event.preventDefault();
-  let createRoomModal = $('.create-groupcall');
-  createRoomModal.openModal();
-}
-
-
-function createRoomEvent(event) {
-  event.preventDefault();
-
-  let createRoomModal = $('.create-groupcall');
-  let participantsForm = createRoomModal.find('.participants-form');
-  let serializedObject = $(participantsForm).serializeArray();
-  let users = [];
-  let domains = [];
-
-  if (serializedObject) {
-    let emailsObject = serializedObject.filter((field) => { return field.name === 'email';});
-    users = emailsObject.map((emailObject) => { return emailObject.value; });
-    let domainObject = serializedObject.filter((field) => { return field.name === 'domain';});
-    domains = domainObject.map((domainObject) => { return domainObject.value; });
-  }
-
-  // Prepare the chat
-  let name = createRoomModal.find('.input-name').val();
-
-  console.log('Participants: ', users, ' domain: ', domains);
-
-  // chatGroupManager.create(name, users, domains).then(function(chatController) {
-
-  //   let isOwner = true;
-  //   prepareChat(chatController, isOwner);
-  //   participantsForm[0].reset();
-
-  // }).catch(function(reason) {
-  //   console.error(reason);
-  // });
-}
-
-function addParticipantEvent(event) {
-
-  event.preventDefault();
-
-  let createRoomModal = $('.create-groupcall');
-  let participants = createRoomModal.find('.participants-form');
-  let countParticipants = participants.length - 1;
-
-  countParticipants++;
-
-  let participantEl = '<div class="row">' +
-    '<div class="input-field col s8">' +
-    '  <input class="input-email" name="email" id="email-' + countParticipants + '" required aria-required="true" type="text">' +
-    '  <label for="email-' + countParticipants + '">Participant Email</label>' +
-    '</div>' +
-    '<div class="input-field col s4">' +
-    '  <input class="input-domain" name="domain" id="domain-' + countParticipants + '" type="text">' +
-    '  <label for="domain-' + countParticipants + '">Participant domain</label>' +
-    '</div>' +
-  '</div>';
-
-  participants.append(participantEl);
-
-}
-
-
 
 function notificationHandler(controller, identity) {
-  console.info('---------------- ---- notificationHandler ----------------------------------')
 
   var calleeInfo = identity;
   var incoming = $('.modal-call');
@@ -146,7 +68,6 @@ function notificationHandler(controller, identity) {
   var informationHolder = incoming.find('.information');
 
   showVideo(controller);
-  controllerExist = true;
 
   acceptBtn.on('click', function(e) {
 
@@ -160,7 +81,7 @@ function notificationHandler(controller, identity) {
       return controller.accept(mediaStream);
     })
     .then(function(result) {
-      console.debug('result : ', result);
+      console.log(result);
     }).catch(function(reason) {
       console.error(reason);
     });
@@ -316,14 +237,13 @@ function openVideo(hyperty, domain) {
   console.log('connecting hyperty: ', hyperty);
 
   var toHyperty = hyperty;
-  let roomID = document.getElementById('roomName').value;
   var localMediaStream;
 
   var options = options || {video: true, audio: true};
   getUserMedia(options).then(function(mediaStream) {
     console.info('recived media stream: ', mediaStream);
     localMediaStream = mediaStream;
-    return connector.connect(toHyperty, mediaStream, roomID, domain);
+    return connector.connect(toHyperty, mediaStream, '', domain);
   })
   .then(function(controller) {
     showVideo(controller);
@@ -335,39 +255,16 @@ function openVideo(hyperty, domain) {
   });
 }
 
-function processVideo(event, user) {
+function processVideo(event) {
 
   console.log('Process Video: ', event);
- // working for 1- 1
-  // var videoHolder = $('.video-holder');
-  // var video = videoHolder.find('.video');
 
-  // var videoHolder = document.getElementById('video-container')
-  // var video = document.createElement('video');
-//   video.id = user;
- 
-//   // videoHolder.appendChild(video);
-//  console.debug('videoHolder is ', videoHolder )
-
-//   video[0].src = URL.createObjectURL(event.stream);
-//   console.debug('video[0] is ', video[0])
-
-    console.log('Remote stream added.', event.stream);
-    //remoteVideo.src = window.URL.createObjectURL(event.stream);
-    console.log('Dynamically creating video');
-    let remoteVideo = document.createElement("video");
-    remoteVideo.id = user;
-    remoteVideo.autoplay = true;
-    remoteVideo.src = URL.createObjectURL(event.stream);
-    // remoteVideo = event.stream;
-    $('#video-container').append(remoteVideo);
-   console.debug('Creation complete!');
+  var videoHolder = $('.video-holder');
+  var video = videoHolder.find('.video');
+  video[0].src = URL.createObjectURL(event.stream);
 
 }
 
-
-
-//
 function processLocalVideo(mediaStream) {
   console.log('Process Local Video: ', mediaStream);
 
@@ -388,7 +285,6 @@ function disconnecting() {
 }
 
 function showVideo(controller) {
-  console.debug('showVideo controller:  ', controller)
   var videoHolder = $('.video-holder');
   videoHolder.removeClass('hide');
 
@@ -397,9 +293,10 @@ function showVideo(controller) {
   var btnMic = videoHolder.find('.mic');
   var btnHangout = videoHolder.find('.hangout');
 
-  controller.onAddStream(function(event, user) {
-    console.debug(' controller.onAddStream : ', controller, event, user);
-    processVideo(event, user);
+  console.log(controller);
+
+  controller.onAddStream(function(event) {
+    processVideo(event);
   });
 
   controller.onDisconnect(function(identity) {

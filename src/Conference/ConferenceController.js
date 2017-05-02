@@ -723,7 +723,7 @@ class ConferenceController {
     return new Promise(function(resolve, reject) {
 
       try {
-        let remoteStream = newPeerConncection[_this.user].getRemoteStreams()[0];
+        let remoteStream = newPeerConncection[_this.user].getLocalStreams()[0];
         let audioTrack = remoteStream.getAudioTracks()[0];
 
         if (!value) {
