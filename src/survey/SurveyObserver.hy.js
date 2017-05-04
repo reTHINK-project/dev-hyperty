@@ -4,14 +4,16 @@ import { Syncher} from 'service-framework/dist/Syncher'
 let SurveyObserver = {
     onRequest (callback) {
         this.syncher.onNotification((event) =>{
-            if(event.schema === this.objectDescURL){
+            if(event.schema === this.objectDescURL && event.value.resources[0] === 'survey' ){
                     this.syncher.subscribe(this.objectDescURL, event.url)
                     .then((dataObject) => {
-                        callback({
-                            answer:(answer)=>{
-                                dataObject.addChild('chatmessages', {response:answer})
-                            },
-                            data:dataObject.data.survey
+                        dataObject.onAddChild(msg=>{
+                            callback({
+                                answer:(answer)=>{
+                                    dataObject.addChild('chatmessages', {response:answer})
+                                },
+                                data:msg.value.survey
+                            })
                         })
                     })
             }

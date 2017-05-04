@@ -6,7 +6,7 @@
     "browser": true
   },
   "hypertyType": [
-    "location"
+    "survey"
   ],
   "dataObjects": [
     "https://catalogue.localhost/.well-known/dataschema/Communication"

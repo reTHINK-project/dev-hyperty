@@ -13,11 +13,10 @@ let Survey = {
 const SurveyReporter = {
     _getHyFor (participants){
         return Promise.all(participants.map((p) => {
-            console.log('participanrt', p)
-            return this.hypertyDiscoveryService.discoverHyperties(p.email, ['comm'], ['location'], p.domain)
+            return this.hypertyDiscoveryService.discoverHyperties(p.email, ['comm'], ['survey'], p.domain)
                 .then((hyperties) => {
                     let target = hyperties
-                        .sort((a, b) => (new Date(hyperties[a].lastModified) < new Date(hyperties[b].lastModified)) ? 1 : -1)
+                        .sort((a, b) => (new Date(a.lastModified) < new Date(b.lastModified)) ? 1 : -1)
                         .shift()
 
                     if (!target)
@@ -31,7 +30,7 @@ const SurveyReporter = {
     _createSyncher (hyperties){
         const survey = {
             name: 'survey',
-            resources: [],
+            resources: ['survey'],
             children: [],
             startingTime: new Date().toJSON(),
             status: 'open',
@@ -52,7 +51,9 @@ const SurveyReporter = {
                 dataObjectReporter.onAddChild((dataChild)=>{
                     Survey._addResponse(dataChild.value.response)
                 })
-                dataObjectReporter.addChild({survey:survey})
+                setTimeout(()=>{
+                    dataObjectReporter.addChild('chatmessages', {survey:survey})
+                },2000)
                 Survey.config = survey
                 return Survey
             })
