@@ -62,7 +62,7 @@ let GroupChatHyperty = {
                     .then((dataObject) => {
                         this._position = dataObject
                     })
-            }else if(event.schema.endsWith(this.groupChatDS)){
+            }else if(event.schema.endsWith(this.groupChatDS) && event.value.resources[0]==='chat'){
                 this.syncher.subscribe(this.objectDescURL, event.url)
                     .then((dataObject) => {
                         return this.identityManagerService.discoverUserRegistered()
