@@ -29,7 +29,7 @@
 
 class ChatController {
 
-  constructor(syncher, discovery, domain, search) {
+  constructor(syncher, discovery, domain, search, identity) {
 
     if (!syncher) throw Error('Syncher is a necessary dependecy');
     if (!discovery) throw Error('Discover is a necessary dependecy');
@@ -40,8 +40,9 @@ class ChatController {
     _this._syncher = syncher;
     _this.discovery = discovery;
     _this.search = search;
-    _this.myIdentity = null;
+    _this.myIdentity = identity;
     _this.controllerMode = 'reporter';
+    _this.child_cseq = 0;
 
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
   }
@@ -60,7 +61,7 @@ class ChatController {
 
       let participant = event.identity.userProfile;
 
-      console.log('[GroupChatManager.ChatController] new participant', participant);
+      console.log('[GroupChatManager.ChatController]  new participant', participant);
       if (event.identity.legacy) {
         participant.legacy = event.identity.legacy;
       }
@@ -75,8 +76,7 @@ class ChatController {
       dataObjectReporter.data.lastModified = new Date().toJSON();
 
       dataObjectReporter.data.participants[participant.userURL] = { identity: participant };
-
-      console.log('communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
+      console.log('[GroupChatManager.ChatController] communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
 
       console.log('[GroupChatManager.ChatController - onSubscription] ', found, participant);
       if (!found) {
@@ -87,20 +87,10 @@ class ChatController {
     });
 
     dataObjectReporter.onAddChild(function(child) {
-      console.info('[GroupChatManager.ChatController]Reporter - Add Child: ', child);
+      _this.child_cseq +=1;
+      console.info('[GroupChatManager.ChatController]Reporter - Add Child:', child);
       // dataObjectReporter.data.lastModified = new Date().toJSON();
       if (_this._onMessage) _this._onMessage(child);
-    });
-
-    setTimeout(() => {
-      let childrens = dataObjectReporter.childrens;
-      Object.keys(childrens).forEach((child) => {
-        if (_this._onMessage) _this._onMessage({
-          childId: child,
-          identity: childrens[child].identity,
-          value: childrens[child].data
-        });
-      })
     });
 
     _this._dataObjectReporter = dataObjectReporter;
@@ -122,7 +112,6 @@ class ChatController {
       console.info('[GroupChatManager.ChatController]Observer - onChange', event);
 
       if (event.field.includes('participants')) {
-        console.log('When field includes participants');
         switch (event.cType) {
           case 'add':
             if (_this._onUserAdded) _this._onUserAdded(event);
@@ -139,18 +128,19 @@ class ChatController {
     });
 
     dataObjectObserver.onAddChild(function(child) {
+      _this.child_cseq +=1;
       console.info('[GroupChatManager.ChatController]Observer - Add Child: ', child);
       if (_this._onMessage) _this._onMessage(child);
     });
 
-    let childrens = dataObjectObserver.childrens;
-    Object.keys(childrens).forEach((child) => {
-      if (_this._onMessage) _this._onMessage({
-        childId: child,
-        identity: childrens[child].identity,
-        value: childrens[child].data
-      });
-    })
+    // let childrens = dataObjectObserver.childrens;
+    // Object.keys(childrens).forEach((child) => {
+    //   if (_this._onMessage) _this._onMessage({
+    //     childId: child,
+    //     identity: childrens[child].identity,
+    //     value: childrens[child].data
+    //   });
+    // })
 
   }
 
@@ -189,44 +179,37 @@ class ChatController {
     return new Promise(function(resolve, reject) {
 
       let _dataObjectChild;
+      _this.child_cseq += 1;
+      let msg = {
+        url: dataObject.data.url,
+        cseq: _this.child_cseq,
+        reporter: dataObject.data.reporter,
+        schema: dataObject.data.schema,
+        name: dataObject.data.name,
+        created : new Date().toJSON(),
+        type : "chat",
+        content : message
+      }
+
 
       // TODO: change chatmessages to resource - chat, file
       // TODO: change message to hypertyResource - https://github.com/reTHINK-project/dev-service-framework/tree/develop/docs/datamodel/data-objects/hyperty-resource
       // TODO: handle with multiple resources - if the "message" will be different for each type of resources
-      dataObject.addChild('chatmessages', {message: message}).then(function(dataObjectChild) {
-
+      dataObject.addChild('resources', msg).then(function(dataObjectChild) {
         console.log('[GroupChatManager.ChatController][addChild - Chat Message]: ', dataObjectChild);
-        _dataObjectChild = dataObjectChild;
-
-        let identity = _this.myIdentity;
-
-        if (!identity) {
-          return _this.search.myIdentity().then((identity) => {
-            return _this.myIdentity = identity;
-          }).catch((reason) => {
-            console.error('Add Child - Get my Identity fails', reason);
-          });
-        } else {
-          return identity;
-        }
-
-      }).then((myIdentity) => {
-
-        console.log('[Chat Controller] - My Identity: ', myIdentity);
-
-        console.log('[Chat Controller] - dataObjectChild: ', _dataObjectChild);
+        //resolve(dataObjectChild);
 
         let msg = {
-          childId: _dataObjectChild._childId,
-          from: _dataObjectChild._owner,
-          value: _dataObjectChild.data,
+          childId: dataObjectChild._childId,
+          from: dataObjectChild._owner,
+          value: dataObjectChild.data,
           type: 'create',
           identity: {
-            userProfile: myIdentity
+            userProfile: _this.myIdentity
           }
         };
-
         resolve(msg);
+
       }).catch(function(reason) {
         console.error('Reason:', reason);
         reject(reason);

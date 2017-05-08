@@ -39,8 +39,14 @@ export let communicationObject = {
   startingTime: '',
   lastModified: '',
   status: '',
-  children: [],
+  children: ["resources"],
   participants: {}
+};
+
+export let communicationChildren = {
+  "parent" : "communication",
+  "listener" : "resources",
+  "type" : "HypertyResource"
 };
 
 /*

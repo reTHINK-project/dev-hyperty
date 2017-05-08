@@ -422,6 +422,8 @@ function chatManagerReady(chatController, isOwner) {
 
 function processMessage(message) {
 
+  console.log('[GroupChatManager - processMessage] - msg ', message);
+
   let chatSection = $('.chat-section');
   let messagesList = chatSection.find('.messages .collection');
   let avatar = '';
@@ -431,16 +433,17 @@ function processMessage(message) {
     avatar = message.identity.userProfile.avatar;
     from = message.identity.userProfile.cn;
   }
+  if (message.value.content) {
+    let list = `<li class="collection-item avatar">
+      <img src="` + avatar + `" alt="" class="circle">
+      <span class="title">` + from + `</span>
+      <p>` + message.value.content.replace(/\n/g, '<br>') + `</p>
+    </li>`;
 
-  let list = `<li class="collection-item avatar">
-    <img src="` + avatar + `" alt="" class="circle">
-    <span class="title">` + from + `</span>
-    <p>` + message.value.message.replace(/\n/g, '<br>') + `</p>
-  </li>`;
+    console.log('[GroupChatManager - processMessage] - ', messagesList, message, list);
 
-  console.log('[GroupChatManager - processMessage] - ', messagesList, message, list);
-
-  messagesList.append(list);
+    messagesList.append(list);
+  }
 }
 
 function processNewUser(event) {
