@@ -9,6 +9,6 @@
     "browser": true
   },
   "dataObjects": [
-    "https://catalogue.hysmart.rethink.ptinovacao.pt/.well-known/dataschema/Communication"
+    "https://catalogue.%domain%/.well-known/dataschema/Communication"
   ]
 }

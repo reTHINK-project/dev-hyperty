@@ -16,7 +16,7 @@ class DiscoveryHyperty {
         this._domain = divideURL(hypertyURL).domain;
         this._objectDescURL = 'hyperty-catalogue://catalogue.' + this._domain + '/.well-known/dataschema/Context';
         this._syncher = new Syncher(hypertyURL, bus, configuration);
-        this._discovery = new Discovery(hypertyURL, bus);
+        this._discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
         this._users = newUserCollection()
 
         // receiving starts here
@@ -36,6 +36,7 @@ class DiscoveryHyperty {
     }
 
     _onNotification(event) {
+        console.error('[DiscoveryHyperty] msg received', event)
         if(!event.schema.endsWith('Context') || event.value.name !== 'discovery')
             return
 
@@ -55,10 +56,13 @@ class DiscoveryHyperty {
     }
 
     _notify(hypertyURL) {
+        console.error('[DiscoveryHyperty] init')
         this._discovery.discoverDataObject('discovery', ['context'], ["users"])
-            .then((h) => this._createSyncher(Object.keys(h).map(k=>h[k].reporter)))
-            .catch((err)=>{
-                if(err === 'Not Found')
+            .then((h) => {
+                console.log('[DiscoveryHyperty]', h)
+                this._createSyncher(Object.keys(h).map(k=>h[k].reporter))
+            }).catch((err)=>{
+                if(err === 'No DataObject was found')
                     return this._createSyncher(([]))
 
                 console.error('[DiscoveryHyperty]', err)

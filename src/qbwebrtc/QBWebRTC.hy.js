@@ -20,7 +20,7 @@ class QBWebRTC extends EventEmitter { // extends EventEmitter because we need to
     this._domain = divideURL(hypertyURL).domain;
     this._objectDescURL = 'hyperty-catalogue://catalogue.' + this._domain + '/.well-known/dataschema/Connection';
     this._syncher = new Syncher(hypertyURL, bus, configuration);
-    this.discovery = new Discovery(hypertyURL, bus);
+    this.discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
     this.identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
     this.objObserver;
     this.objReporter;

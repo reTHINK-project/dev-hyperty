@@ -74,9 +74,14 @@ export function hypertyDeployed(hyperty) {
       script = 'notifications/notificationsObserver.js';
       break;
 
-    case 'Location':
+    case 'LocationReporter':
       template = 'location/location';
       script = 'location/location.js';
+      break;
+
+    case 'LocationObserver':
+      template = 'location/locationObserver';
+      script = 'location/locationObserver.js';
       break;
 
     case 'RoomClient':
