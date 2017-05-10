@@ -65,12 +65,12 @@ class HelloWorldReporter {
 
     return new Promise(function(resolve, reject) {
 
-      syncher.create(_this._objectDescURL, [hypertyURL], hello, false, false).then(function(helloObjtReporter) {
+      syncher.create(_this._objectDescURL, [hypertyURL], hello, false, false, 'hello').then(function(helloObjtReporter) {
         console.info('1. Return Created Hello World Data Object Reporter', helloObjtReporter);
 
         _this.helloObjtReporter = helloObjtReporter;
 
-        this.prepareDataObjectReporter(helloObjtReporter);
+        _this.prepareDataObjectReporter(helloObjtReporter);
 
         resolve(helloObjtReporter);
 

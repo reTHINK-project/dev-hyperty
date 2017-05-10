@@ -59,7 +59,7 @@ function hypertyReady(result, identity) {
   chatGroupManager.onResumeReporter((chatControllers) => {
 
     getSectionTpl().then(() => {
-      console.log('[GroupChatManagerDemo - on Resume observers] - Section Template ready:', chatControllers);
+      console.log('[GroupChatManagerDemo - on Resume reporters] - Section Template ready:', chatControllers);
 
       Object.values(chatControllers).forEach((chatController) => {
 

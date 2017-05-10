@@ -75,6 +75,10 @@ class GroupChatManager {
 
     syncher.resumeReporters({store: true}).then((reporters) => {
 
+      let reportersList = Object.keys(reporters);
+
+      if (reportersList.length  > 0) {
+
       Object.keys(reporters).forEach((dataObjectReporterURL) => {
 
         // create a new chatController
@@ -89,6 +93,7 @@ class GroupChatManager {
       });
 
       if (_this._onResumeReporter) _this._onResumeReporter(this._reportersControllers);
+    }
 
     }).catch((reason) => {
       console.info('Resume Reporter | ', reason);
@@ -97,21 +102,26 @@ class GroupChatManager {
     syncher.resumeObservers({store: true}).then((observers) => {
       console.log('[GroupChatManager] resuming observers : ', observers, _this, _this._onResume);
 
-      Object.keys(observers).forEach((dataObjectObserverURL) => {
+      let observersList = Object.keys(observers);
 
-        // create a new chatController
-        let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
-        chatController.dataObjectObserver = observers[dataObjectObserverURL];
+      if (observersList.length  > 0) {
+        observersList.forEach((dataObjectObserverURL) => {
 
-        // Save the chat controllers by dataObjectReporterURL
-        this._observersControllers[dataObjectObserverURL] = chatController;
-      });
+          // create a new chatController
+          let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search);
+          chatController.dataObjectObserver = observers[dataObjectObserverURL];
 
-      console.log('AQUI:', this._observersControllers);
-      if (_this._onResumeObserver) _this._onResumeObserver(this._observersControllers);
+          // Save the chat controllers by dataObjectReporterURL
+          this._observersControllers[dataObjectObserverURL] = chatController;
+        });
+
+        if (_this._onResumeObserver) _this._onResumeObserver(this._observersControllers);
+
+      }
+
 
     }).catch((reason) => {
-      console.info('Resume Observer | ', reason);
+      console.info('[GroupChatManager] Resume Observer | ', reason);
     });
 
     syncher.onNotification(function(event) {
@@ -266,7 +276,7 @@ class GroupChatManager {
         console.info('[GroupChatManager] Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
 
-        return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false);
+        return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false, name);
 
       }).catch((reason) => {
         console.log('[GroupChatManager] MyIdentity Error:', reason);
