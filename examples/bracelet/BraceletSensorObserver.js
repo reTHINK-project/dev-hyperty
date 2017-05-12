@@ -91,17 +91,17 @@ function hypertyLoaded(result) {
 
                     observer.onChange(function(event) {
                       console.log('[BraceletSensorObserver] new event', event);
-                      let type = event.data[0].type;
+                      let type = event.data.type;
                       console.log('[BraceletSensorObserver] type', type);
                       if (type === 'battery') {
-                        batteryValue.text(event.data[0].value);
-                        console.log(event.data[0].value);
+                        batteryValue.text(event.data.value);
+                        console.log(event.data.value);
                       } else if (type === 'user_steps') {
                         let x = (new Date()).getTime();
-                        series.addPoint([x, event.data[0].value], true, true);
+                        series.addPoint([x, event.data.value], true, true);
                         console.log('[BraceletSensorObserver] series', series);
-                        stepValue.text(event.data[0].value);
-                        console.log(event.data[0].value);
+                        stepValue.text(event.data.value);
+                        console.log(event.data.value);
                       }
                     });
                   }
