@@ -5,12 +5,6 @@ import Search from '../utils/Search';
 import IdentityManager from 'service-framework/dist/IdentityManager';
 import Discovery from 'service-framework/dist/Discovery';
 
-const LocationHyperty = {
-    getCurrentPosition(){
-        return new Promise((resolve, reject)=>navigator.geolocation.getCurrentPosition((position=>resolve(position))))
-    }
-}
-
 const LocationHypertyFactory = function(hypertyURL, bus, config){
     let uri = new URI(hypertyURL)
     let objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Context`
@@ -18,11 +12,14 @@ const LocationHypertyFactory = function(hypertyURL, bus, config){
     let identityManager = new IdentityManager(hypertyURL, config.runtimeURL, bus);
     let discovery = new Discovery(hypertyURL, config.runtimeURL, bus);
     let search = new Search(discovery, identityManager)
+    let currentPosition
+    const getCurrentPosition = ()=> currentPosition
 
     syncher.create(objectDescURL, [], position())
         .then((reporter)=>{
             reporter.onSubscription((event)=>event.accept())
             navigator.geolocation.watchPosition((position)=>{
+                currentPosition = position 
                 search.myIdentity().then(identity => {
                     reporter.data.values = [
                         { name: 'latitude', unit: 'lat', value: position.coords.latitude},
@@ -34,7 +31,7 @@ const LocationHypertyFactory = function(hypertyURL, bus, config){
             })
         })
 
-    return LocationHyperty
+    return { getCurrentPosition }
 }
 
 export default function activate(hypertyURL, bus, config){
