@@ -196,7 +196,7 @@ class GroupChatManager {
       let participants = communication.data.participants;
       let objectUrl = communication.url;
       let schemaUrl = communication.schema;
-      let name = communication.data.name;
+      let name = communication.name;
 
       console.log('[GroupChatManager._resumeInterworking for] ', participants);
 
@@ -212,7 +212,7 @@ class GroupChatManager {
 
           let msg = {
               type: 'create', from: _this._hypertyURL, to: user,
-              body: { resource: objectUrl, schema: schemaUrl, value: {name: name} }
+              body: { resource: objectUrl, schema: schemaUrl, value: communication.metadata }
             };
 
           _this._bus.postMessage(msg, () => {
@@ -250,12 +250,12 @@ class GroupChatManager {
 
       _this.communicationObject = communicationObject;
       _this.communicationObject.cseq = 1;
-      _this.communicationObject.reporter =  _this._hypertyURL;
+/*      _this.communicationObject.reporter =  _this._hypertyURL;
       _this.communicationObject.schema = _this._objectDescURL;
       _this.communicationObject.name = name;
-      _this.communicationObject.created =  new Date().toJSON();
-      _this.communicationObject.startingTime = _this.communicationObject.created;
-      _this.communicationObject.lastModified = _this.communicationObject.created;
+      _this.communicationObject.created =  new Date().toJSON();*/
+      _this.communicationObject.startingTime = new Date().toJSON();
+//      _this.communicationObject.lastModified = _this.communicationObject.created;
       _this.communicationObject.status =  CommunicationStatus.OPEN;
       /*_this.communicationObject.children = [];
       _this.communicationObject.children.push({parent: 'communication', listener:'resource', type:'chat'});
@@ -297,9 +297,9 @@ class GroupChatManager {
 
         resolve(chatController);
 
-        dataObjectReporter.data.url = dataObjectReporter.url;
+        /*dataObjectReporter.data.url = dataObjectReporter.url;
         dataObjectReporter.data.cseq += 1;
-        dataObjectReporter.lastModified = new Date().toJSON();
+        dataObjectReporter.lastModified = new Date().toJSON();*/
 
         chatController.dataObjectReporter = dataObjectReporter;
 

@@ -71,9 +71,9 @@ class ChatController {
         console.log('find: ', user.identity.userURL, participant.userURL);
         return user.identity.userURL === participant.userURL;
       });
-
+/*
       dataObjectReporter.data.cseq += 1;
-      dataObjectReporter.data.lastModified = new Date().toJSON();
+      dataObjectReporter.data.lastModified = new Date().toJSON();*/
 
       dataObjectReporter.data.participants[participant.userURL] = { identity: participant };
       console.log('[GroupChatManager.ChatController] communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
@@ -181,12 +181,12 @@ class ChatController {
       let _dataObjectChild;
       _this.child_cseq += 1;
       let msg = {
-        url: dataObject.data.url,
+/*        url: dataObject.data.url,
         cseq: _this.child_cseq,
         reporter: dataObject.data.reporter,
         schema: dataObject.data.schema,
         name: dataObject.data.name,
-        created : new Date().toJSON(),
+        created : new Date().toJSON(),*/
         type : "chat",
         content : message
       }
