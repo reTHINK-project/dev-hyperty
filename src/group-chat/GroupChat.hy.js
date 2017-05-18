@@ -10,8 +10,9 @@ let GroupChatHyperty = {
         return Promise.all(participants.map((p) => {
             return this.hypertyDiscoveryService.discoverHyperties(p.email, this.scheme, this.resources, p.domain)
                 .then((hyperties)=>{
+                    console.log(hyperties)
                     let target = hyperties
-                        .sort((a,b)=>(new Date(hyperties[a].lastModified)<new Date(hyperties[b].lastModified))?1:-1)
+                        .sort((a,b)=>(new Date(a.lastModified)<new Date(b.lastModified))?1:-1)
                         .shift()
 
                     if(!target)
