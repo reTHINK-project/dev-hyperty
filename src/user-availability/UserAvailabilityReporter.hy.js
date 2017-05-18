@@ -74,11 +74,10 @@ start(){
 
     if (reportersList.length  > 0) {
 
-    console.log('[UserAvailabilityReporter].syncher.resumeReporters ', reporters[0]);
+    console.log('[UserAvailabilityReporter].syncher.resumeReporters ', reporters[reportersList[0]]);
     // set availability to available
 
-    _this.userAvailability = reporters[0];
-    _this.userAvailability.setStatus('available');
+    _this.userAvailability = reporters[reportersList[0]];
     _this._onSubscription(_this.userAvailability);
 
     _this._onResumeReporter(_this.userAvailability);

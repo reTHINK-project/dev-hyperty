@@ -121,23 +121,30 @@ class UserAvailabilityObserver extends EventEmitter {
   });
 }
 
-  observeAvailability(url) {
+  subscribeAvailability(url) {
     let _this = this;
     return new Promise(function(resolve,reject) {
-        _this._syncher.subscribe(_this._objectDescURL, url).then((observer) => {
-          console.log('[MyContxt.observeAvailability] observer object', observer);
+        _this._syncher.subscribe(_this._objectDescURL, url).then((availability) => {
+          console.log('[UserAvailabilityObserver.observeAvailability] observer object', observer);
 
-          resolve(observer);
+          resolve(availability);
 
-          observer.onChange('*', (event) => {
-            console.log('event->->->->->:', event);
-
-            _this.trigger('user-status', event.data);
-
-            if (_this._onChange) _this.onChange(event);
-          });
+          _this.observe(availability);
         });
       });
+
+  }
+
+  observe(availability) {
+    let _this = this;
+
+    availability.onChange('*', (event) => {
+      console.log('[UserAvailabilityObserver.observe] Availability changed:', event);
+
+      _this.trigger('user-availability', event);
+
+      if (_this._onChange) _this.onChange(event);
+    });
 
   }
 

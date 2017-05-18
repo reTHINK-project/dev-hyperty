@@ -35,13 +35,21 @@
   </ul>
 </div>
 
-<a class="bt-label hide"></a>
+<a class="availability-label"></a>
 <span class="value_availability"></span><br>
 
 <div id="container" class="hide" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
-<div class="bye-panel">
-</div>
-
-<div class="msg-panel">
-</div>
+<style>
+#user-list .state-unavailable,
+#user-list .state-away {
+    background: rgba(0, 0, 0, 0.2);
+}
+#user-list .state-available {
+    background: rgba(77, 182, 148, 0.3);
+}
+#user-list .state-busy {
+    background: rgba(255, 0, 0, 0.3);
+}
+</style>
+<ul id="user-list" class="user-list collection"></ul>

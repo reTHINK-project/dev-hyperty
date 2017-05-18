@@ -17,9 +17,12 @@ function hypertyLoaded(result) {
   userAvailabilityHy = result.instance;
 
   let contacts = [];
+  let $myAvailability = $('.my_availability');
+
   Handlebars.getTemplate('user-availability/user-card').then(function(template) {
     $('.btn-change-state').on('click', function() {
       userAvailabilityHy.setStatus($(this).attr('rel'));
+      $myAvailability.text($(this).attr('rel'));
     });
 
   userAvailabilityHy.onResumeReporter((userAvailability) => {
@@ -32,6 +35,7 @@ function hypertyLoaded(result) {
       userAvailabilityHy.create().then(function(availability) {
           console.info('[userAvailabilityReporterDemo] new: ', availability);
           availability.data.values.value = 'available';
+          $myAvailability.text(availability.data.values.value);
         }).catch(function(reason) {
           console.error(reason);
         });

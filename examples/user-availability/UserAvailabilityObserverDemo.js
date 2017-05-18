@@ -25,6 +25,7 @@ function hypertyLoaded(result) {
 
     if (userAvailability) {
       console.log('[UserAvailabilityObserverDemo - on Resume observers] resuming:', userAvailability);
+      observer.observe(userAvailability);
       observeUserAvailability(observer, userAvailability);
 
     } else {
@@ -62,7 +63,7 @@ function discoverUsers(observer) {
         if (discoveredUser.hasOwnProperty('userID')) {
           collectionItem = '<li data-url="' + discoveredUser.userID + '" class="collection-item">' +
           '<span class="title"><b>UserURL: </b>' + discoveredUser.userID + '</span>' +
-          '<a data-id= "'+discoveredUser.hypertyID+'" href="#" title="Subscribe to ' + discoveredUser.userID + '" class="waves-effect waves-light btn subscribe-btn secondary-content" ><i class="material-icons">import_export</i></a>' +
+          '<a hyperty-id= "'+discoveredUser.hypertyID+'" user-id= "'+discoveredUser.userID+'" href="#" title="Subscribe to ' + discoveredUser.userID + '" class="waves-effect waves-light btn subscribe-btn secondary-content" ><i class="material-icons">import_export</i></a>' +
           '<p><b>DescriptorURL: </b>' + discoveredUser.descriptor + '<br><b> HypertyURL: </b>' + discoveredUser.hypertyID +
           '<br><b>Resources: </b>' + JSON.stringify(discoveredUser.resources) +
           '<br><b>DataSchemes: </b>' + JSON.stringify(discoveredUser.dataSchemes) +
@@ -92,38 +93,37 @@ function connect(event){
         event.preventDefault();
 
         let $currEl = $(event.currentTarget);
-        let hyperty = $currEl.attr('data-id');
+        let hyperty = $currEl.attr('hyperty-id');
+        let user = $currEl.attr('user-id');
         $('.collection').hide();
 
         observer.connect(hyperty).then(function(urlDataObject) {
           console.log('[UserAvailabilityObserverDemo] Subscribed', urlDataObject);
 
-          observer.observeAvailability(urlDataObject).then(observerDataObject => {
+          observer.subscribeAvailability(urlDataObject).then(observerDataObject => {
 
-            observeUserAvailability(observer, observerDataObject);
+            observeUserAvailability(observer, observerDataObject, user);
     });
   });
 }
 
-function observeUserAvailability(observer, userAvailability) {
+function observeUserAvailability(observer, userAvailability, user) {
   console.log('[UserAvailabilityObserverDemo.observeUserAvailability]: ', userAvailability);
 
-  let msgPanel = $('.msg-panel');
+  let $availability = $('.value_availability');
+  let $userId = $('.availability_label');
+  $userId.removeClass('hide');
+  $userId.text('Availability of '+ user + ' : ');
 
   if (userAvailability.data && userAvailability.data.values && userAvailability.data.values.legth > 0) {
-    let msg = `<p>  ` + userAvailability.data.values[0].value + `</p>`;
-    msgPanel.append(msg);
+    $availability.text(userAvailability.data.values[0].value);
   }
 
-  observer.addEventListener('user-status', function(event) {
+  observer.addEventListener('user-availability', function(event) {
 
-      console.log('User Status event received:', event);
+      console.log('[UserAvailabilityObserverDemo.observeUserAvailability] Updated :', event);
 
-      let msgPanel = $('.msg-panel');
-
-      let msg = `<p>  ` + userAvailability.data.values[0].value + `</p>`;
-
-      msgPanel.append(msg);
+      $availability.text(userAvailability.data.values[0].value);
 
     });
 }
