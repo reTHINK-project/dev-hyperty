@@ -129,7 +129,8 @@ function observeUserAvailability(userAvailability) {
 
   userAvailability.observe();
 
-  if (userAvailability.dataObject.data && userAvailability.dataObject.data.values && userAvailability.dataObject.data.values.legth > 0) {
+  if (userAvailability.dataObject.data && userAvailability.dataObject.data.values && userAvailability.dataObject.data.values.length > 0) {
+    console.log('[UserAvailabilityObserverDemo.observeUserAvailability] last value :', userAvailability.dataObject.data.values[0].value);
     $userAvailability.removeClass('state-available state-unavailable state-busy state-away')
     .addClass('state-' + userAvailability.dataObject.data.values[0].value);
   }

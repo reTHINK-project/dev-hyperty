@@ -23,6 +23,7 @@
 
 // Service Framework
 import Discovery from 'service-framework/dist/Discovery';
+import IdentityManager from 'service-framework/dist/IdentityManager';
 import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
@@ -51,7 +52,8 @@ class UserAvailabilityReporter extends EventEmitter {
 
     this.syncher = new Syncher(hypertyURL, bus, configuration);
 
-//    this.discovery = new Discovery(hypertyURL, bus);
+    //    this.discovery = new Discovery(hypertyURL, bus);
+    this.identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
     this.domain = divideURL(hypertyURL).domain;
 
     this.userAvailabilityyDescURL = 'hyperty-catalogue://catalogue.' + this.domain + '/.well-known/dataschema/Context';
@@ -142,6 +144,8 @@ onResumeReporter(callback) {
 
     _this.userAvailability.data.values[0].value = newStatus;
     console.debug('[UserAvailabilityReporterReporter.setStatus] after change :', _this.userAvailability.data);
+    _this.trigger('my-availability-update', newStatus);
+
   }
 
 
