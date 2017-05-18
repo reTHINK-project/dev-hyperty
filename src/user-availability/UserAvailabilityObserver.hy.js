@@ -125,7 +125,7 @@ class UserAvailabilityObserver extends EventEmitter {
     let _this = this;
     return new Promise(function(resolve,reject) {
         _this._syncher.subscribe(_this._objectDescURL, url).then((availability) => {
-          console.log('[UserAvailabilityObserver.observeAvailability] observer object', observer);
+          console.log('[UserAvailabilityObserver.observeAvailability] observer object', availability);
 
           resolve(availability);
 
