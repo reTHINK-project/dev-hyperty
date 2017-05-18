@@ -196,8 +196,32 @@ function discoverEmail(event) {
 
   $('.send-panel').html(msg);
 
-	hyperty.search.users([email], [domain], ['connection'], ['audio', 'video']).then( (result) => {
-		if ( result.length == 0 ) {
+	// > This leads to a 404 Response
+  // hypertyWebRTC.discovery.discoverHypertiesPerUser(email, domain).then((hyperties) => {
+
+  // > The search-util doesn't handle the String-array problem.
+	//hyperty.search.users([email], [domain], ['connection'], ['audio', 'video']).then( (result) => {
+
+  // This one returns results, but as an Array of chars --> added handling for that
+  hyperty.discovery.discoverHyperties(email, domain).then((result) => {
+    console.log('[DTWebRTC] [discover] discovered these hyperties: \n', result);
+    try {
+      // in all tests the discovery result body was an array of chars --> join it to a string
+      if ( result instanceof Array ) {
+        result = result.join("");
+
+        // then parse it to an object
+        result = JSON.parse(result);
+      }
+    } catch (e) {
+      console.log('[DTWebRTC] [discover] result of discovery was unparsable');
+    }
+		let hyperties = [];
+		for (url in result ) {
+			hyperties.push(result[url]);
+		}
+
+		if ( hyperties.length == 0 ) {
 			$('.send-panel').html(
 	      '<div>No hyperty found!</div>'
 	    );
@@ -208,7 +232,7 @@ function discoverEmail(event) {
 				'<input type="text" class="webrtc-hyperty-input form-control " style="font-size: 18px; font-size: bold;">' +
 				'<button type="submit" class="btn btn-default btn-sm btn-block ">webRTC to Hyperty </button>' +
 				'</form><br>');
-				$('.send-panel').find('.webrtc-hyperty-input').val(result[0].hypertyID);
+				$('.send-panel').find('.webrtc-hyperty-input').val(hyperties[0].hypertyID);
 				$('.webrtcconnect').on('submit', webrtcconnectToHyperty);
 				$('.webrtcconnect').find("button").focus();
 		}
