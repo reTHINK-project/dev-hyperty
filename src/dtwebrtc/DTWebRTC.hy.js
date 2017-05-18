@@ -22,9 +22,10 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
     this._domain = divideURL(hypertyURL).domain;
     this._objectDescURL = 'hyperty-catalogue://catalogue.' + this._domain + '/.well-known/dataschema/Connection';
     this._syncher = new Syncher(hypertyURL, bus, configuration);
-    let discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
+    this.discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
+    console.log("[DTWebRTC] [constructor] >>>>> Discovery object is:", this.discovery);
     let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
-    this.search = new Search(discovery, identityManager);
+    this.search = new Search(this.discovery, identityManager);
     this.objObserver;
     this.objReporter;
     this.callerIdentity;
