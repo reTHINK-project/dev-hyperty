@@ -24,8 +24,7 @@ function hypertyLoaded(result) {
 
       if (usersAvailability) {
         console.log('[UserAvailabilityObserverDemo - on Resume observers] resuming:', usersAvailability);
-        observer.observe(userAvailability);
-        observeUsersAvailability(observer, usersAvailability);
+        observeUsersAvailability(usersAvailability);
         discoverUsers(observer);
       } else {
         console.log('[UserAvailabilityObserverDemo] Nothing to be resumed. Lets discover users availability to observer ');
@@ -56,6 +55,7 @@ function discoverUsers(observer) {
       let collection = $('.collection');
       let collectionItem;
       collection.empty();
+      collection.show();
 
       result.forEach((discoveredUser) => {
 
@@ -101,7 +101,7 @@ function discoverAvailability(event){
 
           observer.subscribeAvailability(urlDataObject).then(observerDataObject => {
 
-            observeUserAvailability(observer, observerDataObject);
+            observeUserAvailability(observerDataObject);
     });
   });
 }
@@ -125,7 +125,9 @@ function observeUserAvailability(userAvailability) {
   let $userAvailability = $('<li/>')
        .addClass('user-list-item')
        .attr('url', availabilityUrl)
-       .text('UserAvailabilityURL: '+availabilityUrl);
+       .text(availabilityUrl);
+
+  userAvailability.observe();
 
   if (userAvailability.dataObject.data && userAvailability.dataObject.data.values && userAvailability.dataObject.data.values.legth > 0) {
     $userAvailability.removeClass('state-available state-unavailable state-busy state-away')

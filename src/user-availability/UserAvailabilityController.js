@@ -31,8 +31,10 @@ import EventEmitter from '../utils/EventEmitter';
 class UserAvailabilityController extends EventEmitter {
 
   constructor(userAvailability) {
+    super();
 
-    if (!userAvailability) throw Error('[UserAvailabilityController constructir] userAvailability input parameter is mandatory ');
+
+    if (!userAvailability) throw Error('[UserAvailabilityController constructir] userAvailability input parameter is mandatory');
 
     let _this = this;
 
@@ -58,7 +60,7 @@ class UserAvailabilityController extends EventEmitter {
   }
 
   get dataObject() {
-    return this.userAvailability;
+    return this._userAvailability;
   }
 
   set closeEvent(event) {

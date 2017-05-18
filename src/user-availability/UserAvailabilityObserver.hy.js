@@ -40,10 +40,10 @@ class UserAvailabilityObserver extends EventEmitter {
 
       if (observersList.length  > 0) {
 
-      console.log('[UserAvailabilityObserver.start] resuming: ', observers[observersList[0]]);
+      console.log('[UserAvailabilityObserver.start] resuming: ', observers);
 
-      observersList.forEach((availability)=>{
-        _this._users2observe.push(new UserAvailabilityController(_this._syncher, availability));
+      observersList.forEach((i)=>{
+        _this._users2observe.push(new UserAvailabilityController(observers[i]));
       });
 
       _this._onResumeObserver(_this._users2observe);
@@ -135,8 +135,6 @@ class UserAvailabilityObserver extends EventEmitter {
           _this._users2observe.push(newUserAvailability);
 
           resolve(newUserAvailability);
-
-          newUserAvailability.observe();
         });
       });
   }

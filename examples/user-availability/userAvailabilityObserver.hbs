@@ -41,15 +41,17 @@
 <div id="container" class="hide" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
 <style>
-#user-list .state-unavailable,
+#user-list .state-unavailable {
+    background: rgba(192,192,192,0.3);
+}
 #user-list .state-away {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(255,255,0,1);
 }
 #user-list .state-available {
-    background: rgba(77, 182, 148, 0.3);
+    background: rgba(0,255,0,1);
 }
 #user-list .state-busy {
-    background: rgba(255, 0, 0, 0.3);
+    background: rgba(255,0,0,1);
 }
 </style>
-<ul id="user-list" class="user-list collection"></ul>
+<ul id="user-list" class="user-list"></ul>
