@@ -70,26 +70,32 @@ class UserAvailabilityReporter extends EventEmitter {
 start(){
   let _this = this;
 
-  this.syncher.resumeReporters({store: true}).then((reporters) => {
+  return new Promise((resolve, reject) => {
 
-    let reportersList = Object.keys(reporters);
+    this.syncher.resumeReporters({store: true}).then((reporters) => {
 
-    if (reportersList.length  > 0) {
+      let reportersList = Object.keys(reporters);
 
-    console.log('[UserAvailabilityReporter].syncher.resumeReporters ', reporters[reportersList[0]]);
-    // set availability to available
+      if (reportersList.length  > 0) {
 
-    _this.userAvailability = reporters[reportersList[0]];
-    _this._onSubscription(_this.userAvailability);
+      console.log('[UserAvailabilityReporter.start] resuming ', reporters[reportersList[0]]);
+      // set availability to available
 
-    _this._onResumeReporter(_this.userAvailability);
-  } else {
-    _this._onResumeReporter(false);
-  }
+      _this.userAvailability = reporters[reportersList[0]];
 
+      _this._onSubscription(_this.userAvailability);
+
+      resolve(_this.userAvailability);
+      } else {
+        console.log('[UserAvailabilityReporter.start] nothing to resume ', reporters);
+        resolve(_this._create());
+      }
+
+    }).catch((reason) => {
+      console.error('[UserAvailabilityReporter] Resume failed | ', reason);
+    });
   }).catch((reason) => {
-    console.info('Resume Reporter | ', reason);
-    if (_this._onResumeReporter) _this._onResumeReporter(false);
+  reject('[UserAvailabilityReporter] Start failed | ', reason);
 });
 }
 
@@ -112,7 +118,7 @@ onResumeReporter(callback) {
    * @param  {URL.UserURL} contacts List of Users
    * @return {Promise}
    */
-  create() {
+  _create() {
     let _this = this;
 
     return new Promise((resolve, reject) => {
@@ -122,6 +128,7 @@ onResumeReporter(callback) {
         _this.userAvailability = userAvailability;
 
         _this._onSubscription(userAvailability);
+        resolve(userAvailability);
 
       }).catch(function(reason) {
         reject(reason);

@@ -41,32 +41,13 @@ function hypertyReady(result, identity) {
       userAvailabilityHy.setStatus($(this).attr('rel'));
     });
 
-  userAvailabilityHy.onResumeReporter((userAvailability) => {
-    console.log('[userAvailabilityReporterDemo - on Resume reporters] :', userAvailability);
-
-    if (userAvailability) {
-      console.log('[userAvailabilityReporterDemo - on Resume reporters] resuming:', userAvailability);
-      availabilityReady(userAvailability);
-
-    } else {
-      userAvailabilityHy.create().then(function(availability) {
-          console.info('[userAvailabilityReporterDemo] new: ', availability);
-
-          availabilityReady(availability);
-        }).catch(function(reason) {
-          console.error(reason);
-        });
-      }
+    userAvailabilityHy.start().then((availability)=>{
+      availabilityReady(availability);
+    }).catch(function(reason) {
+      console.error(reason);
     });
-    userAvailabilityHy.start();
   });
 
-
-  /*userAvailabilityHy.addEventListener('statusChange', function(event) {
-    console.debug('handle statusChange event for', event);
-    let email = (typeof event !== 'undefined' && typeof event.identity !== 'undefined') ? event.identity.userProfile.username : 'none';
-    $('#user-list').children('[rel="' + email + '"]').removeClass('state-available state-unavailable state-busy state-away').addClass('state-' + event.status);
-  });*/
 }
 
 function availabilityReady(availability) {
