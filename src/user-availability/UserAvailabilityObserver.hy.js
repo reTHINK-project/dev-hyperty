@@ -103,30 +103,6 @@ class UserAvailabilityObserver extends EventEmitter {
     });
   }
 
-  discoverAvailability(hypertyID)
-  {
-    let _this = this;
-    return new Promise(function(resolve,reject) {
-        _this._discovery.discoverDataObjectsPerReporter(hypertyID, ['context'], ['availability_context'],  _this._domain).then(function(dataObjects) {
-          console.log('[UserAvailabilityObserver.discoverAvailability] discovered user availability objects ', dataObjects);
-        let last = 0;
-        let url;
-
-        dataObjects.forEach( (dataObject) => {
-          if (dataObject.hasOwnProperty('lastModified') && dataObject.hasOwnProperty('url') && Date.parse(dataObject.lastModified) > last) {
-            last = dataObject.lastModified;
-            url = dataObject.url;
-              //console.log('URL DATA Object', url);
-        }
-      });
-      if (last != 0 && url) {
-        resolve(url);
-      } else {
-        reject ('[UserAvailabilityObserver.discoverAvailability] discovered DataObjecs are invalid', dataObjects);
-      }
-    });
-  });
-}
 
   observe(hypertyID)
     {
