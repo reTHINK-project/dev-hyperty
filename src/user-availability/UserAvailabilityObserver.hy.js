@@ -34,28 +34,32 @@ class UserAvailabilityObserver extends EventEmitter {
   start () {
     let _this = this;
 
-    _this._syncher.resumeObservers({store: true}).then((observers) => {
+    return new Promise((resolve, reject) => {
+      _this._syncher.resumeObservers({store: true}).then((observers) => {
 
-      let observersList = Object.keys(observers);
+        let observersList = Object.keys(observers);
 
-      if (observersList.length  > 0) {
+        if (observersList.length  > 0) {
 
-      console.log('[UserAvailabilityObserver.start] resuming: ', observers);
+        console.log('[UserAvailabilityObserver.start] resuming: ', observers);
 
-      observersList.forEach((i)=>{
-        _this._users2observe.push(new UserAvailabilityController(observers[i]));
+        observersList.forEach((i)=>{
+          _this._users2observe.push(new UserAvailabilityController(observers[i]));
+        });
+
+        resolve(_this._users2observe);
+      } else {
+        resolve(false);
+      }
+
+      }).catch((reason) => {
+        console.info('[UserAvailabilityObserver] Resume Observer failed | ', reason);
+        resolve(false);
       });
-
-      _this._onResumeObserver(_this._users2observe);
-    } else {
-      _this._onResumeObserver(false);
-    }
-
     }).catch((reason) => {
-      console.info('[UserAvailabilityObserver] Resume Observer failed | ', reason);
-      _this._onResumeObserver(false);
-    });
-  }
+    reject('[UserAvailabilityObserver] Start failed | ', reason);
+  });
+}
 
   onResumeObserver(callback) {
      let _this = this;
@@ -124,7 +128,32 @@ class UserAvailabilityObserver extends EventEmitter {
   });
 }
 
-  subscribeAvailability(url) {
+  observe(hypertyID)
+    {
+      let _this = this;
+      return new Promise(function(resolve,reject) {
+          _this._discovery.discoverDataObjectsPerReporter(hypertyID, ['context'], ['availability_context'],  _this._domain).then(function(dataObjects) {
+            console.log('[UserAvailabilityObserver.discoverAvailability] discovered user availability objects ', dataObjects);
+          let last = 0;
+          let url;
+
+          dataObjects.forEach( (dataObject) => {
+            if (dataObject.hasOwnProperty('lastModified') && dataObject.hasOwnProperty('url') && Date.parse(dataObject.lastModified) > last) {
+              last = dataObject.lastModified;
+              url = dataObject.url;
+                //console.log('URL DATA Object', url);
+          }
+        });
+        if (last != 0 && url) {
+          resolve(_this._subscribeAvailability(url));
+        } else {
+          reject ('[UserAvailabilityObserver.discoverAvailability] discovered DataObjecs are invalid', dataObjects);
+        }
+      });
+    });
+  }
+
+  _subscribeAvailability(url) {
     let _this = this;
     return new Promise(function(resolve,reject) {
         _this._syncher.subscribe(_this._objectDescURL, url).then((availability) => {

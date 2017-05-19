@@ -39,9 +39,11 @@ class UserAvailabilityController extends EventEmitter {
     let _this = this;
 
     _this._userAvailability = userAvailability;
+
+    _this._observe();
   }
 
-  observe() {
+  _observe() {
     let _this = this;
 
     _this._userAvailability.onChange('*', (event) => {

@@ -19,19 +19,12 @@ function hypertyLoaded(result) {
   console.log('UserAvailabilityObserverDemo Waiting!!');
 
     observer = result.instance;
-    observer.onResumeObserver((usersAvailability) => {
-      console.log('[UserAvailabilityObserverDemo - on Resume observers] :', usersAvailability);
 
-      if (usersAvailability) {
-        console.log('[UserAvailabilityObserverDemo - on Resume observers] resuming:', usersAvailability);
-        observeUsersAvailability(usersAvailability);
-        discoverUsers(observer);
-      } else {
-        console.log('[UserAvailabilityObserverDemo] Nothing to be resumed. Lets discover users availability to observer ');
-        discoverUsers(observer);
-      }
+    observer.start().then((usersAvailability)=>{
+      if (usersAvailability) { observeUsersAvailability(usersAvailability); }
+
+      discoverUsers(observer);
     });
-    observer.start();
 }
 
 function discoverUsers(observer) {
@@ -77,7 +70,7 @@ function discoverUsers(observer) {
 
         let subscribe = $item.find('.subscribe-btn');
 
-        subscribe.on('click', discoverAvailability);
+        subscribe.on('click', subscribeAvailability);
         collection.append($item);
 
       });
@@ -85,7 +78,7 @@ function discoverUsers(observer) {
   });
 }
 
-function discoverAvailability(event){
+function subscribeAvailability(event){
 
         console.log('[UserAvailabilityObserverDemo] ON SUBSCRIBE', event);
 
@@ -96,15 +89,12 @@ function discoverAvailability(event){
         //let user = $currEl.attr('user-id');
         $('.collection').hide();
 
-        observer.discoverAvailability(hyperty).then(function(urlDataObject) {
-          console.log('[UserAvailabilityObserverDemo] Discovered UserAvailability: ', urlDataObject);
+        observer.observe(hyperty).then(function(availability) {
+          console.log('[UserAvailabilityObserverDemo.discoverAvailability] start observing: ', availability);
 
-          observer.subscribeAvailability(urlDataObject).then(observerDataObject => {
-
-            observeUserAvailability(observerDataObject);
-    });
-  });
-}
+          observeUserAvailability(availability);
+        });
+      }
 
 function observeUsersAvailability(usersAvailability) {
   console.log('[UserAvailabilityObserverDemo.observeUsersAvailability]: ', usersAvailability);
@@ -127,7 +117,7 @@ function observeUserAvailability(userAvailability) {
        .attr('url', availabilityUrl)
        .text(availabilityUrl);
 
-  userAvailability.observe();
+  //userAvailability.observe();
 
   if (userAvailability.dataObject.data && userAvailability.dataObject.data.values && userAvailability.dataObject.data.values.length > 0) {
     console.log('[UserAvailabilityObserverDemo.observeUserAvailability] last value :', userAvailability.dataObject.data.values[0].value);
