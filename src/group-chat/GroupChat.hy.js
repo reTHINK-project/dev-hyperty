@@ -10,8 +10,9 @@ let GroupChatHyperty = {
         return Promise.all(participants.map((p) => {
             return this.hypertyDiscoveryService.discoverHyperties(p.email, this.scheme, this.resources, p.domain)
                 .then((hyperties)=>{
+                    console.log(hyperties)
                     let target = hyperties
-                        .sort((a,b)=>(new Date(hyperties[a].lastModified)<new Date(hyperties[b].lastModified))?1:-1)
+                        .sort((a,b)=>(new Date(a.lastModified)<new Date(b.lastModified))?1:-1)
                         .shift()
 
                     if(!target)
@@ -41,7 +42,7 @@ let GroupChatHyperty = {
     },
 
     _onAddChild(dataObject){
-        return (callback)=>{console.log('onaddchildddd');dataObject.onAddChild((child)=>callback(child.data || child.value, child.identity))} 
+        return (callback)=>{console.log('onaddchildddd', dataObject);dataObject.onAddChild((child)=>callback(child.data || child.value, child.identity))} 
     },
 
     create (name, participants) {
@@ -52,7 +53,7 @@ let GroupChatHyperty = {
                 hyperties.forEach(h=>hys[h] = {})
                 hys[this.hypertyURL] = {}
 
-                return this.syncher.create(this.objectDescURL, hyperties, buildComm(name, this.hypertyURL, hys))
+                return this.syncher.create(this.objectDescURL, hyperties, buildComm(name, this.hypertyURL, hys), true, false, name, {}, {resources: ['chat']})
             }).then((dataObjectReporter) => {
                 dataObjectReporter.onSubscription((event)=>{
                     //console.log('antes', event)
@@ -69,11 +70,14 @@ let GroupChatHyperty = {
 
     onInvite (callback) {
         this.syncher.onNotification((event) =>{
+            console.log('onINvite', event)
             if(event.schema.endsWith(this.groupChatDS) && event.value.resources[0]==='chat'){
                 this.syncher.subscribe(this.objectDescURL, event.url)
                     .then((dataObject) => {
+                        console.log('onINvite', dataObject)
                         return this.identityManagerService.discoverUserRegistered()
                             .then(identity=>{
+                                console.log('onINvite', identity)
                                 callback(GroupChat(dataObject.url, this._addChild(dataObject), this._onAddChild(dataObject), 
                                             dataObject.data, identity))
                             })

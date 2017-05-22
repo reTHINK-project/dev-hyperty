@@ -24,6 +24,16 @@ export function hypertyDeployed(hyperty) {
       script = 'discovery/dist/discovery.js';
       break;
 
+    case 'UserAvailabilityObserver':
+      template = 'user-availability/userAvailabilityObserver';
+      script = 'user-availability/UserAvailabilityObserverDemo.js';
+      break;
+
+    case 'UserAvailabilityReporter':
+      template = 'user-availability/userAvailabilityReporter';
+      script = 'user-availability/UserAvailabilityReporterDemo.js';
+      break;
+
     case 'QBWebRTC':
       template = 'qbwebrtc/qbwebrtc';
       script = 'qbwebrtc/dist/qbwebrtc.js';

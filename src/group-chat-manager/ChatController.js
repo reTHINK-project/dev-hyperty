@@ -49,7 +49,7 @@ class ChatController {
 
   set dataObjectReporter(dataObjectReporter) {
 
-    if (!dataObjectReporter) throw new Error('The data object reporter is necessary parameter');
+    if (!dataObjectReporter) throw new Error('The data object reporter is necessary parameter ');
     let _this = this;
 
     _this.controllerMode = 'reporter';
