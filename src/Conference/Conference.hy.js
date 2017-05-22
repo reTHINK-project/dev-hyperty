@@ -42,7 +42,7 @@ import Search from '../utils/Search';
 class Conference {
 
   /**
-  * Create a new Hyperty Connector
+  * Create a new Hyperty Conference
   * @param  {Syncher} syncher - Syncher provided from the runtime core
   */
   constructor(hypertyURL, bus, configuration) {
@@ -161,7 +161,7 @@ class Conference {
    * This function is used to create a new connection providing the identifier of the user to be notified.
    * @param  {URL.UserURL}        userURL      user to be invited that is identified with reTHINK User URL.
    * @param  {MediaStream}        stream       WebRTC local MediaStream retrieved by the Application
-   * @param  {string}             name         is a string to identify the connection.
+   * @param  {string}             roomID        is a string to identify the room Identifier(connection).
    * @return {<Promise>conferenceController}   A conferenceController object as a Promise.
    */
   connect(userURL, stream, roomID, domain) {
@@ -180,10 +180,8 @@ class Conference {
       let conferenceController;
       let selectedHyperty;
       console.info('------------------------ Syncher Create ---------------------- \n');
-
       _this.search.myIdentity().then(function(identity) {
-
-        console.debug('connector searching: ', [userURL], `at domain `, [domain]);
+        console.debug('Conference searching: ', [userURL], `at domain `, [domain]);
         console.debug('identity: ', identity, _this.connectionObject);
         _this.myId = identity;
 
@@ -205,6 +203,7 @@ class Conference {
         // Initial data
         // _this.connectionObject.usename = _this.myId;
         _this.connectionObject.name = connectionName;
+        _this.connectionObject.serverURL = selectedHyperty;
         _this.connectionObject.roomName = roomID;
         _this.connectionObject.scheme = 'connection';
         _this.connectionObject.owner = _this.hypertyURL;
@@ -244,6 +243,72 @@ class Conference {
   onInvitation(callback) {
     let _this = this;
     _this.onInvitation = callback;
+  }
+
+   /**
+   * This function is used to create a new connection providing the identifier of the user to be notified.
+   * @param  {URL.UserURL}        userURL       user to be invited that is identified with reTHINK User URL.
+   * @param  {string}             (roomID) name    is a string to identify the room Identifier(connection).
+   * @param  {string}             domain        Th domain where the user invited belong to
+   * @return {<Promise>conferenceController}    A conferenceController object as a Promise.
+   */
+
+  invite(userURL, roomID, domain, serverInfo) {
+    let _this = this;
+    let syncher = _this.syncher;
+    let roomName = roomID;
+    let conferenceController;
+    let selectedHyperty;
+    let connectionName = 'Connection';
+    let scheme = ['connection'];
+    let resource = ['audio', 'video'];
+
+    console.debug('connecting to user : ', userURL);
+    console.debug('roomID is :', roomID);
+
+    return new Promise((resolve, reject) => {
+      console.info('------------------------ Syncher Create ---------------------- \n');
+      _this.search.myIdentity().then(function(identity) {
+        console.debug('Conference searching: ', [userURL], `at domain `, [domain]);
+        console.debug('identity: ', identity, _this.connectionObject);
+        _this.myId = identity;
+        return _this.search.users([userURL], [domain], scheme, resource);
+      }).then((hypertiesIDs) => {
+        selectedHyperty = hypertiesIDs[0].hypertyID;
+        // selectedHyperty = hypertiesIDs;
+        console.info('It supports  group communication, selected hyperty: ', selectedHyperty);
+  
+        if (roomID) {
+          connectionName = roomID;
+        }
+        // Initial data
+        // _this.connectionObject.usename = _this.myId;
+        _this.connectionObject.name = connectionName;
+        _this.connectionObject.options = serverInfo;
+        _this.connectionObject.roomName = roomID;
+        _this.connectionObject.scheme = 'connection';
+        _this.connectionObject.owner = _this.hypertyURL;
+        // _this.connectionObject.peer = selectedHyperty;
+        _this.connectionObject.status = '';
+        return syncher.create(_this.objectDescURL, [selectedHyperty], _this.connectionObject);
+      }).catch((reason) => {
+        console.error(reason);
+        reject(reason);
+      }).then((dataObjectReporter) => {
+        console.debug('1. Return Create Data Object Reporter', dataObjectReporter);
+        console.debug('2. Return syncher', syncher);
+        conferenceController = new ConferenceController(syncher, _this.domain, _this.configuration, _this.myId.username)
+        console.debug('_this.myId is:', _this.myId);
+        conferenceController.username = _this.myId.username;
+        conferenceController.dataObjectReporter = dataObjectReporter;
+        _this.controllers[selectedHyperty] = conferenceController;
+        resolve(conferenceController);
+        console.info('--------------------------- END --------------------------- \n');
+      }).catch((reason) => {
+        console.error(reason);
+        reject(reason);
+      });
+    });
   }
 }
 

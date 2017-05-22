@@ -44,6 +44,7 @@
 export let connection = {
   name: '',
   scheme: '',
+  optional:'',
   status: '',
   owner: '',
   connectionDescription: {},

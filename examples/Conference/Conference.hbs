@@ -3,14 +3,13 @@
 <div class="col s12">
     <button class="btn waves-effect waves-light create-room-btn" type="button"><i class="material-icons left">room</i>Create Conference call</button>
     <button class="btn waves-effect waves-light invite-participants-btn" type="button"><i class="material-icons left">call</i>Invite participant(s)</button>
-    <button class="btn waves-effect waves-light join-room-btn" type="submit" name="action">Join<i class="material-icons left">group_add</i></button>
 </div>
 
 <div class="modal modal-fixed-footer groupcall">
    <div class="modal-content">
-        <div class="chat-name">
-            <h4>Name of Chat Group</h4>
-            <input class="input-name" placeholder="chat name" id="name" required aria-required="true" type="text">
+        <div class="conference-name">
+            <h4>Name of conference Room</h4>
+            <input class="input-name" placeholder="conference name" id="name" required aria-required="true" type="text">
         </div>
         <div class="participants">
             <form class="participants-form">
@@ -22,36 +21,16 @@
     </div>
 
     <div class="modal-footer">
-        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat btn-cancel" style="margin-top: 110px;">Cancel</a>
-        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat btn-create" style="margin-top: 110px;">Create</a>
+        <button href="#!" class="modal-action modal-close waves-effect waves-green btn-flat btn-cancel">Cancel</button>
+        <button href="#!" class="modal-action modal-close waves-effect waves-green btn-flat btn-create">Create</button>
     </div>
 </div>
 
 <!-- Modal Structure -->
 <div class="modal modal-fixed-footer create-groupcall">
-    {{!--<div class="modal-content">
-        <div class="chat-name">
-            <h4>Name of Chat Group</h4>
-            <input class="input-name" placeholder="chat name" id="name" required aria-required="true" type="text">
-        </div>
-        <div class="participants">
-            <form class="participants-form">
-            </form>
-        </div>
-        <div class="row">
-            <button class="btn waves-effect waves-light btn-add" type="submit" name="action">Add Participant<i class="material-icons right">add</i></button>
-        </div>
-    </div>
-
-    <div class="modal-footer">
-        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat btn-cancel" style="margin-top: 110px;">Cancel</a>
-        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat btn-create" style="margin-top: 110px;">Create</a>
-    </div>--}}
     <section class="discover">
       <h4>Discover Conference Servers</h4>
-            {{!--<input class="input-name" placeholder="chat name" id="name" required aria-required="true" type="text">--}}
       <form class="form col s12">
-
         <div class="row">
           <div class="input-field col s12">
             <input placeholder="Conference Server ID" id="email" required aria-required="true" type="email" class="friend-email validate">
@@ -83,51 +62,9 @@
 </section>
 </div>
 
-{{!--<section class="discover">
-
-  <form class="form col s12">
-
-    <div class="row">
-      <div class="input-field col s12">
-        <input placeholder="your friend's email" id="email" required aria-required="true" type="email" class="friend-email validate">
-        <label for="email" style="width: 100%;" data-error="the email format should be like user@domain.pt">search by email</label>
-      </div>
-      <div class="input-field col s12">
-        <input class="input-domain" name="domain" id="domain" type="text">
-        <label for="domain">Participant domain</label>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="input-field col s8">
-        <button class="search waves-effect waves-light btn" type="submit"><i class="material-icons left">search</i>Search</button>
-      </div>
-    </div>
-  </form>
-
-  <div class="loader"></div>
-
-  <div class="col s12">
-    <ul class="collection hide">  
-      <li class="collection-header"><h4>User Hyperty</h4></li>
-    </ul>
-     <div class="input-field col s12">
-        <input class="input-roomName" name="roomName" id="roomName" type="text">
-        <label for="roomName">roomName</label>
-    </div> 
-  
-  </div>
-
-</section>--}}
 	
 <div class="video-holder col s12 hide"  id="video-container" style="position: relative;">
-
-  {{!--<video class="my-video responsive-video" muted style="background-color: black; position: absolute; top: 10px; right: 10px; width: 80px; height: 80px;" autoplay></video>--}}
-  {{!--<video class="my-video responsive-video" muted style="position: absolute; right: 20px;width: 250px; left: 650px;" autoplay></video>--}}
   <video class="my-video responsive-video" muted style="right: 10px;width: 250px;left: 1090px;" autoplay></video>
-  {{!--<video class="video" autoplay></video>--}}
-  {{!--<video class="video" id="" autoplay></video>--}}
-
   <div class="row">
     <button class="camera waves-effect waves-light btn" style=" padding-left: 10px; padding-right: 5px;"><i class="material-icons left">videocam_off</i></button>
     <button class="mute waves-effect waves-light btn" style="padding-left: 10px; padding-right: 5px;"><i class="material-icons left">volume_off</i></button>
@@ -135,7 +72,6 @@
     <button class="mic waves-effect waves-light btn" style=" padding-left: 10px; padding-right: 5px;"><i class="material-icons left">mic</i></button>
     <button class="hangout waves-effect waves-light btn" style="padding-right: 10px; padding-left: 5px;"><i class="material-icons left">call_end</i></button>
   </div>
-
 </div>
 
 <!-- Modal Structure -->

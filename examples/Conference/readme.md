@@ -1,10 +1,9 @@
-## WebRTC Connector example
+## WebRTC WebRTC Group communication example
 
-This is the WebRTC demo that uses the [Connector Hyperty](../../src/hyperty-connector/readme.md). Main features:
+This is the WebRTC Group communication demo peer Hyperty. Main features:
 
-- invite user for a WebRTC video call (limited Google account)
-- accept/reject invitation
-- have a cross domain video conversation with another peer
+Supporting documentation will be provided soon.....
+
 
 ### How to use it
 

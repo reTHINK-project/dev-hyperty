@@ -4,35 +4,32 @@
 // import config from '../system.config.json!json';
 // import {getTemplate, getUserMedia} from '../../utils/utils';
 
-var connector;
-let controllerExist = false;
+let confHyperty;
+
+let serverURL;
 
 function getUserMedia(constraints) {
-
-  return new Promise(function(resolve, reject) {
-
-    navigator.mediaDevices.getUserMedia(constraints)
-      .then(function(mediaStream) {
-        resolve(mediaStream);
-      })
-      .catch(function(reason) {
-        reject(reason);
-      });
+  return new Promise((resolve, reject) => {
+    navigator.mediaDevices.getUserMedia(constraints).then((mediaStream) => {
+      resolve(mediaStream);
+    }).catch((reason) => {
+      reject(reason);
+    });
   });
 }
 
 function hypertyLoaded(result) {
-
   // Prepare to discover email:
-  var search = result.instance.search;
+  let search = result.instance.search;
   discoverEmail(search);
-
-  search.myIdentity().then(function(identity) {
+  search.myIdentity().then((identity) => {
     hypertyReady(result, identity);
   });
 }
 
 function hypertyReady(result, identity) {
+  let createBtn = $('.create-room-btn');
+  let InviteBtn = $('.invite-participants-btn');
   let $cardPanel = $('.card-panel');
   let hypertyInfo = '<div class="row"><span class="white-text">' +
                     '<b>Name:</b> ' + result.name + '</br>' +
@@ -52,35 +49,40 @@ function hypertyReady(result, identity) {
   $cardPanel.append(userInfo);
   $cardPanel.append(hypertyInfo);
 
-  connector = result.instance;
-
-  connector.onInvitation(function(controller, identity) {
-    console.debug('On Invitation: ', controller, identity); 
-      notificationHandler(controller, identity);
-      
-  });
-
-  let createBtn = $('.create-room-btn');
-  let joinBtn = $('.join-room-btn');
-
+  confHyperty = result.instance;
+  confHyperty.onInvitation((controller, identity) => {
+    // console.debug('On Invitation: ', controller, identity); 
+      notificationHandler(controller, identity);   
+  }); 
   createBtn.on('click', createRoom);
-  // joinBtn.on('click', joinRoom);
+  InviteBtn.on('click', inviteParticipants);
+}
+
+function inviteParticipants(event) {
+  event.preventDefault();
+  let createRoomModal = $('.groupcall');
+  let createRoomBtn = createRoomModal.find('.btn-create');
+  let addParticipantBtn = createRoomModal.find('.btn-add');
+
+  addParticipantBtn.on('click', addParticipantEvent);
+  createRoomBtn.on('click', createRoomEvent);
+  createRoomModal.openModal();
 }
 
 /*
   Create Room actions
  */
+
 function createRoom(event) {
   event.preventDefault();
   let createRoomModal = $('.create-groupcall');
   createRoomModal.openModal();
 }
 
-
 function createRoomEvent(event) {
   event.preventDefault();
 
-  let createRoomModal = $('.create-groupcall');
+  let createRoomModal = $('.groupcall');
   let participantsForm = createRoomModal.find('.participants-form');
   let serializedObject = $(participantsForm).serializeArray();
   let users = [];
@@ -93,27 +95,33 @@ function createRoomEvent(event) {
     domains = domainObject.map((domainObject) => { return domainObject.value; });
   }
 
-  // Prepare the chat
   let name = createRoomModal.find('.input-name').val();
 
   console.log('Participants: ', users, ' domain: ', domains);
 
-  // chatGroupManager.create(name, users, domains).then(function(chatController) {
-
-  //   let isOwner = true;
-  //   prepareChat(chatController, isOwner);
-  //   participantsForm[0].reset();
-
-  // }).catch(function(reason) {
-  //   console.error(reason);
-  // });
+  for (value in users) {
+    let search = confHyperty.search;
+    let emailsObject = serializedObject.filter((field) => { return field.name === 'email';});
+    users = emailsObject.map((emailObject) => { return emailObject.value; });
+    let domainObject = serializedObject.filter((field) => { return field.name === 'domain';});
+    domains = domainObject.map((domainObject) => { return domainObject.value; });
+    console.log('users[user] is :',  users[value], domains[value], name) 
+    search.users([users[value]], [domains[value]], ['connection'], ['audio', 'video']).then((result)=> {
+      result.forEach((hyperty) => {
+        if (hyperty.hasOwnProperty('userID')) {
+          console.debug('hyperty:', hyperty.userID)   
+           confHyperty.invite(hyperty.userID, name, domains[value]);
+        }
+      });    
+    }).catch(emailDiscoveredError); 
+  }
 }
 
 function addParticipantEvent(event) {
 
   event.preventDefault();
 
-  let createRoomModal = $('.create-groupcall');
+  let createRoomModal = $('.groupcall');
   let participants = createRoomModal.find('.participants-form');
   let countParticipants = participants.length - 1;
 
@@ -131,54 +139,47 @@ function addParticipantEvent(event) {
   '</div>';
 
   participants.append(participantEl);
-
 }
-
-
 
 function notificationHandler(controller, identity) {
   console.info('---------------- ---- notificationHandler ----------------------------------')
-
-  var calleeInfo = identity;
-  var incoming = $('.modal-call');
-  var acceptBtn = incoming.find('.btn-accept');
-  var rejectBtn = incoming.find('.btn-reject');
-  var informationHolder = incoming.find('.information');
-
-  showVideo(controller);
-  controllerExist = true;
-
-  acceptBtn.on('click', function(e) {
-
+  let calleeInfo = identity;
+  let incoming = $('.modal-call');
+  let acceptBtn = incoming.find('.btn-accept');
+  let rejectBtn = incoming.find('.btn-reject');
+  let informationHolder = incoming.find('.information');
+  var options = options || {video: true, audio: true};
+  let toHyperty = controller._connectionEvent.value.serverURL;
+  let roomID = controller._connectionEvent.value.roomName;
+  let localMediaStream;
+  
+  acceptBtn.on('click', (e) => {   
     console.log('accepted call from', calleeInfo);
-
     e.preventDefault();
-
-    var options = options || {video: true, audio: true};
-    getUserMedia(options).then(function(mediaStream) {
-      processLocalVideo(mediaStream);
-      return controller.accept(mediaStream);
-    })
-    .then(function(result) {
-      console.debug('result : ', result);
-    }).catch(function(reason) {
+  
+    getUserMedia(options).then((mediaStream) => {
+      console.info('recieved media stream: ', mediaStream);
+      localMediaStream = mediaStream;
+      return confHyperty.connect(toHyperty, mediaStream, roomID, domain);
+    }).then((result) => {;
+      showVideo(result);
+      processLocalVideo(localMediaStream);
+    }).catch((reason) => {
       console.error(reason);
     });
-
   });
 
-  rejectBtn.on('click', function(e) {
-
-    controller.decline().then(function(result) {
+  rejectBtn.on('click', (e) => {
+    controller.decline().then((result) => {
       console.log(result);
-    }).catch(function(reason) {
+    }).catch((reason) => {
       console.error(reason);
     });
 
     e.preventDefault();
   });
 
-  var parseInformation = '<div class="col s12">' +
+  let parseInformation = '<div class="col s12">' +
         '<div class="row valign-wrapper">' +
           '<div class="col s2">' +
             '<img src="' + calleeInfo.avatar + '" alt="" class="circle responsive-img">' +
@@ -209,30 +210,25 @@ function notificationHandler(controller, identity) {
 }
 
 function discoverEmail(search) {
-
-  var section = $('.discover');
-  var searchForm = section.find('.form');
-  var inputField = searchForm.find('.friend-email');
-  var inputDomain = searchForm.find('.input-domain');
-
+  let section = $('.discover');
+  let searchForm = section.find('.form');
+  let inputField = searchForm.find('.friend-email');
+  let inputDomain = searchForm.find('.input-domain');
   section.removeClass('hide');
 
-  searchForm.on('submit', function(event) {
+  searchForm.on('submit', (event) => {
     event.preventDefault();
-
-    var collection = section.find('.collection');
-    var collectionItem = '<li class="collection-item item-loader"><div class="preloader-wrapper small active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div></li>';
+    let collection = section.find('.collection');
+    let collectionItem = '<li class="collection-item item-loader"><div class="preloader-wrapper small active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div></li>';
+    let email = inputField.val();
+    let domain = inputDomain.val();
 
     collection.empty();
     collection.removeClass('hide');
     collection.addClass('center-align');
     collection.prepend(collectionItem);
-
-    var email = inputField.val();
-    var domain = inputDomain.val();
-
+ 
     console.log('searching for: ', email, ' at domain: ', domain);
-
     search.users([email], [domain], ['connection'], ['audio', 'video']).then(emailDiscovered).catch(emailDiscoveredError);
 
   });
@@ -241,25 +237,24 @@ function discoverEmail(search) {
 function emailDiscovered(result) {
   console.log('Email Discovered: ', result);
 
-  var section = $('.discover');
-  var collection = section.find('.collection');
-  var collectionItem;
+  let section = $('.discover');
+  let collection = section.find('.collection');
+  let loader = collection.find('li.item-loader');
+  let collectionItem;
 
   collection.removeClass('center-align');
-  var loader = collection.find('li.item-loader');
   loader.remove();
 
   if (result.length === 0) {
     collectionItem = '<li class="collection-item orange lighten-3">' +
       '<span class="title">Hyperty not found</span>' +
       '</li>';
-
     collection.append(collectionItem);
   }
 
   result.forEach((hyperty) => {
+    let itemsFound = collection.find('li[data-url="' + hyperty.userID + '"]');
 
-    var itemsFound = collection.find('li[data-url="' + hyperty.userID + '"]');
     if (itemsFound.length) {
       itemsFound[0].remove();
     }
@@ -277,20 +272,16 @@ function emailDiscovered(result) {
       '<span class="title">Hyperty not found</span>' +
       '</li>';
     }
-
     collection.append(collectionItem);
-
   });
 
-  var callBtn = collection.find('.call-btn');
-  callBtn.on('click', function(event) {
+  let callBtn = collection.find('.call-btn');
+
+  callBtn.on('click', (event) => {
     event.preventDefault();
     let userURL = $(event.currentTarget).parent().attr('data-user');
     let hypertyURL = $(event.currentTarget).parent().attr('data-url');
-
     let domain = hypertyURL.substring(hypertyURL.lastIndexOf(':') + 3, hypertyURL.lastIndexOf('/'));
-    console.log('Domain:', domain);
-
     openVideo(userURL, domain);
   });
 
@@ -300,10 +291,9 @@ function emailDiscoveredError(result) {
 
   console.error('Email Discovered Error: ', result);
 
-  var section = $('.discover');
-  var collection = section.find('.collection');
-
-  var collectionItem = '<li class="collection-item orange lighten-3"><i class="material-icons left circle">error_outline</i>' + result + '</li>';
+  let section = $('.discover');
+  let collection = section.find('.collection');
+  let collectionItem = '<li class="collection-item orange lighten-3"><i class="material-icons left circle">error_outline</i>' + result + '</li>';
 
   collection.empty();
   collection.removeClass('center-align');
@@ -315,72 +305,48 @@ function openVideo(hyperty, domain) {
 
   console.log('connecting hyperty: ', hyperty);
 
-  var toHyperty = hyperty;
+  let toHyperty = hyperty;
   let roomID = document.getElementById('roomName').value;
-  var localMediaStream;
-
+  let localMediaStream;
   var options = options || {video: true, audio: true};
-  getUserMedia(options).then(function(mediaStream) {
-    console.info('recived media stream: ', mediaStream);
+
+  getUserMedia(options).then((mediaStream) => {
     localMediaStream = mediaStream;
-    return connector.connect(toHyperty, mediaStream, roomID, domain);
-  })
-  .then(function(controller) {
+    serverURL = toHyperty;
+    return confHyperty.connect(toHyperty, mediaStream, roomID, domain);
+  }).then((controller) => {
     showVideo(controller);
-
     processLocalVideo(localMediaStream);
-
-  }).catch(function(reason) {
+  }).catch((reason) => {
     console.error(reason);
   });
 }
 
 function processVideo(event, user) {
-
   console.log('Process Video: ', event);
- // working for 1- 1
-  // var videoHolder = $('.video-holder');
-  // var video = videoHolder.find('.video');
 
-  // var videoHolder = document.getElementById('video-container')
-  // var video = document.createElement('video');
-//   video.id = user;
- 
-//   // videoHolder.appendChild(video);
-//  console.debug('videoHolder is ', videoHolder )
-
-//   video[0].src = URL.createObjectURL(event.stream);
-//   console.debug('video[0] is ', video[0])
-
-    console.log('Remote stream added.', event.stream);
-    //remoteVideo.src = window.URL.createObjectURL(event.stream);
-    console.log('Dynamically creating video');
-    let remoteVideo = document.createElement("video");
-    remoteVideo.id = user;
-    remoteVideo.autoplay = true;
-    remoteVideo.src = URL.createObjectURL(event.stream);
-    // remoteVideo = event.stream;
-    $('#video-container').append(remoteVideo);
-   console.debug('Creation complete!');
-
+  let remoteVideo = document.createElement("video");
+  remoteVideo.id = user;
+  remoteVideo.autoplay = true;
+  remoteVideo.src = URL.createObjectURL(event.stream);
+  $('#video-container').append(remoteVideo);
+  console.debug('Creation complete!');
 }
 
 
-
-//
 function processLocalVideo(mediaStream) {
   console.log('Process Local Video: ', mediaStream);
 
-  var videoHolder = $('.video-holder');
-  var video = videoHolder.find('.my-video');
+  let videoHolder = $('.video-holder');
+  let video = videoHolder.find('.my-video');
   video[0].src = URL.createObjectURL(mediaStream);
 }
 
 function disconnecting() {
 
-  var videoHolder = $('.video-holder');
-  var myVideo = videoHolder.find('.my-video');
-  var video = videoHolder.find('.video');
+  let videoHolder = $('.video-holder');
+  let myVideo = videoHolder.find('.my-video');
+  let video = videoHolder.find('.video');
   myVideo[0].src = '';
   video[0].src = '';
 
@@ -397,20 +363,20 @@ function showVideo(controller) {
   var btnMic = videoHolder.find('.mic');
   var btnHangout = videoHolder.find('.hangout');
 
-  controller.onAddStream(function(event, user) {
-    console.debug(' controller.onAddStream : ', controller, event, user);
+  controller.onAddStream((event, user) => {
+    console.debug('controller.onAddStream : ', controller, event, user);
     processVideo(event, user);
   });
 
-  controller.onDisconnect(function(identity) {
+  controller.onDisconnect((identity) => {
     disconnecting();
   });
 
-  btnCamera.on('click', function(event) {
+  btnCamera.on('click', (event) => {
 
     event.preventDefault();
 
-    controller.disableVideo().then(function(status) {
+    controller.disableVideo().then((status) => {
       console.log(status, 'camera');
       var icon = 'videocam_off';
       var text = 'Disable Camera';
@@ -421,17 +387,17 @@ function showVideo(controller) {
 
       var iconEl = '<i class="material-icons left">' + icon + '</i>';
       $(event.currentTarget).html(iconEl);
-    }).catch(function(e) {
+    }).catch((e) => {
       console.error(e);
     });
 
   });
 
-  btnMute.on('click', function(event) {
+  btnMute.on('click', (event) => {
 
     event.preventDefault();
 
-    controller.mute().then(function(status) {
+    controller.mute().then((status) => {
       console.log(status, 'audio');
       var icon = 'volume_off';
       var text = 'Disable Sound';
@@ -442,7 +408,7 @@ function showVideo(controller) {
 
       var iconEl = '<i class="material-icons left">' + icon + '</i>';
       $(event.currentTarget).html(iconEl);
-    }).catch(function(e) {
+    }).catch((e) => {
       console.error(e);
     });
 
@@ -450,11 +416,11 @@ function showVideo(controller) {
 
   });
 
-  btnMic.on('click', function(event) {
+  btnMic.on('click', (event) => {
 
     event.preventDefault();
 
-    controller.disableAudio().then(function(status) {
+    controller.disableAudio().then((status) => {
       console.log(status, 'mic');
       var icon = 'mic_off';
       var text = 'Disable Microphone';
@@ -465,23 +431,20 @@ function showVideo(controller) {
 
       var iconEl = '<i class="material-icons left">' + icon + '</i>';
       $(event.currentTarget).html(iconEl);
-    }).catch(function(e) {
+    }).catch((e) => {
       console.error(e);
     });
 
   });
 
-  btnHangout.on('click', function(event) {
-
+  btnHangout.on('click', (event) => {
     event.preventDefault();
-
-    controller.disconnect().then(function(status) {
+    controller.disconnect().then((status) => {
       console.log('Status of Handout:', status);
       disconnecting();
-    }).catch(function(e) {
+    }).catch((e) => {
       console.error(e);
     });
-
     console.log('hangout');
   });
 }

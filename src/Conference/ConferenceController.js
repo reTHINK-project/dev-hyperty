@@ -281,7 +281,7 @@ class ConferenceController {
     let peerData = dataObjectObserver.data;
 
     // let peerData = isOwner ? data.ownerPeer : data.Peer;
-    console.info('[Connector.ConnectionController ]Peer Data:', JSON.stringify(peerData));
+    console.info('[Conference ConnectionController ] Peer Data:', JSON.stringify(peerData));
 
     if(peerData !== 'undefined') {
       if (peerData.hasOwnProperty('connectionDescription')) {
@@ -322,7 +322,7 @@ class ConferenceController {
     }
 
     if (data.type === 'candidate') {
-      console.info('[Connector.ConnectionController ] Process Ice Candidate: ', data);
+      console.info('[Conference ConnectionController ] Process Ice Candidate: ', data);
          let parsedCandidate = {
            type: 'candidate',
            candidate:data.candidate,
@@ -362,12 +362,12 @@ class ConferenceController {
     let data = _this.dataObjectReporter.data;
 
     console.debug('conferenceroom::receiveVideo', senderName);
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
       try {
         newPeerConncection[senderName] = new RTCPeerConnection(_this._configuration.webrtc);
         console.debug('_this._username is :', _this.user, username);
 
-        newPeerConncection[senderName].addEventListener('signalingstatechange', function(event) {
+        newPeerConncection[senderName].addEventListener('signalingstatechange', (event) => {
 
           console.info('signalingstatechange', event.currentTarget.signalingState);
 
@@ -382,7 +382,7 @@ class ConferenceController {
 
         });
 
-        newPeerConncection[senderName].addEventListener('iceconnectionstatechange', function(event) {
+        newPeerConncection[senderName].addEventListener('iceconnectionstatechange', (event) => {
           console.info('iceconnectionstatechange', event.currentTarget.iceConnectionState, _this.dataObjectReporter);
 
           if (data.hasOwnProperty('status')) {
@@ -390,7 +390,7 @@ class ConferenceController {
           }
         });
 
-        newPeerConncection[senderName].addEventListener('icecandidate', function(event) {
+        newPeerConncection[senderName].addEventListener('icecandidate', (event) => {
 
           // console.info('icecandidate changes', event.candidate, _this.dataObjectReporter);
 
@@ -415,15 +415,16 @@ class ConferenceController {
         newPeerConncection[senderName].addStream(_this._mediaStream);
 
         // Add stream to PeerConnection
-        newPeerConncection[senderName].addEventListener('addstream', function(event) {
+        newPeerConncection[senderName].addEventListener('addstream', (event) => {
           console.debug('Add Stream: ', event);
 
           // newPeerConncection[senderName].addStream(_this._mediaStream);
+          console.log('/************************* _this._onAddStream :', _this._onAddStream)
 
-          if (_this._onAddStream) _this._onAddStream(event, senderName);
+          if (_this._onAddStream)  _this._onAddStream(event, senderName);
         });
 
-        newPeerConncection[senderName].onremovestream = function(event) {
+        newPeerConncection[senderName].onremovestream = (event) => {
           console.info('Stream removed: ', event);
         };
 
@@ -496,7 +497,7 @@ class ConferenceController {
     console.debug('-------------------------- setLocalDescription -------------------------:',mode ,  senderName, _this.mode, description)
     if (mode === 'offer') {
       description.sdp = _this.setSendOnly(description.sdp);
-      newPeerConncection[senderName].setLocalDescription(description, function() {
+      newPeerConncection[senderName].setLocalDescription(description, () => {
 
         let sdpConnection = {
           senderName: senderName,
@@ -513,7 +514,7 @@ class ConferenceController {
       }, _this._infoError);
     } else {
       description.sdp = _this.setRecvOnly(description.sdp);
-      newPeerConncection[senderName].setLocalDescription(description, function() {
+      newPeerConncection[senderName].setLocalDescription(description, () => {
 
         let sdpConnection = {
           sdp: description.sdp,
@@ -574,18 +575,18 @@ class ConferenceController {
     console.debug('Remote Peer Information: ', _this.dataObjectObserver.data);
     let remotePeer = _this.dataObjectObserver.data.reporter;
 
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
       try {
         console.info('------------------------ Syncher Create ---------------------- \n');
         syncher.create(_this._objectDescURL, [remotePeer], _this.peer)
-        .then(function(dataObjectReporter) {
+        .then((dataObjectReporter) => {
           console.info('2. Return the Data Object Reporter ', dataObjectReporter);
 
           _this.mediaStream = stream;
           _this.dataObjectReporter = dataObjectReporter;
           resolve(true);
         })
-        .catch(function(reason) {
+        .catch((reason) => {
           console.error(reason);
           reject(false);
         });
@@ -633,7 +634,7 @@ class ConferenceController {
 
     let _this = this;
 
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
 
       try {
 
@@ -667,7 +668,7 @@ class ConferenceController {
   disableAudio(value) {
     let _this = this;
 
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
 
       try {
         let localStream = newPeerConncection[_this.user].getLocalStreams()[0];
@@ -696,7 +697,7 @@ class ConferenceController {
   disableVideo(value) {
     let _this = this;
 
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
 
       try {
         let localStream = newPeerConncection[_this.user].getLocalStreams()[0];
@@ -720,7 +721,7 @@ class ConferenceController {
 
     let _this = this;
 
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
 
       try {
         let remoteStream = newPeerConncection[_this.user].getLocalStreams()[0];
