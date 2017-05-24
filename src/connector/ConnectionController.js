@@ -46,13 +46,13 @@ class ConnectionController {
 
     // Private
     _this._syncher = syncher;
-    _this._configuration = configuration.webrtc;
+    _this._configuration = configuration;
     _this._domain = domain;
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Connection';
     _this._clean = clean;
 
     // Prepare the PeerConnection
-    let peerConnection = new RTCPeerConnection(_this._configuration.webrtc);
+    let peerConnection = new RTCPeerConnection(_this._configuration.ice);
 
     peerConnection.addEventListener('signalingstatechange', function(event) {
 
