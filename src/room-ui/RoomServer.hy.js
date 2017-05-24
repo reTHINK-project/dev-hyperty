@@ -56,7 +56,7 @@ class RoomServer {
         this.contextSchemaURL = 'hyperty-catalogue://catalogue.' + divideURL(hypertyURL).domain + '/.well-known/dataschema/Context';
 
         // make hyperty discoverable
-        this.discovery = new Discovery(hypertyURL, bus);
+        this.discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
 
         // syncher
         this.syncher = new Syncher(hypertyURL, bus, configuration);
@@ -89,6 +89,7 @@ class RoomServer {
 
         //add listener
         this.bus.addListener(this.hypertyURL, (msg) => {
+            l.d("got a message!:", msg);
             // we are only interested in execute messages
             if (msg.type === "execute") {
                 l.d("got execute message:", msg);

@@ -1,7 +1,6 @@
 {
   "configuration": {
-    "webrtc": {
-      "iceServers": [{
+      "ice": [{
              "urls": "stun:stun.voiparound.com"
            }, {
              "urls": "stun:stun.voipbuster.com"
@@ -40,7 +39,6 @@
              "credential": "muazkh",
              "username": "webrtc@live.com"
            }]
-    }
   },
   "constraints": {
     "browser":true,"windowSandbox":true,"mic":true,"camera":true
