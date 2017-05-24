@@ -62,7 +62,7 @@ class DiscoveryHyperty {
                 console.log('[DiscoveryHyperty]', h)
                 this._createSyncher(Object.keys(h).map(k=>h[k].reporter))
             }).catch((err)=>{
-                if(err === 'No DataObject was found')
+                if(err === 'Not Found')
                     return this._createSyncher(([]))
 
                 console.error('[DiscoveryHyperty]', err)
@@ -74,12 +74,10 @@ class DiscoveryHyperty {
             schema: "context",
             id: '_' + Math.random().toString(36).substr(2, 9),
             type: "presence",
-            time: "0",
-            name: "discovery",
-            resources: ["users"]
+            time: "0"
         }
         console.log('synchers', hyperties)
-        this._syncher.create(this._objectDescURL, hyperties, dataObject)
+        this._syncher.create(this._objectDescURL, hyperties, dataObject, true, false, "discovery", {}, {resources: ["users"]})
             .then((objReporter) => {
                 console.log('[DiscoveryHy _syncher created]', hyperties)
                 objReporter.onSubscription((event) => {

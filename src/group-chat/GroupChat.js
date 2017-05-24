@@ -24,7 +24,7 @@ const GroupChat = {
     }
 }
 
-export default function(id, addChild, onAddChild, { name, startingTime, participants }, identity){
+export default function(id, addChild, onAddChild, name, {startingTime, participants }, identity){
     let initialData = {
         id: id,
         name: name,
