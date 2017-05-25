@@ -182,11 +182,11 @@ function addParticipantEvent(event) {
 
   let participantEl = '<div class="row">' +
     '<div class="input-field col s8">' +
-    '  <input class="input-email" name="email" id="email-' + countParticipants + '" required aria-required="true" type="text">' +
+    '  <input class="input-email" name="email" id="email-' + countParticipants + '" required aria-required="true" type="text" >' +
     '  <label for="email-' + countParticipants + '">Participant Email</label>' +
     '</div>' +
     '<div class="input-field col s4">' +
-    '  <input class="input-domain" name="domain" id="domain-' + countParticipants + '" type="text">' +
+    '  <input class="input-domain" name="domain" id="domain-' + countParticipants + '" type="text"">' +
     '  <label for="domain-' + countParticipants + '">Participant domain</label>' +
     '</div>' +
   '</div>';
@@ -208,12 +208,27 @@ function createRoomEvent(event) {
   let users = [];
   let domains = [];
 
+  debugger;
+
   if (serializedObject) {
 
     let emailsObject = serializedObject.filter((field) => { if (field.value !== '') return field.name === 'email';});
     users = emailsObject.map((emailObject) => { return emailObject.value;});
-    let domainObject = serializedObject.filter((field) => { if (field.value !== '') return field.name === 'domain';});
-    domains = domainObject.map((domainObject) => { return domainObject.value; });
+    let domainObject = serializedObject.filter((field) => {
+      return field.name === 'domain';
+      /*if (field.value !== '') {
+        return field.name === 'domain';
+      }*/
+    });
+
+    domainObject.forEach((domain)=>{
+      if (!domain.value)
+       domain.value = chatGroupManager._domain;
+    });
+    domains = domainObject.map((domainObject) => {
+      if (domainObject.value) { return domainObject.value; }
+      //else return chatGroupManager._domain;
+    });
   }
 
   // Prepare the chat
@@ -351,10 +366,14 @@ function inviteParticipants(chatController) {
 
     event.preventDefault();
 
-    let usersIDs = inviteModal.find('.input-emails').val();
-    let domains = inviteModal.find('.input-domains').val();
+    let userID = inviteModal.find('.input-emails').val();
+    let domain = inviteModal.find('.input-domains').val();
 
-    let usersIDsParsed = [];
+    if (!domain) { domain = chatController.domain; }
+
+    console.log('[GroupChatManagerDemo.inviteParticipants]: ', userID, ' @ ', domain);
+
+    /*let usersIDsParsed = [];
     if (usersIDs.includes(',')) {
       usersIDsParsed = usersIDs.split(',');
     } else {
@@ -366,9 +385,9 @@ function inviteParticipants(chatController) {
       domainsParsed = domains.split(',');
     } else {
       domainsParsed.push(domains);
-    }
+    }*/
 
-    chatController.addUser(usersIDsParsed, domainsParsed).then(function(result) {
+    chatController.addUser([userID], [domain]).then(function(result) {
       console.log('Invite emails', result);
     }).catch(function(reason) {
       console.log('Error:', reason);

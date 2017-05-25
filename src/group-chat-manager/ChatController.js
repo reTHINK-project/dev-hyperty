@@ -43,6 +43,7 @@ class ChatController {
     _this.myIdentity = identity;
     _this.controllerMode = 'reporter';
     _this.child_cseq = 0;
+    _this.domain = domain;
 
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
   }

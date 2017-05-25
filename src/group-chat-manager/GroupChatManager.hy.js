@@ -236,30 +236,10 @@ class GroupChatManager {
 
     return new Promise(function(resolve, reject) {
 
-      // Create owner participant
-      /*
-      _this.communicationObject.owner = _this._hypertyURL;
-      _this.communicationObject.name = name;
-      _this.communicationObject.id = name;
-      _this.communicationObject.resources = ['chat'];
-      _this.communicationObject.children = [];
-      _this.communicationObject.status = CommunicationStatus.OPEN;
-      _this.communicationObject.startingTime = new Date().toJSON();
-      _this.communicationObject.lastModified = _this.communicationObject.startingTime;
-      */
-
       _this.communicationObject = communicationObject;
       _this.communicationObject.cseq = 1;
-/*      _this.communicationObject.reporter =  _this._hypertyURL;
-      _this.communicationObject.schema = _this._objectDescURL;
-      _this.communicationObject.name = name;
-      _this.communicationObject.created =  new Date().toJSON();*/
       _this.communicationObject.startingTime = new Date().toJSON();
-//      _this.communicationObject.lastModified = _this.communicationObject.created;
       _this.communicationObject.status =  CommunicationStatus.OPEN;
-      /*_this.communicationObject.children = [];
-      _this.communicationObject.children.push({parent: 'communication', listener:'resource', type:'chat'});
-      _this.communicationObject.participants = {};*/
       let myIdentity;
       _this.search.myIdentity().then((identity) => {
         myIdentity = identity;
