@@ -16,6 +16,7 @@ function hypertyLoaded(result) {
 }
 
 function hypertyReady(result, identity) {
+
   let $cardPanel = $('.card-panel');
   let hypertyInfo = '<div class="row"><span class="white-text">' +
                     '<b>Name:</b> ' + result.name + '</br>' +
@@ -35,6 +36,9 @@ function hypertyReady(result, identity) {
   $cardPanel.append(userInfo);
   $cardPanel.append(hypertyInfo);
 
+  /*$('.create-room-btn').hide();
+  $('.join-room-btn').hide();*/
+
   chatGroupManager = result.instance;
   chatGroupManager.onInvitation((event) => {
     onInvitation(event);
@@ -46,13 +50,24 @@ function hypertyReady(result, identity) {
     getSectionTpl().then(() => {
       console.log('[GroupChatManagerDemo - on Resume observers] - Section Template ready:', chatControllers);
 
-      Object.values(chatControllers).forEach((chatController) => {
+      let groupChats = Object.values(chatControllers);
 
-        chatManagerReady(chatController, false);
-        prepareChat(chatController);
+      if (groupChats.length >= 0) {
+        $('.create-room-btn').hide();
+        $('.join-room-btn').hide();
 
-      });
+        let messageChat = $('.chat');
+        messageChat.removeClass('hide');
 
+        let chatSection = $('.chat-section');
+        chatSection.removeClass('hide');
+        groupChats.forEach((chatController) => {
+
+          chatManagerReady(chatController, false);
+          prepareChat(chatController);
+
+        });
+      }
     })
   });
 
@@ -61,16 +76,24 @@ function hypertyReady(result, identity) {
     getSectionTpl().then(() => {
       console.log('[GroupChatManagerDemo - on Resume reporters] - Section Template ready:', chatControllers);
 
-      Object.values(chatControllers).forEach((chatController) => {
+      let groupChats = Object.values(chatControllers);
 
-        chatManagerReady(chatController, true);
-        prepareChat(chatController);
+      if (groupChats.length >= 0) {
+        $('.create-room-btn').hide();
+        $('.join-room-btn').hide();
 
-      });
+
+        groupChats.forEach((chatController) => {
+          chatManagerReady(chatController, true);
+          prepareChat(chatController);
+
+        });
+
+      }
+
     });
 
   });
-
   let messageChat = $('.chat');
   messageChat.removeClass('hide');
 
@@ -82,7 +105,18 @@ function hypertyReady(result, identity) {
 
   createBtn.on('click', createRoom);
   joinBtn.on('click', joinRoom);
+
 }
+
+/*function enableCreationJoin() {
+
+  let createBtn = $('.create-room-btn');
+  let joinBtn = $('.join-room-btn');
+
+  createBtn.on('click', createRoom);
+  joinBtn.on('click', joinRoom);
+}*/
+
 
 function onInvitation(event) {
   console.log('On Invitation: ', event);
@@ -91,6 +125,8 @@ function onInvitation(event) {
     console.log('[GroupChatManagerDemo - On Invitation] - Section Template ready', event);
     return chatGroupManager.join(event.url)
   }).then((chatController) => {
+    $('.create-room-btn').hide();
+    $('.join-room-btn').hide();
     chatManagerReady(chatController, false);
     prepareChat(chatController);
   }).catch(function(reason) {
@@ -357,8 +393,8 @@ function chatManagerReady(chatController, isOwner) {
   let textArea = messageForm.find('.materialize-textarea');
 
   Handlebars.getTemplate('group-chat-manager/chat-header').then(function(template) {
-    let name = chatController.dataObject.data.name;
-    let resource = chatController.dataObject._url;
+    let name = chatController.dataObject.metadata.name;
+    let resource = chatController.dataObject.url;
 
     let html = template({name: name, resource: resource});
     $('.chat-header').append(html);
@@ -373,6 +409,9 @@ function chatManagerReady(chatController, isOwner) {
 
         closeChat(chatController);
       });
+    } else {
+      $('.invite-btn').hide();
+
     }
 
   });
