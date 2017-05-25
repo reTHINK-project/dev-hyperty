@@ -141,6 +141,12 @@ class GroupChatManager {
         // TODO: replace the 200 for Message.Response
         event.ack(200);
 
+        _this._observersControllers[event.url].closeEvent = event;
+
+        delete _this._observersControllers[event.url];
+
+        _this._observersControllers.closeEvent = event;
+
         _this.communicationObject = communicationObject;
 
 

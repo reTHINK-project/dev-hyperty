@@ -208,8 +208,6 @@ function createRoomEvent(event) {
   let users = [];
   let domains = [];
 
-  debugger;
-
   if (serializedObject) {
 
     let emailsObject = serializedObject.filter((field) => { if (field.value !== '') return field.name === 'email';});
