@@ -118,7 +118,6 @@ class QBWebRTC extends EventEmitter { // extends EventEmitter because we need to
     return new Promise((resolve, reject) => {
       // initial data for sync object
       let dataObject = {
-        name : "Connection",
         status : "",
         owner : this.myUrl,
         connectionDescription : {},

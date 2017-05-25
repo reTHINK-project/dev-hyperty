@@ -21,15 +21,13 @@ const NotificationsTriggerObject = {
         return this._getHyFor(recipients)
             .then((hypertyURLs)=>{
                 return this._syncher.create(this._objectDescURL, hypertyURLs, {
-                    name: 'NotificationReporter',
-                    resources: ['notification'],
                     children: [],
                     status: 'open',
                     participants: hypertyURLs
-                }).then((reporter)=>{
+                }, true, false, 'NotificationReporter', {}, {resources: ['notification']}).then((reporter)=>{
                         reporter.onSubscription((event)=>event.accept())
                         setTimeout(()=>{
-                        return reporter.addChild('chatmessages', notification)
+                        return reporter.addChild('resources', notification)
                             .then((child)=>{
                                 console.log('notification sended', notification)
                                 return child
