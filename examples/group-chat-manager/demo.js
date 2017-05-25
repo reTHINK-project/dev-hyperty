@@ -343,6 +343,9 @@ function prepareChat(chatController, isOwner) {
   chatController.onClose(function(event) {
     console.log('[GroupChatManagerDemo ] onClose Event:', event);
     $('.chat-section').html('');
+
+    $('.create-room-btn').show();
+    $('.join-room-btn').show();
   });
 
   let inviteBtn = $('.invite-btn');
