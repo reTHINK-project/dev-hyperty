@@ -57,7 +57,7 @@ class ChatController {
 
     dataObjectReporter.onSubscription(function(event) {
       event.accept();
-      console.log('[GroupChatManager.ChatController] event', event);
+      console.log('[GroupChatManager.ChatController] event', event, dataObjectReporter.url);
       console.log('[GroupChatManager.ChatController]New user has subscribe this object: ', dataObjectReporter.data, event.identity);
 
       let participant = event.identity.userProfile;
@@ -67,24 +67,11 @@ class ChatController {
         participant.legacy = event.identity.legacy;
       }
 
-      // TODO: check why the data is empty when we resume;
-      let found = Object.values(dataObjectReporter.data.participants || {}).find((user) => {
-        console.log('find: ', user.identity.userURL, participant.userURL);
-        return user.identity.userURL === participant.userURL;
-      });
-/*
-      dataObjectReporter.data.cseq += 1;
-      dataObjectReporter.data.lastModified = new Date().toJSON();*/
-
       dataObjectReporter.data.participants[participant.userURL] = { identity: participant };
       console.log('[GroupChatManager.ChatController] communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
-
-      console.log('[GroupChatManager.ChatController - onSubscription] ', found, participant);
-      if (!found) {
-        console.log('[GroupChatManager.ChatController - this._onUserAdded] ', _this._onUserAdded);
-        if (_this._onUserAdded) _this._onUserAdded(participant);
-      }
-
+      console.log('[GroupChatManager.ChatController - onSubscription] ', participant);
+      console.log('[GroupChatManager.ChatController - this._onUserAdded] ', _this._onUserAdded);
+      if (_this._onUserAdded) _this._onUserAdded(participant);
     });
 
     dataObjectReporter.onAddChild(function(child) {
