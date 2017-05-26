@@ -87,7 +87,7 @@ class GroupChatManager {
         console.log('[GroupChatManager].syncher.resumeReporters ', dataObjectReporterURL);
         // create a new chatController but first get identity
         _this.search.myIdentity().then((identity) => {
-          let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, identity);
+          let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, identity, _this);
           chatController.dataObjectReporter = reporters[dataObjectReporterURL];
 
           // Save the chat controllers by dataObjectReporterURL
@@ -114,7 +114,7 @@ class GroupChatManager {
         console.log('[GroupChatManager].syncher.resumeObservers ', dataObjectObserverURL);
         // create a new chatController but first get indentity
         this.search.myIdentity().then((identity) => {
-          let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, identity);
+          let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, identity, _this);
           chatController.dataObjectObserver = observers[dataObjectObserverURL];
 
           // Save the chat controllers by dataObjectReporterURL
@@ -150,29 +150,6 @@ class GroupChatManager {
         _this.communicationObject = communicationObject;
 
 
-        //Reset all the parameters
-        /*
-        _this.communicationObject.owner = '';
-        _this.communicationObject.name = '';
-        _this.communicationObject.id = '';
-        _this.communicationObject.status = '';
-        _this.communicationObject.startingTime = '';
-        _this.communicationObject.lastModified = '';
-        _this.communicationObject.participants = [];
-        _this.communicationObject.resources = ['chat'];
-        _this.communicationObject.children = [];
-
-        _this.communicationObject.url = '';
-        _this.communicationObject.cseq = '';
-        _this.communicationObject.reporter =  '';
-        _this.communicationObject.schema = '';
-        _this.communicationObject.name = '';
-        _this.communicationObject.created =  '';
-        _this.communicationObject.startingTime = '';
-        _this.communicationObject.lastModified = '';
-        _this.communicationObject.status =  '';
-        _this.communicationObject.children = [];
-        _this.communicationObject.participants = {};*/
 
         for (let url in this._reportersControllers) {
           this._reportersControllers[url].closeEvent(event);
@@ -279,7 +256,7 @@ class GroupChatManager {
       }).then(function(dataObjectReporter) {
 
         console.info('[GroupChatManager] 3. Return Create Data Object Reporter', dataObjectReporter);
-        let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, myIdentity);
+        let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, myIdentity, _this);
 
         resolve(chatController);
 
@@ -337,7 +314,7 @@ class GroupChatManager {
       }).then(function(dataObjectObserver) {
         console.info('Data Object Observer: ', dataObjectObserver);
 
-        let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, myIdentity);
+        let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, myIdentity, _this);
         resolve(chatController);
 
         chatController.dataObjectObserver = dataObjectObserver;

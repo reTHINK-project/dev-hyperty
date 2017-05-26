@@ -29,7 +29,7 @@
 
 class ChatController {
 
-  constructor(syncher, discovery, domain, search, identity) {
+  constructor(syncher, discovery, domain, search, identity, manager) {
 
     if (!syncher) throw Error('Syncher is a necessary dependecy');
     if (!discovery) throw Error('Discover is a necessary dependecy');
@@ -45,6 +45,8 @@ class ChatController {
     _this.child_cseq = 0;
     _this.domain = domain;
 
+    _this._manager = manager;
+
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
   }
 
@@ -56,22 +58,11 @@ class ChatController {
     _this.controllerMode = 'reporter';
 
     dataObjectReporter.onSubscription(function(event) {
-      event.accept();
-      console.log('[GroupChatManager.ChatController] event', event, dataObjectReporter.url);
-      console.log('[GroupChatManager.ChatController]New user has subscribe this object: ', dataObjectReporter.data, event.identity);
 
-      let participant = event.identity.userProfile;
-
-      console.log('[GroupChatManager.ChatController]  new participant', participant);
-      if (event.identity.legacy) {
-        participant.legacy = event.identity.legacy;
+      switch (event.type) {
+        case 'subscribe': _this._onSubscribe(event); break;
+        case 'unsubscribe': _this._onUnsubscribe(event); break;
       }
-
-      dataObjectReporter.data.participants[participant.userURL] = { identity: participant };
-      console.log('[GroupChatManager.ChatController] communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
-      console.log('[GroupChatManager.ChatController - onSubscription] ', participant);
-      console.log('[GroupChatManager.ChatController - this._onUserAdded] ', _this._onUserAdded);
-      if (_this._onUserAdded) _this._onUserAdded(participant);
     });
 
     dataObjectReporter.onAddChild(function(child) {
@@ -153,6 +144,44 @@ class ChatController {
     return _this._closeEvent;
   }
 
+  _onSubscribe(event) {
+
+    let dataObjectReporter = this._dataObjectReporter;
+     event.accept();
+     console.log('[GroupChatManager.ChatController.onSubscribe] event', event, dataObjectReporter.url);
+     console.log('[GroupChatManager.ChatController.onSubscribe]New user has subscribe this object: ', dataObjectReporter.data, event.identity);
+
+     let participant = event.identity.userProfile;
+
+     console.log('[GroupChatManager.ChatController.onSubscribe]  new participant', participant);
+     if (event.identity.legacy) {
+       participant.legacy = event.identity.legacy;
+     }
+
+     dataObjectReporter.data.participants[participant.userURL] = { identity: participant };
+     console.log('[GroupChatManager.ChatController.onSubscribe] communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
+     console.log('[GroupChatManager.ChatController.onSubscribe - onSubscription] ', participant);
+     console.log('[GroupChatManager.ChatController.onSubscribe - this._onUserAdded] ', this._onUserAdded);
+     if (this._onUserAdded) this._onUserAdded(participant);
+  }
+
+  _onUnsubscribe(event) {
+    let dataObjectReporter = this._dataObjectReporter;
+
+    console.log('[GroupChatManager.ChatController.onUnsubscribe] event', event, dataObjectReporter.url);
+
+    let participant = event.identity.userProfile;
+
+    console.log('[GroupChatManager.ChatController.onUnsubscribe]  participant left', participant);
+    if (event.identity.legacy) {
+      participant.legacy = event.identity.legacy;
+    }
+
+    delete dataObjectReporter.data.participants[participant.userURL];
+
+    console.log('[GroupChatManager.ChatController.onUnsubscribe - this._onUserRemoved] ', this.onUserRemoved);
+    if (this._onUserRemoved) this._onUserRemoved(participant);
+  }
   /**
    * This function is used to send a chat message.
    * @param  {string}     message                        Is the ChatMessage to be sent.
@@ -328,13 +357,23 @@ class ChatController {
 
     return new Promise(function(resolve, reject) {
 
-      try {
-        _this.dataObjectReporter.delete();
-        resolve(true);
-      } catch (e) {
-        reject(false);
+      if (_this.controllerMode === 'reporter') {
+        try {
+          delete _this._manager._reportersControllers[_this.dataObjectReporter.url];
+          _this.dataObjectReporter.delete();
+          resolve(true);
+        } catch (e) {
+          reject(false);
+        }
+      } else {
+        try {
+          delete _this._manager._observersControllers[_this.dataObjectObserver.url];
+          _this.dataObjectObserver.unsubscribe();
+          resolve(true);
+        } catch (e) {
+          reject(false);
+        }
       }
-
     });
 
   }

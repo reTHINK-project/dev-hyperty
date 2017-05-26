@@ -338,6 +338,7 @@ function prepareChat(chatController, isOwner) {
 
   chatController.onUserRemoved(function(event) {
     console.log('[GroupChatManagerDemo ] onUserRemoved Event:', event);
+    removeParticipant(event.userURL);
   });
 
   chatController.onClose(function(event) {
@@ -419,20 +420,17 @@ function chatManagerReady(chatController, isOwner) {
     let html = template({name: name, resource: resource});
     $('.chat-header').append(html);
 
-    if (isOwner) {
-
-      let closeBtn = $('.close-btn');
-      closeBtn.removeClass('hide');
-      closeBtn.on('click', function(event) {
-
-        event.preventDefault();
-
-        closeChat(chatController);
-      });
-    } else {
+    if (!isOwner) {
       $('.invite-btn').hide();
-
     }
+    let closeBtn = $('.close-btn');
+    closeBtn.removeClass('hide');
+    closeBtn.on('click', function(event) {
+
+      event.preventDefault();
+
+      closeChat(chatController);
+    });
 
   });
 
