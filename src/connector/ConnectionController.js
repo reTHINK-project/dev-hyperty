@@ -52,7 +52,7 @@ class ConnectionController {
     _this._clean = clean;
 
     // Prepare the PeerConnection
-    let peerConnection = new RTCPeerConnection(_this._configuration.ice);
+    let peerConnection = new RTCPeerConnection(_this._configuration);
 
     peerConnection.addEventListener('signalingstatechange', function(event) {
 

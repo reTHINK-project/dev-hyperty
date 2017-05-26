@@ -1,32 +1,7 @@
 {
   "configuration": {
-      "ice": [{
-             "urls": "stun:stun.voiparound.com"
-           }, {
-             "urls": "stun:stun.voipbuster.com"
-           }, {
-             "urls": "stun:stun.voipstunt.com"
-           }, {
-             "urls": "stun:stun.voxgratia.org"
-           }, {
-             "urls": "stun:stun.ekiga.net"
-           }, {
-             "urls": "stun:stun.schlund.de"
-           }, {
-             "urls": "stun:stun.iptel.org"
-           }, {
-             "urls": "stun:stun.l.google.com:19302"
-           }, {
-             "urls": "stun:stun1.l.google.com:19302"
-           }, {
-             "urls": "stun:stun.ideasip.com"
-           }, {
-             "urls": "stun:stun4.l.google.com:19302"
-           }, {
-             "urls": "stun:stun2.l.google.com:19302"
-           }, {
-             "urls": "stun:stun3.l.google.com:19302"
-           }, {
+      "iceServers": [
+           {
              "urls": "turn:192.158.29.39:3478?transport=tcp",
              "credential": "JZEOEt2V3Qb0y27GRntt2u2PAYA=",
              "username": "28224511:1379330808"
@@ -38,7 +13,26 @@
              "urls": "turn:numb.viagenie.ca",
              "credential": "muazkh",
              "username": "webrtc@live.com"
-           }]
+           },
+           {
+                  "urls": [
+                    "stun:stun.voiparound.com",
+                    "stun:stun.voipbuster.com",
+                    "stun:stun.voipstunt.com",
+                    "stun:stun.voxgratia.org",
+                    "stun:stun.ekiga.net",
+                    "stun:stun.schlund.de",
+                    "stun:stun.iptel.org",
+                    "stun:stun.l.google.com:19302",
+                    "stun:stun1.l.google.com:19302",
+                    "stun:stun.ideasip.com",
+                    "stun:stun4.l.google.com:19302",
+                    "stun:stun2.l.google.com:19302",
+                    "stun:stun3.l.google.com:19302"
+                  ]
+          }
+        ],
+        "iceTransportPolicy": "all"
   },
   "constraints": {
     "browser":true,"windowSandbox":true,"mic":true,"camera":true
