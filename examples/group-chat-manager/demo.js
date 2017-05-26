@@ -553,6 +553,8 @@ function closeChat(chatController) {
     let joinBtn = $('.join-room-btn');
     createBtn.removeClass('hide');
     joinBtn.removeClass('hide');
+    createBtn.show();
+    joinBtn.show();
 
     $('.chat-section').html('');
   }).catch(function(reason) {
