@@ -116,6 +116,7 @@ class CodeGeneratorReporter {
       if(name === '' || name === undefined)
         reject('It must be a valid string...')
 
+      _this.codeGenerator.data = {};
       _this.codeGenerator.data.name = '';
       _this.codeGenerator.data.code = '';
       console.log('[CodeGeneratorReporter] Name ->', name);
@@ -126,9 +127,7 @@ class CodeGeneratorReporter {
 
       //The APP needs to know the generated code
       resolve(_this.codeGenerator.data.code);
-    }).catch(function(reason) {
-      reject(reason);
-    });
+    })
   }
 
 
