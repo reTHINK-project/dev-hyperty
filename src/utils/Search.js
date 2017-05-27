@@ -27,6 +27,11 @@ class Search {
 
   }
 
+  hyperties(users, schemes, resources, globalFlag = false) {
+    //TODO: reuse users or the other way around
+
+  }
+
   /**
    * List of usersURL to search
    * @param  {array<URL.userURL>}  users List of UserUR, like this format user://<ipddomain>/<user-identifier>
