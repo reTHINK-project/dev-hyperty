@@ -2,6 +2,7 @@
 // jshint varstmt: false
 
 let observer;
+let discoveredHyperties = {};
 
 function hypertyLoaded(result) {
 
@@ -50,9 +51,12 @@ function discoverUsers(observer) {
       collection.empty();
       collection.show();
 
+
       result.forEach((discoveredUser) => {
 
+
         if (discoveredUser.hasOwnProperty('userID')) {
+          discoveredHyperties[discoveredUser.hypertyID] = discoveredUser;
           collectionItem = '<li data-url="' + discoveredUser.userID + '" class="collection-item">' +
           '<span class="title"><b>UserURL: </b>' + discoveredUser.userID + '</span>' +
           '<a hyperty-id= "'+discoveredUser.hypertyID+'" user-id= "'+discoveredUser.userID+'" href="#" title="Subscribe to ' + discoveredUser.userID + '" class="waves-effect waves-light btn subscribe-btn secondary-content" ><i class="material-icons">import_export</i></a>' +
@@ -70,7 +74,7 @@ function discoverUsers(observer) {
 
         let subscribe = $item.find('.subscribe-btn');
 
-        subscribe.on('click', subscribeAvailability);
+        subscribe.on('click', subscribeAvailability );
         collection.append($item);
 
       });
@@ -89,7 +93,7 @@ function subscribeAvailability(event){
         //let user = $currEl.attr('user-id');
         $('.collection').hide();
 
-        observer.observe(hyperty).then(function(availability) {
+        observer.observe(discoveredHyperties[hyperty]).then(function(availability) {
           console.log('[UserAvailabilityObserverDemo.discoverAvailability] start observing: ', availability);
 
           observeUserAvailability(availability);
