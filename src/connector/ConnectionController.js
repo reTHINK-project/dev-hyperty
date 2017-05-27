@@ -402,7 +402,8 @@ class ConnectionController {
 
       try {
         console.info('[Connector.ConnectionController ]------------------------ Syncher Create ---------------------- \n');
-        syncher.create(_this._objectDescURL, [remotePeer], _this.connectionObject)
+
+        syncher.create(_this._objectDescURL, [remotePeer], _this.connectionObject, false, false, remoteData.name, {}, {resources: ['audio', 'video']})
         .then(function(dataObjectReporter) {
           console.info('[Connector.ConnectionController ]2. Return the Data Object Reporter ', dataObjectReporter);
 
