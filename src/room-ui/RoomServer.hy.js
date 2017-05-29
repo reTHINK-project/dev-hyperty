@@ -5,6 +5,9 @@ import Discovery from "service-framework/dist/Discovery";
 import Logger from "./Logger";
 import {divideURL} from "../utils/utils";
 import roomJson from "./roomJson";
+// import Request from "runtime-nodejs/dist/Request";
+
+let fetch = require('node-fetch');
 
 var l = new Logger("ROOMUI");
 
@@ -33,6 +36,8 @@ class RoomServer {
         this.hypertyURL = hypertyURL;
         this.bus = bus;
         this.configuration = configuration;
+        // this.httpRequest = new Request();
+
 
         // get useExampleRoomJson from configuration
         let boolFromConf = configuration["useExampleRoomJson"];
@@ -75,6 +80,10 @@ class RoomServer {
                 _this.polling()
             }, 5000);
         }
+    }
+
+    setFetch(fetchFunc) {
+        this.fetch = fetchFunc;
     }
 
     /**
@@ -130,7 +139,7 @@ class RoomServer {
     polling() {
         l.d("starting polling");
         this.getRooms().then((roomsArray) => {
-            // l.d("parsing rooms ", JSON.stringify(roomsArray, null, 2));
+            l.d("parsing rooms ", JSON.stringify(roomsArray, null, 2));
             var dateMap = {};
             roomsArray.forEach((room) => {
                 room.devices.forEach((device) => {
@@ -330,35 +339,77 @@ class RoomServer {
      */
     makeRequest(json) {
         l.d("makeRequest:", arguments);
+        l.d("MAKING A REQUEST");
+        // e.g. json = {"mode": "read", "room": null}
+
         return new Promise((resolve, reject) => {
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open('POST', url, true);
-
-            xmlHttp.onload = () => {
-                if (xmlHttp.readyState === 4) {
-                    if (xmlHttp.status === 200) {
-                        try {
-                            var responseJson = JSON.parse(xmlHttp.responseText);
-                            l.d("makeRequest returns:", responseJson);
-                            resolve(responseJson);
-                        } catch (e) {
-                            l.e("json parsing failed! raw:", xmlHttp.responseText);
-                            l.e(e);
-                            reject(e);
-                        }
-                    } else {
-                        l.e("Unsuccessful request:", xmlHttp.statusText);
-                        reject(xmlHttp.statusText);
-                    }
-                }
-            };
-
-            xmlHttp.onerror = (e) => {
-                reject("Unable to send request. Status: " + e.target.status);
-            };
-
-            xmlHttp.send(JSON.stringify(json));
+            return this.fetch("https://hotelguest.fokus.fraunhofer.de:8000", {
+                method: 'POST',
+                body: JSON.stringify(json)
+            })
+                .then((res) => {
+                    l.d("GOT RESPONSE!!!!");
+                    resolve(res.json());
+                }).catch((err) => {
+                    l.d("GOT ERROR:", err);
+                    reject(err);
+                });
         });
+        // return this.httpRequest.post(url, {"body": json})
+        // return new Promise((resolve, reject) => {
+        // var xmlHttp = new XMLHttpRequest();
+        // xmlHttp.open('POST', url, true);
+        //
+        // xmlHttp.onload = () => {
+        //     if (xmlHttp.readyState === 4) {
+        //         if (xmlHttp.status === 200) {
+        //             try {
+        //                 var responseJson = JSON.parse(xmlHttp.responseText);
+        //                 l.d("makeRequest returns:", responseJson);
+        //                 resolve(responseJson);
+        //             } catch (e) {
+        //                 l.e("json parsing failed! raw:", xmlHttp.responseText);
+        //                 l.e(e);
+        //                 reject(e);
+        //             }
+        //         } else {
+        //             l.e("Unsuccessful request:", xmlHttp.statusText);
+        //             reject(xmlHttp.statusText);
+        //         }
+        //     }
+        // };
+        //
+        // xmlHttp.onerror = (e) => {
+        //     reject("Unable to send request. Status: " + e.target.status);
+        // };
+        //
+        // xmlHttp.send(JSON.stringify(json));
+
+        //
+        // var http = require('http');
+        //
+        // var options = {
+        //     host: 'hotelguest.fokus.fraunhofer.de:8000'
+        // };
+        //
+        // var callback = function (response) {
+        //     var str = '';
+        //
+        //     //another chunk of data has been recieved, so append it to `str`
+        //     response.on('data', function (chunk) {
+        //         str += chunk;
+        //     });
+        //
+        //     //the whole response has been recieved, so we just print it out here
+        //     response.on('end', function () {
+        //         console.log(str);
+        //         console.log("WEDIDIT!!! BOIIIZZZZ");
+        //         resolve(JSON.parse(str));
+        //     });
+        // };
+        //
+        // http.request(options, callback).end();
+        // });
     }
 
 
