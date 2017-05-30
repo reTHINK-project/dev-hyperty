@@ -43,11 +43,11 @@ class UserAvailabilityObserver extends EventEmitter {
 
         console.log('[UserAvailabilityObserver.start] resuming: ', observers);
 
-        observersList.forEach((i)=>{
+        /*observersList.forEach((i)=>{
           _this._users2observe.push(new UserAvailabilityController(observers[i]));
-        });
+        });*/
 
-        resolve(_this._users2observe);
+        resolve(observers);
       } else {
         resolve(false);
       }
@@ -135,11 +135,11 @@ class UserAvailabilityObserver extends EventEmitter {
         _this._syncher.subscribe(_this._objectDescURL, url).then((availability) => {
           console.log('[UserAvailabilityObserver.observeAvailability] observer object', availability);
 
-          let newUserAvailability = new UserAvailabilityController(availability, userID);
+          //let newUserAvailability = new UserAvailabilityController(availability, userID);
 
-          _this._users2observe.push(newUserAvailability);
+          _this._users2observe.push(availability);
 
-          resolve(newUserAvailability);
+          resolve(availability);
         });
       });
   }
