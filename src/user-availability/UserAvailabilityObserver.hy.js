@@ -11,7 +11,7 @@ class UserAvailabilityObserver extends EventEmitter {
   constructor(hypertyURL, bus, configuration) {
     if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
     if (!bus) throw new Error('The MiniBus is a needed parameter');
-    if (!configuration) throw new Error('The configuration is a needed parameter');
+    if (!configuration) throw new Error('The configuration is a needed parameter ');
 
     super();
 

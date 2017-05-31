@@ -122,7 +122,7 @@ onResumeReporter(callback) {
     let _this = this;
 
     return new Promise((resolve, reject) => {
-      console.info('[UserAvailabilityReporter.create] lets create a new User availability Context Object');
+      console.info('[UserAvailabilityReporter.create] lets create a new User availability Context Object ');
       _this.syncher.create(_this.userAvailabilityyDescURL, [], availability(), true, false, 'myAvailability', null, {resources: ['availability_context']})
       .then((userAvailability) => {
         _this.userAvailability = userAvailability;
