@@ -158,8 +158,20 @@ class Connector {
 
       _this._controllers[event.from] = connectionController;
 
+      let identity = event.identity;
+
+      if (!identity) {
+        identity = {};
+        identity.userProfile = {
+          avatar: "https://www.mybloggerguides.com/wp-content/uploads/2016/01/anonymous_avatar.png",
+          cn: 'anonymous',
+          userURL: 'anonymous',
+          username: "anonymous"
+            };
+          }
+
       // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
-      if (_this._onInvitation) _this._onInvitation(connectionController, event.identity.userProfile);
+      if (_this._onInvitation) _this._onInvitation(connectionController, identity.userProfile);
 
       console.info('------------------------ END ---------------------- \n');
     }).catch(function(reason) {
