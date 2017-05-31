@@ -37,6 +37,8 @@ class RoomClient extends EventEmitter {
         this.bus = bus;
         this.configuration = configuration;
 
+        autostart = configuration["autostart"] || autostart;
+
         // l.test(this); 
 
         // create Context Schema URL

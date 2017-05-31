@@ -1,5 +1,7 @@
 {
-  "configuration": {},
+  "configuration": {
+    "autostart": true
+  },
   "hypertyType": [],
   "constraints": {"browser":true},
   "dataObjects": [

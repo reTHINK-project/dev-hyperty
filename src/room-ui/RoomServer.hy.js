@@ -35,9 +35,7 @@ class RoomServer {
         this.configuration = configuration;
 
         // get useExampleRoomJson from configuration
-        let boolFromConf = configuration["useExampleRoomJson"];
-        if (boolFromConf) // triggers only if configuration["useExampleRoomJson"] is true
-            useExampleRoomJson = boolFromConf;
+        useExampleRoomJson = configuration["useExampleRoomJson"] || useExampleRoomJson;
 
         if (configuration["lwm2mUrl"])
             url = configuration["lwm2mUrl"];
