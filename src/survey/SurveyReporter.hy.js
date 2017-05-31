@@ -29,14 +29,12 @@ const SurveyReporter = {
 
     _createSyncher (hyperties){
         const survey = {
-            name: 'survey',
-            resources: ['survey'],
             children: [],
             startingTime: new Date().toJSON(),
             status: 'open',
             participants: hyperties
         }
-        return this.syncher.create(this.objectDescURL, hyperties, survey)
+        return this.syncher.create(this.objectDescURL, hyperties, survey, true, false, 'survey', {}, {resources: ['survey']})
     },
 
     create (survey, participants) {
@@ -52,7 +50,7 @@ const SurveyReporter = {
                     Survey._addResponse(dataChild.value.response)
                 })
                 setTimeout(()=>{
-                    dataObjectReporter.addChild('chatmessages', {survey:survey})
+                    dataObjectReporter.addChild('resources', {survey:survey})
                 },2000)
                 Survey.config = survey
                 return Survey

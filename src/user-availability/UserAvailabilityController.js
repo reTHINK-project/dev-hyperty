@@ -30,15 +30,17 @@ import EventEmitter from '../utils/EventEmitter';
 
 class UserAvailabilityController extends EventEmitter {
 
-  constructor(userAvailability) {
+  constructor(userAvailability, userUrl) {
     super();
 
 
     if (!userAvailability) throw Error('[UserAvailabilityController constructir] userAvailability input parameter is mandatory');
+    if (!userUrl) throw Error('[UserAvailabilityController constructir] userUrl input parameter is mandatory');
 
     let _this = this;
 
     _this._userAvailability = userAvailability;
+    _this._userUrl = userUrl;
 
     _this._observe();
   }

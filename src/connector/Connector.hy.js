@@ -215,7 +215,7 @@ class Connector {
         _this.connectionObject.peer = selectedHyperty;
         _this.connectionObject.status = '';
 
-        return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject);
+        return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject, false, false, name, {}, {resources: ['audio', 'video']});
       })
       .catch(function(reason) {
         console.error(reason);

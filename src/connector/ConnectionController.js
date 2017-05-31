@@ -46,13 +46,13 @@ class ConnectionController {
 
     // Private
     _this._syncher = syncher;
-    _this._configuration = configuration.webrtc;
+    _this._configuration = configuration;
     _this._domain = domain;
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Connection';
     _this._clean = clean;
 
     // Prepare the PeerConnection
-    let peerConnection = new RTCPeerConnection(_this._configuration.webrtc);
+    let peerConnection = new RTCPeerConnection(_this._configuration);
 
     peerConnection.addEventListener('signalingstatechange', function(event) {
 
@@ -402,7 +402,8 @@ class ConnectionController {
 
       try {
         console.info('[Connector.ConnectionController ]------------------------ Syncher Create ---------------------- \n');
-        syncher.create(_this._objectDescURL, [remotePeer], _this.connectionObject)
+
+        syncher.create(_this._objectDescURL, [remotePeer], _this.connectionObject, false, false, remoteData.name, {}, {resources: ['audio', 'video']})
         .then(function(dataObjectReporter) {
           console.info('[Connector.ConnectionController ]2. Return the Data Object Reporter ', dataObjectReporter);
 

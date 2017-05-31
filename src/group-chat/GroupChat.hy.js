@@ -64,6 +64,7 @@ let GroupChatHyperty = {
                 return this.identityManagerService.discoverUserRegistered()
                     .then(identity=>GroupChat(dataObjectReporter.url, this._addChild(dataObjectReporter),
                                 this._onAddChild(dataObjectReporter), 
+                                dataObjectReporter._name,
                                 dataObjectReporter.data, identity))
             }).catch((err)=>console.error('[GROUPCHAT]', err))
     },
@@ -79,7 +80,7 @@ let GroupChatHyperty = {
                             .then(identity=>{
                                 console.log('onINvite', identity)
                                 callback(GroupChat(dataObject.url, this._addChild(dataObject), this._onAddChild(dataObject), 
-                                            dataObject.data, identity))
+                                            dataObject._name, dataObject.data, identity))
                             })
                     })
             }

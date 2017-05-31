@@ -43,11 +43,11 @@ class UserAvailabilityObserver extends EventEmitter {
 
         console.log('[UserAvailabilityObserver.start] resuming: ', observers);
 
-        observersList.forEach((i)=>{
+        /*observersList.forEach((i)=>{
           _this._users2observe.push(new UserAvailabilityController(observers[i]));
-        });
+        });*/
 
-        resolve(_this._users2observe);
+        resolve(observers);
       } else {
         resolve(false);
       }
@@ -104,11 +104,11 @@ class UserAvailabilityObserver extends EventEmitter {
   }
 
 
-  observe(hypertyID)
+  observe(hyperty)
     {
       let _this = this;
       return new Promise(function(resolve,reject) {
-          _this._discovery.discoverDataObjectsPerReporter(hypertyID, ['context'], ['availability_context'],  _this._domain).then(function(dataObjects) {
+          _this._discovery.discoverDataObjectsPerReporter(hyperty.hypertyID, ['context'], ['availability_context'],  _this._domain).then(function(dataObjects) {
             console.log('[UserAvailabilityObserver.discoverAvailability] discovered user availability objects ', dataObjects);
           let last = 0;
           let url;
@@ -121,7 +121,7 @@ class UserAvailabilityObserver extends EventEmitter {
           }
         });
         if (last != 0 && url) {
-          resolve(_this._subscribeAvailability(url));
+          resolve(_this._subscribeAvailability(hyperty.userID, url));
         } else {
           reject ('[UserAvailabilityObserver.discoverAvailability] discovered DataObjecs are invalid', dataObjects);
         }
@@ -129,17 +129,17 @@ class UserAvailabilityObserver extends EventEmitter {
     });
   }
 
-  _subscribeAvailability(url) {
+  _subscribeAvailability(userID, url) {
     let _this = this;
     return new Promise(function(resolve,reject) {
         _this._syncher.subscribe(_this._objectDescURL, url).then((availability) => {
           console.log('[UserAvailabilityObserver.observeAvailability] observer object', availability);
 
-          let newUserAvailability = new UserAvailabilityController(availability);
+          //let newUserAvailability = new UserAvailabilityController(availability, userID);
 
-          _this._users2observe.push(newUserAvailability);
+          _this._users2observe.push(availability);
 
-          resolve(newUserAvailability);
+          resolve(availability);
         });
       });
   }

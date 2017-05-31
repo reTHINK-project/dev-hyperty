@@ -15,7 +15,7 @@ const LocationHypertyFactory = function(hypertyURL, bus, config){
     let currentPosition
     const getCurrentPosition = ()=> currentPosition
 
-    syncher.create(objectDescURL, [], position())
+    syncher.create(objectDescURL, [], position(), true, false, 'location')
         .then((reporter)=>{
             reporter.onSubscription((event)=>event.accept())
             navigator.geolocation.watchPosition((position)=>{

@@ -10,7 +10,7 @@ let SurveyObserver = {
                         dataObject.onAddChild(msg=>{
                             callback({
                                 answer:(answer)=>{
-                                    dataObject.addChild('chatmessages', {response:answer})
+                                    dataObject.addChild('resources', {response:answer})
                                 },
                                 data:msg.value.survey
                             })
