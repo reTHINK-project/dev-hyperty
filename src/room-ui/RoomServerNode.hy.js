@@ -11,7 +11,7 @@ var l = new Logger("ROOMUI");
 var url = "https://hotelguest.fokus.fraunhofer.de:8000";
 var useExampleRoomJson = false;
 
-class RoomServer {
+class RoomServerNode {
 
     /**
      * Create a new RoomServer
@@ -33,9 +33,13 @@ class RoomServer {
         this.hypertyURL = hypertyURL;
         this.bus = bus;
         this.configuration = configuration;
+        // this.httpRequest = new Request();
+
 
         // get useExampleRoomJson from configuration
-        useExampleRoomJson = configuration["useExampleRoomJson"] || useExampleRoomJson;
+        let boolFromConf = configuration["useExampleRoomJson"];
+        if (boolFromConf) // triggers only if configuration["useExampleRoomJson"] is true
+            useExampleRoomJson = boolFromConf;
 
         if (configuration["lwm2mUrl"])
             url = configuration["lwm2mUrl"];
@@ -73,6 +77,10 @@ class RoomServer {
                 _this.polling()
             }, 5000);
         }
+    }
+
+    setFetch(fetchFunc) {
+        this.fetch = fetchFunc;
     }
 
     /**
@@ -225,13 +233,17 @@ class RoomServer {
      * @returns {Array} - list of object URLs
      */
     getRoomsForRemote(token) {
-        l.d("getRoooms:", arguments);
+        l.d("getRooms:", arguments);
+        l.d("accessToken map: ", this.accessMap);
         let urls = [];
         // iterate through rooms and extract their URLs
-        l.d("iterating through rooms:", this.roomMap);
+        // l.d("iterating through rooms:", this.roomMap);
         let room;
         for (room in this.roomMap) {
             // TODO: check member array for having user in it
+            l.d("checking if ", this.accessMap[token], " contains ", room)
+            if (this.accessMap[token] != undefined)
+                l.d("blub? ", this.accessMap[token].indexOf(room));
             if (this.accessMap[token] != undefined && this.accessMap[token].indexOf(room) != -1) {
                 l.d("token " + token + " has access to room " + room);
                 urls.push(this.roomMap[room].url);
@@ -328,44 +340,29 @@ class RoomServer {
      */
     makeRequest(json) {
         l.d("makeRequest:", arguments);
+        l.d("MAKING A REQUEST");
+        // e.g. json = {"mode": "read", "room": null}
+
         return new Promise((resolve, reject) => {
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open('POST', url, true);
-
-            xmlHttp.onload = () => {
-                if (xmlHttp.readyState === 4) {
-                    if (xmlHttp.status === 200) {
-                        try {
-                            var responseJson = JSON.parse(xmlHttp.responseText);
-                            l.d("makeRequest returns:", responseJson);
-                            resolve(responseJson);
-                        } catch (e) {
-                            l.e("json parsing failed! raw:", xmlHttp.responseText);
-                            l.e(e);
-                            reject(e);
-                        }
-                    } else {
-                        l.e("Unsuccessful request:", xmlHttp.statusText);
-                        reject(xmlHttp.statusText);
-                    }
-                }
-            };
-
-            xmlHttp.onerror = (e) => {
-                reject("Unable to send request. Status: " + e.target.status);
-            };
-
-            xmlHttp.send(JSON.stringify(json));
+            return this.fetch("https://hotelguest.fokus.fraunhofer.de:8000", {
+                method: 'POST',
+                body: JSON.stringify(json)
+            })
+                .then((res) => {
+                    l.d("GOT RESPONSE!!!!");
+                    resolve(res.json());
+                }).catch((err) => {
+                    l.d("GOT ERROR:", err);
+                    reject(err);
+                });
         });
     }
-
-
 }
 
 
 export default function activate(hypertyURL, bus, configuration) {
     return {
-        name: 'RoomServer',
-        instance: new RoomServer(hypertyURL, bus, configuration)
+        name: 'RoomServerNode',
+        instance: new RoomServerNode(hypertyURL, bus, configuration)
     };
 }
