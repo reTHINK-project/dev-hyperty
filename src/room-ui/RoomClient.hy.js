@@ -10,6 +10,7 @@ import Logger from "./Logger";
 var l = new Logger("ROOMUI");
 var roomServerIdentity = "openidtest10@gmail.com";
 
+var autostart = false;
 
 class RoomClient extends EventEmitter {
 
@@ -48,6 +49,12 @@ class RoomClient extends EventEmitter {
         // Syncher
         this.syncher = new Syncher(hypertyURL, bus, configuration);
 
+        if (autostart) {
+            setTimeout(() => {
+                l.d("forcing START with usertoken");
+                this.start("usertoken");
+            })
+        }
     }
 
     start(token) {
