@@ -55,7 +55,7 @@ class RoomClient extends EventEmitter {
             setTimeout(() => {
                 l.d("forcing START with usertoken");
                 this.start("usertoken");
-            })
+            }, 1000)
         }
     }
 
@@ -201,7 +201,7 @@ class RoomClient extends EventEmitter {
                     let urls = reply.body.value;
                     resolve(urls);
                 } else {
-                    l.e("getRooms request rejected (" + reply.body.code + "):", reply.body.value);
+                    l.e("execute request rejected (" + reply.body.code + "):", reply.body.value);
                     reject(reply.body.value);
                 }
             });
