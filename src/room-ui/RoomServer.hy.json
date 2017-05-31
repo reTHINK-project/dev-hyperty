@@ -1,10 +1,14 @@
 {
   "configuration": {
-    "useExampleRoomJson": true
+    "useExampleRoomJson": true,
+    "accessMap": {
+      "usertoken": [237],
+      "admintoken": [237, 238]
+    }
   },
   "hypertyType": [],
   "constraints": {"browser":true},
   "dataObjects": [
-    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Communication"
+    "https://catalogue.fokus.fraunhofer.de/.well-known/dataschema/Communication"
   ]
 }

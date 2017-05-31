@@ -8,11 +8,11 @@ import EventEmitter from "../utils/EventEmitter";
 import Logger from "./Logger";
 
 var l = new Logger("ROOMUI");
-var roomServerIdentity = "openidtest10@gmail.com";
+var roomServerIdentity = "nodejs-conference@nodejs.com";
 
 var autostart = false;
 
-class RoomClient extends EventEmitter {
+class RoomClientNode extends EventEmitter {
 
     /**
      * Create a new RoomClient
@@ -263,9 +263,9 @@ class RoomClient extends EventEmitter {
 
 export default function activate(hypertyURL, bus, configuration) {
 
-    return {
-        name: 'RoomClient',
-        instance: new RoomClient(hypertyURL, bus, configuration)
+return {
+        name: 'RoomClientNode',
+        instance: new RoomClientNode(hypertyURL, bus, configuration)
     };
 
 }
