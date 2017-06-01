@@ -116,7 +116,6 @@ class CodeGeneratorReporter {
       if(name === '' || name === undefined)
         reject('It must be a valid string...')
 
-      _this.codeGenerator.data = {};
       _this.codeGenerator.data.name = '';
       _this.codeGenerator.data.code = '';
       console.log('[CodeGeneratorReporter] Name ->', name);
