@@ -27,6 +27,8 @@
 * @version 0.1.0
 */
 
+import { UserInfo } from './UserInfo';
+
 class ChatController {
 
   constructor(syncher, discovery, domain, search, identity, manager) {
@@ -147,22 +149,37 @@ class ChatController {
   _onSubscribe(event) {
 
     let dataObjectReporter = this._dataObjectReporter;
-     event.accept();
-     console.log('[GroupChatManager.ChatController.onSubscribe] event', event, dataObjectReporter.url);
-     console.log('[GroupChatManager.ChatController.onSubscribe]New user has subscribe this object: ', dataObjectReporter.data, event.identity);
 
-     let participant = event.identity.userProfile;
+    event.accept();
 
-     console.log('[GroupChatManager.ChatController.onSubscribe]  new participant', participant);
-     if (event.identity.legacy) {
-       participant.legacy = event.identity.legacy;
-     }
+    console.log('[GroupChatManager.ChatController.onSubscribe] event', event, dataObjectReporter.url);
+    console.log('[GroupChatManager.ChatController.onSubscribe] New user has subscribe this object: ', dataObjectReporter.data, event.identity);
 
-     dataObjectReporter.data.participants[participant.userURL] = { identity: participant };
-     console.log('[GroupChatManager.ChatController.onSubscribe] communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
-     console.log('[GroupChatManager.ChatController.onSubscribe - onSubscription] ', participant);
-     console.log('[GroupChatManager.ChatController.onSubscribe - this._onUserAdded] ', this._onUserAdded);
-     if (this._onUserAdded) this._onUserAdded(participant);
+    let identity = JSON.parse(JSON.stringify(event.identity));
+
+    if (identity.hasOwnProperty('assertion')) {
+      delete identity.assertion
+    }
+
+    let userInfo = {
+      hypertyURL: event.url,
+      domain: event.domain,
+      identity: identity
+    }
+    let userURL = event.identity.userProfile.userURL;
+
+    console.log('[GroupChatManager.ChatController.onSubscribe]  new participant', userInfo);
+    if (event.identity.legacy) {
+     userInfo.legacy = event.identity.legacy;
+    }
+
+    dataObjectReporter.data.participants[userURL] = userInfo;
+
+    console.log('[GroupChatManager.ChatController.onSubscribe] communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
+    console.log('[GroupChatManager.ChatController.onSubscribe - onSubscription] ', userInfo);
+    // console.log('[GroupChatManager.ChatController.onSubscribe - this._onUserAdded] ', this._onUserAdded);
+
+    if (this._onUserAdded) this._onUserAdded(userInfo);
   }
 
   _onUnsubscribe(event) {

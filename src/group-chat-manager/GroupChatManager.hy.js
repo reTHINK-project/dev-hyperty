@@ -33,6 +33,7 @@ import Search from '../utils/Search';
 // Internals
 import { communicationObject, CommunicationStatus, communicationChildren } from './communication';
 import ChatController from './ChatController';
+import { UserInfo } from './UserInfo';
 
 /**
 * Hyperty Group Chat Manager API (HypertyChat)
@@ -185,7 +186,7 @@ class GroupChatManager {
 
       Object.keys(participants).forEach((participant) => {
 
-        let user = participants[participant].identity.userURL.split('://');
+        let user = participants[participant].identity.userProfile.userURL.split('://');
 
         if (user[0] !== 'user') {
 
@@ -217,20 +218,24 @@ class GroupChatManager {
     let _this = this;
     let syncher = _this._syncher;
 
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
 
       _this.communicationObject = communicationObject;
       _this.communicationObject.cseq = 1;
       _this.communicationObject.startingTime = new Date().toJSON();
       _this.communicationObject.status =  CommunicationStatus.OPEN;
+
       let myIdentity;
+
       _this.search.myIdentity().then((identity) => {
         myIdentity = identity;
         console.log('[GroupChatManager.create ] My Identity', identity);
         let url = _this.communicationObject.reporter;
 
+        let userInfo = new UserInfo(_this._hypertyURL, _this._domain, identity);
+
         // Add my identity
-        _this.communicationObject.participants[identity.userURL] = { identity: myIdentity };
+        _this.communicationObject.participants[identity.userURL] = userInfo;
 
         console.log('[GroupChatManager.create ] participants: ', _this.communicationObject.participants);
         console.log('[GroupChatManager.create ] communicationObject', _this.communicationObject);
