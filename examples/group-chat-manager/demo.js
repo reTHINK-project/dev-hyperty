@@ -310,7 +310,7 @@ function prepareChat(chatController, isOwner) {
 
   Object.keys(users).forEach(function(objectKey, index) {
     var user = users[objectKey];
-    processNewUser(user.identity);
+    processNewUser(user);
   });
 
   Object.keys(msgs).forEach(function(objectKey, index) {
@@ -512,14 +512,17 @@ function processNewUser(event) {
   let user;
 
   if (event.hasOwnProperty('data') && event.data) {
-    user = event.data.identity;
+    user = event.data;
   } else {
     user = event;
   }
   console.log('[GroupChatManager.demo.processNewUser]user', user, collection);
 
-  //debugger;
-  collection.append('<li class="chip" data-name="' + user.userURL + '"><img src="' + user.avatar + '" alt="Contact Person">' + user.cn + '<i class="material-icons close">close</i></li>');
+  collection.append(`
+    <li class="chip" data-name="${ user.identity.userProfile.userURL }">
+      <img src="${ user.identity.userProfile.avatar }" alt="Contact Person">${ user.identity.userProfile.cn }
+      <i class="material-icons close">close</i>
+    </li>`);
   collection.removeClass('center-align');
 
   let closeBtn = collection.find('.close');
