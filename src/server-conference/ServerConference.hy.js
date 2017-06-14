@@ -137,12 +137,12 @@ class ServerConference extends EventEmitter {
     console.log('---------------- Syncher Subscribe (Auto Accept) ---------------- \n');
 
     syncher.subscribe(_this.objectDescURL, event.url ).then(function(dataObjectObserver) {
-      console.log('1. [autoAccept], Return Subscribe Data Object Observer', dataObjectObserver);
+      console.log('1. [autoAccept], Return Subscribe Data Object Observer', dataObjectObserver.data);
 
       let roomController = new RoomController(syncher, _this.domain, _this.configuration);
       roomController.connectionEvent = event;
       // we get the sdp offer
-      roomController.roomName = event.value.roomName;
+      roomController.roomName = dataObjectObserver.data.roomName;
       roomController.dataObjectObserver = dataObjectObserver;
       _this.roomController[event.from] = roomController;
  
@@ -174,26 +174,27 @@ class ServerConference extends EventEmitter {
 
     return new Promise((resolve, reject) => {
       
-      let dataObject = {
-        name : 'connection',
-        id: message.id,
-        type: "response",
-        from: _this.myUrl,
-        to: toUser,
-        status : "",
-        data : message
-      };
+      // let dataObject = {
+      //   name : 'connection',
+      //   type: "response",
+      //   from: _this.myUrl,
+      //   to: toUser,
+      //   status : "",
+      //   data : message
+      // };
        // Initial data
-        // _this.connectionObject.name = 'connection';
-        _this.connectionObject.scheme = 'connection';
-        _this.connectionObject.owner = _this.myUrl;
-        _this.connectionObject.data = dataObject.data;
-        _this.connectionObject.status = '';
+      // _this.connectionObject.name = 'connection';
+      // _this.connectionObject.scheme = 'connection';
+       // _this.connectionObject.status = '';
+        let participant = {};
+        participant.owner = _this.myUrl;
+        participant.message = message;
+       
      
       console.log('------------ _this.connectionObject: ----------------\n', _this.connectionObject);
       // create ObjectReporter to communicate with specific client hyperty
-      syncher.create(_this.objectDescURL, [toHyperty], _this.connectionObject).then((objReporter) => {
-        console.log('Created WebRTC Object Reporter: ', objReporter.data);
+      syncher.create(_this.objectDescURL, [toHyperty], participant).then((objReporter) => {
+        console.log('Create conference participant Object Reporter: ', objReporter.data);
         objReporter.onSubscription((event) => {
           console.log('-------- Receiver peer Hyperty subscription request --------- \n');
           event.accept();

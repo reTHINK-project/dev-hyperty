@@ -285,7 +285,8 @@ class ConferenceController {
 
     if(peerData !== 'undefined') {
       if (peerData.hasOwnProperty('connectionDescription')) {
-        _this._processPeerInformation(peerData.connectionDescription);
+         console.debug('Process Peer data connectionDescription: ', peerData);
+        _this._processPeerInformation(peerData);
       }
 
       if (peerData.hasOwnProperty('iceCandidates')) {
@@ -293,6 +294,15 @@ class ConferenceController {
         peerData.iceCandidates.forEach(function(ice) {
           _this._processPeerInformation(ice);
         });
+      }
+      if (peerData.hasOwnProperty('message')) {
+        console.debug('Process Peer message existingParticipants: ', peerData)
+            if(data.message.id === 'existingParticipants') {
+              console.debug('existingParticipants are :', data.message.data)
+              if(data.message.data.length !== 0) {
+                _this.onExistingParticipants(data.message);
+              }
+            }
       }
 
       dataObjectObserver.onChange('*', function(event) {
@@ -336,12 +346,12 @@ class ConferenceController {
       console.debug('newParticipantArrived is :', data)
       _this.onNewParticipant(data);
     }
-    if(data.id === 'existingParticipants') {
-      console.debug('existingParticipants are :', data)
-      if(data.data.length !== 0) {
-        _this.onExistingParticipants(data);
-      }
-    }
+    // if(data.message.id === 'existingParticipants') {
+    //   console.debug('existingParticipants are :', data.message.data)
+    //   if(data.message.data.length !== 0) {
+    //     _this.onExistingParticipants(data.message);
+    //   }
+    // }
   }
   onExistingParticipants(msg) {
     let _this = this;

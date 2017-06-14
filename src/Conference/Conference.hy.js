@@ -121,10 +121,11 @@ class Conference {
       console.debug('1. Return Subscribe Data Object Observer', dataObjectObserver);
       _this.controllers[event.from].dataObjectObserver = dataObjectObserver;
 
-      if((event.value.data.id === 'existingParticipants') || (event.value.data.id === 'iceCandidate')) {
-           console.debug('event.value.data is:', event );
-         _this.controllers[event.from]._processPeerInformation(event.value.data);
-      }
+      // if((dataObjectObserver.data.message.id === 'existingParticipants') || (event.value.data.id === 'iceCandidate')) {
+      //      console.debug('event.value.data is:', event );
+      //      console.log('******************* dataObjectObserver.data :', dataObjectObserver.data)
+      //    _this.controllers[event.from]._processPeerInformation(dataObjectObserver.data);
+      // }
     }).catch(function(reason) {
       console.error(reason);
     });
