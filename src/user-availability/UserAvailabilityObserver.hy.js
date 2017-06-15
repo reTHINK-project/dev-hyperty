@@ -103,6 +103,11 @@ class UserAvailabilityObserver extends EventEmitter {
     });
   }
 
+  /**
+   * This function is used to start the user availability observation for a certain user availability reporter
+   * @param  {DiscoveredObject} hyperty       Hyperty to be observed.
+   * @return {<Promise> DataObjectObserver}      It returns as a Promise the UserAvailability Data Object Observer.
+   */
 
   observe(hyperty)
     {
@@ -144,6 +149,25 @@ class UserAvailabilityObserver extends EventEmitter {
       });
   }
 }
+
+/**
+ * This function is used to stop the user availability observation for a certain user
+ * @param  {string} availability       the UserAvailability Data Object Observer URL to be unobserved.
+ */
+
+  unobserve(availability)
+    {
+      let _this = this;
+
+      _this._users2observe.forEach( (user, index) => {
+        if (user.url === availability) {
+          user.unsubscribe();
+          _this._users2observe.splice(index, 1);
+        }
+
+      });
+  }
+
 
 export default function activate(hypertyURL, bus, configuration) {
   return {
