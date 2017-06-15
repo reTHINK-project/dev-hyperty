@@ -4,7 +4,6 @@ import Discovery from 'service-framework/dist/Discovery';
 import {divideURL} from '../utils/utils';
 import Search from '../utils/Search';
 import EventEmitter from '../utils/EventEmitter';
-import UserAvailabilityController from './UserAvailabilityController';
 
 class UserAvailabilityObserver extends EventEmitter {
 
