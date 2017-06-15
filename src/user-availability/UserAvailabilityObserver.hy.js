@@ -147,7 +147,6 @@ class UserAvailabilityObserver extends EventEmitter {
         });
       });
   }
-}
 
 /**
  * This function is used to stop the user availability observation for a certain user
@@ -167,6 +166,7 @@ class UserAvailabilityObserver extends EventEmitter {
       });
   }
 
+}
 
 export default function activate(hypertyURL, bus, configuration) {
   return {
