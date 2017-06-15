@@ -65,6 +65,15 @@ class UserAvailabilityReporter extends EventEmitter {
       let _this = this;
       _this.onNotification(event);
     });
+
+    this.syncher.onClose((event) => {
+
+      console.log('[UserAvailabilityReporter.onClose]')
+      let _this = this;
+      _this.setStatus('unavailable');
+      event.ack();
+    });
+
   }
 
 start(){
