@@ -2,7 +2,7 @@
 User Availability Hyperties
 -------------------
 
-##1. Functionality description
+## Functionality description
 
 The User Availability is comprised by two Hyperties.
 
@@ -10,7 +10,7 @@ The User Availability Reporter manages user availability state ('available', 'un
 
 The User Availability Observer provides the monitoring of availability from multiple users. It enables the discovery of users publishing its Availability Context and the subscription to it.
 
-##1.1 Hyperty Data Objects schemas
+### Hyperty Data Objects schemas
 
 This Hyperty handles a standard [Context Data Object](https://github.com/reTHINK-project/dev-service-framework/tree/master/docs/datamodel/data-objects/context) with:
 
@@ -36,7 +36,7 @@ This Hyperty handles a standard [Context Data Object](https://github.com/reTHINK
 }
 ```
 
-##1.2 Descriptor
+### Descriptor
 
 The My Bracelet Hyperty descriptor is:
 
@@ -146,22 +146,32 @@ This function starts the observation of the availability status managed by a cer
 
 **parameters**
 
-*hypertyID* the URL of the Hyperty to be observed
+*hyperty* the DiscoveredObject of the Hyperty to be observed
 
 **returns**
 
-A promise with an UserAvailabilityController instance that monitors the availability status for a certain user.
+A promise with the UserAvailability Data Object Observer for a certain user.
 
-### UserAvailabilityController
+### unobserve
 
-The UserAvailabilityController monitors the availability status for a certain user. Every change of the status triggers a `onChange` event identified by the context URL of the observed Data. The event handler to be set by the APP should be done like:
+This function stops the observation of the availability status for a certain user.
 
 ```
-userAvailabilityControllerInstance.addEventListener(availabilityUrl, function(event) {
-    \\Your code to process the availability status change
-	});
+unobserve( ContextURL availability )
 ```
 
-The observed UserAvailability DataObject can be obtained with `dataObject` getter. Example to get UserAvailability URL:
+**parameters**
 
-`userAvailabilityControllerInstance.dataObject.url`
+*availability* the UserAvailability Data Object Observer URL to be unobserved
+
+
+### Monitor changes to UserAvailability status
+
+Every change of the status triggers a `onChange` event of the observed Data:
+
+```
+userAvailability.onChange('*', (event) => {
+	console.log('New User Availability status :', userAvailability.data.values[0].value);
+
+});
+```
