@@ -142,15 +142,16 @@ function addParticipantEvent(event) {
 }
 
 function notificationHandler(controller, identity) {
-  console.info('---------------- ---- notificationHandler ----------------------------------')
+  console.info('---------------- ---- notificationHandler ----------------------------------', controller,'------------------controller._dataObjectObserver.data :',controller._dataObjectObserver.data.serverURL)
   let calleeInfo = identity;
   let incoming = $('.modal-call');
   let acceptBtn = incoming.find('.btn-accept');
   let rejectBtn = incoming.find('.btn-reject');
   let informationHolder = incoming.find('.information');
   var options = options || {video: true, audio: true};
-  let toHyperty = controller._connectionEvent.value.serverURL;
-  let roomID = controller._connectionEvent.value.roomName;
+  let toHyperty = controller._dataObjectObserver.data.serverURL;
+  // let roomID = controller._connectionEvent.value.roomName;
+  let roomID = controller._dataObjectObserver.data.roomName;
   let localMediaStream;
   
   acceptBtn.on('click', (e) => {   
@@ -326,6 +327,7 @@ function processVideo(event, user) {
   console.log('Process Video: ', event);
 
   let remoteVideo = document.createElement("video");
+  remoteVideo.setAttribute("style", "width: 900px;");
   remoteVideo.id = user;
   remoteVideo.autoplay = true;
   remoteVideo.src = URL.createObjectURL(event.stream);
