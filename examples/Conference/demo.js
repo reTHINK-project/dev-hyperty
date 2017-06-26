@@ -304,7 +304,7 @@ function emailDiscoveredError(result) {
 
 function openVideo(hyperty, domain) {
 
-  console.log('connecting hyperty: ', hyperty);
+  console.log('connecting to hyperty: ', hyperty);
 
   let toHyperty = hyperty;
   let roomID = document.getElementById('roomName').value;
@@ -327,7 +327,7 @@ function processVideo(event, user) {
   console.log('Process Video: ', event);
 
   let remoteVideo = document.createElement("video");
-  remoteVideo.setAttribute("style", "width: 900px;");
+  remoteVideo.setAttribute("style", "width: 450px;");
   remoteVideo.id = user;
   remoteVideo.autoplay = true;
   remoteVideo.src = URL.createObjectURL(event.stream);
@@ -351,7 +351,6 @@ function disconnecting() {
   let video = videoHolder.find('.video');
   myVideo[0].src = '';
   video[0].src = '';
-
   videoHolder.addClass('hide');
 }
 
@@ -375,9 +374,7 @@ function showVideo(controller) {
   });
 
   btnCamera.on('click', (event) => {
-
     event.preventDefault();
-
     controller.disableVideo().then((status) => {
       console.log(status, 'camera');
       var icon = 'videocam_off';
@@ -386,19 +383,13 @@ function showVideo(controller) {
         text = 'Enable Camera';
         icon = 'videocam';
       }
-
-      var iconEl = '<i class="material-icons left">' + icon + '</i>';
-      $(event.currentTarget).html(iconEl);
     }).catch((e) => {
       console.error(e);
     });
-
   });
 
   btnMute.on('click', (event) => {
-
     event.preventDefault();
-
     controller.mute().then((status) => {
       console.log(status, 'audio');
       var icon = 'volume_off';
@@ -407,21 +398,14 @@ function showVideo(controller) {
         text = 'Enable Sound';
         icon = 'volume_up';
       }
-
-      var iconEl = '<i class="material-icons left">' + icon + '</i>';
-      $(event.currentTarget).html(iconEl);
     }).catch((e) => {
       console.error(e);
     });
-
     console.log('mute other peer');
-
   });
 
   btnMic.on('click', (event) => {
-
     event.preventDefault();
-
     controller.disableAudio().then((status) => {
       console.log(status, 'mic');
       var icon = 'mic_off';
@@ -430,9 +414,6 @@ function showVideo(controller) {
         icon = 'mic';
         text = 'Enable Microphone';
       }
-
-      var iconEl = '<i class="material-icons left">' + icon + '</i>';
-      $(event.currentTarget).html(iconEl);
     }).catch((e) => {
       console.error(e);
     });
@@ -443,6 +424,9 @@ function showVideo(controller) {
     event.preventDefault();
     controller.disconnect().then((status) => {
       console.log('Status of Handout:', status);
+      $('.my-video-buttons').addClass('hide');
+      $('.video-holder').addClass('hide');
+      $('.my-video').addClass('hide');
       disconnecting();
     }).catch((e) => {
       console.error(e);

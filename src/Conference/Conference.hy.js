@@ -185,15 +185,12 @@ class Conference {
         console.debug('Conference searching: ', [userURL], `at domain `, [domain]);
         console.debug('identity: ', identity, _this.connectionObject);
         _this.myId = identity;
-
         return _this.search.users([userURL], [domain], scheme, resource);
-      }).then((hypertiesIDs) => {
 
+      }).then((hypertiesIDs) => {
         selectedHyperty = hypertiesIDs[0].hypertyID;
         // selectedHyperty = hypertiesIDs;
-
         let roomName = roomID;
-
         console.info('It supports  group communication, selected hyperty: ', selectedHyperty);
 
         let connectionName = 'Connection';
@@ -219,8 +216,6 @@ class Conference {
         console.debug('2. Return syncher', syncher);
 
         conferenceController = new ConferenceController(syncher, _this.domain, _this.configuration, _this.myId.username);
-
-        console.debug('_this.myId is:', _this.myId);
         conferenceController.username = _this.myId.username;
         conferenceController.mediaStream = stream;
         conferenceController.dataObjectReporter = dataObjectReporter;

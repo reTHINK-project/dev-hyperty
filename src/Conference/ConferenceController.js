@@ -56,10 +56,10 @@ class ConferenceController {
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Connection';
 
     // Prepare the PeerConnection
-    newPeerConncection[username] = new RTCPeerConnection(_this._configuration.webrtc);
-    console.debug('_this._username is :', _this.user, username);
+    newPeerConncection[_this.user] = new RTCPeerConnection(_this._configuration.webrtc);
+    console.debug('_this._username is :', _this.user);
 
-    newPeerConncection[username].addEventListener('signalingstatechange', function(event) {
+    newPeerConncection[_this.user].addEventListener('signalingstatechange', function(event) {
 
       console.info('signalingstatechange', event.currentTarget.signalingState);
 
@@ -74,7 +74,7 @@ class ConferenceController {
 
     });
 
-    newPeerConncection[username].addEventListener('iceconnectionstatechange', function(event) {
+    newPeerConncection[_this.user].addEventListener('iceconnectionstatechange', function(event) {
       console.info('iceconnectionstatechange', event.currentTarget.iceConnectionState, _this.dataObjectReporter);
       let data = _this.dataObjectReporter.data;
       if (data.hasOwnProperty('status')) {
@@ -82,7 +82,7 @@ class ConferenceController {
       }
     });
 
-    newPeerConncection[username].addEventListener('icecandidate', function(event) {
+    newPeerConncection[_this.user].addEventListener('icecandidate', function(event) {
 
       if (!event.candidate) return;
 
@@ -116,13 +116,13 @@ class ConferenceController {
     });
 
     // Add stream to PeerConnection
-    newPeerConncection[username].addEventListener('addstream', function(event) {
+    newPeerConncection[_this.user].addEventListener('addstream', function(event) {
       console.info('Remote stream added to PeerConnection: ', event);
 
-      if (_this._onAddStream) _this._onAddStream(event, username);
+      if (_this._onAddStream) _this._onAddStream(event, _this.user);
     });
 
-    newPeerConncection[username].onremovestream = function(event) {
+    newPeerConncection[_this.user].onremovestream = function(event) {
       console.info('Stream removed: ', event);
     };
 
@@ -256,7 +256,7 @@ class ConferenceController {
 
   _removeMediaStream() {
     let _this = this;
-    console.log(_this.mediaStream, _this.peerConnection);
+    console.log(_this.mediaStream, newPeerConncection[_this.user]);
 
     if (_this.mediaStream) {
 
@@ -267,8 +267,8 @@ class ConferenceController {
       });
     }
 
-    _this.peerConnection.removeStream(_this.mediaStream);
-    _this.peerConnection.close();
+    newPeerConncection[_this.user].removeStream(_this.mediaStream);
+    newPeerConncection[_this.user].close();
   }
 
   _changePeerInformation(dataObjectObserver) {
@@ -327,7 +327,7 @@ class ConferenceController {
     }
 
     else if (data.id === 'receiveVideoAnswer') {
-      console.debug('Process Connection Descriptionn , receiveAnswer: ', data.sdpAnswer, _this._username, data.name, newPeerConncection);
+      // console.debug('Process Connection Descriptionn , receiveAnswer: ', data.sdpAnswer, _this._username, data.name, newPeerConncection);
        newPeerConncection[data.name].setRemoteDescription(new RTCSessionDescription({type: 'answer', sdp: data.sdpAnswer}), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
     }
 
@@ -375,7 +375,7 @@ class ConferenceController {
     return new Promise((resolve, reject) => {
       try {
         newPeerConncection[senderName] = new RTCPeerConnection(_this._configuration.webrtc);
-        console.debug('_this._username is :', _this.user, username);
+        // console.debug('_this._username is :', _this.user, username);
 
         newPeerConncection[senderName].addEventListener('signalingstatechange', (event) => {
 
@@ -461,7 +461,7 @@ class ConferenceController {
 
   onNewParticipant(request) {
     let _this = this;
-    let userName = _this.username;
+    let userName = _this.user;
     console.debug('------------------onNewParticipant---------------------', request.name);
     _this.receiveVideo(request.name).then((result) => {
       console.debug('##### On receiveVideo from ########', result)
@@ -501,7 +501,6 @@ class ConferenceController {
   _onLocalSessionCreated(description, senderName, mode) {
 
     let _this = this;
-    let userName = _this.user;
     let data = _this.dataObjectReporter.data;
 
     console.debug('-------------------------- setLocalDescription -------------------------:',mode ,  senderName, _this.mode, description)
@@ -511,7 +510,7 @@ class ConferenceController {
 
         let sdpConnection = {
           senderName: senderName,
-          userName: userName,
+          userName: _this.user,
           sdp: description.sdp,
           type: description.type
         };
@@ -534,7 +533,7 @@ class ConferenceController {
         let msg =  {
           id : "receiveVideoFrom",
           senderName : senderName,
-          userName: userName,
+          userName: _this.user,
           sdpOffer : sdpConnection.sdp
         }
 
