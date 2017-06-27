@@ -36,9 +36,7 @@ import code from './code';
 /**
 * Hyperty Code Generator Reporter API - reTHINK Tester Event
 * @author Bernardo Graça [bernardo.marquesg@gmail.com]
-* @version 0.1.0
-* NOTE The interaction between CodeGeneratorObserver and CodeGeneratorReporter will only work if
-*      CodeGeneratorObserver uses the "rethink.inesc.test@gmail.com" identity. Password: rethinkbernardo
+* @version 0.2.0
 */
 class CodeGeneratorReporter {
 
@@ -62,25 +60,19 @@ class CodeGeneratorReporter {
     _this.identityManager = identityManager;
     _this.search = new Search(discovery, identityManager);
     _this.code = code;
-
-    _this._create()
-    .then((codeGenerator) => {
-      console.log('[CodeGenerator.CodeGeneratorReporter]: ', codeGenerator);
-      _this.codeGenerator = codeGenerator;
-    });
   }
 
 
   /**
-   * This function is used to create a new Code Generator providing the name and the identifiers of users to be invited.
+   * This function is used to create a new Code Generator providing the email of the users to be invited.
    * @return {Promise}             It returns code as a Promise
    */
-  _create() {
+  create(emails) {
     let _this = this;
 
     return new Promise(function(resolve, reject) {
 
-      _this.search.users(["rethink.inesc.test@gmail.com"], [_this._domain], [], [])
+      _this.search.users(emails, [_this._domain], [], ['code'])
       .then((hypertiesResult) => {
         let hypertiesIDs = hypertiesResult.map((hyperty) => {
           return hyperty.hypertyID;
@@ -93,7 +85,6 @@ class CodeGeneratorReporter {
           _this.codeGenerator = codeGenerator;
           _this._onSubscription(codeGenerator);
 
-          //The APP needs to know the generated code
           resolve(codeGenerator);
         }).catch(function(reason) {
           reject(reason);
@@ -124,9 +115,8 @@ class CodeGeneratorReporter {
       _this.codeGenerator.data.name = name;
       _this.codeGenerator.data.code = _this._hashCode(name);
 
-      //The APP needs to know the generated code
       resolve(_this.codeGenerator.data.code);
-    })
+    });
   }
 
 
