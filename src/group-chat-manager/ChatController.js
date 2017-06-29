@@ -74,6 +74,10 @@ class ChatController {
       if (_this._onMessage) _this._onMessage(child);
     });
 
+    dataObjectReporter.onRead((event) => {
+      event.accept();
+    });
+
     _this._dataObjectReporter = dataObjectReporter;
   }
 
