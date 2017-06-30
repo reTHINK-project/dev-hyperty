@@ -66,6 +66,8 @@ class UserAvailabilityReporter extends EventEmitter {
       _this.onNotification(event);
     });
 
+    //TODO: uncomment when used with service framework develop branch
+
     this.syncher.onClose((event) => {
 
       console.log('[UserAvailabilityReporter.onClose]')
@@ -132,7 +134,7 @@ onResumeReporter(callback) {
 
     return new Promise((resolve, reject) => {
       console.info('[UserAvailabilityReporter.create] lets create a new User availability Context Object ');
-      _this.syncher.create(_this.userAvailabilityyDescURL, [], availability(), true, false, 'myAvailability', null, {resources: ['availability_context']})
+      _this.syncher.create(_this.userAvailabilityyDescURL, [], availability(), true, false, 'myAvailability', null, {resources: ['availability_context'], expires: 20})
       .then((userAvailability) => {
         _this.userAvailability = userAvailability;
 

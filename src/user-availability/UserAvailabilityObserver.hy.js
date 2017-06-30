@@ -15,23 +15,29 @@ class UserAvailabilityObserver extends EventEmitter {
     super();
 
     let _this = this;
+    _this._url = hypertyURL;
     //let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
     console.log('[UserAvailabilityObserver] started with hypertyURL->', hypertyURL);
     _this._domain = divideURL(hypertyURL).domain;
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Context';
 
     _this._users2observe = [];
+    _this._observers = {};
 
     _this._syncher = new Syncher(hypertyURL, bus, configuration);
     let discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
     _this._discovery = discovery;
+
+    _this._discoveries = {}; //list of discovered objects
     //_this.identityManager = identityManager;
     //_this.search = new Search(discovery, identityManager);
     window.discovery = _this._discovery;
   }
 
-  start () {
+
+  start() {
     let _this = this;
+    console.log('[UserAvailabilityObserver.start] ');
 
     return new Promise((resolve, reject) => {
       _this._syncher.resumeObservers({store: true}).then((observers) => {
@@ -40,24 +46,72 @@ class UserAvailabilityObserver extends EventEmitter {
 
         if (observersList.length  > 0) {
 
-        console.log('[UserAvailabilityObserver.start] resuming: ', observers);
+          console.log('[UserAvailabilityObserver.start] resuming: ', observers);
 
-        /*observersList.forEach((i)=>{
+          /*observersList.forEach((i)=>{
           _this._users2observe.push(new UserAvailabilityController(observers[i]));
         });*/
+        _this._observers = observers;
 
         resolve(observers);
+
+        // TODO: add onDisconnected to DataObjectObserver and invoke for each resumed observer
+        observersList.forEach((observer) =>{
+          let availability = observers[observer]
+
+          // By default resumed availability is unavailable. It will be updated with value synchronized with reporter if connected
+          availability.data.values[0].value = 'unavailable';
+          availability.sync();
+
+          //Add listener to be notified when reporter is abruptly disconnected
+          availability.onDisconnected(()=>{
+            console.log('[UserAvailabilityObserver.onDisconnected]: ', observers[observer]);
+
+            availability.data.values[0].value = 'unavailable';
+            // to avoid false disconnects
+            availability.sync();
+          });
+        });
+
+
       } else {
         resolve(false);
       }
 
-      }).catch((reason) => {
-        console.info('[UserAvailabilityObserver] Resume Observer failed | ', reason);
-        resolve(false);
-      });
     }).catch((reason) => {
+      console.info('[UserAvailabilityObserver] Resume Observer failed | ', reason);
+      resolve(false);
+    });
+  }).catch((reason) => {
     reject('[UserAvailabilityObserver] Start failed | ', reason);
   });
+}
+
+resumeDiscoveries() {
+  let _this = this;
+
+  return new Promise((resolve, reject) => {
+    _this._discovery.resumeDiscoveries().then((discoveries) => {
+
+      console.log('[UserAvailabilityObserver._resumeDiscoveries] found: ', discoveries);
+
+      discoveries.forEach((discovery) =>{
+
+        if (discovery.data.resources && discovery.data.resources[0] === 'availability_context') {
+          console.log('[UserAvailabilityObserver._resumeDiscoveries] resuming: ', discovery);
+
+          discovery.onLive(_this._url,()=>{
+            console.log('[UserAvailabilityObserver._resumeDiscoveries] disconnected Hyperty is back to live', discovery);
+
+            resolve([discovery.data]);
+            discovery.unsubscribeLive(_this._url);
+          });
+        }
+      });
+    });
+  }).catch((reason) => {
+  reject('[UserAvailabilityObserver] resumeDiscoveries failed | ', reason);
+});
 }
 
   onResumeObserver(callback) {
@@ -71,14 +125,15 @@ class UserAvailabilityObserver extends EventEmitter {
     let _this = this;
     return new Promise(function(resolve,reject) {
       //TODO: replace by _discovery.discoverHypertiesDO(..) when DR notification works
-      _this._discovery.discoverHyperties(email, ['context'], ['availability_context'], domain).then(hyperties =>{
+      _this._discovery.discoverHypertiesDO(email, ['context'], ['availability_context'], domain).then(hyperties =>{
       //_this.search.users([email], [domain], ['context'], ['availability_context']).then(function(a) {
         console.log('[UserAvailabilityObserver.discoverUsers] discovery result->', hyperties);
         let discovered = [];
         let disconnected = [];
         hyperties.forEach(hyperty =>{
-          if (hyperty.status === 'live') {
-            discovered.push(hyperty);
+          _this._discoveries[hyperty.data.hypertyID] = hyperty;
+          if (hyperty.data.status === 'live') {
+            discovered.push(hyperty.data);
           } else {
             disconnected.push(hyperty);
             };
@@ -89,14 +144,15 @@ class UserAvailabilityObserver extends EventEmitter {
           resolve(discovered);
         } else if (disconnected.length > 0) {
           console.log('[UserAvailabilityObserver.discoverUsers] disconnected Hyperties ', disconnected);
-          resolve([]);
+          //resolve([]);
 
-          //TODO: uncommented below when DR notification works
-          /*
-          disconnected[0].onLive(()=>{
+          disconnected[0].onLive(_this._url,()=>{
+            console.log('[UserAvailabilityObserver.discoverUsers] disconnected Hyperty is back to live', disconnected[0]);
+
             discovered.push(disconnected[0].data);
             resolve(discovered);
-          });*/
+            disconnected[0].unsubscribeLive(_this._url);
+          });
         }
       });
     });
@@ -125,7 +181,7 @@ class UserAvailabilityObserver extends EventEmitter {
           }
         });
         if (last != 0 && url) {
-          resolve(_this._subscribeAvailability(hyperty.userID, url));
+          resolve(_this._subscribeAvailability(hyperty, url));
         } else {
           reject ('[UserAvailabilityObserver.discoverAvailability] discovered DataObjecs are invalid', dataObjects);
         }
@@ -133,7 +189,7 @@ class UserAvailabilityObserver extends EventEmitter {
     });
   }
 
-  _subscribeAvailability(userID, url) {
+  _subscribeAvailability(hyperty, url) {
     let _this = this;
     return new Promise(function(resolve,reject) {
         _this._syncher.subscribe(_this._objectDescURL, url).then((availability) => {
@@ -142,6 +198,14 @@ class UserAvailabilityObserver extends EventEmitter {
           //let newUserAvailability = new UserAvailabilityController(availability, userID);
 
           _this._users2observe.push(availability);
+
+          // When Object is disconnected set user availability status as unavailable
+          availability.onDisconnected(()=>{
+            console.log('[UserAvailabilityObserver.onDisconnected]: ', availability);
+
+            availability.data.values[0].value = 'unavailable';
+            availability.sync();
+          });
 
           resolve(availability);
         });
