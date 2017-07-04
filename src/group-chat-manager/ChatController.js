@@ -316,16 +316,35 @@ class ChatController {
 
     let _this = this;
 
+    let haveEmptyElements = (element) => {
+      console.log('Element:', element.length);
+      return element.length !== 0;
+    };
+
+    let notFoundElements = (element) => {
+      console.log('user not found: ', element);
+      return !(element instanceof String);
+    }
+
     return new Promise(function(resolve, reject) {
+
+      if (users.filter(haveEmptyElements).length === 0) {
+        return reject('Don\'t have users to invite');
+      }
 
       console.info('[GroupChatManager.ChatController]----------------------- Inviting users -------------------- \n');
       console.info('[GroupChatManager.ChatController]Users: ', users, '\nDomains:', domains);
       _this.search.users(users, domains, ['comm'], ['chat'])
       .then((hypertiesIDs) => {
 
+        if (hypertiesIDs.filter(notFoundElements).length === 0) {
+          throw 'User(s) not found';
+        }
+
         let selectedHyperties = hypertiesIDs.map((hyperty) => {
           return hyperty.hypertyID;
         });
+
         console.info('[GroupChatManager.ChatController]------------------------ Syncher Create ---------------------- \n');
         console.info('[GroupChatManager.ChatController]Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
@@ -333,14 +352,13 @@ class ChatController {
 
         let dataObject = _this.controllerMode === 'reporter' ? _this.dataObjectReporter : _this.dataObjectObserver;
         return dataObject.inviteObservers(selectedHyperties);
-
       })
-      .then(function() {
+      .then(() => {
         console.info('[GroupChatManager.ChatController]Are invited with success ' + users.length + ' users;');
         resolve(true);
-      }).catch(function(reason) {
+      }).catch((reason) => {
         console.error('An error occurred when trying to invite users;\n', reason);
-        reject(false);
+        reject(reason);
       });
 
     });
