@@ -92,6 +92,7 @@ function notificationHandler(controller, identity) {
 
     controller.decline().then(function(result) {
       console.log(result);
+      disconnecting();
     }).catch(function(reason) {
       console.error(reason);
     });
