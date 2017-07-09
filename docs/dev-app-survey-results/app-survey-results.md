@@ -23,7 +23,7 @@ The purpose of this sruvey was to evaluate the evolution of the feedback perceiv
 
 ## 1. Do you now understand the reTHINK overall concept?
 
-![Answers for question 1](/docs/dev-app-survey-results/docs/dev-app-survey-results/images/2-app-dev-survey-1.png)
+![Answers for question 1](/docs/dev-app-survey-results/images/2-app-dev-survey-1.png)
 
 
 
@@ -64,10 +64,10 @@ The purpose of this sruvey was to evaluate the evolution of the feedback perceiv
 
 ## 11. What would you like to improve/add in order to be able to debug ReTHINKs apps more easily?
 
-![Answers for question 11](/docs/dev-app-survey-results/images/2-app-dev-survey-11.png)
 
-##12. Does the identity meet the requirements of your application?
+## 12. Does the identity meet the requirements of your application?
 
+![Answers for question 12](/docs/dev-app-survey-results/images/2-app-dev-survey-12.png)
 
 
 ## 13. Is clearly defined the border between Application and hyperty code?
