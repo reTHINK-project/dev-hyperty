@@ -9,6 +9,6 @@
     "browser": true
   },
   "dataObjects": [
-    "https://catalogue.hysmart.rethink.ptinovacao.pt/.well-known/dataschema/HelloWorldDataSchema"
+    "https://catalogue.hysmart.rethink.ptinovacao.pt/.well-known/dataschema/CodeGeneratorDataSchema"
   ]
 }

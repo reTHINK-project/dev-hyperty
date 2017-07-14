@@ -28,9 +28,7 @@ import EventEmitter from '../utils/EventEmitter';
 /**
 * Hyperty Code Generator Observer API - reTHINK Tester Event
 * @author Bernardo Graça [bernardo.marquesg@gmail.com]
-* @version 0.1.0
-* NOTE The interaction between CodeGeneratorObserver and CodeGeneratorReporter will only work if
-*      CodeGeneratorObserver uses the "rethink.inesc.test@gmail.com" identity. Password: rethinkbernardo
+* @version 0.2.0
 */
 
 class CodeGeneratorObserver extends EventEmitter {

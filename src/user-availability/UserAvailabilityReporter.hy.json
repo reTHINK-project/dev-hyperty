@@ -1,5 +1,5 @@
 {
-  "configuration": {},
+  "configuration": { "expires": 30 },
   "hypertyType": [
     "availability_context"
   ],
@@ -9,6 +9,6 @@
   "language": "javascript",
   "signature": "",
   "dataObjects": [
-    "https://catalogue.%domain%/.well-known/dataschema/Context"
+    "https://catalogue.%domain%/.well-known/dataschema/ContextReporter"
   ]
 }

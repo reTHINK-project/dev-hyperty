@@ -6,6 +6,8 @@ let discoveredHyperties = {};
 
 function hypertyLoaded(result) {
 
+  console.log('UserAvailabilityObserverDemo hyperty loaded!! ', result);
+
   $('.selection-panel').hide();
 
   console.log('[UserAvailabilityObserverDemo] started ', result);
@@ -17,7 +19,7 @@ function hypertyLoaded(result) {
                     '</span>';
   $('.card-panel').html(hypertyInfo);
 
-  console.log('UserAvailabilityObserverDemo Waiting!!');
+  console.log('UserAvailabilityObserverDemo Waiting!! ');
 
     observer = result.instance;
 
@@ -25,7 +27,19 @@ function hypertyLoaded(result) {
       if (usersAvailability) { observeUsersAvailability(usersAvailability); }
 
       discoverUsers(observer);
+
+      observer.resumeDiscoveries().then( (discovered) => {
+        console.log('UserAvailabilityObserverDemo: Discoveries back to live ', discovered);
+        if (discovered) {
+          let collection = $('.collection');
+          collection.empty();
+          collection.show();
+          showDiscoveredUser(discovered[0], collection);
+        }
     });
+  }).catch((reason) => {
+    console.info('[UserAvailabilityObserverDemo] start failed | ', reason);
+  });
 }
 
 function discoverUsers(observer) {
@@ -47,39 +61,42 @@ function discoverUsers(observer) {
       console.log('[UserAvailabilityObserverDemo.discoverUsers] discovered: ', result);
 
       let collection = $('.collection');
-      let collectionItem;
       collection.empty();
       collection.show();
 
-
-      result.forEach((discoveredUser) => {
-
-
-        if (discoveredUser.hasOwnProperty('userID')) {
-          discoveredHyperties[discoveredUser.hypertyID] = discoveredUser;
-          collectionItem = '<li data-url="' + discoveredUser.userID + '" class="collection-item">' +
-          '<span class="title"><b>UserURL: </b>' + discoveredUser.userID + '</span>' +
-          '<a hyperty-id= "'+discoveredUser.hypertyID+'" user-id= "'+discoveredUser.userID+'" href="#" title="Subscribe to ' + discoveredUser.userID + '" class="waves-effect waves-light btn subscribe-btn secondary-content" ><i class="material-icons">import_export</i></a>' +
-          '<p><b>DescriptorURL: </b>' + discoveredUser.descriptor + '<br><b> HypertyURL: </b>' + discoveredUser.hypertyID +
-          '<br><b>Resources: </b>' + JSON.stringify(discoveredUser.resources) +
-          '<br><b>DataSchemes: </b>' + JSON.stringify(discoveredUser.dataSchemes) +
-          '</p></li>';
-        } else {
-          collectionItem = '<li class="collection-item">' +
-          '<span class="title">' + discoveredUser + '</span>' +
-          '</li>';
-        }
-
-        let $item = $(collectionItem);
-
-        let subscribe = $item.find('.subscribe-btn');
-
-        subscribe.on('click', subscribeAvailability );
-        collection.append($item);
-
+      result.forEach((discoveredUser)=>{
+        showDiscoveredUser(discoveredUser, collection)
       });
     });
   });
+}
+
+function showDiscoveredUser(discoveredUser, collection){
+
+  let collectionItem;
+
+    if (discoveredUser.hasOwnProperty('userID')) {
+      discoveredHyperties[discoveredUser.hypertyID] = discoveredUser;
+      collectionItem = '<li data-url="' + discoveredUser.userID + '" class="collection-item">' +
+      '<span class="title"><b>UserURL: </b>' + discoveredUser.userID + '</span>' +
+      '<a hyperty-id= "'+discoveredUser.hypertyID+'" user-id= "'+discoveredUser.userID+'" href="#" title="Subscribe to ' + discoveredUser.userID + '" class="waves-effect waves-light btn subscribe-btn secondary-content" ><i class="material-icons">import_export</i></a>' +
+      '<p><b>DescriptorURL: </b>' + discoveredUser.descriptor + '<br><b> HypertyURL: </b>' + discoveredUser.hypertyID +
+      '<br><b>Resources: </b>' + JSON.stringify(discoveredUser.resources) +
+      '<br><b>DataSchemes: </b>' + JSON.stringify(discoveredUser.dataSchemes) +
+      '</p></li>';
+    } else {
+      collectionItem = '<li class="collection-item">' +
+      '<span class="title">' + discoveredUser + '</span>' +
+      '</li>';
+    }
+
+    let $item = $(collectionItem);
+
+    let subscribe = $item.find('.subscribe-btn');
+
+    subscribe.on('click', subscribeAvailability );
+    collection.append($item);
+
 }
 
 function subscribeAvailability(event){

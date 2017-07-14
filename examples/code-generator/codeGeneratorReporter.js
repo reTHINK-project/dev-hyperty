@@ -5,17 +5,32 @@ function hypertyLoaded(result) {
   codeGeneratorHyperty = result.instance;
   console.log(codeGeneratorHyperty);
   $('.requet-code').on('submit', generateCode);
+  $('.create').on('submit', create);
+
+}
+
+function create (event) {
+  event.preventDefault();
+  let emails = []
+  let form = $('.create');
+  emails.push(form.find('#email').val())
+
+  codeGeneratorHyperty.create(emails).then((CodeGeneratorReporter) => {
+    form.find('#email').val('')
+    $('.create-panel').hide()
+    $('.request-code-panel').show()
+  });
 }
 
 function generateCode(event) {
   event.preventDefault();
   let form = $(event.currentTarget);
-  let name = form.find('.message-input').val();
+  let name = form.find('#name').val();
   $('.code-panel').children().remove();
 
   codeGeneratorHyperty.generateCode(name).then(function(code) {
     showCode(code);
-    form.find('.message-input').val('');
+    form.find('#name').val('');
   }).catch(function(reason) {
     console.error(reason);
   });

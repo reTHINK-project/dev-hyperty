@@ -27,6 +27,8 @@
 * @version 0.1.0
 */
 
+import { UserInfo } from './UserInfo';
+
 class ChatController {
 
   constructor(syncher, discovery, domain, search, identity, manager) {
@@ -70,6 +72,10 @@ class ChatController {
       console.info('[GroupChatManager.ChatController]Reporter - Add Child:', child);
       // dataObjectReporter.data.lastModified = new Date().toJSON();
       if (_this._onMessage) _this._onMessage(child);
+    });
+
+    dataObjectReporter.onRead((event) => {
+      event.accept();
     });
 
     _this._dataObjectReporter = dataObjectReporter;
@@ -147,22 +153,37 @@ class ChatController {
   _onSubscribe(event) {
 
     let dataObjectReporter = this._dataObjectReporter;
-     event.accept();
-     console.log('[GroupChatManager.ChatController.onSubscribe] event', event, dataObjectReporter.url);
-     console.log('[GroupChatManager.ChatController.onSubscribe]New user has subscribe this object: ', dataObjectReporter.data, event.identity);
 
-     let participant = event.identity.userProfile;
+    event.accept();
 
-     console.log('[GroupChatManager.ChatController.onSubscribe]  new participant', participant);
-     if (event.identity.legacy) {
-       participant.legacy = event.identity.legacy;
-     }
+    console.log('[GroupChatManager.ChatController.onSubscribe] event', event, dataObjectReporter.url);
+    console.log('[GroupChatManager.ChatController.onSubscribe] New user has subscribe this object: ', dataObjectReporter.data, event.identity);
 
-     dataObjectReporter.data.participants[participant.userURL] = { identity: participant };
-     console.log('[GroupChatManager.ChatController.onSubscribe] communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
-     console.log('[GroupChatManager.ChatController.onSubscribe - onSubscription] ', participant);
-     console.log('[GroupChatManager.ChatController.onSubscribe - this._onUserAdded] ', this._onUserAdded);
-     if (this._onUserAdded) this._onUserAdded(participant);
+    let identity = JSON.parse(JSON.stringify(event.identity));
+
+    if (identity.hasOwnProperty('assertion')) {
+      delete identity.assertion
+    }
+
+    let userInfo = {
+      hypertyURL: event.url,
+      domain: event.domain,
+      identity: identity
+    }
+    let userURL = event.identity.userProfile.userURL;
+
+    console.log('[GroupChatManager.ChatController.onSubscribe]  new participant', userInfo);
+    if (event.identity.legacy) {
+     userInfo.legacy = event.identity.legacy;
+    }
+
+    dataObjectReporter.data.participants[userURL] = userInfo;
+
+    console.log('[GroupChatManager.ChatController.onSubscribe] communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
+    console.log('[GroupChatManager.ChatController.onSubscribe - onSubscription] ', userInfo);
+    // console.log('[GroupChatManager.ChatController.onSubscribe - this._onUserAdded] ', this._onUserAdded);
+
+    if (this._onUserAdded) this._onUserAdded(userInfo);
   }
 
   _onUnsubscribe(event) {
@@ -295,16 +316,35 @@ class ChatController {
 
     let _this = this;
 
+    let haveEmptyElements = (element) => {
+      console.log('Element:', element.length);
+      return element.length !== 0;
+    };
+
+    let notFoundElements = (element) => {
+      console.log('user not found: ', element);
+      return !(element instanceof String);
+    }
+
     return new Promise(function(resolve, reject) {
+
+      if (users.filter(haveEmptyElements).length === 0) {
+        return reject('Don\'t have users to invite');
+      }
 
       console.info('[GroupChatManager.ChatController]----------------------- Inviting users -------------------- \n');
       console.info('[GroupChatManager.ChatController]Users: ', users, '\nDomains:', domains);
       _this.search.users(users, domains, ['comm'], ['chat'])
       .then((hypertiesIDs) => {
 
+        if (hypertiesIDs.filter(notFoundElements).length === 0) {
+          throw 'User(s) not found';
+        }
+
         let selectedHyperties = hypertiesIDs.map((hyperty) => {
           return hyperty.hypertyID;
         });
+
         console.info('[GroupChatManager.ChatController]------------------------ Syncher Create ---------------------- \n');
         console.info('[GroupChatManager.ChatController]Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
@@ -312,14 +352,13 @@ class ChatController {
 
         let dataObject = _this.controllerMode === 'reporter' ? _this.dataObjectReporter : _this.dataObjectObserver;
         return dataObject.inviteObservers(selectedHyperties);
-
       })
-      .then(function() {
+      .then(() => {
         console.info('[GroupChatManager.ChatController]Are invited with success ' + users.length + ' users;');
         resolve(true);
-      }).catch(function(reason) {
+      }).catch((reason) => {
         console.error('An error occurred when trying to invite users;\n', reason);
-        reject(false);
+        reject(reason);
       });
 
     });

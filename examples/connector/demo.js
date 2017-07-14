@@ -92,6 +92,7 @@ function notificationHandler(controller, identity) {
 
     controller.decline().then(function(result) {
       console.log(result);
+      disconnecting();
     }).catch(function(reason) {
       console.error(reason);
     });
@@ -180,6 +181,13 @@ function emailDiscovered(result) {
   }
 
   result.forEach((hyperty) => {
+
+    if (!hyperty.userID) {
+      hyperty.userID = hyperty.hypertyID;
+      hyperty.descriptor = 'Interworking';
+      hyperty.resources = ['audio','video'];
+      hyperty.dataSchemes = ['connection'];
+    }
 
     var itemsFound = collection.find('li[data-url="' + hyperty.userID + '"]');
     if (itemsFound.length) {
