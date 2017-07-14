@@ -11,8 +11,9 @@ const LocationObserverHyperty = (descURL, syncher, discovery, users_position=[],
 
     discovery.discoverDataObjectsPerName('location')
         .then((dataobjects) => {
-            console.log('[DiscoveryHyperty]', dataobjects)
-            dataobjects.forEach(dataobject =>  {
+            const liveDOs = dataobjects.filter(d => d.status === 'live') 
+            console.log('[DiscoveryHyperty]', liveDOs)
+            liveDOs.forEach(dataobject =>  {
                 syncher.subscribe(descURL, dataobject.url).then(observer=>{
                     console.log('location ob', observer)
                     //observer.data.values[]
