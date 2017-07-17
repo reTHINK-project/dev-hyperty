@@ -284,6 +284,7 @@ function processLocalVideo(mediaStream) {
 
 function disconnecting() {
 
+  $('.modal-call').closeModal();
   var videoHolder = $('.video-holder');
   var myVideo = videoHolder.find('.my-video');
   var video = videoHolder.find('.video');
