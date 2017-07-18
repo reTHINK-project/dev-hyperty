@@ -92,6 +92,7 @@ function notificationHandler(controller, identity) {
 
     controller.decline().then(function(result) {
       console.log(result);
+      disconnecting();
     }).catch(function(reason) {
       console.error(reason);
     });
@@ -283,6 +284,7 @@ function processLocalVideo(mediaStream) {
 
 function disconnecting() {
 
+  $('.modal-call').closeModal();
   var videoHolder = $('.video-holder');
   var myVideo = videoHolder.find('.my-video');
   var video = videoHolder.find('.video');

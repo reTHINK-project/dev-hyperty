@@ -58,9 +58,11 @@ class DiscoveryHyperty {
     _notify(hypertyURL) {
         console.error('[DiscoveryHyperty] init')
         this._discovery.discoverDataObject('discovery', ['context'], ["users"])
-            .then((h) => {
-                console.log('[DiscoveryHyperty]', h)
-                this._createSyncher(Object.keys(h).map(k=>h[k].reporter))
+            .then((object) => Object.keys(object).map(k=>object[k]))
+            .then((hs) => { console.log('discovered hyperties', hs); return hs; })
+            .then((hs) => hs.filter((h) => h.status === 'live'))
+            .then((hs) => {
+                this._createSyncher(hs.map((h) => h.reporter))
             }).catch((err)=>{
                 if(err === 'Not Found')
                     return this._createSyncher(([]))

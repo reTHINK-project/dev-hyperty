@@ -148,7 +148,12 @@ class ConnectionController {
     _this._dataObjectReporter = dataObjectReporter;
 
     dataObjectReporter.onSubscription(function(event) {
-      event.accept();
+      if (event.type === 'subscribe') event.accept();
+      else {//to handle reject from remote peer
+        _this._removeMediaStream();
+        if (_this._onDisconnect) _this._onDisconnect(event.identity);
+        _this._clean(_this._connector._controllers, _this._remoteHyperty);
+      }
     });
 
     if (_this.mode === 'offer') {
@@ -439,9 +444,10 @@ class ConnectionController {
     return new Promise(function(resolve, reject) {
 
       try {
-        _this.connectionEvent.ack(declineReason);
-        _this.disconnect();
-        resolve(true);
+      //  _this.connectionEvent.ack(declineReason);
+        _this.disconnect().then(()=>{
+          resolve(true);
+        });
       } catch (e) {
         console.error(e);
         reject(false);

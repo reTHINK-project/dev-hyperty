@@ -18,9 +18,9 @@ const LocationHypertyFactory = function(hypertyURL, bus, config){
     syncher.create(objectDescURL, [], position(), true, false, 'location')
         .then((reporter)=>{
             reporter.onSubscription((event)=>event.accept())
-            navigator.geolocation.watchPosition((position)=>{
-                currentPosition = position 
-                search.myIdentity().then(identity => {
+            search.myIdentity().then(identity => {
+                navigator.geolocation.watchPosition((position)=>{
+                    currentPosition = position 
                     reporter.data.values = [
                         { name: 'latitude', unit: 'lat', value: position.coords.latitude},
                         { name: 'longitude', unit: 'lon', value: position.coords.longitude }

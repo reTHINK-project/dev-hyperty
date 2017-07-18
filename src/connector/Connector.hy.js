@@ -88,6 +88,7 @@ class Connector {
         if (_this._controllers[event.from]) {
           _this._autoSubscribe(event);
         } else {
+
           _this._autoAccept(event);
         }
 
@@ -156,9 +157,18 @@ class Connector {
       connectionController.connectionEvent = event;
       connectionController.dataObjectObserver = dataObjectObserver;
 
+      if (Object.keys(_this._controllers).length > 0) {      // check if there an ongoing call
+        ongoingCall = true;
+      }
+
       _this._controllers[event.from] = connectionController;
 
       let identity = event.identity;
+
+      let ongoingCall;
+
+
+
 
       if (!identity) {
         identity = {};
@@ -170,8 +180,13 @@ class Connector {
             };
           }
 
-      // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
-      if (_this._onInvitation) _this._onInvitation(connectionController, identity.userProfile);
+      if (ongoingCall) {
+        // ongoing call lets decline we busy
+        connectionController.decline(486, 'Busy Here');
+      } else if (_this._onInvitation) {
+        // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
+       _this._onInvitation(connectionController, identity.userProfile);
+      }
 
       console.info('------------------------ END ---------------------- \n');
     }).catch(function(reason) {
