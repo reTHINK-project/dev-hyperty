@@ -151,7 +151,7 @@ class ConnectionController {
       if (event.type === 'subscribe') event.accept();
       else {//to handle reject from remote peer
         _this._removeMediaStream();
-        if (_this._onDisconnect) _this._onDisconnect(event.identity);
+        if (_this._onDisconnect) _this._onDisconnect(event);
         _this._clean(_this._connector._controllers, _this._remoteHyperty);
       }
     });
@@ -220,7 +220,7 @@ class ConnectionController {
     _this._deleteEvent = event;
 
     _this._removeMediaStream();
-    if (_this._onDisconnect) _this._onDisconnect(event.identity);
+    if (_this._onDisconnect) _this._onDisconnect(event);
     _this._clean(_this._connector._controllers, _this._remoteHyperty);
   }
 
