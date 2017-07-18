@@ -109,7 +109,7 @@ class ConnectionController {
 
     // Add stream to PeerConnection
     peerConnection.addEventListener('addstream', function(event) {
-      console.info('[Connector.ConnectionController ]Add Stream: ', event, _this._onAddStream);
+      console.info('[Connector.ConnectionController ]Add Stream: ', event);
 
       if (_this._onAddStream) _this._onAddStream(event);
     });
@@ -528,15 +528,20 @@ class ConnectionController {
 
       try {
         let localStream = _this.peerConnection.getLocalStreams()[0];
-        let videoTrack = localStream.getVideoTracks()[0];
+        let videoTrack = localStream ? localStream.getVideoTracks()[0] : null;
 
-        if (!value) {
-          videoTrack.enabled = videoTrack.enabled ? false : true;
+        if (videoTrack) {
+          if (!value) {
+            videoTrack.enabled = videoTrack.enabled ? false : true;
+          } else {
+            videoTrack.enabled = value;
+          }
+
+          resolve(videoTrack.enabled);
         } else {
-          videoTrack.enabled = value;
+          reject('not ready yet');
         }
 
-        resolve(videoTrack.enabled);
       } catch (e) {
         reject(e);
       }
