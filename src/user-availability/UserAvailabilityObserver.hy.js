@@ -16,6 +16,10 @@ class UserAvailabilityObserver extends EventEmitter {
 
     let _this = this;
     _this._url = hypertyURL;
+    _this._discoverUsersPromises = {}; // object with promises executed at discoverUsers function
+    _this._observePromises = {}; // object with promises executed at observe function
+
+
     //let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
     console.log('[UserAvailabilityObserver] started with hypertyURL->', hypertyURL);
     _this._domain = divideURL(hypertyURL).domain;
@@ -123,8 +127,13 @@ resumeDiscoveries() {
   discoverUsers(email,domain)
   {
     let _this = this;
-    return new Promise(function(resolve,reject) {
-      //TODO: replace by _discovery.discoverHypertiesDO(..) when DR notification works
+
+
+    let user = email + '@' + domain;
+
+    if (!_this._discoverUsersPromises[user])
+      _this._discoverUsersPromises[user] = new Promise(function(resolve,reject) {
+
       _this._discovery.discoverHypertiesDO(email, ['context'], ['availability_context'], domain).then(hyperties =>{
       //_this.search.users([email], [domain], ['context'], ['availability_context']).then(function(a) {
         console.log('[UserAvailabilityObserver.discoverUsers] discovery result->', hyperties);
@@ -156,6 +165,7 @@ resumeDiscoveries() {
         }
       });
     });
+    return _this._discoverUsersPromises[user];
   }
 
   /**
@@ -167,7 +177,13 @@ resumeDiscoveries() {
   observe(hyperty)
     {
       let _this = this;
-      return new Promise(function(resolve,reject) {
+      if (!_this._observePromises[hyperty.hypertyID])
+        _this._observePromises[hyperty.hypertyID] = new Promise(function(resolve,reject) {
+        //check if we are already observing it
+        _this._users2observe.forEach((availability) => {
+          if (availability._reporter === hyperty.hypertyID) return resolve(availability);
+        });
+
           _this._discovery.discoverDataObjectsPerReporter(hyperty.hypertyID, ['context'], ['availability_context'],  _this._domain).then(function(dataObjects) {
             console.log('[UserAvailabilityObserver.discoverAvailability] discovered user availability objects ', dataObjects);
           let last = 0;
@@ -187,11 +203,18 @@ resumeDiscoveries() {
         }
       });
     });
+    return _this._observePromises[hyperty.hypertyID];
   }
 
   _subscribeAvailability(hyperty, url) {
     let _this = this;
+    // avoid duplicated subscriptions
+
     return new Promise(function(resolve,reject) {
+      _this._users2observe.forEach((availability) => {
+        if (availability.url === url) return resolve(availability);
+      });
+
         _this._syncher.subscribe(_this._objectDescURL, url).then((availability) => {
           console.log('[UserAvailabilityObserver.observeAvailability] observer object', availability);
 
