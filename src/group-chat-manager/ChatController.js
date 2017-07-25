@@ -78,6 +78,21 @@ class ChatController {
       event.accept();
     });
 
+    dataObjectReporter.onExecute((event) => {
+      switch (event.method) {
+        case 'addUser':
+          _this.addUser(event.params[0], event.params[1]).then(() => {
+            event.accept();
+          }).catch(function(reason) {
+            console.error('Reason:', reason);
+            reject(reason);
+          });
+          break;
+        default: event.reject('[ChatController.onExecute] Chat method execution not accepted by Reporter');
+          break;
+      }
+    });
+
     _this._dataObjectReporter = dataObjectReporter;
   }
 
@@ -364,6 +379,45 @@ class ChatController {
     });
 
   }
+
+  /**
+   * This function is used to request the Reporter to add / invite new user on an existing Group Chat instance.
+   * Only Observers are allowed to use this function.
+   * @param {URL.UserURL}  users  User to be invited to join the Group Chat that is identified with reTHINK User URL.
+   * @return {Promise<boolean>}   It returns as a Promise true if successfully invited or false otherwise.
+   */
+  addUserReq(users, domains) {
+
+    let _this = this;
+
+    //check is Observer and invoke observer.execute() with new promise
+    let haveEmptyElements = (element) => {
+      console.log('Element:', element.length);
+      return element.length !== 0;
+    };
+
+    return new Promise(function(resolve, reject) {
+
+      if (users.filter(haveEmptyElements).length === 0) {
+        return reject('[GroupChatManager.ChatController.addUserReq] Don\'t have users to add');
+      }
+      if (!_this.controllerMode === 'observer') {
+        return reject('[GroupChatManager.ChatController.addUserReq] only allowed to Chat Observer');
+      }
+
+        _this._dataObjectObserver.execute('addUser', [users, domains])
+        .then(() => {
+        console.info('[GroupChatManager.ChatController.addUserReq] Request accepted by Reporter ');
+        resolve(true);
+      }).catch((reason) => {
+        console.error('[GroupChatManager.ChatController.addUserReq] Request rejected by Reporter;\n', reason);
+        reject(reason);
+      });
+
+    });
+
+  }
+
 
   /**
    * This function is used to remove a user from an existing Group Chat instance.
