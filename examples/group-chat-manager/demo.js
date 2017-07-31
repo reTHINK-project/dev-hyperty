@@ -416,6 +416,8 @@ function chatManagerReady(chatController, isOwner) {
   let btnCancel = addParticipantModal.find('.btn-cancel');
 
   let messageForm = chatSection.find('.message-form');
+  let fileForm = chatSection.find('.file-form');
+  let file = $( "input:file" )
   let textArea = messageForm.find('.materialize-textarea');
 
   Handlebars.getTemplate('group-chat-manager/chat-header').then(function(template) {
@@ -460,6 +462,24 @@ function chatManagerReady(chatController, isOwner) {
       messageForm[0].reset();
     }).catch(function(reason) {
       console.error('message error', reason);
+    });
+
+  });
+
+  fileForm.on('change', function(event) {
+    console.log('send file event: ', event);
+
+    event.preventDefault();
+
+    let object = $(this).serializeObject();
+    console.log('file: ', file);
+
+    chatController.sendFile(file).then(function(result) {
+      console.log('file sent', result);
+      // processFile(result);
+      fileForm[0].reset();
+    }).catch(function(reason) {
+      console.error('file error', reason);
     });
 
   });

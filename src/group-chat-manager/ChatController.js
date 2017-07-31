@@ -28,6 +28,7 @@
 */
 
 import { UserInfo } from './UserInfo';
+import {FileHypertyResource} from 'service-framework/dist/HypertyResource';
 
 class ChatController {
 
@@ -58,6 +59,14 @@ class ChatController {
     let _this = this;
 
     _this.controllerMode = 'reporter';
+    _this.fileManager = new FileManager(dataObjectReporter);
+
+    // Handler to process received files
+
+    _this.fileManager.onFile((file)=>{
+      console.info('[GroupChatManager.ChatController] Reporter - file received: ', file);
+
+    });
 
     dataObjectReporter.onSubscription(function(event) {
 
@@ -67,12 +76,7 @@ class ChatController {
       }
     });
 
-    dataObjectReporter.onAddChild(function(child) {
-      _this.child_cseq +=1;
-      console.info('[GroupChatManager.ChatController]Reporter - Add Child:', child);
-      // dataObjectReporter.data.lastModified = new Date().toJSON();
-      if (_this._onMessage) _this._onMessage(child);
-    });
+    _this._setOnAddChildListener(dataObjectReporter);
 
     dataObjectReporter.onRead((event) => {
       event.accept();
@@ -108,6 +112,14 @@ class ChatController {
 
     _this._dataObjectObserver = dataObjectObserver;
 
+    _this.fileManager = new FileManager(dataObjectObserver);
+
+    // Handler to process received files
+
+    _this.fileManager.onFile((file)=>{
+      console.info('[GroupChatManager.ChatController] Observer - file received: ', file);
+    });
+
     dataObjectObserver.onChange('*', function(event) {
       console.info('[GroupChatManager.ChatController]Observer - onChange', event);
 
@@ -127,11 +139,7 @@ class ChatController {
 
     });
 
-    dataObjectObserver.onAddChild(function(child) {
-      _this.child_cseq +=1;
-      console.info('[GroupChatManager.ChatController]Observer - Add Child: ', child);
-      if (_this._onMessage) _this._onMessage(child);
-    });
+    _this._setOnAddChildListener(dataObjectObserver);
 
     // let childrens = dataObjectObserver.childrens;
     // Object.keys(childrens).forEach((child) => {
@@ -148,6 +156,29 @@ class ChatController {
     let _this = this;
     return _this._dataObjectObserver;
   }
+
+  _setOnAddChildListener(dataObject) {
+
+    let _this = this;
+
+    dataObject.onAddChild(function(child) {
+      _this.child_cseq +=1;
+      console.info('[GroupChatManager.ChatController._setOnAddChildListener] new Child received: ', child);
+
+      switch (child.value.type) {
+        case 'message':
+          if (_this._onMessage) _this._onMessage(child);
+          break;
+        case 'file':
+          let resourceFile = new FileHypertyResource(_this._manager._hypertyURL, _this._manager._syncher._runtime, _this._manager._bus, false, child.value);
+          console.info('[GroupChatManager.ChatController] Received file:', resourceFile);
+          //TODO: trigger event to App
+          break;
+      }
+    });
+
+  }
+
 
   get dataObject() {
     return this.controllerMode === 'reporter' ? this.dataObjectReporter : this.dataObjectObserver;
@@ -218,6 +249,24 @@ class ChatController {
     console.log('[GroupChatManager.ChatController.onUnsubscribe - this._onUserRemoved] ', this.onUserRemoved);
     if (this._onUserRemoved) this._onUserRemoved(participant);
   }
+
+  /**
+   * This function is used to send a file.
+   * @param  {string}     file                        Is the file to be sent.
+   * @return {Promise<Communication.ChatMessage>}        It returns the ChatMessage child object created by the Syncher as a Promise.
+   */
+  sendFile(file) {
+
+    let _this = this;
+
+    let resourceFile = new FileHypertyResource(_this._manager._hypertyURL, _this._manager._syncher._runtime, _this._manager._bus, true, file);
+
+    resourceFile.save().then(()=>{
+      return resourceFile.share('resources');
+    });
+
+  }
+
   /**
    * This function is used to send a chat message.
    * @param  {string}     message                        Is the ChatMessage to be sent.
