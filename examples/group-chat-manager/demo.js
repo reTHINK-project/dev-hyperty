@@ -417,7 +417,7 @@ function chatManagerReady(chatController, isOwner) {
 
   let messageForm = chatSection.find('.message-form');
   let fileForm = chatSection.find('.file-form');
-  let file = $( "input:file" )
+  //let file = $( "input:file" )
   let textArea = messageForm.find('.materialize-textarea');
 
   Handlebars.getTemplate('group-chat-manager/chat-header').then(function(template) {
@@ -472,6 +472,7 @@ function chatManagerReady(chatController, isOwner) {
     event.preventDefault();
 
     let object = $(this).serializeObject();
+    let file = event.target.files[0];
     console.log('file: ', file);
 
     chatController.sendFile(file).then(function(result) {
@@ -517,11 +518,23 @@ function processMessage(message) {
   if (message.value.content) {
     let list = `<li class="collection-item avatar">
       <img src="` + avatar + `" alt="" class="circle">
-      <span class="title">` + from + `</span>
-      <p>` + message.value.content.replace(/\n/g, '<br>') + `</p>
-    </li>`;
+      <span class="title">` + from + `</span>`;
 
     console.log('[GroupChatManager - processMessage] - ', messagesList, message, list);
+
+    switch (message.value.type) {
+      case 'chat':
+        list = list + `<p>` + message.value.content.replace(/\n/g, '<br>') + `</p>
+      </li>`;
+        break;
+      case 'file':
+          list = list + `<p>` + message.value.content.name + `</p><img src="`+message.value.content.thumbnail+`" alt="">
+        </li>`;
+        break;
+      default:
+        break;
+
+    }
 
     messagesList.append(list);
   }

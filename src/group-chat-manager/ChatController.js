@@ -59,14 +59,9 @@ class ChatController {
     let _this = this;
 
     _this.controllerMode = 'reporter';
-    _this.fileManager = new FileManager(dataObjectReporter);
 
     // Handler to process received files
 
-    _this.fileManager.onFile((file)=>{
-      console.info('[GroupChatManager.ChatController] Reporter - file received: ', file);
-
-    });
 
     dataObjectReporter.onSubscription(function(event) {
 
@@ -111,14 +106,6 @@ class ChatController {
     _this.controllerMode = 'observer';
 
     _this._dataObjectObserver = dataObjectObserver;
-
-    _this.fileManager = new FileManager(dataObjectObserver);
-
-    // Handler to process received files
-
-    _this.fileManager.onFile((file)=>{
-      console.info('[GroupChatManager.ChatController] Observer - file received: ', file);
-    });
 
     dataObjectObserver.onChange('*', function(event) {
       console.info('[GroupChatManager.ChatController]Observer - onChange', event);
@@ -170,9 +157,21 @@ class ChatController {
           if (_this._onMessage) _this._onMessage(child);
           break;
         case 'file':
-          let resourceFile = new FileHypertyResource(_this._manager._hypertyURL, _this._manager._syncher._runtime, _this._manager._bus, false, child.value);
-          console.info('[GroupChatManager.ChatController] Received file:', resourceFile);
-          //TODO: trigger event to App
+          let resourceFile = new FileHypertyResource(_this._manager._hypertyURL, _this._manager._syncher._runtimeUrl, _this._manager._bus, dataObject, false );
+          resourceFile.init(child.value).then(()=>{
+            console.info('[GroupChatManager.ChatController] Received file:', resourceFile);
+            let msgFile = {};
+            msgFile.type = resourceFile.type;
+            msgFile.content = {
+              name: resourceFile.name,
+              thumbnail: resourceFile.thumbnail
+            };
+            msgFile.mimetype = resourceFile.mimetype;
+            delete child.value;
+            child.value = msgFile;
+            //TODO: trigger event to App
+            if (_this._onMessage) _this._onMessage(child);
+          });
           break;
       }
     });
@@ -259,10 +258,20 @@ class ChatController {
 
     let _this = this;
 
-    let resourceFile = new FileHypertyResource(_this._manager._hypertyURL, _this._manager._syncher._runtime, _this._manager._bus, true, file);
+    return new Promise(function(resolve, reject) {
 
-    resourceFile.save().then(()=>{
-      return resourceFile.share('resources');
+      let mode = _this.controllerMode;
+      let dataObject = mode === 'reporter' ? _this.dataObjectReporter : _this.dataObjectObserver;
+
+      let resourceFile = new FileHypertyResource(_this._manager._hypertyURL, _this._manager._syncher._runtimeUrl, _this._manager._bus, dataObject, true);
+
+      resourceFile.init(file).then(()=>{
+        return resourceFile.save();
+      }).then(()=>{
+        return resourceFile.share('resources');
+      }).then(()=>{
+        resolve(resourceFile);
+      });
     });
 
   }
