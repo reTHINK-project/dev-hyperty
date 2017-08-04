@@ -153,14 +153,14 @@ class ChatController {
       console.info('[GroupChatManager.ChatController._setOnAddChildListener] new Child received: ', child);
 
       switch (child.value.type) {
-        case 'message':
+        case 'chat':
           if (_this._onMessage) _this._onMessage(child);
           break;
         case 'file':
           let resourceFile = new FileHypertyResource(_this._manager._hypertyURL, _this._manager._syncher._runtimeUrl, _this._manager._bus, dataObject, false );
           resourceFile.init(child.value).then(()=>{
             console.info('[GroupChatManager.ChatController] Received file:', resourceFile);
-            let msgFile = {};
+            /*let msgFile = {};
             msgFile.type = resourceFile.type;
             msgFile.content = {
               name: resourceFile.name,
@@ -168,8 +168,7 @@ class ChatController {
             };
             msgFile.mimetype = resourceFile.mimetype;
             delete child.value;
-            child.value = msgFile;
-            //TODO: trigger event to App
+            child.value = msgFile;*/
             if (_this._onMessage) _this._onMessage(child);
           });
           break;

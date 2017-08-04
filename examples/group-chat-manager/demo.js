@@ -504,7 +504,7 @@ function chatManagerReady(chatController, isOwner) {
 
 function processMessage(message) {
 
-  console.log('[GroupChatManager - processMessage] - msg ', message);
+  console.log('[GroupChatManagerDemo - processMessage] - msg ', message);
 
   let chatSection = $('.chat-section');
   let messagesList = chatSection.find('.messages .collection');
@@ -515,12 +515,12 @@ function processMessage(message) {
     avatar = message.identity.userProfile.avatar;
     from = message.identity.userProfile.cn;
   }
-  if (message.value.content) {
+  if (message.value) {
     let list = `<li class="collection-item avatar">
       <img src="` + avatar + `" alt="" class="circle">
       <span class="title">` + from + `</span>`;
 
-    console.log('[GroupChatManager - processMessage] - ', messagesList, message, list);
+    console.log('[GroupChatManagerDemo - processMessage] - ', messagesList, message, list);
 
     switch (message.value.type) {
       case 'chat':
@@ -528,7 +528,7 @@ function processMessage(message) {
       </li>`;
         break;
       case 'file':
-          list = list + `<p>` + message.value.content.name + `</p><img src="`+message.value.content.thumbnail+`" alt="">
+          list = list + `<p>` + message.value.name + `</p><img src="`+message.value.preview+`" alt="">
         </li>`;
         break;
       default:
