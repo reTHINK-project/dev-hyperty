@@ -268,8 +268,12 @@ class ChatController {
         return resourceFile.save();
       }).then(()=>{
         return resourceFile.share('resources');
-      }).then(()=>{
-        resolve(resourceFile);
+      }).then((sentFile)=>{
+        let identity = {
+            userProfile: _this.myIdentity
+        };
+        sentFile.identity = identity;
+        resolve(sentFile);
       });
     });
 

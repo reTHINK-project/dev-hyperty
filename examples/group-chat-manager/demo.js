@@ -477,6 +477,7 @@ function chatManagerReady(chatController, isOwner) {
 
     chatController.sendFile(file).then(function(result) {
       console.log('file sent', result);
+      processMessage(result);
       // processFile(result);
       fileForm[0].reset();
     }).catch(function(reason) {
