@@ -126,7 +126,7 @@ class ConnectionController {
     if (!mediaStream) throw new Error('The mediaStream is a needed parameter');
 
     let _this = this;
-    console.info('[Connector.ConnectionController ]set stream: ', mediaStream);
+    console.info('[Connector.ConnectionController ]set stream: ', mediaStream, 'peerConnection', _this.peerConnection);
     _this._mediaStream = mediaStream;
     _this.peerConnection.addStream(mediaStream);
   }
@@ -286,7 +286,6 @@ class ConnectionController {
     console.info('[Connector.ConnectionController processPeerInformation ]', JSON.stringify(data));
 
     if (data.type === 'offer' || data.type === 'answer') {
-      _this.mode = data.type;
       console.info('[Connector.ConnectionController processPeerInformation]Process Connection Description: ', data.sdp);
       _this.peerConnection.setRemoteDescription(new RTCSessionDescription(data), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
 
