@@ -85,7 +85,10 @@ class Connector {
         console.info('------------ Acknowledges the Reporter - Create ------------ \n');
         event.ack(200);
 
-        if (_this._controllers[event.from]) {
+        if (!_this._controllers[event.from]) {
+          let connectionController = new ConnectionController(syncher, _this._domain, _this._configuration,  _this._removeController, _this, event.from);
+          connectionController.connectionEvent = event;
+          _this._controllers[event.from] = connectionController;
           _this._autoSubscribe(event);
         } else {
 
@@ -116,6 +119,15 @@ class Connector {
     });
 
     _this._syncher = syncher;
+
+    let msgToInit = {
+        type: 'init', from: hypertyURL, to: 'sip://test@rethink-project.eu',
+        body: {source: hypertyURL, schema: _this._objectDescURL}
+    };
+
+    bus.postMessage(msgToInit, (reply) => {
+    });
+
   }
 
   // callback when connection Controllers are disconnected
@@ -201,13 +213,12 @@ class Connector {
    * @param  {string}             name         is a string to identify the connection.
    * @return {<Promise>ConnectionController}   A ConnectionController object as a Promise.
    */
-  connect(userURL, stream, name, domain) {
+  connect(userURL, stream, name, domain, resource = ['audio', 'video']) {
     // TODO: Pass argument options as a stream, because is specific of implementation;
     // TODO: CHange the hypertyURL for a list of URLS
     let _this = this;
     let syncher = _this._syncher;
     let scheme = ['connection'];
-    let resource = ['audio', 'video'];
 
     console.log('connecting: ', userURL);
 
@@ -242,7 +253,7 @@ class Connector {
         _this.connectionObject.peer = selectedHyperty;
         _this.connectionObject.status = '';
 
-        return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject, false, false, name, {}, {resources: ['audio', 'video']});
+        return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject, false, false, name, {}, {resources: resource});
       })
       .catch(function(reason) {
         console.error(reason);

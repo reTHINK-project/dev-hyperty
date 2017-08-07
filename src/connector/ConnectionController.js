@@ -185,7 +185,6 @@ class ConnectionController {
     console.info('[Connector.ConnectionController ]set data object observer: ', dataObjectObserver);
     _this._dataObjectObserver = dataObjectObserver;
     _this._changePeerInformation(dataObjectObserver);
-
   }
 
   /**
@@ -286,6 +285,7 @@ class ConnectionController {
     console.info('[Connector.ConnectionController processPeerInformation ]', JSON.stringify(data));
 
     if (data.type === 'offer' || data.type === 'answer') {
+      _this.mode = data.type;
       console.info('[Connector.ConnectionController processPeerInformation]Process Connection Description: ', data.sdp);
       _this.peerConnection.setRemoteDescription(new RTCSessionDescription(data), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
     }
@@ -392,6 +392,7 @@ class ConnectionController {
 
     return new Promise(function(resolve, reject) {
 
+      console.log('ON CONNECTIONCONTROLLER -> STREAM', stream);
       let syncher = _this._syncher;
       let remoteData = _this.dataObjectObserver.data;
       let remotePeer = remoteData.owner;
