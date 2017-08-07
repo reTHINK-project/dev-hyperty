@@ -154,6 +154,7 @@ class ConnectionController {
         if (_this._onDisconnect) _this._onDisconnect(event);
         _this._clean(_this._connector._controllers, _this._remoteHyperty);
       }
+
     });
 
     if (_this.mode === 'offer') {
@@ -288,6 +289,7 @@ class ConnectionController {
       _this.mode = data.type;
       console.info('[Connector.ConnectionController processPeerInformation]Process Connection Description: ', data.sdp);
       _this.peerConnection.setRemoteDescription(new RTCSessionDescription(data), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
+
     }
 
     if (data.type === 'candidate') {

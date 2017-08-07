@@ -86,9 +86,9 @@ class Connector {
         event.ack(200);
 
         if (!_this._controllers[event.from]) {
-          let connectionController = new ConnectionController(syncher, _this._domain, _this._configuration,  _this._removeController, _this, event.from);
-          connectionController.connectionEvent = event;
-          _this._controllers[event.from] = connectionController;
+          //let connectionController = new ConnectionController(syncher, _this._domain, _this._configuration,  _this._removeController, _this, event.from);
+          //connectionController.connectionEvent = event;
+          //_this._controllers[event.from] = connectionController;
           _this._autoSubscribe(event);
         } else {
 
@@ -150,7 +150,7 @@ class Connector {
     console.info('Subscribe URL Object ', event);
     syncher.subscribe(_this._objectDescURL, event.url).then(function(dataObjectObserver) {
       console.info('1. Return Subscribe Data Object Observer', dataObjectObserver);
-      _this._controllers[event.from].dataObjectObserver = dataObjectObserver;
+      _this._controllers[_this._GlobalHybperty].dataObjectObserver = dataObjectObserver;
     }).catch(function(reason) {
       console.error(reason);
     });
@@ -252,6 +252,7 @@ class Connector {
         _this.connectionObject.owner = _this._hypertyURL;
         _this.connectionObject.peer = selectedHyperty;
         _this.connectionObject.status = '';
+        _this._GlobalHybperty = selectedHyperty;
 
         return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject, false, false, name, {}, {resources: resource});
       })
@@ -265,7 +266,6 @@ class Connector {
         connectionController = new ConnectionController(syncher, _this._domain, _this._configuration, _this._removeController, _this, selectedHyperty);
         connectionController.mediaStream = stream;
         connectionController.dataObjectReporter = dataObjectReporter;
-
         _this._controllers[selectedHyperty] = connectionController;
 
         resolve(connectionController);
