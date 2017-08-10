@@ -261,15 +261,10 @@ class GroupChatManager {
       }).then(function(dataObjectReporter) {
 
         console.info('[GroupChatManager] 3. Return Create Data Object Reporter', dataObjectReporter);
+
         let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, myIdentity, _this);
-
-        resolve(chatController);
-
-        /*dataObjectReporter.data.url = dataObjectReporter.url;
-        dataObjectReporter.data.cseq += 1;
-        dataObjectReporter.lastModified = new Date().toJSON();*/
-
         chatController.dataObjectReporter = dataObjectReporter;
+        resolve(chatController);
 
         _this._reportersControllers[dataObjectReporter.url] = chatController;
 
