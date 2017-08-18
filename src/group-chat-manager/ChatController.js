@@ -272,8 +272,8 @@ class ChatController {
         let identity = {
             userProfile: _this.myIdentity
         };
-        sentFile.identity = identity;
-        resolve(sentFile);
+        let fileSentEvt = { value : sentFile, identity: identity};
+        resolve(fileSentEvt);
       });
     });
 
