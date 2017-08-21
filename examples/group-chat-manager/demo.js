@@ -529,7 +529,7 @@ function processMessage(message) {
       </li>`;
         break;
       case 'file':
-          list = list + `<p>` + message.value.name + `</p><img src="`+message.value.preview+`" alt="">
+          list = list + `<p>` + message.value.name + `</p><img src="`+message.value.preview+`" alt="" onclick="`+message.resource.read()+`">
         </li>`;
         break;
       default:
@@ -539,6 +539,11 @@ function processMessage(message) {
 
     messagesList.append(list);
   }
+}
+
+function readFile(file) {
+  console.log('[GroupChatManager.demo.readFile] ', file);
+  //file.read();
 }
 
 function processNewUser(event) {

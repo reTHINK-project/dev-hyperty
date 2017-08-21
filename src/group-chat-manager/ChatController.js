@@ -28,7 +28,6 @@
 */
 
 import { UserInfo } from './UserInfo';
-import {FileHypertyResource} from 'service-framework/dist/HypertyResource';
 
 class ChatController {
 
@@ -169,6 +168,7 @@ class ChatController {
             msgFile.mimetype = resourceFile.mimetype;
             delete child.value;
             child.value = msgFile;*/
+            child.resource = resourceFile;
             if (_this._onMessage) _this._onMessage(child);
           });
           break;
@@ -256,25 +256,22 @@ class ChatController {
   sendFile(file) {
 
     let _this = this;
+    let mode = _this.controllerMode;
+    let dataObject = mode === 'reporter' ? _this.dataObjectReporter : _this.dataObjectObserver;
 
     return new Promise(function(resolve, reject) {
 
-      let mode = _this.controllerMode;
-      let dataObject = mode === 'reporter' ? _this.dataObjectReporter : _this.dataObjectObserver;
+      dataObject.addChild('resources', {hypertyResource: file, hypertyResourceType: 'file'}).then(function(resourceFile) {
 
-      let resourceFile = new FileHypertyResource(_this._manager._hypertyURL, _this._manager._syncher._runtimeUrl, _this._manager._bus, dataObject, true);
-
-      resourceFile.init(file).then(()=>{
-        return resourceFile.save();
-      }).then(()=>{
-        return resourceFile.share('resources');
-      }).then((sentFile)=>{
-        let identity = {
-            userProfile: _this.myIdentity
-        };
-        let fileSentEvt = { value : sentFile, identity: identity};
-        resolve(fileSentEvt);
-      });
+          let identity = {
+              userProfile: _this.myIdentity
+          };
+          let fileSentEvt = { value : sentFile, identity: identity, resource: resourceFile};
+          resolve(fileSentEvt);
+        });
+    }).catch(function(reason) {
+      console.error('Reason:', reason);
+      reject(reason);
     });
 
   }
