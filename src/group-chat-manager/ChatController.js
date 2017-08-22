@@ -151,28 +151,7 @@ class ChatController {
       _this.child_cseq +=1;
       console.info('[GroupChatManager.ChatController._setOnAddChildListener] new Child received: ', child);
 
-      switch (child.value.type) {
-        case 'chat':
-          if (_this._onMessage) _this._onMessage(child);
-          break;
-        case 'file':
-          let resourceFile = new FileHypertyResource(_this._manager._hypertyURL, _this._manager._syncher._runtimeUrl, _this._manager._bus, dataObject, false );
-          resourceFile.init(child.value).then(()=>{
-            console.info('[GroupChatManager.ChatController] Received file:', resourceFile);
-            /*let msgFile = {};
-            msgFile.type = resourceFile.type;
-            msgFile.content = {
-              name: resourceFile.name,
-              thumbnail: resourceFile.thumbnail
-            };
-            msgFile.mimetype = resourceFile.mimetype;
-            delete child.value;
-            child.value = msgFile;*/
-            child.resource = resourceFile;
-            if (_this._onMessage) _this._onMessage(child);
-          });
-          break;
-      }
+      if (_this._onMessage) _this._onMessage(child);
     });
 
   }
@@ -261,12 +240,12 @@ class ChatController {
 
     return new Promise(function(resolve, reject) {
 
-      dataObject.addChild('resources', {hypertyResource: file, hypertyResourceType: 'file'}).then(function(resourceFile) {
+      dataObject.addHypertyResource('resources', 'file',  file).then(function(resourceFile) {
 
           let identity = {
               userProfile: _this.myIdentity
           };
-          let fileSentEvt = { value : sentFile, identity: identity, resource: resourceFile};
+          let fileSentEvt = { value : resourceFile, identity: identity, resource: resourceFile};
           resolve(fileSentEvt);
         });
     }).catch(function(reason) {

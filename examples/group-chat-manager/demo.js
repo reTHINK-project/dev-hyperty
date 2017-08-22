@@ -523,19 +523,20 @@ function processMessage(message) {
 
     console.log('[GroupChatManagerDemo - processMessage] - ', messagesList, message, list);
 
-    switch (message.value.type) {
-      case 'chat':
-        list = list + `<p>` + message.value.content.replace(/\n/g, '<br>') + `</p>
-      </li>`;
-        break;
+    if (!message.resource) {
+      list = list + `<p>` + message.value.content.replace(/\n/g, '<br>') + `</p>
+    </li>`;
+  } else {
+    switch (message.resource.resourceType) {
       case 'file':
-          list = list + `<p>` + message.value.name + `</p><img src="`+message.value.preview+`" alt="" onclick="`+message.resource.read()+`">
+          list = list + `<p>` + message.resource.metadata.name + `</p><img src="`+message.resource.metadata.preview+`" alt="" onclick="`+message.resource.read()+`">
         </li>`;
         break;
       default:
         break;
-
     }
+  }
+
 
     messagesList.append(list);
   }
