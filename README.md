@@ -10,6 +10,19 @@ This repository hosts source code of Hyperties. For more information about Hyper
 
 Hold all Hyperty related source code, like hyperty classes and JSON-Schemas. The hyperty class must have the suffix ".hy.js", on the file.
 
+Each hyperty folder could have it's own `package.json`
+
+```shell
+# To create the pacakge.json
+npm init
+```
+
+To use the all modules from [**Service Framework**](https://github.com/reTHINK-project/dev-service-framework/), like, *Syncher* or *Discovery* do:
+```shell
+# install dependencies
+npm install rethink-project/dev-service-framework#develop --save
+```
+
 **Example:** Hello.hy.js
 
 **Why?**
