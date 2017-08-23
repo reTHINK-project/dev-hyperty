@@ -8,6 +8,7 @@
   "hypertyType": [
     "chat"
   ],
+  "objectName": "GroupChat",
   "dataObjects": [
     "https://catalogue.localhost/.well-known/dataschema/Communication"
   ]
