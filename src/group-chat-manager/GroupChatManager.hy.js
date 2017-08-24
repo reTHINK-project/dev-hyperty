@@ -209,11 +209,13 @@ class GroupChatManager {
 
   /**
    * This function is used to create a new Group Chat providing the name and the identifiers of users to be invited.
-   * @param  {string}                     name  Is a string to identify the Group Chat
-   * @param  {array<URL.userURL>}         users Array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL, like this format user://<ipddomain>/<user-identifier>
-   * @return {<Promise>ChatController}    A ChatController object as a Promise.
+   * @param  {string}           name    Is a string to identify the Group Chat
+   * @param  {URL.userURL[]}    users   users Array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL, like this format user://<ipddomain>/<user-identifier>
+   * @param  {string[]}         domains array of users domain
+   * @param  {Object}           extra   extra informatio to be used like a metadata
+   * @return {Promise<ChatController, Error>} A ChatController object as a Promise.
    */
-  create(name, users, domains) {
+  create(name, users, domains, extra = {}) {
 
     let _this = this;
     let syncher = _this._syncher;
@@ -253,6 +255,7 @@ class GroupChatManager {
         console.info('[GroupChatManager] Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
 
+        //let input = Object.assign({resources: ['chat']}, extra);
         return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false, name, {}, {resources: ['chat']});
 
       }).catch((reason) => {
@@ -261,15 +264,10 @@ class GroupChatManager {
       }).then(function(dataObjectReporter) {
 
         console.info('[GroupChatManager] 3. Return Create Data Object Reporter', dataObjectReporter);
+
         let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, myIdentity, _this);
-
-        resolve(chatController);
-
-        /*dataObjectReporter.data.url = dataObjectReporter.url;
-        dataObjectReporter.data.cseq += 1;
-        dataObjectReporter.lastModified = new Date().toJSON();*/
-
         chatController.dataObjectReporter = dataObjectReporter;
+        resolve(chatController);
 
         _this._reportersControllers[dataObjectReporter.url] = chatController;
 

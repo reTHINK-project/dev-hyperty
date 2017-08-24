@@ -10,5 +10,6 @@
   },
   "dataObjects": [
     "https://catalogue.%domain%/.well-known/dataschema/Communication"
-  ]
+  ],
+  "objectName": "GroupChatManager"
 }

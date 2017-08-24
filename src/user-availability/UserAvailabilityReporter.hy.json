@@ -10,5 +10,6 @@
   "signature": "",
   "dataObjects": [
     "https://catalogue.%domain%/.well-known/dataschema/ContextReporter"
-  ]
+  ],
+  "objectName": "UserAvailabilityReporter"
 }

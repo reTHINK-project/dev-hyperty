@@ -26,6 +26,7 @@
         ],
         "iceTransportPolicy": "all"
   },
+  "objectName": "Connector",
   "constraints": {
     "browser":true,"windowSandbox":true,"mic":true,"camera":true
   },
