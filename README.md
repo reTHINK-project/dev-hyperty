@@ -2,11 +2,40 @@
 Hyperty Repository
 -------------------------
 
+
+## Add your hyperty
+
+To expose your hyperty in the Testing Web App you need to go to *function* ***hypertyDeployed*** on **main.js** and add your **hyperty name** and **javascript file** file to the switch cases presented there.
+
+```javascript
+
+function hypertyDeployed(hyperty) {
+
+  ...
+  switch (hyperty.name) {
+
+    // You can add your own hyperty with this code
+    case '<hyperty name>':
+      template = '<hyperty-name>/<HypertyName>';
+      script =  '<hyperty-name>/<app.js>';
+      break;
+  }
+}
+```
+**NOTE:** This probably needs to be optimized, suggestion are welcome;
+
+## Install all modules inside each hyperty source code
+
+```shell
+# This will execute npm install for each package.json inside each hyperty source code;
+npm run install:all
+```
+
+## The Repository structure
+
 This repository hosts source code of Hyperties. For more information about Hyperties and reTHINK framework pls read [this](https://github.com/reTHINK-project/dev-hyperty-toolkit/blob/master/README.md).
 
-### The Repository structure
-
-#### **src** folder
+### **SRC** folder
 
 Hold all Hyperty related source code, like hyperty classes and JSON-Schemas. The hyperty class must have the suffix ".hy.js", on the file.
 
@@ -28,28 +57,75 @@ npm install rethink-project/dev-service-framework#develop --save
 **Why?**
 Because all the files in folder, could be a possible hyperty, with this suffix, we can distinguish the main hyperty from others files that complement it;
 
-To expose your hyperty in the Testing Web App you need to go to *function* ***hypertyDeployed*** on **main.js** and add your **hyperty name** and **javascript file** file to the switch cases presented there.
 
-**example:**
+#### Hyperty Source Code
 
 ```javascript
 
-function hypertyDeployed(hyperty) {
+// Service Framework
+import IdentityManager from 'service-framework/dist/IdentityManager';
+import Discovery from 'service-framework/dist/Discovery';
+import { Syncher } from 'service-framework/dist/Syncher';
 
-  ...
-  switch (hyperty.name) {
+/**
+ *
+ */
+class MyHyperty {
 
-    // You can add your own hyperty with this code
-    case '<hyperty name>':
-      template = '<hyperty-name>/<HypertyName>';
-      script =  '<hyperty-name>/<app.js>';
-      break;
+  constructor(hypertyURL, bus, configuration) {
+
+    if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
+    if (!bus) throw new Error('The MiniBus is a needed parameter');
+    if (!configuration) throw new Error('The configuration is a needed parameter');
+
+    let syncher = new Syncher(hypertyURL, bus, configuration);
+
   }
+
+  myMethod() {
+    console.log('hello');
+  }
+
+}
+
+/**
+ * Function will activate the hyperty on the runtime
+ * @param  {URL.URL} hypertyURL   url which identifies the hyperty
+ * @param  {MiniBus} bus          Minibus used to make the communication between hyperty and runtime;
+ * @param  {object} configuration configuration
+ */
+export default function activate(hypertyURL, bus, configuration) {
+
+  return {
+    name: 'MyHyperty',
+    instance: new MyHyperty(hypertyURL, bus, configuration)
+  };
+
 }
 ```
-**NOTE:** This probably needs to be optimized, suggestion are welcome;
 
-#### **examples** folder
+#### Hyperty Descriptor
+
+```json
+{
+  "language": "javascript",
+  "signature": "",
+  "configuration": {},
+  "hypertyType": [
+    "chat"
+  ],
+  "constraints": {
+    "browser": true
+  },
+  "dataObjects": [
+    "https://catalogue.%domain%/.well-known/dataschema/Communication"
+  ],
+  "objectName": "HypertyName"
+}
+```
+
+
+### **EXAMPLES** folder
 
 In this folder you have, for each hyperty you develop, the Web side testing.
 This is customized with HTML using [Handlebars](http://handlebarsjs.com/) and ES5 javascript;

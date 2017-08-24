@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "preinstall": "node bin/preinstall",
+    "install:all": "node bin/preinstall",
     "test": "karma start"
   },
   "repository": {
