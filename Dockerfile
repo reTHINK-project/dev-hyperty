@@ -1,12 +1,11 @@
-FROM alpine:3.3
+FROM node:boron
 
+RUN mkdir /opt; cd /opt; mkdir reTHINK; cd reTHINK; mkdir dev-hyperty;
 
+COPY . /opt/reTHINK/dev-hyperty
 
-RUN mkdir /opt; cd /opt; mkdir reTHINK; cd reTHINK; mkdir dev-hyperty; cd dev-hyperty; mkdir src; mkdir examples;
+# Change the work directory
+WORKDIR /opt/reTHINK/dev-hyperty
 
-
-COPY src/ /opt/reTHINK/dev-hyperty/src/
-COPY examples/ /opt/reTHINK/dev-hyperty/examples/
-
-
-CMD echo '/opt/reTHINK/dev-hyperty/src' && ls /opt/reTHINK/dev-hyperty/src && echo '/opt/reTHINK/dev-hyperty/examples' && ls /opt/reTHINK/dev-hyperty/examples
+# Install app dependencies
+RUN npm install
