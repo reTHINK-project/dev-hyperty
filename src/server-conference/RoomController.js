@@ -58,7 +58,7 @@ class RoomController {
     console.log('set data object reporter: ', dataObjectReporter);
 
     _this._dataObjectReporter = dataObjectReporter;
- 
+
     dataObjectReporter.onSubscription(function(event) {
       console.log('----------------------- got subscription ------------------------------------');
       event.accept();
@@ -85,9 +85,11 @@ class RoomController {
 
     let _this = this;
     // object observer from the peer joining the room including sdp of the peer
-    console.log('set data object observer: ');
+    console.log('server-conference roomController :: set data object observer: ');
     _this._dataObjectObserver = dataObjectObserver;
     // _this._changePeerInformation(dataObjectObserver);
+
+    console.log('server-conference roomController :: fin du set data object observer: ');
   }
 
   /**
@@ -117,7 +119,7 @@ class RoomController {
 
   // get room(event) {
   //   let _this = this;
-  //   return _this.room[roomName]; 
+  //   return _this.room[roomName];
   // }
 
   /**
@@ -144,7 +146,7 @@ class RoomController {
           console.log('2. Return the Data Object Reporter ', dataObjectReporter);
           _this.dataObjectReporter = dataObjectReporter;
           resolve(true);
-          
+
         }).catch(function(reason) {
           console.error(reason);
           reject(false);

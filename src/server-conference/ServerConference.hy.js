@@ -89,11 +89,13 @@ class ServerConference extends EventEmitter {
   onNotification(event) {
      let _this = this;  
 
-    console.log(' event is :  '.red, event)
+    console.log('serverConference :: event is :', event);
+    console.log('serverConference :: event.from is :', event.from);
     event.ack();
     _this.callerIdentity = event.identity;
     switch(event.type) {
       case "create":
+        //console.log('serverConference switch create :');
         if (_this.roomController[event.from]) {
           _this.autoSubscribe(event);
         } else {
@@ -117,7 +119,11 @@ class ServerConference extends EventEmitter {
 
     }
   }
-   autoSubscribe(event) {
+  
+  autoSubscribe(event) {
+
+    console.log('serverConference :: autoSubscribe');
+
     let _this = this;
     let syncher = _this.syncher;
   
@@ -125,13 +131,21 @@ class ServerConference extends EventEmitter {
 
     syncher.subscribe(_this.objectDescURL, event.url).then(function(dataObjectObserver) {
       console.log('1.[autoSubscribe], Return Subscribe Data Object Observer:', dataObjectObserver);
+
+      //console.log('_this.roomController[event.from]:', _this.roomController[event.from]);
+      //console.log('event.from:', event.from);
       _this.roomController[event.from].dataObjectObserver = dataObjectObserver;
+
+      //console.log('autoSubscribe après set dataObjectObserver');
     }).catch(function(reason) {
       console.error(reason);
     });
   }
 
   autoAccept(event) {
+
+    console.log('serverConference :: autoAccept');
+
     let _this = this;
     let syncher = _this.syncher;
     console.log('---------------- Syncher Subscribe (Auto Accept) ---------------- \n');

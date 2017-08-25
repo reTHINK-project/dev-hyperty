@@ -30,28 +30,28 @@ import ConnectionController from './ConnectionController'
  */
 class KurentoStub {
 
-	/**
-	 * Initialise the protocol stub including as input parameters its allocated
-	 * component runtime url, the runtime BUS postMessage function to be invoked
-	 * on messages received by the protocol stub and required configuration retrieved from protocolStub descriptor.
-	 * @param  {URL.runtimeProtoStubURL}                   runtimeProtoStubURL runtimeProtoSubURL
-	 * @param  {Message.Message}                           busPostMessage     configuration
-	 * @param  {ProtoStubDescriptor.ConfigurationDataList} configuration      configuration
-	 */
-	constructor(runtimeProtoStubURL, miniBus, configuration) {
+    /**
+    * Initialise the protocol stub including as input parameters its allocated
+    * component runtime url, the runtime BUS postMessage function to be invoked
+    * on messages received by the protocol stub and required configuration retrieved from protocolStub descriptor.
+    * @param  {URL.runtimeProtoStubURL}                   runtimeProtoStubURL runtimeProtoSubURL
+    * @param  {Message.Message}                           busPostMessage     configuration
+    * @param  {ProtoStubDescriptor.ConfigurationDataList} configuration      configuration
+    */
+    constructor(runtimeProtoStubURL, miniBus, configuration) {
 
-		if (!runtimeProtoStubURL) throw new Error('The runtimeProtoStubURL is a required parameter')
-		if (!miniBus) throw new Error('The bus is a required parameter')
-		if (!configuration) throw new Error('The configuration is a required parameter')
+        if (!runtimeProtoStubURL) throw new Error('The runtimeProtoStubURL is a required parameter')
+        if (!miniBus) throw new Error('The bus is a required parameter')
+        if (!configuration) throw new Error('The configuration is a required parameter')
 
-		this.objectDescURL = 'hyperty-catalogue://catalogue.' + configuration.domain + '/.well-known/dataschema/Connection'
-		this.runtimeProtoStubURL = runtimeProtoStubURL
-		this.runtimeURL = configuration.runtimeURL
-		this.connection = new ConnectionController(configuration)
-		this.bus = miniBus
-		this.syncher = new Syncher(this.runtimeProtoStubURL, miniBus, configuration)
+        this.objectDescURL = 'hyperty-catalogue://catalogue.' + configuration.domain + '/.well-known/dataschema/Connection'
+        this.runtimeProtoStubURL = runtimeProtoStubURL
+        this.runtimeURL = configuration.runtimeURL
+        this.connection = new ConnectionController(configuration)
+        this.bus = miniBus
+        this.syncher = new Syncher(this.runtimeProtoStubURL, miniBus, configuration)
         console.log('protostub url', this.runtimeProtoStubURL)
-		let that = this
+        let that = this
         miniBus.addListener('*', function(msg) { 
             console.log('NEW MSG ->', msg);
             if(msg.body.identity) {
@@ -88,8 +88,8 @@ class KurentoStub {
             }
         });
 
-		this.connect()
-	}
+        this.connect()
+    }
 
     _filter(msg) {
         if (msg.body && msg.body.via === this.runtimeProtoStubURL)
@@ -97,27 +97,27 @@ class KurentoStub {
         return true;
     }
 
-	/**
-	 * Try to open the connection. Connection is auto managed, there is no need to call this explicitly.
-	 * However, if "disconnect()" is called, it's necessary to call this to enable connections again.
-	 * A status message is sent to "runtimeProtoStubURL/status", containing the value "connected" if successful, or "disconnected" if some error occurs.
-	 */
-	connect() {
-		this.connection.connect()
-	}
+    /**
+    * Try to open the connection. Connection is auto managed, there is no need to call this explicitly.
+    * However, if "disconnect()" is called, it's necessary to call this to enable connections again.
+    * A status message is sent to "runtimeProtoStubURL/status", containing the value "connected" if successful, or "disconnected" if some error occurs.
+    */
+    connect() {
+        this.connection.connect()
+    }
 
-	/**
-	 * It will disconnect and order to stay disconnected. Reconnection tries, will not be attempted, unless "connect()" is called.
-	 * A status message is sent to "runtimeProtoStubURL/status" with value "disconnected".
-	 */
-	disconnect() {
+    /**
+    * It will disconnect and order to stay disconnected. Reconnection tries, will not be attempted, unless "connect()" is called.
+    * A status message is sent to "runtimeProtoStubURL/status" with value "disconnected".
+    */
+    disconnect() {
 
-	}
+    }
 }
 
 export default function activate(url, bus, config) {
-	return {
-		name: 'IMSIWStub',
-		instance: new IMSIWStub(url, bus, config)
-	}
+    return {
+        name: 'IMSIWStub',
+        instance: new IMSIWStub(url, bus, config)
+    }
 }
