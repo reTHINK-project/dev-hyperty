@@ -33,7 +33,7 @@
       <form class="form col s12">
         <div class="row">
           <div class="input-field col s12">
-            <input placeholder="Conference Server ID" id="email" required aria-required="true" type="email" class="friend-email validate">
+            <input placeholder="Conference Server ID" id="email" required aria-required="true" type="email" value="nodejs-conference@nodejs.com" class="friend-email validate">
             <label for="email" style="width: 100%;" data-error="the email format should be like user@domain.com">search by email</label>
           </div>
           <div class="input-field col s12">
@@ -68,9 +68,17 @@
     <button class="mute waves-effect waves-light btn" style="padding-left: 10px; padding-right: 5px;"><i class="material-icons left" style="width: 30px;">volume_off</i></button>
     <button class="btn-floating btn-large waves-effect waves-light red darken-4"><i class="material-icons left"><p>record</p></i></button>
     <button class="mic waves-effect waves-light btn" style=" padding-left: 10px; padding-right: 5px;"><i class="material-icons left" style="width: 30px;">mic</i></button>
+<!--
     <button class="hangout waves-effect waves-light btn" style="padding-right: 10px; padding-left: 5px;"><i class="material-icons left" style="width: 30px;">call_end</i></button>
+-->
+  </div>
+  <div class="row my-participants-list blue lighten-2 hide white-text" style="margin-left: 5px;">
+    <ul id="myparticipantsList">
+      <b>Participants list :</b>
+    </ul>
   </div>
 </div>
+
 
 <!-- Modal Structure -->
 <div class="modal modal-call">

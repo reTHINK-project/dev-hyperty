@@ -31,8 +31,7 @@ import 'webrtc-adapter';
 import peer from './peer';
 
 let newSdp;
-let newPeerConncection = {};
-
+let newPeerConnection = {};
 
 class ConferenceController {
 
@@ -47,19 +46,21 @@ class ConferenceController {
     _this.mode = 'offer';
     _this.peer = peer;
     _this.user = username;
+
+    _this.autoSubscribeActivated = false;
    //  TODO get myURL
 
     // Private
     _this._syncher = syncher;
-    _this._configuration = configuration.webrtc;
+    _this._configuration = configuration;
     _this._domain = domain;
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Connection';
 
     // Prepare the PeerConnection
-    newPeerConncection[_this.user] = new RTCPeerConnection(_this._configuration.webrtc);
+    newPeerConnection[_this.user] = new RTCPeerConnection(_this._configuration.webrtc);
     console.debug('_this._username is :', _this.user);
 
-    newPeerConncection[_this.user].addEventListener('signalingstatechange', function(event) {
+    newPeerConnection[_this.user].addEventListener('signalingstatechange', function(event) {
 
       console.info('signalingstatechange', event.currentTarget.signalingState);
 
@@ -71,10 +72,9 @@ class ConferenceController {
         console.info('signalingstatechange - have-remote-offer: ', event.currentTarget.signalingState);
         _this.mode = 'answer';
       }
-
     });
 
-    newPeerConncection[_this.user].addEventListener('iceconnectionstatechange', function(event) {
+    newPeerConnection[_this.user].addEventListener('iceconnectionstatechange', function(event) {
       console.info('iceconnectionstatechange', event.currentTarget.iceConnectionState, _this.dataObjectReporter);
       let data = _this.dataObjectReporter.data;
       if (data.hasOwnProperty('status')) {
@@ -82,9 +82,19 @@ class ConferenceController {
       }
     });
 
-    newPeerConncection[_this.user].addEventListener('icecandidate', function(event) {
+    newPeerConnection[_this.user].addEventListener('icecandidate', function(event) {
 
       if (!event.candidate) return;
+
+//workaround test
+      let n = JSON.stringify(event.candidate.candidate).indexOf("typ host");
+      if(n !== -1) {
+        console.error('Candidate is host - Filtering');
+        return;
+      } else {
+        console.error('Candidate is not host - not Filtering');
+      }
+//workaround test
 
       let icecandidate = {
         type: 'candidate',
@@ -116,16 +126,23 @@ class ConferenceController {
     });
 
     // Add stream to PeerConnection
-    newPeerConncection[_this.user].addEventListener('addstream', function(event) {
+    newPeerConnection[_this.user].addEventListener('addstream', function(event) {
       console.info('Remote stream added to PeerConnection: ', event);
 
       if (_this._onAddStream) _this._onAddStream(event, _this.user);
     });
 
-    newPeerConncection[_this.user].onremovestream = function(event) {
+    newPeerConnection[_this.user].onremovestream = function(event) {
       console.info('Stream removed: ', event);
     };
 
+    newPeerConnection[_this.user].onsignalingstatechange = function(event) {
+      console.info('onsignalingstatechange: ', event);
+    };
+
+    newPeerConnection[_this.user].oniceconnectionstatechange = function(event) {
+      console.info('oniceconnectionstatechange: ', event);
+    };
   }
 
   set mediaStream(mediaStream) {
@@ -134,7 +151,7 @@ class ConferenceController {
     let _this = this;
     console.info('set stream: ', mediaStream);
     _this._mediaStream = mediaStream;
-    newPeerConncection[_this.user].addStream(mediaStream);
+    newPeerConnection[_this.user].addStream(mediaStream);
   }
 
   set username(name) {
@@ -149,7 +166,6 @@ class ConferenceController {
     let _this = this;
     return _this._mediaStream;
   }
-
 
   /**
   * Set the dataObject in the controller
@@ -166,12 +182,6 @@ class ConferenceController {
       event.accept();
     });
 
-    // if (_this.mode === 'offer') {
-    //   _this._createOffer();
-    // } else {
-    //   _this._createAnswer();
-    // }
-
   /**
    * @param  {nodejsRuntime}
    **/
@@ -181,7 +191,6 @@ class ConferenceController {
     } else {
       _this._createAnswer(_this.user);
     }
-
   }
 
   /**
@@ -203,12 +212,11 @@ class ConferenceController {
     let _this = this;
     // object observer from the peer joining the room including sdp of the peer
 
-    console.debug('set data object observer: ', dataObjectObserver);
+    console.debug('ConferenceController :: set data object observer: ', dataObjectObserver);
     _this._dataObjectObserver = dataObjectObserver;
     console.debug('set data object observer: ', _this._dataObjectObserver );
 
     _this._changePeerInformation(dataObjectObserver);
-
   }
 
   /**
@@ -221,7 +229,6 @@ class ConferenceController {
     return _this._dataObjectObserver;
   }
 
-
   /**
    * Set the connection event to accept or reject
    * @param  {CreateEvent} event Event with actions to accept or reject the connection
@@ -230,7 +237,6 @@ class ConferenceController {
     let _this = this;
     _this._connectionEvent = event;
   }
-
 
   /**
    * Get the connection event to accept or reject
@@ -256,7 +262,7 @@ class ConferenceController {
 
   _removeMediaStream() {
     let _this = this;
-    console.log(_this.mediaStream, newPeerConncection[_this.user]);
+    console.log(_this.mediaStream, newPeerConnection[_this.user]);
 
     if (_this.mediaStream) {
 
@@ -267,8 +273,8 @@ class ConferenceController {
       });
     }
 
-    newPeerConncection[_this.user].removeStream(_this.mediaStream);
-    newPeerConncection[_this.user].close();
+    newPeerConnection[_this.user].removeStream(_this.mediaStream);
+    newPeerConnection[_this.user].close();
   }
 
   _changePeerInformation(dataObjectObserver) {
@@ -295,14 +301,40 @@ class ConferenceController {
           _this._processPeerInformation(ice);
         });
       }
+
       if (peerData.hasOwnProperty('message')) {
-        console.debug('Process Peer message existingParticipants: ', peerData)
-            if(data.message.id === 'existingParticipants') {
-              console.debug('existingParticipants are :', data.message.data)
-              if(data.message.data.length !== 0) {
-                _this.onExistingParticipants(data.message);
-              }
+        console.debug('Process Peer message : ', peerData)
+        console.debug('data.message : ', data.message)
+
+        if(data.message.id === 'existingParticipants') {
+          console.debug('existingParticipants are :', data.message.data);
+
+          if (_this._onParticipant) _this._onParticipant(data.message);
+
+          if (data.message.data.length !== 0) {
+            if (_this.autoSubscribeActivated === true) {
+              _this.onExistingParticipants(data.message);
             }
+          }
+        }
+        if(data.message.id === 'receiveVideoAnswer') {
+          console.debug('receiveVideoAnswer :', data.message)
+          _this._processPeerInformation(data.message);
+        }
+        if(data.message.id === 'IceCandidate') {
+          console.debug('iceCandidate received :', data.message.candidate)
+          _this._processPeerInformation(data.message);
+        }
+        if(data.message.id  === 'newParticipantArrived') {
+          console.debug('newParticipantArrived is :', data.message)
+
+          if (_this.autoSubscribeActivated === true) {
+            _this.onNewParticipant(data.message);
+          }
+
+          if (_this._onParticipant) _this._onParticipant(data.message);
+          //_this.onExistingParticipants(data.message);
+        }
       }
 
       dataObjectObserver.onChange('*', function(event) {
@@ -321,30 +353,36 @@ class ConferenceController {
 
     if (data.type === 'offer' || data.type === 'answer') {
       console.debug('Process Connection Description: ', data.sdp);
-
-      newPeerConncection[_this.user].setRemoteDescription(new RTCSessionDescription(data), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
-
+      newPeerConnection[_this.user].setRemoteDescription(new RTCSessionDescription(data), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
     }
 
     else if (data.id === 'receiveVideoAnswer') {
-      // console.debug('Process Connection Descriptionn , receiveAnswer: ', data.sdpAnswer, _this._username, data.name, newPeerConncection);
-       newPeerConncection[data.name].setRemoteDescription(new RTCSessionDescription({type: 'answer', sdp: data.sdpAnswer}), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
+      // console.debug('Process Connection Descriptionn , receiveAnswer: ', data.sdpAnswer, _this._username, data.name, newPeerConnection);
+       newPeerConnection[data.name].setRemoteDescription(new RTCSessionDescription({type: 'answer', sdp: data.sdpAnswer}), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
     }
 
-    if (data.type === 'candidate') {
-      console.info('[Conference ConnectionController ] Process Ice Candidate: ', data);
-         let parsedCandidate = {
-           type: 'candidate',
-           candidate:data.candidate,
-           sdpMid:data.sdpMid,
-           sdpMLineIndex:data.sdpMLineIndex
-         }
-        console.debug('parsedCandidate : ', parsedCandidate.candidate);
-       newPeerConncection[data.name].addIceCandidate(new RTCIceCandidate({candidate:parsedCandidate.candidate}), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
+    if (data.id === 'IceCandidate') {
+      console.error('[Conference ConnectionController ] Process Ice Candidate: data :', data);
+      console.error('data.candidate', data.candidate);
+
+      let parsedCandidate = {
+        //type: 'candidate',
+        candidate:data.candidate.candidate,
+        //sdpMid:data.candidate.sdpMid,
+        sdpMLineIndex:data.candidate.sdpMLineIndex
+      }
+      console.error('parsedCandidate : ', parsedCandidate);
+      newPeerConnection[data.name].addIceCandidate(new RTCIceCandidate(parsedCandidate), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
     }
+
     if(data.id  === 'newParticipantArrived') {
-      console.debug('newParticipantArrived is :', data)
-      _this.onNewParticipant(data);
+      console.debug('newParticipantArrived is :', data);
+
+      if (_this.autoSubscribeActivated === true) {
+        _this.onNewParticipant(data);
+      }
+
+//if (_this._onParticipant) _this._onParticipant(data.message);
     }
     // if(data.message.id === 'existingParticipants') {
     //   console.debug('existingParticipants are :', data.message.data)
@@ -361,96 +399,128 @@ class ConferenceController {
       _this.receiveVideo(senderName).then((result) => {
         console.debug('##### On receiveVideo from ########', result)
         _this.mode = 'RecvOnly';
-        _this._createOffer(senderName, _this.mode);
+        _this._createOfferToReceive(senderName, _this.mode, false);
       });
     });
   }
 
-  receiveVideo(senderName) {
+  receiveVideo(senderName, forceStreamRestart) {
     let _this = this;
     let username = _this.user;
     let data = _this.dataObjectReporter.data;
 
-    console.debug('conferenceroom::receiveVideo', senderName);
+    console.error('conferenceroom::receiveVideo', senderName);
+
+    if (senderName === undefined) {
+      console.error('sendername undefined, leaving receiveVideo', senderName);
+      return;
+    }
+
+    if (forceStreamRestart === true) {
+
+      if(newPeerConnection[senderName] !== undefined) {
+
+        console.error('Forcing cleaning stream :', senderName);
+
+        if (_this._onCleanStream) _this._onCleanStream(senderName);
+
+        newPeerConnection[senderName].close();
+        delete newPeerConnection[senderName];
+      }
+    }
+
     return new Promise((resolve, reject) => {
       try {
-        newPeerConncection[senderName] = new RTCPeerConnection(_this._configuration.webrtc);
-        // console.debug('_this._username is :', _this.user, username);
 
-        newPeerConncection[senderName].addEventListener('signalingstatechange', (event) => {
+        if( newPeerConnection[senderName] !== undefined) {
+          console.error('conferenceroom::receiveVideo, subscribe already exist, not subscribing a second time');
+          reject();
 
-          console.info('signalingstatechange', event.currentTarget.signalingState);
+        } else {
 
-          if (event.currentTarget.signalingState === 'have-local-offer') {
-            console.info('signalingstatechange - have-local-offer: ', event.currentTarget.signalingState);
-          }
+          newPeerConnection[senderName] = new RTCPeerConnection(_this._configuration.webrtc);
+          // console.debug('_this._username is :', _this.user, username);
 
-          if (event.currentTarget.signalingState === 'have-remote-offer') {
-            console.info('signalingstatechange - have-remote-offer: ', event.currentTarget.signalingState);
-            // _this.mode = 'answer';
-          }
+          newPeerConnection[senderName].addEventListener('signalingstatechange', (event) => {
 
-        });
+            console.info('signalingstatechange', event.currentTarget.signalingState);
 
-        newPeerConncection[senderName].addEventListener('iceconnectionstatechange', (event) => {
-          console.info('iceconnectionstatechange', event.currentTarget.iceConnectionState, _this.dataObjectReporter);
+            if (event.currentTarget.signalingState === 'have-local-offer') {
+              console.info('signalingstatechange - have-local-offer: ', event.currentTarget.signalingState);
+            }
 
-          if (data.hasOwnProperty('status')) {
-            data.status = event.currentTarget.iceConnectionState;
-          }
-        });
+            if (event.currentTarget.signalingState === 'have-remote-offer') {
+              console.info('signalingstatechange - have-remote-offer: ', event.currentTarget.signalingState);
+              // _this.mode = 'answer';
+            }
+          });
 
-        newPeerConncection[senderName].addEventListener('icecandidate', (event) => {
+          newPeerConnection[senderName].addEventListener('iceconnectionstatechange', (event) => {
+            console.info('iceconnectionstatechange', event.currentTarget.iceConnectionState, _this.dataObjectReporter);
 
-          // console.info('icecandidate changes', event.candidate, _this.dataObjectReporter);
+            if (data.hasOwnProperty('status')) {
+              data.status = event.currentTarget.iceConnectionState;
+            }
+          });
 
-          if (!event.candidate) return;
-          let icecandidate = {
-            type: 'candidate',
-            candidate: event.candidate.candidate,
-            sdpMid: event.candidate.sdpMid,
-            sdpMLineIndex: event.candidate.sdpMLineIndex
+          newPeerConnection[senderName].addEventListener('icecandidate', (event) => {
+
+            // console.info('icecandidate changes', event.candidate, _this.dataObjectReporter);
+
+            if (!event.candidate) return;
+            let icecandidate = {
+              type: 'candidate',
+              candidate: event.candidate.candidate,
+              sdpMid: event.candidate.sdpMid,
+              sdpMLineIndex: event.candidate.sdpMLineIndex
+            };
+
+            let message = {
+              id: 'onIceCandidate',
+              userName: username,
+              senderName: senderName,
+              icecandidate : icecandidate
+            }
+
+            data.iceCandidates.push(message);
+          });
+
+          console.debug('this._mediaStream is : ', _this._mediaStream)
+          newPeerConnection[senderName].addStream(_this._mediaStream);
+
+          // Add stream to PeerConnection
+          newPeerConnection[senderName].addEventListener('addstream', (event) => {
+            console.debug('Add Stream: ', event);
+
+            // newPeerConnection[senderName].addStream(_this._mediaStream);
+            console.log('/************************* _this._onAddStream :', _this._onAddStream)
+
+            if (_this._onAddStream)  _this._onAddStream(event, senderName);
+          });
+
+          newPeerConnection[senderName].onremovestream = (event) => {
+            console.info('Stream removed: ', event);
           };
 
-          let message = {
-            id: 'onIceCandidate',
-            userName: username,
-            senderName: senderName,
-            icecandidate : icecandidate
-          }
-          data.iceCandidates.push(message);
-        });
+          newPeerConnection[senderName].onsignalingstatechange = function(event) {
+            console.info('onsignalingstatechange: ', event);
+          };
 
-        console.debug('this._mediaStream is : ', _this._mediaStream)
-        newPeerConncection[senderName].addStream(_this._mediaStream);
-
-        // Add stream to PeerConnection
-        newPeerConncection[senderName].addEventListener('addstream', (event) => {
-          console.debug('Add Stream: ', event);
-
-          // newPeerConncection[senderName].addStream(_this._mediaStream);
-          console.log('/************************* _this._onAddStream :', _this._onAddStream)
-
-          if (_this._onAddStream)  _this._onAddStream(event, senderName);
-        });
-
-        newPeerConncection[senderName].onremovestream = (event) => {
-          console.info('Stream removed: ', event);
-        };
-
-     } catch (e) {
+          newPeerConnection[senderName].oniceconnectionstatechange = function(event) {
+            console.info('oniceconnectionstatechange: ', event);
+          };
+        }
+      } catch (e) {
         reject('error accepting connection');
       }
-      resolve(newPeerConncection[senderName]);
+      resolve(newPeerConnection[senderName]);
     });
-
   }
 
   setSendOnly(sdp) {
     sdp = sdp.replace(/a=sendrecv\r\n/g, 'a=sendonly\r\n');
     sdp = sdp.replace(/a=recvonly\r\n/g, 'a=sendonly\r\n');
     return sdp;
-
   }
 
   setRecvOnly(sdp) {
@@ -462,11 +532,14 @@ class ConferenceController {
   onNewParticipant(request) {
     let _this = this;
     let userName = _this.user;
-    console.debug('------------------onNewParticipant---------------------', request.name);
+
+    console.debug('onNewParticipant :', request.name);
     _this.receiveVideo(request.name).then((result) => {
       console.debug('##### On receiveVideo from ########', result)
+      //_this.mode = 'RecvOnly';
+      //_this._createOffer(request.name, _this.mode);
       _this.mode = 'RecvOnly';
-      _this._createOffer(request.name, _this.mode);
+      _this._createOfferToReceive(request.name, _this.mode, false);
     }).catch((reason) => {
       console.error('[Error], has occured, reason :', reason);
     });
@@ -482,22 +555,69 @@ class ConferenceController {
 
   _createOffer(senderName, mode) {
     let _this = this;
-    let sdescription;
+    //let sdescription;
 
     console.info('################ createOffer sender #############################"', senderName);
+
     return new Promise((resolve, reject) => {
-      newPeerConncection[senderName].createOffer().then((description) => {
-        console.debug('created offer is : ', description)
-        sdescription = description;
+
+      //Setting this offer as sendOnly
+      let offerOptions = {'offerToReceiveAudio':false,'offerToReceiveVideo':false};
+
+      newPeerConnection[senderName].createOffer(offerOptions).then((description) => {
+        console.debug('created offer is : ', description);
+
+        //sdescription = description;
         return _this._onLocalSessionCreated(description, senderName, mode);
-      }).then(() => {
+      //}).then(() => {
         // _this.sendToServer(sdescription, mode, senderName);
-      }) .catch((reason) => {
+      }).catch((reason) => {
         // An error occurred, so handle the failure to connect
         console.error('[Error] has occured, reason :', reason);
       });
     })
   }
+
+  stripVideoMediaDescriptionFromSDP(sdp) {
+
+      console.info("stripVideoMediaDescriptionFromSDP");
+      sdp = sdp.replace('a=group:BUNDLE audio video', 'a=group:BUNDLE audio');
+      var sdpMediaPart = sdp.split('m=video'),
+          i = 0;
+      //for (i = 0; i < sdpMediaPart.length; i += 1) {
+      //    console.log("sdpMediaPart[i] : " + sdpMediaPart[i]);
+      //}
+      return sdpMediaPart[0];
+  };
+
+  _createOfferToReceive(senderName, mode, audioOnly) {
+    let _this = this;
+
+    console.info('################ createOffer receiver #############################"', senderName, mode);
+
+    let offerOptions = {};
+
+    if (audioOnly === true) {
+      offerOptions = {'offerToReceiveAudio':true,'offerToReceiveVideo':false};
+    } else {
+      offerOptions = {'offerToReceiveAudio':true,'offerToReceiveVideo':true};
+    }
+
+    newPeerConnection[senderName].createOffer(offerOptions).then((description) => {
+      console.debug('created subscribe offer is : ', description);
+
+      if (audioOnly === true) {
+        description.sdp = _this.stripVideoMediaDescriptionFromSDP(description.sdp);
+        console.debug('modified offer is : ', description);
+      }
+
+      return _this._onLocalSessionCreated(description, senderName, mode);
+    }).catch((reason) => {
+      // An error occurred, so handle the failure to connect
+      console.error('[Error] has occured, reason :', reason);
+    });
+  };
+
   _onLocalSessionCreated(description, senderName, mode) {
 
     let _this = this;
@@ -505,8 +625,9 @@ class ConferenceController {
 
     console.debug('-------------------------- setLocalDescription -------------------------:',mode ,  senderName, _this.mode, description)
     if (mode === 'offer') {
+      console.debug('mode is offer - publish');
       description.sdp = _this.setSendOnly(description.sdp);
-      newPeerConncection[senderName].setLocalDescription(description, () => {
+      newPeerConnection[senderName].setLocalDescription(description, () => {
 
         let sdpConnection = {
           senderName: senderName,
@@ -519,11 +640,13 @@ class ConferenceController {
 
       //  data.ownerPeer.connectionDescription = sdpConnection;
 
-
       }, _this._infoError);
     } else {
+      console.debug('mode is not offer - subscribe');
       description.sdp = _this.setRecvOnly(description.sdp);
-      newPeerConncection[senderName].setLocalDescription(description, () => {
+      newPeerConnection[senderName].setLocalDescription(description, () => {
+
+        console.debug('subscribe setLocalDescription cb');
 
         let sdpConnection = {
           sdp: description.sdp,
@@ -531,7 +654,7 @@ class ConferenceController {
         };
 
         let msg =  {
-          id : "receiveVideoFrom",
+          id : "subscribeVideoFrom",
           senderName : senderName,
           userName: _this.user,
           sdpOffer : sdpConnection.sdp
@@ -550,15 +673,50 @@ class ConferenceController {
     console.error(err.toString(), err);
   }
 
-
   /**
    * This function is used to handle the peer stream
    * @return {MediaStream}           WebRTC remote MediaStream retrieved by the Application
    */
   onAddStream(callback, username) {
     let _this = this;
-    console.debug(' name is :', username )
+    console.debug(' name is :', username );
     _this._onAddStream = callback;
+  }
+
+  onParticipant(callback) {
+    let _this = this;
+    console.debug(' onParticipant ' );
+    _this._onParticipant = callback;
+  }
+
+  onCleanStream(callback) {
+    let _this = this;
+    console.debug('onCleanStream');
+    _this._onCleanStream = callback;
+  }
+
+  subscribeToVideo(senderName) {
+    let _this = this;
+    console.debug("subscribeToVideo : ", senderName);
+    var forceStreamRestart = true;
+
+    _this.receiveVideo(senderName, forceStreamRestart).then((result) => {
+      console.debug('##### On receiveVideo from ########', result)
+      _this.mode = 'RecvOnly';
+      _this._createOfferToReceive(senderName, _this.mode, false);
+    });
+  }
+
+  subscribeToAudio(senderName) {
+    let _this = this;
+    console.debug("subscribeToAudio : ", senderName);
+    var forceStreamRestart = true;
+
+    _this.receiveVideo(senderName, forceStreamRestart).then((result) => {
+      console.debug('##### On receiveVideo from ########', result)
+      _this.mode = 'RecvOnly';
+      _this._createOfferToReceive(senderName, _this.mode, true);
+    });
   }
 
   /**
@@ -604,7 +762,6 @@ class ConferenceController {
         reject('error accepting connection');
       }
     });
-
   }
 
   /**
@@ -631,7 +788,6 @@ class ConferenceController {
         reject(false);
       }
     });
-
   }
 
   /**
@@ -639,6 +795,9 @@ class ConferenceController {
    * @return {<Promise> boolean} It returns as a Promise true if successfully disconnected or false otherwise.
    */
   disconnect() {
+
+    console.log("disconnect");
+
     // TODO: Optimize this process
 
     let _this = this;
@@ -666,12 +825,11 @@ class ConferenceController {
       }
 
     });
-
   }
 
   /**
-   * Disable Microfone
-   * @param  {boolean} value status of microfone
+   * Disable Microphone
+   * @param  {boolean} value status of microphone
    * @return {boolean}
    */
   disableAudio(value) {
@@ -680,7 +838,7 @@ class ConferenceController {
     return new Promise((resolve, reject) => {
 
       try {
-        let localStream = newPeerConncection[_this.user].getLocalStreams()[0];
+        let localStream = newPeerConnection[_this.user].getLocalStreams()[0];
         let audioTrack = localStream.getAudioTracks()[0];
 
         if (!value) {
@@ -709,7 +867,7 @@ class ConferenceController {
     return new Promise((resolve, reject) => {
 
       try {
-        let localStream = newPeerConncection[_this.user].getLocalStreams()[0];
+        let localStream = newPeerConnection[_this.user].getLocalStreams()[0];
         let videoTrack = localStream.getVideoTracks()[0];
 
         if (!value) {
@@ -733,7 +891,7 @@ class ConferenceController {
     return new Promise((resolve, reject) => {
 
       try {
-        let remoteStream = newPeerConncection[_this.user].getLocalStreams()[0];
+        let remoteStream = newPeerConnection[_this.user].getLocalStreams()[0];
         let audioTrack = remoteStream.getAudioTracks()[0];
 
         if (!value) {
