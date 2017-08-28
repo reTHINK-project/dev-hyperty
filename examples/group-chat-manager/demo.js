@@ -314,12 +314,16 @@ function prepareChat(chatController, isOwner) {
   });
 
   Object.keys(msgs).forEach(function(objectKey, index) {
-    var msg = msgs[objectKey];
-    console.log('ProcessMessage: ', msg);
-    processMessage({
+    let msg = {
       value: msgs[objectKey].data,
       identity: msgs[objectKey].identity
-    });
+    };
+
+    if (msgs[objectKey].resourceType) msg.resource = msgs[objectKey];
+
+    console.log('[GroupChatManagerDemo.prepareChat] for msg ', msg);
+
+    processMessage(msg);
   });
 
   chatController.onMessage(function(message) {
