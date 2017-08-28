@@ -77,7 +77,6 @@ class Connector {
 
     syncher.onNotification((event) => {
 
-
       console.log('On Notification: ', event);
       console.log('This Controllers: ', _this._controllers);
 
@@ -86,16 +85,8 @@ class Connector {
         event.ack(200);
 
         if (_this._controllers[event.from]) {
-
-
-          let connectionController = new ConnectionController(syncher, _this._domain, _this._configuration,  _this._removeController, _this, event.from);
-          connectionController.connectionEvent = event;
-          _this._controllers[event.from] = connectionController;
-
           _this._autoSubscribe(event);
-
         } else {
-
           _this._autoAccept(event);
         }
 
