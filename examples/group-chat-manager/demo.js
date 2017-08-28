@@ -529,7 +529,7 @@ function processMessage(message) {
   } else {
     switch (message.resource.resourceType) {
       case 'file':
-          list = list + `<p>` + message.resource.metadata.name + `</p><img src="`+message.resource.metadata.preview+`" alt="" onclick="`+message.resource.read()+`">
+          list = list + `<p>` + message.resource.metadata.name + `</p><img src="`+message.resource.metadata.preview+`" alt="">
         </li>`;
         break;
       default:
