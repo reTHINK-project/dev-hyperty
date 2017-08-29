@@ -64,7 +64,7 @@ function hypertyReady(result, identity) {
         groupChats.forEach((chatController) => {
 
           chatManagerReady(chatController, false);
-          prepareChat(chatController);
+          prepareChat(chatController, false);
 
         });
       }
@@ -85,7 +85,7 @@ function hypertyReady(result, identity) {
 
         groupChats.forEach((chatController) => {
           chatManagerReady(chatController, true);
-          prepareChat(chatController);
+          prepareChat(chatController, true);
 
         });
 
@@ -128,7 +128,7 @@ function onInvitation(event) {
     $('.create-room-btn').hide();
     $('.join-room-btn').hide();
     chatManagerReady(chatController, false);
-    prepareChat(chatController);
+    prepareChat(chatController, false);
   }).catch(function(reason) {
     console.error('Error connecting to', reason);
   });
@@ -269,11 +269,11 @@ function joinRoom(event) {
     let resource = joinModal.find('.input-name').val();
 
     getSectionTpl().then(() => {
-      console.log('[GroupChatManagerDemo - JoinRoom] - Section Template ready:', resource);
+      console.log('[GroupChatManagerDemo - JoinRoom] - Section Template ready: ', resource);
       return chatGroupManager.join(resource)
     }).then(function(chatController) {
       chatManagerReady(chatController, false);
-      prepareChat(chatController);
+      prepareChat(chatController, false);
     }).catch(function(reason) {
       console.error(reason);
     });
