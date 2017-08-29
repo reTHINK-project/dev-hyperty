@@ -197,8 +197,8 @@ function emailDiscovered(result) {
     if (hyperty.hasOwnProperty('userID')) {
       collectionItem = '<li data-user="' + hyperty.userID + '" data-url="' + hyperty.hypertyID + '" class="collection-item">' +
       '<span class="title"><b>UserURL: </b>' + hyperty.userID + '</span>' +
-      '<a title="Call Video and Audio to ' + hyperty.userID + '" class="waves-effect waves-light btn call-btn secondary-content"><i class="material-icons">call</i></a>' +
-      '<a title="Call Audio Only to ' + hyperty.userID + '" class="waves-effect waves-light btn callaudio-btn secondary-content"><i class="material-icons">call</i></a>' +
+      '<a title="Call Video and Audio to ' + hyperty.userID + '" class="waves-effect waves-light btn call-btn secondary-content"><i class="material-icons">videocam</i></a>' +
+      '<a title="Call Audio Only to ' + hyperty.userID + '" class="waves-effect waves-light btn callaudio-btn secondary-content"><i class="material-icons">phone</i></a>' +
       '<p><b>DescriptorURL: </b>' + hyperty.descriptor + '<br><b>HypertyURL: </b>' + hyperty.hypertyID +
       '<br><b>Resources: </b>' + JSON.stringify(hyperty.resources) +
       '<br><b>DataSchemes: </b>' + JSON.stringify(hyperty.dataSchemes) +
