@@ -126,7 +126,7 @@ class ConnectionController {
     if (!mediaStream) throw new Error('The mediaStream is a needed parameter');
 
     let _this = this;
-    console.info('[Connector.ConnectionController ]set stream: ', mediaStream);
+    console.info('[Connector.ConnectionController ]set stream: ', mediaStream, 'peerConnection', _this.peerConnection);
     _this._mediaStream = mediaStream;
     _this.peerConnection.addStream(mediaStream);
   }
@@ -154,6 +154,7 @@ class ConnectionController {
         if (_this._onDisconnect) _this._onDisconnect(event);
         _this._clean(_this._connector._controllers, _this._remoteHyperty);
       }
+
     });
 
     if (_this.mode === 'offer') {
@@ -185,7 +186,6 @@ class ConnectionController {
     console.info('[Connector.ConnectionController ]set data object observer: ', dataObjectObserver);
     _this._dataObjectObserver = dataObjectObserver;
     _this._changePeerInformation(dataObjectObserver);
-
   }
 
   /**
@@ -288,6 +288,7 @@ class ConnectionController {
     if (data.type === 'offer' || data.type === 'answer') {
       console.info('[Connector.ConnectionController processPeerInformation]Process Connection Description: ', data.sdp);
       _this.peerConnection.setRemoteDescription(new RTCSessionDescription(data), _this._remoteDescriptionSuccess, _this._remoteDescriptionError);
+
     }
 
     if (data.type === 'candidate') {
@@ -392,6 +393,7 @@ class ConnectionController {
 
     return new Promise(function(resolve, reject) {
 
+      console.log('ON CONNECTIONCONTROLLER -> STREAM', stream);
       let syncher = _this._syncher;
       let remoteData = _this.dataObjectObserver.data;
       let remotePeer = remoteData.owner;

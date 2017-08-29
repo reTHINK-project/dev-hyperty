@@ -197,7 +197,8 @@ function emailDiscovered(result) {
     if (hyperty.hasOwnProperty('userID')) {
       collectionItem = '<li data-user="' + hyperty.userID + '" data-url="' + hyperty.hypertyID + '" class="collection-item">' +
       '<span class="title"><b>UserURL: </b>' + hyperty.userID + '</span>' +
-      '<a title="Call to ' + hyperty.userID + '" class="waves-effect waves-light btn call-btn secondary-content"><i class="material-icons">call</i></a>' +
+      '<a title="Call Video and Audio to ' + hyperty.userID + '" class="waves-effect waves-light btn call-btn secondary-content"><i class="material-icons">videocam</i></a>' +
+      '<a title="Call Audio Only to ' + hyperty.userID + '" class="waves-effect waves-light btn callaudio-btn secondary-content"><i class="material-icons">phone</i></a>' +
       '<p><b>DescriptorURL: </b>' + hyperty.descriptor + '<br><b>HypertyURL: </b>' + hyperty.hypertyID +
       '<br><b>Resources: </b>' + JSON.stringify(hyperty.resources) +
       '<br><b>DataSchemes: </b>' + JSON.stringify(hyperty.dataSchemes) +
@@ -213,6 +214,19 @@ function emailDiscovered(result) {
   });
 
   var callBtn = collection.find('.call-btn');
+  var callaudioBtn = collection.find('.callaudio-btn');
+
+  callaudioBtn.on('click', function(event) {
+    event.preventDefault();
+    let userURL = $(event.currentTarget).parent().attr('data-user');
+    let hypertyURL = $(event.currentTarget).parent().attr('data-url');
+
+    let domain = hypertyURL.substring(hypertyURL.lastIndexOf(':') + 3, hypertyURL.lastIndexOf('/'));
+    console.log('Domain:', domain);
+
+    openAudio(userURL, domain);
+  })
+
   callBtn.on('click', function(event) {
     event.preventDefault();
     let userURL = $(event.currentTarget).parent().attr('data-user');
@@ -252,7 +266,31 @@ function openVideo(hyperty, domain) {
   getUserMedia(options).then(function(mediaStream) {
     console.info('recived media stream: ', mediaStream);
     localMediaStream = mediaStream;
-    return connector.connect(toHyperty, mediaStream, '', domain);
+    return connector.connect(toHyperty, mediaStream, '', domain, ['audio', 'video']);
+  })
+  .then(function(controller) {
+
+    showVideo(controller);
+
+    processLocalVideo(localMediaStream);
+
+  }).catch(function(reason) {
+    console.error(reason);
+  });
+}
+
+function openAudio(hyperty, domain) {
+
+  console.log('connecting hyperty: ', hyperty);
+
+  var toHyperty = hyperty;
+  var localMediaStream;
+
+  var options = options || {audio: true};
+  getUserMedia(options).then(function(mediaStream) {
+    console.info('recived media stream: ', mediaStream);
+    localMediaStream = mediaStream;
+    return connector.connect(toHyperty, mediaStream, '', domain, ['audio']);
   })
   .then(function(controller) {
     showVideo(controller);
@@ -263,6 +301,7 @@ function openVideo(hyperty, domain) {
     console.error(reason);
   });
 }
+
 
 function processVideo(event) {
 
