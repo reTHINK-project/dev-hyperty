@@ -8,6 +8,7 @@
   "hypertyType": [
     "hello"
   ],
+  "objectName": "HelloWorldObserver",
   "dataObjects": [
     "https://%domain%/.well-known/dataschema/HelloWorldDataSchema"
   ]

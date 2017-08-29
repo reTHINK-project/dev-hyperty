@@ -45,10 +45,9 @@
   "constraints": {
     "browser": true
   },
+  "objectName": "Conference",
   "hypertyType": ["audio", "video"],
   "dataObjects": [
     "https://catalogue.localhost/.well-known/dataschema/Connection"
   ]
 }
-
-

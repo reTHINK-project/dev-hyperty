@@ -6,6 +6,7 @@
   },
   "language": "javascript",
   "signature": "",
+  "objectName": "NotificationsReporter",
   "dataObjects": [
     "https://catalogue.localhost/.well-known/dataschema/Communication"
   ]

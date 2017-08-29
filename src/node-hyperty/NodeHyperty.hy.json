@@ -3,6 +3,7 @@
   "constraints": {
     "node": true
   },
+  "objectName": "NodeHyperty",
   "hypertyType": ["audio", "video"],
   "dataObjects": [
     "https://catalogue.localhost/.well-known/dataschema/Connection"

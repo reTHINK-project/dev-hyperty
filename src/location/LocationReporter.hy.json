@@ -9,6 +9,7 @@
   },
   "language": "javascript",
   "signature": "",
+  "objectName": "LocationReporter",
   "dataObjects": [
     "https://catalogue.localhost/.well-known/dataschema/Context"
   ]
