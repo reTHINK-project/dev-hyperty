@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "bootstrap": "^4.0.0-alpha.6",
-    "service-framework": "github:rethink-project/dev-service-framework#develop"
+    "service-framework": "github:rethink-project/dev-service-framework#develop",
+    "urijs": "^1.18.12"
   }
 }
