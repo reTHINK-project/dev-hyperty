@@ -74,7 +74,7 @@ class GroupChatManager {
     _this.communicationChildren = communicationChildren;
 
     console.log('[GroupChatManager] Discover ', discovery);
-    console.log('[GroupChatManager] Identity Manager: ', identityManager);
+    console.log('[GroupChatManager] Identity Manager ', identityManager);
 
 
 
