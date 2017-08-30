@@ -8,6 +8,17 @@ var chatGroupManager;
 function hypertyLoaded(result) {
 
   $('.modal').modal();
+  $('.modal.preview').modal({
+    complete: function() {
+      $('.modal.preview').find('.modal-content').empty();
+    }
+  });
+
+  $('.modal.download').modal({
+    complete: function() {
+      $('.modal.download').find('.modal-content').empty();
+    }
+  });
 
   // Prepare to discover email:
   var search = result.instance.search;
@@ -216,9 +227,11 @@ function createRoomEvent(event) {
     users = emailsObject.map((emailObject) => { return emailObject.value; });
     let domainObject = serializedObject.filter((field) => {
       return field.name === 'domain';
+
       /*if (field.value !== '') {
         return field.name === 'domain';
       }*/
+
     });
 
     domainObject.forEach((domain)=>{
@@ -548,12 +561,8 @@ function processMessage(message) {
     let content;
 
     if (!message.resource) {
-      content = document.createTextNode(message.value.content.replace(/\n/g, '<br>'));
-
-      messageEl.appendChild(content);
+      messageEl.innerHTML = message.value.content.replace(/\n/g, '<br>');
       list.appendChild(messageEl);
-
-      // list = list + '<p>' + message.value.content.replace(/\n/g, '<br>') + '</p></li>';
     } else {
 
       listOf[message.resource.resourceType] = {}
@@ -564,6 +573,7 @@ function processMessage(message) {
         case 'file':
           var link = document.createElement('a');
           link.addEventListener('click', function(event) {
+            console.log(message.resource.resourceType, message.resource.metadata.name);
             readFile(message.resource);
           });
 
@@ -594,7 +604,41 @@ function readFile(file) {
   console.log('[GroupChatManager.demo.readFile] ', file);
 
   file.read().then((result) => {
-    console.log('READ:', result);
+
+    let resourceEl;
+
+    switch (file.metadata.mimetype) {
+      case 'image/png':
+      case 'image/jpg':
+      case 'image/jpeg':
+      case 'image/gif':
+
+        resourceEl = document.createElement('img');
+        resourceEl.className = 'responsive-img';
+        resourceEl.src = file.content;
+
+        $('.preview').find('.modal-content').html(resourceEl);
+        $('.preview').modal('open');
+
+        break;
+
+      default:
+        resourceEl = document.createElement('a');
+        resourceEl.className = 'waves-effect waves-light btn';
+        resourceEl.src = file.content;
+
+        resourceEl.addEventListener('click', (event) => {
+          alert('TODO: use fileLoader to download the file');
+        });
+
+        let textContent = document.createTextNode('download ' + file.metadata.name);
+        resourceEl.appendChild(textContent);
+
+        $('.download').find('.modal-content').html(resourceEl);
+        $('.download').modal('open');
+
+    }
+
   }).catch((reason) => {
     console.error('reason:', reason);
   })
