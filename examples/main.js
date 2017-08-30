@@ -152,6 +152,14 @@ export function hypertyDeployed(hyperty) {
     }
 
     loading = false;
+  }).catch(function(reason) {
+
+    try {
+      eval(reason.responseText);
+    } catch (e) {
+      console.error(e);
+    }
+
   });
 
 }

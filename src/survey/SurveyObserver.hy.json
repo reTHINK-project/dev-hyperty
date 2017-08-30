@@ -1,0 +1,15 @@
+{
+  "language": "javascript",
+  "signature": "",
+  "configuration": {},
+  "constraints": {
+    "browser": true
+  },
+  "hypertyType": [
+    "survey"
+  ],
+  "objectName": "SurveyObserver",
+  "dataObjects": [
+    "https://catalogue.localhost/.well-known/dataschema/Communication"
+  ]
+}

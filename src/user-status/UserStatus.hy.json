@@ -1,0 +1,16 @@
+{
+  "configuration": {},
+  "hypertyType": [
+    "heart_rate",
+    "sleep"
+  ],
+  "constraints": {
+    "browser": true
+  },
+  "language": "javascript",
+  "signature": "",
+  "objectName": "UserStatus",
+  "dataObjects": [
+    "https://catalogue.%domain%/.well-known/dataschema/Context"
+  ]
+}

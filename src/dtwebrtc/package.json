@@ -1,0 +1,15 @@
+{
+  "name": "dtwebrtc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "DTWebRTC.hy.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "service-framework": "github:rethink-project/dev-service-framework",
+    "webrtc-adapter-test": "^0.2.10"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "group-chat-manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "GroupChatManager.hy.js",
+  "dependencies": {
+    "service-framework": "github:rethink-project/dev-service-framework#p2p-sync"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

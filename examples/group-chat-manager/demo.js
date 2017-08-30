@@ -7,6 +7,8 @@ var chatGroupManager;
 
 function hypertyLoaded(result) {
 
+  $('.modal').modal();
+
   // Prepare to discover email:
   var search = result.instance.search;
 
@@ -149,7 +151,7 @@ function createRoom(event) {
 
   addParticipantBtn.on('click', addParticipantEvent);
   createRoomBtn.on('click', createRoomEvent);
-  createRoomModal.openModal();
+  createRoomModal.modal('open');
   cancelRoomBtn.on('click', cancelRoomEvent);
 }
 
@@ -210,8 +212,8 @@ function createRoomEvent(event) {
 
   if (serializedObject) {
 
-    let emailsObject = serializedObject.filter((field) => { if (field.value !== '') return field.name === 'email';});
-    users = emailsObject.map((emailObject) => { return emailObject.value;});
+    let emailsObject = serializedObject.filter((field) => { if (field.value !== '') return field.name === 'email'; });
+    users = emailsObject.map((emailObject) => { return emailObject.value; });
     let domainObject = serializedObject.filter((field) => {
       return field.name === 'domain';
       /*if (field.value !== '') {
@@ -279,7 +281,7 @@ function joinRoom(event) {
     });
   });
 
-  joinModal.openModal();
+  joinModal.modal('open');
 
 }
 
@@ -408,7 +410,7 @@ function inviteParticipants(chatController, isOwner) {
 
   });
 
-  inviteModal.openModal();
+  inviteModal.modal('open');
 
 }
 
@@ -507,6 +509,8 @@ function chatManagerReady(chatController, isOwner) {
 
 }
 
+var listOf = {};
+
 function processMessage(message) {
 
   console.log('[GroupChatManagerDemo - processMessage] - msg ', message);
@@ -520,35 +524,80 @@ function processMessage(message) {
     avatar = message.identity.userProfile.avatar;
     from = message.identity.userProfile.cn;
   }
+
   if (message.value) {
-    let list = `<li class="collection-item avatar">
-      <img src="` + avatar + `" alt="" class="circle">
-      <span class="title">` + from + `</span>`;
+    let list = document.createElement('li');
+    list.className = 'collection-item avatar';
+
+    let avatarEl = document.createElement('img');
+    avatarEl.className = 'circle';
+    avatarEl.src = avatar;
+    avatarEl.alt = from;
+
+    let nameSpan = document.createElement('span');
+    let name = document.createTextNode(from);
+    nameSpan.className = 'title';
+    nameSpan.appendChild(name);
+
+    list.appendChild(avatarEl);
+    list.appendChild(nameSpan);
 
     console.log('[GroupChatManagerDemo - processMessage] - ', messagesList, message, list);
 
-    if (!message.resource) {
-      list = list + `<p>` + message.value.content.replace(/\n/g, '<br>') + `</p>
-    </li>`;
-  } else {
-    switch (message.resource.resourceType) {
-      case 'file':
-          list = list + `<p>` + message.resource.metadata.name + `</p><img src="`+message.resource.metadata.preview+`" alt="">
-        </li>`;
-        break;
-      default:
-        break;
-    }
-  }
+    let messageEl = document.createElement('p');
+    let content;
 
+    if (!message.resource) {
+      content = document.createTextNode(message.value.content.replace(/\n/g, '<br>'));
+
+      messageEl.appendChild(content);
+      list.appendChild(messageEl);
+
+      // list = list + '<p>' + message.value.content.replace(/\n/g, '<br>') + '</p></li>';
+    } else {
+
+      listOf[message.resource.resourceType] = {}
+      listOf[message.resource.resourceType][message.resource.metadata.url] = message.resource;
+
+      switch (message.resource.resourceType) {
+
+        case 'file':
+          var link = document.createElement('a');
+          link.addEventListener('click', function(event) {
+            readFile(message.resource);
+          });
+
+          content = document.createTextNode(message.resource.metadata.name);
+          messageEl.appendChild(content);
+          list.appendChild(messageEl);
+
+          var img = document.createElement('img');
+          img.src = message.resource.metadata.preview;
+          img.alt = message.resource.metadata.name;
+
+          link.appendChild(img);
+
+          list.appendChild(link);
+
+          break;
+        default:
+          break;
+      }
+    }
 
     messagesList.append(list);
   }
+
 }
 
 function readFile(file) {
   console.log('[GroupChatManager.demo.readFile] ', file);
-  //file.read();
+
+  file.read().then((result) => {
+    console.log('READ:', result);
+  }).catch((reason) => {
+    console.error('reason:', reason);
+  })
 }
 
 function processNewUser(event) {
