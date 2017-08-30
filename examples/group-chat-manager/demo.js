@@ -306,7 +306,7 @@ function prepareChat(chatController, isOwner) {
   console.log('[GroupChatManagerDemo prepareChat] Chat Group Controller: ', chatController);
 
   let dataObject = chatController.dataObjectObserver || chatController.dataObjectReporter || {};
-  console.log('[GroupChatManagerDemo prepareChat] - dataObject: ', dataObject);
+  console.log('[GroupChatManagerDemo prepareChat] dataObject: ', dataObject);
   let users = dataObject.data.participants || {};
   let msgs = dataObject.childrens || {};
 
