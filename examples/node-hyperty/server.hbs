@@ -1,0 +1,21 @@
+<div class="col s12">
+  <div class="card">
+    <div class="card-image">
+      <img src="{{os.image}}" width>
+    </div>
+    <div class="card-stacked">
+      <div class="card-content">
+        <span class="card-title grey-text text-darken-4">server name</span>
+        <span class="row">
+          <span class="col s12 align-left"><b>Arch:</b>{{os.arch}}</span>
+          <span class="col s12 align-left"><b>Plataform:</b>{{os.plataform}}</span>
+          <span class="col s12 align-left"><b>Memory:</b>{{os.freeMemory}}/{{os.totalMemory}}</span>
+          <span class="col s12 align-left"><b>Hostname:</b>{{os.hostname}}</span>
+        </span>
+      </div>
+      <div class="card-action">
+        <h5>Time: <span class="current-time">{{time}}</span></h5>
+      </div>
+    </div>
+  </div>
+</div>
