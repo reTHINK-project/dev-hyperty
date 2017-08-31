@@ -368,13 +368,15 @@ function prepareChat(chatController, isOwner) {
     $('.join-room-btn').show();
   });
 
+  $('.modal').modal();
+
   let inviteBtn = $('.invite-btn');
   inviteBtn.on('click', function(event) {
 
-      event.preventDefault();
+    event.preventDefault();
 
-      inviteParticipants(chatController, isOwner);
-    });
+    inviteParticipants(chatController, isOwner);
+  });
 
 }
 
@@ -420,7 +422,6 @@ function inviteParticipants(chatController, isOwner) {
     });
 
     inviteBtn.off('click');
-
   });
 
   inviteModal.modal('open');
