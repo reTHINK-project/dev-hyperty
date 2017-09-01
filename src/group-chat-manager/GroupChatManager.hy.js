@@ -85,7 +85,7 @@ class GroupChatManager {
       if (reportersList.length  > 0) {
 
       Object.keys(reporters).forEach((dataObjectReporterURL) => {
-        console.log('[GroupChatManager.resumeReporters] ', dataObjectReporterURL);
+        console.log('[GroupChatManager.resumeReporters]: ', dataObjectReporterURL);
         // create a new chatController but first get identity
         _this.search.myIdentity().then((identity) => {
           let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, identity, _this);
