@@ -492,7 +492,11 @@ function chatManagerReady(chatController, isOwner) {
     event.preventDefault();
 
     let object = $(this).serializeObject();
-    let file = event.target.files[0];
+    let file;
+    if (event.target.files){
+      file = event.target.files[0];
+    } else return;
+
     console.log('file: ', file);
 
     chatController.sendFile(file).then(function(result) {
@@ -622,27 +626,115 @@ function readFile(file) {
         $('.preview').modal('open');
 
         break;
+      case 'video/mp4':
+      case 'video/mkv':
+
+        resourceEl = document.createElement('video');
+        resourceEl.autoplay = true;
+        resourceEl.controls = true;
+        resourceEl.className = 'responsive-video';
+        resourceEl.src = file.content;
+
+        $('.preview').find('.modal-content').html(resourceEl);
+        $('.preview').modal('open');
+
+        break;
 
       default:
         resourceEl = document.createElement('a');
         resourceEl.className = 'waves-effect waves-light btn';
         resourceEl.src = file.content;
 
-        resourceEl.addEventListener('click', (event) => {
-          alert('TODO: use fileLoader to download the file');
-        });
-
         let textContent = document.createTextNode('download ' + file.metadata.name);
         resourceEl.appendChild(textContent);
 
-        $('.download').find('.modal-content').html(resourceEl);
-        $('.download').modal('open');
+        dataURLToBlob(file.content, file.metadata.mimetype).then((blob)=>{
+          let blobUrl = (window.URL || window.webkitURL).createObjectURL(blob);
+          console.log('[GroupChatManagerDemo.readFile] saving file to ', blobUrl);
+
+          resourceEl.download = file.name;
+
+          resourceEl.href = blobUrl;
+
+          resourceEl.addEventListener('click', (event) => {
+            console.log('[GroupChatManagerDemo.readFile] saving file to disk ', file);
+
+            //(window.URL || window.webkitURL).revokeObjectURL(resourceEl.href);
+
+            });
+
+          $('.download').find('.modal-content').html(resourceEl);
+          $('.download').modal('open');
+
+
+        });
 
     }
 
   }).catch((reason) => {
     console.error('reason:', reason);
   })
+}
+
+function dataURLToBlob(dataURL, fileType) {
+
+  return new Promise(function(resolve, reject) {
+
+            function processInWebWorker() {
+                var blob = URL.createObjectURL(new Blob(['function getBlob(_dataURL, _fileType) {var binary = atob(_dataURL.substr(_dataURL.indexOf(",") + 1)),i = binary.length,view = new Uint8Array(i);while (i--) {view[i] = binary.charCodeAt(i);};postMessage(new Blob([view], {type: _fileType}));};this.onmessage =  function (e) {var data = JSON.parse(e.data); getBlob(data.dataURL, data.fileType);}'], {
+                    type: 'application/javascript'
+                }));
+
+                var worker = new Worker(blob);
+                URL.revokeObjectURL(blob);
+                return worker;
+            }
+
+            if (!!window.Worker) {
+                var webWorker = processInWebWorker();
+
+                webWorker.onmessage = function(event) {
+                    resolve(event.data);
+                };
+
+                webWorker.postMessage(JSON.stringify({
+                    dataURL: dataURL,
+                    fileType: fileType
+                }));
+            } else {
+                var binary = atob(dataURL.substr(dataURL.indexOf(',') + 1)),
+                    i = binary.length,
+                    view = new Uint8Array(i);
+
+                while (i--) {
+                    view[i] = binary.charCodeAt(i);
+                }
+
+                resolve(new Blob([view]));
+            }
+        });
+      }
+
+function dataURItoBlob(dataURI) {
+    // convert base64/URLEncoded data component to raw binary data held in a string
+    var byteString;
+    if (dataURI.split(',')[0].indexOf('base64') >= 0)
+        byteString = atob(dataURI.split(',')[1]);
+    else
+        byteString = unescape(dataURI.split(',')[1]);
+
+    // separate out the mime component
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    // write the bytes of the string to a typed array
+    var ia = new Uint8Array(byteString.length);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([ia], {
+        type: mimeString
+    });
 }
 
 function processNewUser(event) {
