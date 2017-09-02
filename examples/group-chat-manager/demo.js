@@ -606,11 +606,23 @@ function processMessage(message) {
 }
 
 function readFile(file) {
-  console.log('[GroupChatManager.demo.readFile] ', file);
 
   file.read().then((result) => {
+    console.log('[GroupChatManager.demo.readFile] ', result);
 
     let resourceEl;
+    let blob;
+
+    if (Array.isArray(result.content)){
+      blob = new Blob(result.content, { type: file.metadata.mimetype} );
+    } else{
+      blob = new Blob([result.content], { type: file.metadata.mimetype} );
+    } 
+
+
+
+    let urlCreator = window.URL || window.webkitURL;
+    let url = urlCreator.createObjectURL( blob );
 
     switch (file.metadata.mimetype) {
       case 'image/png':
@@ -620,7 +632,7 @@ function readFile(file) {
 
         resourceEl = document.createElement('img');
         resourceEl.className = 'responsive-img';
-        resourceEl.src = file.content;
+        resourceEl.src = url;
 
         $('.preview').find('.modal-content').html(resourceEl);
         $('.preview').modal('open');
@@ -633,7 +645,7 @@ function readFile(file) {
         resourceEl.autoplay = true;
         resourceEl.controls = true;
         resourceEl.className = 'responsive-video';
-        resourceEl.src = file.content;
+        resourceEl.src = url;
 
         $('.preview').find('.modal-content').html(resourceEl);
         $('.preview').modal('open');
@@ -643,18 +655,16 @@ function readFile(file) {
       default:
         resourceEl = document.createElement('a');
         resourceEl.className = 'waves-effect waves-light btn';
-        resourceEl.src = file.content;
+        resourceEl.src = url;
 
         let textContent = document.createTextNode('download ' + file.metadata.name);
         resourceEl.appendChild(textContent);
 
-        dataURLToBlob(file.content, file.metadata.mimetype).then((blob)=>{
-          let blobUrl = (window.URL || window.webkitURL).createObjectURL(blob);
-          console.log('[GroupChatManagerDemo.readFile] saving file to ', blobUrl);
+        console.log('[GroupChatManagerDemo.readFile] saving file to ', url);
 
           resourceEl.download = file.name;
 
-          resourceEl.href = blobUrl;
+          resourceEl.href = url;
 
           resourceEl.addEventListener('click', (event) => {
             console.log('[GroupChatManagerDemo.readFile] saving file to disk ', file);
@@ -665,9 +675,6 @@ function readFile(file) {
 
           $('.download').find('.modal-content').html(resourceEl);
           $('.download').modal('open');
-
-
-        });
 
     }
 
