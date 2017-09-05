@@ -617,7 +617,7 @@ function readFile(file) {
       blob = new Blob(result.content, { type: file.metadata.mimetype} );
     } else{
       blob = new Blob([result.content], { type: file.metadata.mimetype} );
-    } 
+    }
 
 
 
@@ -662,7 +662,7 @@ function readFile(file) {
 
         console.log('[GroupChatManagerDemo.readFile] saving file to ', url);
 
-          resourceEl.download = file.name;
+          resourceEl.download = '/sca/' + file.name;
 
           resourceEl.href = url;
 
