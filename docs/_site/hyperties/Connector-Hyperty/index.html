@@ -6,10 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1">
 
-  <title>Hyperties Catalogue</title>
-  <meta name="description" content="reTHINK Framework provides the tools to build a global real-time decentralized communication infra-structure where services are inherently inter-operable.">
+  <title>Connector Hyperty</title>
+  <meta name="description" content="Connector Hyperty">
 
-  <link rel="canonical" href="http://localhost:4000/">
+  <link rel="canonical" href="http://localhost:4000/hyperties/Connector-Hyperty/">
   <link rel="alternate" type="application/rss+xml" title="Hyperties Catalogue" href="/feed.xml">
 
   <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
@@ -138,7 +138,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="block">
-                    <h1>Hyperties Catalogue</h1>
+                    <h1>Connector Hyperty</h1>
                     <p></p>
                 </div>
             </div>
@@ -146,20 +146,275 @@
     </div>
   </section>
 
-  <div class="container mtb">
+<div class="container mt">
     <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 centered">
-            <h2>Browse through existing Hyperties and learn how you can quickly use them in your Web Application.</h2>
-            <br>
-            <div class="hline"></div>
-        </div>
-    </div>
-</div><! --/container -->
 
+        <div class="col-lg-5 col-lg-offset-1">
+            <div class="spacing"></div>
+
+            <h2 id="connector-hyperty">Connector Hyperty</h2>
+
+<p>The Connector Hyperty main functionality is to handle two party audio and voice conversations by using WebRTC technology. Main features:</p>
+
+<ul>
+  <li>
+    <p>invite user for a WebRTC audio or video call</p>
+  </li>
+  <li>
+    <p>accept/reject invitation</p>
+  </li>
+  <li>
+    <p>have a cross domain video conversation with another peer eg</p>
+  </li>
+  <li>
+    <p>interoperability with SIP / IMS User Agents as well as with any reachable public E.164 enabled Mobile or Fixed phone.</p>
+  </li>
+</ul>
+
+<p>This Hyperty handles standard <a href="../specs/datamodel/data-objects/connection">Connection Data Objects</a>.
+<a href="">Live Demo Here</a><em>to be provided</em>.</p>
+
+<h2 id="api">API</h2>
+
+<p>The Connector Hyperty implements two Hyperty APIs to be consumed by Applications:</p>
+
+<ul>
+  <li>the Hyperty Connector API manages the creation of new WebRTC connections;</li>
+  <li>the Hyperty ConnectionController API manages a certain WebRTC connection instance.</li>
+</ul>
+
+<h3 id="hyperty-connector-api">Hyperty Connector API</h3>
+
+<p>The Hyperty Connector API is used to create new connections.</p>
+
+<h4 id="connect">connect</h4>
+
+<p>This function is used to create a new connection providing the identifier of the user to be notified.</p>
+
+<p><code class="highlighter-rouge">&lt;Promise&gt; ConnectionController connect( URL.UserURL user, MediaStream stream, string ?name)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>user</em> - user to be invited that is identified with reTHINK User URL.</p>
+
+<p><em>stream</em> - WebRTC local MediaStream retrieved by the Application</p>
+
+<p><em>name</em> - is a string to identify the connection.</p>
+
+<p><strong>returns</strong></p>
+
+<p>A ConnectionController object as a Promise.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code>  <span class="nx">connector</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">stream</span><span class="p">,</span> <span class="nx">name</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">controller</span><span class="p">){</span>
+
+  <span class="c1">// your source code</span>
+
+  <span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+  <span class="p">});</span>
+</code></pre>
+</div>
+
+<h5 id="oninvitation-addeventlistener">onInvitation (addEventListener)</h5>
+
+<p>This function is used to handle notifications about incoming requests to create a new connection.</p>
+
+<p><code class="highlighter-rouge">onInvitation(ConnectionController connection)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>connection</em> - the ConnectionController to handle the incoming connection invitation.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">connector</span><span class="p">.</span><span class="nx">onInvitation</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">connection</span><span class="p">){...});</span>
+</code></pre>
+</div>
+
+<h4 id="hyperty-connectioncontroller-api">Hyperty ConnectionController API</h4>
+
+<p>The Hyperty ConnectionController API is used to control a connection instance.</p>
+
+<h5 id="accept">accept</h5>
+
+<p>This function is used to accept an incoming connection request received by <code class="highlighter-rouge">connection.onInvitation()</code>.</p>
+
+<p><code class="highlighter-rouge">&lt;Promise&gt; boolean accept( MediaStream stream)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>stream</em> - WebRTC local MediaStream retrieved by the Application</p>
+
+<p><strong>returns</strong></p>
+
+<p>It returns, as a Promise, <code class="highlighter-rouge">true</code> in case the connection is successfully accepted, <code class="highlighter-rouge">false</code> otherwise.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">connection</span><span class="p">.</span><span class="nx">accept</span><span class="p">(</span><span class="nx">stream</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">accepted</span><span class="p">){</span>
+
+<span class="c1">// your source code</span>
+
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+<h5 id="decline">decline</h5>
+
+<p>This function is used to decline an incoming connection request received by <code class="highlighter-rouge">connection.onInvitation()</code>.</p>
+
+<p><code class="highlighter-rouge">&lt;Promise&gt; boolean decline(int ?reason)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>reason</em> - Integer decline reason that is compliant with RFC7231. If not present <code class="highlighter-rouge">400</code> is used. (optional)</p>
+
+<p><strong>returns</strong></p>
+
+<p>It returns, as a Promise, <code class="highlighter-rouge">true</code> in case the connection is successfully declined, <code class="highlighter-rouge">false</code> otherwise.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">connection</span><span class="p">.</span><span class="nx">decline</span><span class="p">(</span><span class="nx">reason</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">declined</span><span class="p">){</span>
+
+<span class="c1">// your source code</span>
+
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+<h5 id="disconnect">disconnect</h5>
+
+<p>This function is used to close an existing connection instance.</p>
+
+<p><code class="highlighter-rouge">&lt;Promise&gt; boolean disconnect()</code></p>
+
+<p><strong>returns</strong></p>
+
+<p>It returns as a Promise <code class="highlighter-rouge">true</code> if successfully disconnected or <code class="highlighter-rouge">false</code> otherwise.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">connection</span><span class="p">.</span><span class="nx">close</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">closed</span><span class="p">){</span>
+
+<span class="c1">// your source code</span>
+
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+<h5 id="ondisconnect">onDisconnect</h5>
+
+<p>This function is used to receive requests to close an existing connection instance.</p>
+
+<p><code class="highlighter-rouge">onDisconect(DeleteEvent event)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>event</em> - the DeleteEvent fired by the Syncher when the Connection is closed.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">connection</span><span class="p">.</span><span class="nx">onClose</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">){...});</span>
+</code></pre>
+</div>
+
+<h2 id="descriptor">Descriptor</h2>
+
+<p>The Hyperty Connector descriptor is:</p>
+
+<div class="language-json highlighter-rouge"><pre class="highlight"><code><span class="w">  </span><span class="s2">"HypertyConnector"</span><span class="err">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"sourcePackage"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"sourceCode"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+      </span><span class="s2">"sourceCodeClassname"</span><span class="err">:</span><span class="w"> </span><span class="s2">"HypertyConnector"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"encoding"</span><span class="p">:</span><span class="w"> </span><span class="s2">"base64"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"signature"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="nt">"cguid"</span><span class="p">:</span><span class="w"> </span><span class="mi">10001</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"hypertyType"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="s2">"audio"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"video"</span><span class="w">
+      </span><span class="p">],</span><span class="w">
+      </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.1"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Description of HypertyConnector"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"objectName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HypertyConnector"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"configuration"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"webrtc"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nt">"iceServers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+          </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stun:stun.l.google.com:19302"</span><span class="w">
+          </span><span class="p">},</span><span class="w">
+          </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"turn:194.65.138.95:3478"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"credential"</span><span class="p">:</span><span class="w"> </span><span class="s2">"luis123"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"luis"</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">]</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+      </span><span class="nt">"constraints"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w">
+      </span><span class="nt">"sourcePackageURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/sourcePackage"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"javascript"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"signature"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"messageSchemas"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"dataObjects"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="s2">"https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Connection"</span><span class="w">
+      </span><span class="p">],</span><span class="w">
+      </span><span class="nt">"accessControlPolicy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"somePolicy"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>The Hyperty Connector descriptor includes the required WebRTC ICE servers configuration:</p>
+
+<div class="language-json highlighter-rouge"><pre class="highlight"><code><span class="s2">"configuration"</span><span class="err">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="nt">"webrtc"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nt">"iceServers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stun:stun.l.google.com:19302"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"turn:194.65.138.95:3478"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"credential"</span><span class="p">:</span><span class="w"> </span><span class="s2">"luis123"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"luis"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>Since the Hyperty supports the standard connection data schema, any Catalog URL for that schema can be used.</p>
+
+
+        </div>
+        <div class="col-lg-4 col-lg-offset-1">
+            <div class="spacing"></div>
+            <h4>Project Details</h4>
+            <div class="hline"></div>
+            <p><b>Date:</b> Jan 1, 2016</p>
+            <p><b>Description:</b> WebRTC Audio and Video Calls</p>
+            <p><b>Author:</b> Micael Pedrosa</p>
+            <p><b>Categories:</b> webrtc</p>
+            <p><b>Tagged:</b> webrtc</p>
+            <p><b>Client:</b> reTHINK Project</p>
+            <p><b>Catalogue URL: </b> <a href="https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/Connector">https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/Connector</a></p>
+            <p><b>Live Demo:</b> <a href="https://rethink-project.github.io/hyperties/connector">https://rethink-project.github.io/hyperties/connector</a></p>
+        </div>
+    </div><! --/row -->
+</div><! --/container -->
 
 <div id="portfoliowrap">
     <div class="portfolio-centered">
-        
+        <h3>Related Works.</h3>
         <div class="recentitems portfolio">
             
                 <div class="portfolio-item graphic-design">
@@ -226,20 +481,6 @@
                               <h3 class="a1" data-animate="fadeInDown">MyBracelet Hyperty</h3>
                               <p class="a1" data-animate="fadeInDown">Monitors my Activity</p>
                                 <a href="/hyperties/MyBracelet-Hyperty/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-file"></i></a>
-                                <a href="https://rethink-project.github.io/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-cog fa-spin "></i></a>
-                            </div><!-- he bg -->
-                        </div><!-- he view -->
-                    </div><!-- he wrap -->
-                </div><!-- end col-12 -->
-            
-                <div class="portfolio-item graphic-design">
-                    <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/user-availability.jpg" alt="">
-                        <div class="he-view">
-                            <div class="bg a0" data-animate="fadeIn">
-                              <h3 class="a1" data-animate="fadeInDown">User Availability</h3>
-                              <p class="a1" data-animate="fadeInDown">User Availability to Communicate (Presence)</p>
-                                <a href="/hyperties/User-Availability-Hyperty/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-file"></i></a>
                                 <a href="https://rethink-project.github.io/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-cog fa-spin "></i></a>
                             </div><!-- he bg -->
                         </div><!-- he view -->

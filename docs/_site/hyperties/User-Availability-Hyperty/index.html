@@ -6,10 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1">
 
-  <title>Hyperties Catalogue</title>
-  <meta name="description" content="reTHINK Framework provides the tools to build a global real-time decentralized communication infra-structure where services are inherently inter-operable.">
+  <title>User Availability</title>
+  <meta name="description" content="User Availability">
 
-  <link rel="canonical" href="http://localhost:4000/">
+  <link rel="canonical" href="http://localhost:4000/hyperties/User-Availability-Hyperty/">
   <link rel="alternate" type="application/rss+xml" title="Hyperties Catalogue" href="/feed.xml">
 
   <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
@@ -138,7 +138,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="block">
-                    <h1>Hyperties Catalogue</h1>
+                    <h1>User Availability</h1>
                     <p></p>
                 </div>
             </div>
@@ -146,20 +146,208 @@
     </div>
   </section>
 
-  <div class="container mtb">
+<div class="container mt">
     <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 centered">
-            <h2>Browse through existing Hyperties and learn how you can quickly use them in your Web Application.</h2>
-            <br>
-            <div class="hline"></div>
-        </div>
-    </div>
-</div><! --/container -->
 
+        <div class="col-lg-5 col-lg-offset-1">
+            <div class="spacing"></div>
+
+            <h2 id="user-availability">User Availability</h2>
+
+<p>The User Availability is comprised by two Hyperties.</p>
+
+<p>The User Availability Reporter manages user availability state (‘available’, ‘unavailable’, ‘busy’, ‘away’) by publishing it to a certain Context Resource URL and handling subscriptions requests from User Availability Observer.</p>
+
+<p>The User Availability Observer provides the monitoring of availability from multiple users. It enables the discovery of users publishing its Availability Context and the subscription to it.</p>
+
+<p>This Hyperty handles a standard <a href="https://github.com/reTHINK-project/dev-service-framework/tree/master/docs/datamodel/data-objects/context">Context Data Object</a> with:</p>
+
+<p><strong>Hyperty Resource Type</strong></p>
+
+<ul>
+  <li>AVAILABILITY_CONTEXT</li>
+</ul>
+
+<p><strong>ContextUnit</strong></p>
+
+<ul>
+  <li>pres: user availability status in one of these values: available, unavailable, away, busy</li>
+</ul>
+
+<p><strong>example</strong></p>
+
+<div class="language-json highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
+ </span><span class="nt">"scheme"</span><span class="p">:</span><span class="w"> </span><span class="s2">"context"</span><span class="p">,</span><span class="w">
+ </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1276020076"</span><span class="p">,</span><span class="w">
+ </span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">1465070579</span><span class="p">,</span><span class="w">
+ </span><span class="nt">"values"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"availability_context"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pres"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="err">'available'</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<h2 id="useravailabilityreporter-api">UserAvailabilityReporter API</h2>
+
+<p>The UserAvailabilityReporter Hyperty provides an API to let the Application set the User Availability status. When the Hyperty starts the first time it creates a new Context object that is re-used for the next sessions.</p>
+
+<h3 id="start">start</h3>
+
+<p>This function starts the user availability reporting by setting the subscriptions handler and returning the UserAvailability Data Object. Currently, the subscriptions handler automatically accepts all subscriptions requests. If no UserAvailability objects exists to be resumed, a new one is created.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">Promise</span><span class="o">&gt;</span> <span class="nx">DataObjectReporter</span> <span class="nx">start</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<p><strong>parameters</strong></p>
+
+<p>No input parameter.</p>
+
+<p><strong>returns</strong></p>
+
+<p>A promise with UserAvailability DataObjectReporter.</p>
+
+<h3 id="setstatus">setStatus</h3>
+
+<p>This function sets a new value to UserAvailability status and triggers a <code class="highlighter-rouge">my-availability-update</code> event that the App may listen to.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">setStatus</span><span class="p">(</span> <span class="nx">string</span> <span class="nx">newStatus</span> <span class="p">)</span>
+</code></pre>
+</div>
+
+<p><strong>parameters</strong></p>
+
+<p><em>newStatus</em> the new value of user availability</p>
+
+<h2 id="useravailabilityobserver-api">UserAvailabilityObserver API</h2>
+
+<p>The UserAvailabilityObserver Hyperty provides an API to discover and observe multiple users publishing availability status. The App has to set one listener per observed user to receive events about availability status change.</p>
+
+<h3 id="start-1">start</h3>
+
+<p>This function starts user availability status observation and returns one array of UserAvailabilityController instance. For each one, the App has to set a onChange event handler (see below). If no users exist to observe, it returns <code class="highlighter-rouge">false</code>.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">Promise</span><span class="o">&gt;</span> <span class="nx">UserAvailabilityController</span><span class="p">[]</span> <span class="o">||</span> <span class="kr">boolean</span> <span class="nx">start</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<p><strong>parameters</strong></p>
+
+<p>No input parameter.</p>
+
+<p><strong>returns</strong></p>
+
+<p>A promise with an array of UserAvailabilityController instances.</p>
+
+<h3 id="discoverusers">discoverUsers</h3>
+
+<p>This function discovers Hyperties used by users to publish availability status.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">Promise</span><span class="o">&gt;</span> <span class="nx">HypertyInstance</span><span class="p">[]</span> <span class="nx">discoverUsers</span><span class="p">(</span> <span class="nx">string</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">string</span> <span class="p">?</span><span class="nx">domain</span> <span class="p">)</span>
+</code></pre>
+</div>
+
+<p><strong>parameters</strong></p>
+
+<p><em>email</em> the user identifier
+<em>domain</em> (optional) the domain providing the Hyperty</p>
+
+<p><strong>returns</strong></p>
+
+<p>A promise with an array of discovered HypertyInstance.</p>
+
+<h3 id="observe">observe</h3>
+
+<p>This function starts the observation of the availability status managed by a certain Hyperty.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">Promise</span><span class="o">&gt;</span> <span class="nx">UserAvailabilityController</span> <span class="nx">observe</span><span class="p">(</span> <span class="nx">HypertyURL</span> <span class="nx">hypertyID</span> <span class="p">)</span>
+</code></pre>
+</div>
+
+<p><strong>parameters</strong></p>
+
+<p><em>hyperty</em> the DiscoveredObject of the Hyperty to be observed</p>
+
+<p><strong>returns</strong></p>
+
+<p>A promise with the UserAvailability Data Object Observer for a certain user.</p>
+
+<h3 id="unobserve">unobserve</h3>
+
+<p>This function stops the observation of the availability status for a certain user.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">unobserve</span><span class="p">(</span> <span class="nx">ContextURL</span> <span class="nx">availability</span> <span class="p">)</span>
+</code></pre>
+</div>
+
+<p><strong>parameters</strong></p>
+
+<p><em>availability</em> the UserAvailability Data Object Observer URL to be unobserved</p>
+
+<h3 id="monitor-changes-to-useravailability-status">Monitor changes to UserAvailability status</h3>
+
+<p>Every change of the status triggers a <code class="highlighter-rouge">onChange</code> event of the observed Data:</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">userAvailability</span><span class="p">.</span><span class="nx">onChange</span><span class="p">(</span><span class="s1">'*'</span><span class="p">,</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'New User Availability status :'</span><span class="p">,</span> <span class="nx">userAvailability</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">values</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">value</span><span class="p">);</span>
+
+<span class="p">});</span>
+</code></pre>
+</div>
+
+<h3 id="descriptor">Descriptor</h3>
+
+<p>The My Bracelet Hyperty descriptor is:</p>
+
+<div class="language-json highlighter-rouge"><pre class="highlight"><code><span class="s2">"UserAvailabilityReporter"</span><span class="err">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nt">"sourcePackage"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"sourceCode"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+    </span><span class="s2">"sourceCodeClassname"</span><span class="err">:</span><span class="w"> </span><span class="s2">"UserAvailabilityReporter"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"encoding"</span><span class="p">:</span><span class="w"> </span><span class="s2">"base64"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"signature"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nt">"hypertyType"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"availability_context"</span><span class="p">],</span><span class="w">
+  </span><span class="nt">"cguid"</span><span class="p">:</span><span class="w"> </span><span class="mi">10004</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.1"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Descriptor of UserAvailabilityReporter Hyperty"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"objectName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UserAvailabilityReporter"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"configuration"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w">
+  </span><span class="nt">"sourcePackageURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/sourcePackage"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"javascript"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"signature"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"messageSchemas"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"dataObjects"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="s2">"https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Context"</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nt">"accessControlPolicy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"somePolicy"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>Since the Hyperty supports the standard context data schema, any Catalog URL for that schema can be used.</p>
+
+
+        </div>
+        <div class="col-lg-4 col-lg-offset-1">
+            <div class="spacing"></div>
+            <h4>Project Details</h4>
+            <div class="hline"></div>
+            <p><b>Date:</b> Feb 1, 2017</p>
+            <p><b>Description:</b> User Availability to Communicate (Presence)</p>
+            <p><b>Author:</b> Paulo Chainho</p>
+            <p><b>Categories:</b> availability</p>
+            <p><b>Tagged:</b> presence</p>
+            <p><b>Client:</b> reTHINK Project</p>
+            <p><b>Catalogue URL: </b> <a href="https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/UserAvailability">https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/UserAvailability</a></p>
+            <p><b>Live Demo:</b> <a href="https://rethink-project.github.io/">https://rethink-project.github.io/</a></p>
+        </div>
+    </div><! --/row -->
+</div><! --/container -->
 
 <div id="portfoliowrap">
     <div class="portfolio-centered">
-        
+        <h3>Related Works.</h3>
         <div class="recentitems portfolio">
             
                 <div class="portfolio-item graphic-design">
@@ -226,20 +414,6 @@
                               <h3 class="a1" data-animate="fadeInDown">MyBracelet Hyperty</h3>
                               <p class="a1" data-animate="fadeInDown">Monitors my Activity</p>
                                 <a href="/hyperties/MyBracelet-Hyperty/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-file"></i></a>
-                                <a href="https://rethink-project.github.io/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-cog fa-spin "></i></a>
-                            </div><!-- he bg -->
-                        </div><!-- he view -->
-                    </div><!-- he wrap -->
-                </div><!-- end col-12 -->
-            
-                <div class="portfolio-item graphic-design">
-                    <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/user-availability.jpg" alt="">
-                        <div class="he-view">
-                            <div class="bg a0" data-animate="fadeIn">
-                              <h3 class="a1" data-animate="fadeInDown">User Availability</h3>
-                              <p class="a1" data-animate="fadeInDown">User Availability to Communicate (Presence)</p>
-                                <a href="/hyperties/User-Availability-Hyperty/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-file"></i></a>
                                 <a href="https://rethink-project.github.io/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-cog fa-spin "></i></a>
                             </div><!-- he bg -->
                         </div><!-- he view -->

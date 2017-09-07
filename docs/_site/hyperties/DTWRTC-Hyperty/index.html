@@ -6,10 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1">
 
-  <title>Hyperties Catalogue</title>
-  <meta name="description" content="reTHINK Framework provides the tools to build a global real-time decentralized communication infra-structure where services are inherently inter-operable.">
+  <title>DT WebRTC Hyperty</title>
+  <meta name="description" content="The DTWebRTC Hyperty provides functionalities for the establishment and handling of WebRTC A/V connections between two peers. It uses the same Data Object sc...">
 
-  <link rel="canonical" href="http://localhost:4000/">
+  <link rel="canonical" href="http://localhost:4000/hyperties/DTWRTC-Hyperty/">
   <link rel="alternate" type="application/rss+xml" title="Hyperties Catalogue" href="/feed.xml">
 
   <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
@@ -138,7 +138,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="block">
-                    <h1>Hyperties Catalogue</h1>
+                    <h1>DT WebRTC Hyperty</h1>
                     <p></p>
                 </div>
             </div>
@@ -146,20 +146,267 @@
     </div>
   </section>
 
-  <div class="container mtb">
+<div class="container mt">
     <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 centered">
-            <h2>Browse through existing Hyperties and learn how you can quickly use them in your Web Application.</h2>
-            <br>
-            <div class="hline"></div>
-        </div>
-    </div>
-</div><! --/container -->
 
+        <div class="col-lg-5 col-lg-offset-1">
+            <div class="spacing"></div>
+
+            <p>The DTWebRTC Hyperty provides functionalities for the establishment and handling of WebRTC A/V connections between two peers. It uses the same Data Object scheme as the <a href="https://github.com/reTHINK-project/dev-hyperty/tree/master/docs/connector">Connector Hyperty</a> and is therefore interoperable with this other hyperty implementation.</p>
+
+<p>This Hyperty fully encapsulates the WebRTC actions including the calls to the getUserMedia-API. The application can initiate actions of the hyperty via method calls and receives events from the hyperty.</p>
+
+<p>This Hyperty handles standard <a href="https://github.com/reTHINK-project/dev-service-framework/tree/master/docs/datamodel/data-objects/connection">Connection Data Objects</a>.</p>
+
+<h2 id="api">API</h2>
+<p>The DTWebRTC exposes following API to be used by applications:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>NOTE: The API is preliminary and needs a revision, completion and cleanup.
+</code></pre>
+</div>
+
+<h3 id="hyperty-methods">Hyperty methods</h3>
+
+<h4 id="connect">connect</h4>
+
+<p>This function is used to create a new connection providing the identifier/url of the target hyperty of the peer user. This URL is normally the result of a previous hyperty discovery at the peer users target domain. The discovery process itself is not part of the DTWebRTC hyperty. It must happen before in the scope of the application.</p>
+
+<p><code class="highlighter-rouge">&lt;Promise&gt;  connect( hypertyURL )</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>hypertyURL</em> - The url of a hyperty-instance which is the communication endpoint of the target user.</p>
+
+<p><strong>returns</strong></p>
+
+<p>A Promise that resolves, if the invitation has been sent and our hyperty has received a subscription request for our reporter Data object.</p>
+
+<p>It fails with a reason, if something went wrong.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">connector</span><span class="p">.</span><span class="nx">connect</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+  <span class="c1">// your source code</span>
+
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span> <span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+<h4 id="addeventlistener">addEventListener</h4>
+
+<p>This function is used to add listeners to events emitted by the DTWebRTC hyperty. The full list of events is documented below.</p>
+
+<p><code class="highlighter-rouge">addEventListener(eventName, callback(parameters))</code></p>
+
+<p><strong>parameters</strong>##1. Functionality description</p>
+
+<p><em>eventName</em> - The name of the event to subscribe a listener for.
+<em>callback</em> - A callback function that is invoked, when the hyperty emits the subscribed events. The parameters of the event callback are event specific.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">hyperty</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'invitation'</span><span class="p">,</span> <span class="p">(</span><span class="nx">identity</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// preparing a dialog with the given identity info</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'incomingcall event received from:'</span><span class="p">,</span> <span class="nx">identity</span><span class="p">);</span>
+  <span class="c1">// ...</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+<h4 id="acceptcall">acceptCall</h4>
+
+<p>This function is used to accept an incoming call request received by the <code class="highlighter-rouge">incomingcall()</code> event.</p>
+
+<p><code class="highlighter-rouge">acceptCall()</code></p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">hyperty</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'incomingcall'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">$</span><span class="p">(</span><span class="s1">'#myModal'</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s1">'#btn-accept'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'click'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">hyperty</span><span class="p">.</span><span class="nx">acceptCall</span><span class="p">();</span>
+  <span class="p">});</span>
+</code></pre>
+</div>
+
+<h4 id="seticeserver">setIceServer</h4>
+
+<p>This function can be used to set/modify the ICE-Server configuration that the DTWebRTC hyperty uses to establish a WebRTC connection. It can be used for instance to force the use of a specific TURN server.</p>
+
+<p><code class="highlighter-rouge">setIceServer(iceServers, mode)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>iceServers</em> - a specification conform array holding STUN and TURN server configurations
+<em>mode</em> - a boolean defining whether this iceServer data shall replace or extend the internal DTWebRTC ICE-Server configuration (true : replace, false : extend)</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">iceServers</span> <span class="o">=</span> <span class="p">[];</span>
+<span class="nx">iceServers</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
+  <span class="na">urls</span><span class="p">:</span> <span class="s2">"stun:"</span> <span class="o">+</span> <span class="nx">stun</span>
+<span class="p">});</span>
+<span class="nx">iceServers</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
+  <span class="na">urls</span><span class="p">:</span> <span class="s2">"turn:"</span> <span class="o">+</span> <span class="nx">turn</span><span class="p">,</span>
+  <span class="na">username</span><span class="p">:</span> <span class="nx">turn_user</span><span class="p">,</span>
+  <span class="na">credential</span><span class="p">:</span> <span class="nx">turn_pass</span>
+<span class="p">});</span>
+<span class="nx">hyperty</span><span class="p">.</span><span class="nx">setIceServer</span><span class="p">(</span><span class="nx">iceServers</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+</code></pre>
+</div>
+
+<h4 id="switchlocalaudio">switchLocalAudio</h4>
+
+<p>This function is used to enable/disable the local audio during a running WebRTC session.</p>
+
+<p><code class="highlighter-rouge">switchLocalAudio(newState)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>newState</em> - the requested state of the local audio</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">hyperty</span><span class="p">.</span><span class="nx">switchLocalAudio</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</code></pre>
+</div>
+
+<h4 id="switchlocalvideo">switchLocalVideo</h4>
+
+<p>This function is used to enable/disable the local video during a running WebRTC session.</p>
+
+<p><code class="highlighter-rouge">switchLocalVideo(newState)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>newState</em> - the requested state of the local video</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">hyperty</span><span class="p">.</span><span class="nx">switchLocalVideo</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</code></pre>
+</div>
+
+<h4 id="disconnect">disconnect</h4>
+
+<p>This function is used to close an existing WebRTC connection.</p>
+
+<p><code class="highlighter-rouge">&lt;Promise&gt; disconnect()</code></p>
+
+<p><strong>returns</strong></p>
+
+<p>It returns a Promise that resolves on success or rejects, if some cleanup actions failed.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">hyperty</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">().</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+<span class="c1">// your source code</span>
+
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+<h3 id="hyperty-events">Hyperty events</h3>
+
+<h4 id="incomingcall">incomingcall</h4>
+
+<p>This event is emitted when the hyperty received an invitation and has established the synchronization path between itself and the calling hyperty.  It carries the identity of the inviting peer user as parameter.</p>
+
+<p><code class="highlighter-rouge">incomingcall(identity)</code></p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">hyperty</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'incomingcall'</span><span class="p">,</span> <span class="p">(</span><span class="nx">identity</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// display caller identity and present a modal dialog</span>
+  <span class="nx">$</span><span class="p">(</span><span class="s1">'#myModal'</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s1">'#btn-accept'</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">'click'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">hyperty</span><span class="p">.</span><span class="nx">acceptCall</span><span class="p">();</span>
+  <span class="p">});</span>
+  <span class="c1">// show notification dialog</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h4 id="localvideo">localvideo</h4>
+
+<p>This event is emitted when the hyperties has successfully invoked “getUserMedia” to receive a local A/V stream. The stream itself is provided as parameter and can be set to the corresponding video element of the user interface.</p>
+
+<p><code class="highlighter-rouge">localvideo(stream)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>stream</em> … the stream to be attached to the video element of the GUI</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">hyperty</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'localvideo'</span><span class="p">,</span> <span class="p">(</span><span class="nx">stream</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'local stream received'</span><span class="p">);</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">'localVideo'</span><span class="p">).</span><span class="nx">srcObject</span> <span class="o">=</span> <span class="nx">stream</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+<h4 id="remotevideo">remotevideo</h4>
+
+<p>This event is emitted when the hyperties has received a remotevideo event from its PeerConnection. It indicates that the connection is established successfully. The stream itself is provided as parameter and can be set to the corresponding video element of the user interface.</p>
+
+<p><code class="highlighter-rouge">remotevideo(stream)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>stream</em> … the stream to be attached to the video element of the GUI</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">hyperty</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'remotevideo'</span><span class="p">,</span> <span class="p">(</span><span class="nx">stream</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'local stream received'</span><span class="p">);</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">'remoteVideo'</span><span class="p">).</span><span class="nx">srcObject</span> <span class="o">=</span> <span class="nx">stream</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+<h4 id="ondisconnect">onDisconnect</h4>
+
+<p>This event is emitted when the connection has been closed (either from remote or local side).</p>
+
+<p><code class="highlighter-rouge">disconnected()</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">hyperty</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'disconnected'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'&gt;&gt;&gt;disconnected'</span><span class="p">);</span>
+  <span class="c1">// do cleanup work</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+
+        </div>
+        <div class="col-lg-4 col-lg-offset-1">
+            <div class="spacing"></div>
+            <h4>Project Details</h4>
+            <div class="hline"></div>
+            <p><b>Date:</b> Jan 1, 2016</p>
+            <p><b>Description:</b> Yet Another WebRTC Audio and Video</p>
+            <p><b>Author:</b> Steffen Druesdow</p>
+            <p><b>Categories:</b> webrtc</p>
+            <p><b>Tagged:</b> webrtc</p>
+            <p><b>Client:</b> reTHINK Project</p>
+            <p><b>Catalogue URL: </b> <a href="https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/DTWRTC">https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/DTWRTC</a></p>
+            <p><b>Live Demo:</b> <a href="https://rethink-dev.tlabscloud.com/">https://rethink-dev.tlabscloud.com/</a></p>
+        </div>
+    </div><! --/row -->
+</div><! --/container -->
 
 <div id="portfoliowrap">
     <div class="portfolio-centered">
-        
+        <h3>Related Works.</h3>
         <div class="recentitems portfolio">
             
                 <div class="portfolio-item graphic-design">
@@ -226,20 +473,6 @@
                               <h3 class="a1" data-animate="fadeInDown">MyBracelet Hyperty</h3>
                               <p class="a1" data-animate="fadeInDown">Monitors my Activity</p>
                                 <a href="/hyperties/MyBracelet-Hyperty/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-file"></i></a>
-                                <a href="https://rethink-project.github.io/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-cog fa-spin "></i></a>
-                            </div><!-- he bg -->
-                        </div><!-- he view -->
-                    </div><!-- he wrap -->
-                </div><!-- end col-12 -->
-            
-                <div class="portfolio-item graphic-design">
-                    <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/user-availability.jpg" alt="">
-                        <div class="he-view">
-                            <div class="bg a0" data-animate="fadeIn">
-                              <h3 class="a1" data-animate="fadeInDown">User Availability</h3>
-                              <p class="a1" data-animate="fadeInDown">User Availability to Communicate (Presence)</p>
-                                <a href="/hyperties/User-Availability-Hyperty/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-file"></i></a>
                                 <a href="https://rethink-project.github.io/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-cog fa-spin "></i></a>
                             </div><!-- he bg -->
                         </div><!-- he view -->

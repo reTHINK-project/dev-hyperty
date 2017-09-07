@@ -30,11 +30,13 @@ layout: default-rethink
             <h4>Project Details</h4>
             <div class="hline"></div>
             <p><b>Date:</b> {{ page.date | date: "%b %-d, %Y" }}</p>
+            <p><b>Description:</b> {{ page.description }}</p>
             <p><b>Author:</b> {{ page.author }}</p>
             <p><b>Categories:</b> {{ page.categories }}</p>
             <p><b>Tagged:</b> {{ page.tagged }}</p>
             <p><b>Client:</b> {{ page.client }}</p>
-            <p><b>Web Site:</b> <a href="{{ page.website }}">{{ page.website }}</a></p>
+            <p><b>Catalogue URL: </b> <a href="{{ page.catalogue }}">{{ page.catalogue }}</a></p>
+            <p><b>Live Demo:</b> <a href="{{ page.demo }}">{{ page.demo }}</a></p>
         </div>
     </div><! --/row -->
 </div><! --/container -->

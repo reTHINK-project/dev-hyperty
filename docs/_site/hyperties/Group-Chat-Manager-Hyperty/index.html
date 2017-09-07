@@ -6,10 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1">
 
-  <title>Hyperties Catalogue</title>
-  <meta name="description" content="reTHINK Framework provides the tools to build a global real-time decentralized communication infra-structure where services are inherently inter-operable.">
+  <title>Group Chat Manager</title>
+  <meta name="description" content="Group Chat Manager Hyperty">
 
-  <link rel="canonical" href="http://localhost:4000/">
+  <link rel="canonical" href="http://localhost:4000/hyperties/Group-Chat-Manager-Hyperty/">
   <link rel="alternate" type="application/rss+xml" title="Hyperties Catalogue" href="/feed.xml">
 
   <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
@@ -138,7 +138,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="block">
-                    <h1>Hyperties Catalogue</h1>
+                    <h1>Group Chat Manager</h1>
                     <p></p>
                 </div>
             </div>
@@ -146,20 +146,297 @@
     </div>
   </section>
 
-  <div class="container mtb">
+<div class="container mt">
     <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 centered">
-            <h2>Browse through existing Hyperties and learn how you can quickly use them in your Web Application.</h2>
-            <br>
-            <div class="hline"></div>
-        </div>
-    </div>
-</div><! --/container -->
 
+        <div class="col-lg-5 col-lg-offset-1">
+            <div class="spacing"></div>
+
+            <h2 id="group-chat-manager-hyperty">Group Chat Manager Hyperty</h2>
+
+<p>The Group Chat main functionality is to handle Text conversations among groups, including:</p>
+
+<ul>
+  <li>creation of a new Group Chat with possibility to invite users to join it</li>
+  <li>notification about invitation to join a Group Chat with options to accept or reject</li>
+  <li>send message to group</li>
+  <li>receive message from group with identity from sender</li>
+</ul>
+
+<p>This Hyperty handles standard <a href="https://github.com/reTHINK-project/dev-service-framework/blob/develop/docs/datamodel/data-objects/communication/readme.md">Communication Data Objects</a> constrained for Chat Communications i.e. the hypertyResource type is <code class="highlighter-rouge">chat</code>.</p>
+
+<h2 id="api">API</h2>
+
+<p>The Group Chat Hyperty implements two APIs to be consumed by Applications:</p>
+
+<ul>
+  <li>the Group Chat Manager API manages the creation of new Group Chats;</li>
+  <li>the Hyperty Group Chat API manages a certain Group CHat instance.</li>
+</ul>
+
+<h3 id="hyperty-group-chat-manager-api">Hyperty Group Chat Manager API</h3>
+
+<p>The Hyperty Group Chat Manager API is used to manage new Chat Group conversations.</p>
+
+<h4 id="create">create</h4>
+
+<p>This function is used to create a new Group Chat providing the name and the identifiers of users to be invited.</p>
+
+<p><code class="highlighter-rouge">&lt;Promise&gt; ChatController create(string name, URL.UserURL users[]?)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>name</em> - is a string to identify the Group Chat</p>
+
+<p><em>users</em> - array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL.</p>
+
+<p><strong>returns</strong></p>
+
+<p>A ChatController object as a Promise.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">chatGroupManager</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">users</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">chatController</span><span class="p">){</span>
+
+<span class="c1">// your source code</span>
+
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+<h4 id="oninvitation">onInvitation</h4>
+
+<p>This function is used to handle notifications about incoming invitations to join a Group Chat.</p>
+
+<p><code class="highlighter-rouge">onInvitation(CreateEvent invitation)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>invitation</em> - the CreateEvent fired by the Syncher when an invitaion is received</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">chatGroupManager</span><span class="p">.</span><span class="nx">onInvitation</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">){...});</span>
+</code></pre>
+</div>
+
+<h4 id="join">join</h4>
+
+<p>This function is used to join a Group Chat.</p>
+
+<p><code class="highlighter-rouge">&lt;Promise&gt; ChatController join(URL.CommunicationURL invitation.url)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>invitation.url</em> - the Communication URL of the Group Chat to join that is provided in the invitation event</p>
+
+<p><strong>returns</strong></p>
+
+<p>It returns the ChatController object as a Promise</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">chatGroupManager</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">invitation</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">chatController</span><span class="p">){</span>
+
+<span class="c1">// your source code</span>
+
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+<h3 id="chat-controller-api">Chat Controller API</h3>
+
+<p>The Chat Controller API is used to control a Group Chat  instance.</p>
+
+<h4 id="send">send</h4>
+
+<p>This function is used to send a chat message.</p>
+
+<p><code class="highlighter-rouge">&lt;Promise&gt; Communication.ChatMessage send(Communication.ChatMessage message)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>message</em> is the ChatMessage to be sent.</p>
+
+<p><strong>returns</strong></p>
+
+<p>It returns the ChatMessage child object created by the Syncher as a Promise.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">chatController</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">message</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">sentMessage</span><span class="p">){</span>
+
+<span class="c1">// your source code</span>
+
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+<h4 id="onmessage">onMessage</h4>
+
+<p>This function is used to receive new messages.</p>
+
+<p><code class="highlighter-rouge">onMessage(Communication.ChatMessage message)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>message</em> - the received message compliant with Communication.ChatMessage.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">chatController</span><span class="p">.</span><span class="nx">onMessage</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">){...});</span>
+</code></pre>
+</div>
+
+<h4 id="onclose">onClose</h4>
+
+<p>This function is used to receive requests to close the Group Chat instance.</p>
+
+<p><code class="highlighter-rouge">onClose(DeleteEvent event)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>event</em> - the DeleteEvent fired by the Syncher when the Chat is closed.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">chatController</span><span class="p">.</span><span class="nx">onClose</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">){...});</span>
+</code></pre>
+</div>
+
+<h4 id="close">close</h4>
+
+<p>This function is used to close an existing Group Chat instance. Only available to Chat Group Reporters i.e. the Hyperty instance that created the Group Chat.</p>
+
+<p><code class="highlighter-rouge">&lt;Promise&gt; boolean close()</code></p>
+
+<p><strong>returns</strong></p>
+
+<p>It returns as a Promise <code class="highlighter-rouge">true</code> if successfully closed or <code class="highlighter-rouge">false</code> otherwise.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">chatController</span><span class="p">.</span><span class="nx">close</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">closed</span><span class="p">){</span>
+
+<span class="c1">// your source code</span>
+
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+<h4 id="adduser">addUser</h4>
+
+<p>This function is used to add / invite new user on an existing Group Chat instance. Only the Reporter, i.e. the Hyperty that has created the Group Chat, is allowed to use this function.</p>
+
+<p><code class="highlighter-rouge">&lt;Promise&gt; boolean addUser(URL.UserURL user)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>user</em> - user to be invited to join the Group Chat that is identified with reTHINK User URL.</p>
+
+<p><strong>returns</strong></p>
+
+<p>It returns as a Promise <code class="highlighter-rouge">true</code> if successfully invited or <code class="highlighter-rouge">false</code> otherwise.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">chatController</span><span class="p">.</span><span class="nx">addUser</span><span class="p">(</span><span class="nx">user</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">added</span><span class="p">){</span>
+
+<span class="c1">// your source code</span>
+
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
+<h4 id="removeuser">removeUser</h4>
+
+<p>This function is used to remove a user from an existing Group Chat instance. Only the Reporter, i.e. the Hyperty that has created the Group Chat, is allowed to use this function.</p>
+
+<p><code class="highlighter-rouge">&lt;Promise&gt; boolean removeUser(URL.UserURL user)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>user</em> - user to be removed from the Group Chat that is identified with reTHINK User URL.</p>
+
+<p><strong>returns</strong></p>
+
+<p>It returns as a Promise <code class="highlighter-rouge">true</code> if successfully removed or <code class="highlighter-rouge">false</code> otherwise.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">chatController</span><span class="p">.</span><span class="nx">removeUser</span><span class="p">(</span><span class="nx">user</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">removed</span><span class="p">){</span>
+
+<span class="c1">// your source code</span>
+
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+<h2 id="descriptor">Descriptor</h2>
+
+<p>The Group Chat Hyperty descriptor is:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>"HypertyChat": {
+  "sourcePackage": {
+    "sourceCode": ""
+    "sourceCodeClassname": "HypertyChat",
+    "encoding": "base64",
+    "signature": ""
+  },
+  "hypertyType": [
+    "chat"
+  ],
+  "cguid": 10004,
+  "version": "0.1",
+  "description": "Description of HypertyChat",
+  "objectName": "HypertyChat",
+  "configuration": {},
+  "sourcePackageURL": "/sourcePackage",
+  "language": "javascript",
+  "signature": "",
+  "messageSchemas": "",
+  "dataObjects": [
+    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Communication"
+  ],
+  "accessControlPolicy": "somePolicy"
+}
+</code></pre>
+</div>
+
+<p>Since the Hyperty supports the standard communication data schema, any Catalog URL for that schema can be used.</p>
+
+
+        </div>
+        <div class="col-lg-4 col-lg-offset-1">
+            <div class="spacing"></div>
+            <h4>Project Details</h4>
+            <div class="hline"></div>
+            <p><b>Date:</b> Jan 1, 2016</p>
+            <p><b>Description:</b> </p>
+            <p><b>Author:</b> Vitor Silva</p>
+            <p><b>Categories:</b> chat</p>
+            <p><b>Tagged:</b> chat</p>
+            <p><b>Client:</b> reTHINK Project</p>
+            <p><b>Catalogue URL: </b> <a href="https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/GroupChatManager">https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/GroupChatManager</a></p>
+            <p><b>Live Demo:</b> <a href="https://rethink-project.github.io/">https://rethink-project.github.io/</a></p>
+        </div>
+    </div><! --/row -->
+</div><! --/container -->
 
 <div id="portfoliowrap">
     <div class="portfolio-centered">
-        
+        <h3>Related Works.</h3>
         <div class="recentitems portfolio">
             
                 <div class="portfolio-item graphic-design">
@@ -226,20 +503,6 @@
                               <h3 class="a1" data-animate="fadeInDown">MyBracelet Hyperty</h3>
                               <p class="a1" data-animate="fadeInDown">Monitors my Activity</p>
                                 <a href="/hyperties/MyBracelet-Hyperty/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-file"></i></a>
-                                <a href="https://rethink-project.github.io/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-cog fa-spin "></i></a>
-                            </div><!-- he bg -->
-                        </div><!-- he view -->
-                    </div><!-- he wrap -->
-                </div><!-- end col-12 -->
-            
-                <div class="portfolio-item graphic-design">
-                    <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/user-availability.jpg" alt="">
-                        <div class="he-view">
-                            <div class="bg a0" data-animate="fadeIn">
-                              <h3 class="a1" data-animate="fadeInDown">User Availability</h3>
-                              <p class="a1" data-animate="fadeInDown">User Availability to Communicate (Presence)</p>
-                                <a href="/hyperties/User-Availability-Hyperty/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-file"></i></a>
                                 <a href="https://rethink-project.github.io/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-cog fa-spin "></i></a>
                             </div><!-- he bg -->
                         </div><!-- he view -->

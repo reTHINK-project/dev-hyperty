@@ -6,10 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1">
 
-  <title>YOUR PROJECT NAME</title>
-  <meta name="description" content="####YOUR PROJECT NAME Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever...">
+  <title>MyBracelet Hyperty</title>
+  <meta name="description" content="My Bracelet Hyperty">
 
-  <link rel="canonical" href="http://localhost:4000/projects/your-project-name/">
+  <link rel="canonical" href="http://localhost:4000/hyperties/MyBracelet-Hyperty/">
   <link rel="alternate" type="application/rss+xml" title="Hyperties Catalogue" href="/feed.xml">
 
   <link rel="apple-touch-icon" sizes="57x57" href="/assets/apple-icon-57x57.png">
@@ -116,8 +116,8 @@
                   
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                  <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit" target="_blank">GitHub</a></li>
-                  <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit/releases" target="_blank">v0.6.1</a></li>
+                  <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty" target="_blank">GitHub</a></li>
+                  <li><a class="page-link" href="../specs" target="_blank">Specifications</a></li>
                 </ul>
               
             </div><!-- /.navbar-collapse -->
@@ -138,7 +138,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="block">
-                    <h1>YOUR PROJECT NAME</h1>
+                    <h1>MyBracelet Hyperty</h1>
                     <p></p>
                 </div>
             </div>
@@ -152,11 +152,128 @@
         <div class="col-lg-5 col-lg-offset-1">
             <div class="spacing"></div>
 
-            <p>####YOUR PROJECT NAME
-Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+            <h2 id="my-bracelet-hyperty">My Bracelet Hyperty</h2>
 
-<p>####Our Proposal
-It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+<p>The My Bracelet Hyperty main functionality is to collect data from an individual bracelet, publish it to a certain Context Resource URL.</p>
+
+<p>This Hyperty handles a standard <a href="https://github.com/reTHINK-project/dev-service-framework/tree/master/docs/datamodel/data-objects/context">Context Data Object</a> with:</p>
+
+<p><strong>Hyperty Resource Type</strong></p>
+
+<ul>
+  <li>HEART_RATE</li>
+  <li>USER_STEPS</li>
+  <li>SLEEP</li>
+  <li>BATTERY</li>
+</ul>
+
+<p><strong>ContextUnit</strong></p>
+
+<ul>
+  <li>beat/m: Heart rate in beats per minute</li>
+  <li>beats: Cumulative number of heart beats</li>
+  <li>steps/m: number of steps per minute</li>
+  <li>steps: Cumulative number of steps</li>
+  <li>s: amount of sleep in seconds</li>
+</ul>
+
+<p><strong>example</strong></p>
+
+<div class="language-json highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
+	</span><span class="nt">"scheme"</span><span class="p">:</span><span class="w"> </span><span class="s2">"context"</span><span class="p">,</span><span class="w">
+     </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1276020076"</span><span class="p">,</span><span class="w">
+     </span><span class="nt">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">1465070579</span><span class="p">,</span><span class="w">
+     </span><span class="nt">"values"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+				</span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user_steps"</span><span class="p">,</span><span class="w">
+				</span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Cumulative number of steps"</span><span class="p">,</span><span class="w">
+         </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="s2">"steps"</span><span class="p">,</span><span class="w">
+         </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mi">340</span><span class="w"> </span><span class="p">},</span><span class="w">
+			 </span><span class="p">{</span><span class="w">
+ 				</span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"battery"</span><span class="p">,</span><span class="w">
+				</span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"remaining battery energy level in percents"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"unit"</span><span class="p">:</span><span class="w"> </span><span class="s2">"%EL"</span><span class="p">,</span><span class="w">
+        </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.8</span><span class="w"> </span><span class="p">}</span><span class="w">
+     </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<h2 id="api">API</h2>
+
+<p>The Bracelet Hyperty an API to the Application to discover and connect to the bracelet. These functions are only required to be used once. By default, the Hyperty automatically connects and starts reading a bracelet that was connected the last time.</p>
+
+<h3 id="discover">discover</h3>
+
+<p>This function discovers available bracelets.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">Promise</span><span class="o">&gt;</span> <span class="nx">Context</span><span class="p">.</span><span class="nx">Context</span><span class="p">[]</span> <span class="nx">discover</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<p><strong>parameters</strong></p>
+
+<p>No input parameter.</p>
+
+<p><strong>returns</strong></p>
+
+<p>A list of Context objects is returned as a Promise. Each Context object contains:</p>
+
+<p>context.id : MAC Address of the device</p>
+
+<p>context.name : name of the device eg “Mi Band”</p>
+
+<p>context.description : additional information about the device (optional)</p>
+
+<h3 id="connect">connect</h3>
+
+<p>This function connects to a certain previously discovered bracelet and starts reading its sensors.</p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">Promise</span><span class="o">&gt;</span> <span class="nx">Context</span> <span class="nx">connect</span><span class="p">(</span> <span class="nx">string</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">SensorOptions</span> <span class="p">?</span><span class="nx">options</span> <span class="p">)</span>
+</code></pre>
+</div>
+
+<p><strong>parameters</strong></p>
+
+<p><em>id</em> device identity returned by the discover function ie context.id</p>
+
+<p><em>options</em> is of type SensorOptions defined in <a href="https://www.w3.org/TR/generic-sensor/#api">W3C Generic Sensor API</a> where measurement frequency is defined.</p>
+
+<p><strong>returns</strong>
+Since the Hyperty supports the standard context data schema, any Catalog URL for that schema can be used.</p>
+
+<h2 id="descriptor">Descriptor</h2>
+
+<p>The My Bracelet Hyperty descriptor is:</p>
+
+<div class="language-json highlighter-rouge"><pre class="highlight"><code><span class="s2">"Bracelet"</span><span class="err">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nt">"sourcePackage"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"sourceCode"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+    </span><span class="s2">"sourceCodeClassname"</span><span class="err">:</span><span class="w"> </span><span class="s2">"HypertyBracelet"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"encoding"</span><span class="p">:</span><span class="w"> </span><span class="s2">"base64"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"signature"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nt">"hypertyType"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="s2">"heart_rate"</span><span class="p">,</span><span class="w"> </span><span class="s2">"sleep"</span><span class="p">,</span><span class="w"> </span><span class="s2">"steps"</span><span class="p">,</span><span class="w"> </span><span class="s2">"battery"</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nt">"cguid"</span><span class="p">:</span><span class="w"> </span><span class="mi">10004</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.1"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Descriptor of Bracelet Hyperty"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"objectName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"HypertyBracelet"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"configuration"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w">
+  </span><span class="nt">"sourcePackageURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/sourcePackage"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"javascript"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"signature"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"messageSchemas"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"dataObjects"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="s2">"https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Context"</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nt">"accessControlPolicy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"somePolicy"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>Since the Hyperty supports the standard context data schema, any Catalog URL for that schema can be used.</p>
 
 
         </div>
@@ -164,12 +281,14 @@ It was popularised in the 1960s with the release of Letraset sheets containing L
             <div class="spacing"></div>
             <h4>Project Details</h4>
             <div class="hline"></div>
-            <p><b>Date:</b> Apr 25, 2014</p>
-            <p><b>Author:</b> Marcel Newman</p>
-            <p><b>Categories:</b> project</p>
-            <p><b>Tagged:</b> Flat, UI, Development</p>
-            <p><b>Client:</b> Wonder Corp.</p>
-            <p><b>Website:</b> <a href="http://blacktie.co">http://blacktie.co</a></p>
+            <p><b>Date:</b> Jun 1, 2016</p>
+            <p><b>Description:</b> Monitors my Activity</p>
+            <p><b>Author:</b> Luis Duarte</p>
+            <p><b>Categories:</b> iot</p>
+            <p><b>Tagged:</b> health</p>
+            <p><b>Client:</b> reTHINK Project</p>
+            <p><b>Catalogue URL: </b> <a href="https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/MyBracelet">https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/MyBracelet</a></p>
+            <p><b>Live Demo:</b> <a href="https://rethink-project.github.io/">https://rethink-project.github.io/</a></p>
         </div>
     </div><! --/row -->
 </div><! --/container -->
@@ -181,12 +300,13 @@ It was popularised in the 1960s with the release of Letraset sheets containing L
             
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/portfolio_10.jpg" alt="">
+                    <img src="/assets/img/project/redphone.png" alt="">
                         <div class="he-view">
                             <div class="bg a0" data-animate="fadeIn">
-                                <h3 class="a1" data-animate="fadeInDown">Connector Hyperty</h3>
-                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_10.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
-                                <a href="/projects/Connector-Hyperty/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
+                              <h3 class="a1" data-animate="fadeInDown">Connector Hyperty</h3>
+                              <p class="a1" data-animate="fadeInDown">WebRTC Audio and Video Calls</p>
+                                <a href="/hyperties/Connector-Hyperty/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-file"></i></a>
+                                <a href="https://rethink-project.github.io/hyperties/connector" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-cog fa-spin "></i></a>
                             </div><!-- he bg -->
                         </div><!-- he view -->
                     </div><!-- he wrap -->
@@ -194,12 +314,13 @@ It was popularised in the 1960s with the release of Letraset sheets containing L
             
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/portfolio_10.jpg" alt="">
+                    <img src="/assets/img/project/pinkphone.jpg" alt="">
                         <div class="he-view">
                             <div class="bg a0" data-animate="fadeIn">
-                                <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
-                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_10.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
-                                <a href="/projects/your-project-name/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
+                              <h3 class="a1" data-animate="fadeInDown">DT WebRTC Hyperty</h3>
+                              <p class="a1" data-animate="fadeInDown">Yet Another WebRTC Audio and Video</p>
+                                <a href="/hyperties/DTWRTC-Hyperty/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-file"></i></a>
+                                <a href="https://rethink-dev.tlabscloud.com/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-cog fa-spin "></i></a>
                             </div><!-- he bg -->
                         </div><!-- he view -->
                     </div><!-- he wrap -->
@@ -207,12 +328,13 @@ It was popularised in the 1960s with the release of Letraset sheets containing L
             
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/portfolio_09.jpg" alt="">
+                    <img src="/assets/img/project/messages.jpg" alt="">
                         <div class="he-view">
                             <div class="bg a0" data-animate="fadeIn">
-                                <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
-                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_09.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
-                                <a href="/projects/your-project-name/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
+                              <h3 class="a1" data-animate="fadeInDown">Group Chat Manager</h3>
+                              <p class="a1" data-animate="fadeInDown"></p>
+                                <a href="/hyperties/Group-Chat-Manager-Hyperty/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-file"></i></a>
+                                <a href="https://rethink-project.github.io/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-cog fa-spin "></i></a>
                             </div><!-- he bg -->
                         </div><!-- he view -->
                     </div><!-- he wrap -->
@@ -220,12 +342,13 @@ It was popularised in the 1960s with the release of Letraset sheets containing L
             
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/portfolio_08.jpg" alt="">
+                    <img src="/assets/img/project/whereami.jpg" alt="">
                         <div class="he-view">
                             <div class="bg a0" data-animate="fadeIn">
-                                <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
-                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_08.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
-                                <a href="/projects/your-project-name/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
+                              <h3 class="a1" data-animate="fadeInDown">Location Hyperty</h3>
+                              <p class="a1" data-animate="fadeInDown">Provides Geolocation info of the User</p>
+                                <a href="/hyperties/Location-Hyperty/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-file"></i></a>
+                                <a href="https://rethink-project.github.io/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-cog fa-spin "></i></a>
                             </div><!-- he bg -->
                         </div><!-- he view -->
                     </div><!-- he wrap -->
@@ -233,12 +356,13 @@ It was popularised in the 1960s with the release of Letraset sheets containing L
             
                 <div class="portfolio-item graphic-design">
                     <div class="he-wrap tpl6">
-                    <img src="/assets/img/project/portfolio_07.jpg" alt="">
+                    <img src="/assets/img/project/heart.jpg" alt="">
                         <div class="he-view">
                             <div class="bg a0" data-animate="fadeIn">
-                                <h3 class="a1" data-animate="fadeInDown">YOUR PROJECT NAME</h3>
-                                <a data-rel="prettyPhoto" href="/assets/img/project/portfolio_07.jpg" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-search"></i></a>
-                                <a href="/projects/your-project-name/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-link"></i></a>
+                              <h3 class="a1" data-animate="fadeInDown">MyBracelet Hyperty</h3>
+                              <p class="a1" data-animate="fadeInDown">Monitors my Activity</p>
+                                <a href="/hyperties/MyBracelet-Hyperty/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-file"></i></a>
+                                <a href="https://rethink-project.github.io/" class="dmbutton a2" data-animate="fadeInUp"><i class="fa fa-cog fa-spin "></i></a>
                             </div><!-- he bg -->
                         </div><!-- he view -->
                     </div><!-- he wrap -->

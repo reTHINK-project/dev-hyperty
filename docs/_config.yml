@@ -12,6 +12,7 @@ grant: > # this means to ignore newlines until "baseurl:"
   This project has received funding from the European
   Horizon 2020 Programme for research, technological
   development and demonstration under grant agreement n° 645342
+baseurl: "/hyperties" # the subpath of your site, e.g. /blog
 
 twitter_username: rethink_eu
 github_username:  reTHINK-project
@@ -43,9 +44,9 @@ colors:  #in hex code if not noted else
 
 # Making projects separate from posts
 collections:
-  projects:
+  hyperties:
     output: true
-    permalink: /projects/:title/
+    permalink: /hyperties/:title/
   questions:
     output: true
     permalink: /questions/:title/
