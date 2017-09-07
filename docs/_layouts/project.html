@@ -1,13 +1,23 @@
 ---
-layout: default
+layout: default-rethink
 ---
 
-{% include wrap.html %}
+<div class="row">
+  <section id="global-header">
+    <div class="">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="block">
+                    <h1>{{ page.title | escape }}</h1>
+                    <p>{{ page.subtitle | escape }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+  </section>
 
 <div class="container mt">
     <div class="row">
-
-        {% include carousel.html %}
 
         <div class="col-lg-5 col-lg-offset-1">
             <div class="spacing"></div>
@@ -28,5 +38,5 @@ layout: default
         </div>
     </div><! --/row -->
 </div><! --/container -->
-	 
+
 {% include portfolio.html title="Related Works." limit=5 %}
