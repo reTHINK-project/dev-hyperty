@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+
+  {% include head-rethink.html %}
+
+  <body>
+
+    {% include header-rethink.html %}
+
+    <div class="row">
+      <div class="main col-sm-12">
+        <main class="main-content" role="content" aria-label="Content">
+          {{ content }}
+        </main>
+      </div>
+    </div>
+    {% include footer-rethink.html %}
+    {% include js.html %}
+  </body>
+
+</html>

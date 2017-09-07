@@ -29,7 +29,7 @@ import Discovery from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
-import {divideURL} from '../utils/utils';
+import {divideURL, isLegacy} from '../utils/utils';
 
 // Internals
 import ConnectionController from './ConnectionController';
@@ -62,7 +62,7 @@ class Connector {
     _this._controllers = {};
     _this.connectionObject = connection;
 
-    let discovery = new Discovery(hypertyURL, bus);
+    let discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
     let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
 
     _this.discovery = discovery;
@@ -77,9 +77,8 @@ class Connector {
 
     syncher.onNotification((event) => {
 
-      let _this = this;
-
       console.log('On Notification: ', event);
+      console.log('This Controllers: ', _this._controllers);
 
       if (event.type === 'create') {
         console.info('------------ Acknowledges the Reporter - Create ------------ \n');
@@ -103,9 +102,9 @@ class Connector {
         if (_this._controllers) {
           Object.keys(_this._controllers).forEach((controller) => {
             _this._controllers[controller].deleteEvent = event;
-            delete _this._controllers[controller];
+            //delete _this._controllers[controller];
 
-            console.log('Controllers:', _this._controllers);
+            console.log('deleted Controllers:', _this._controllers);
           });
         }
 
@@ -115,6 +114,27 @@ class Connector {
     });
 
     _this._syncher = syncher;
+
+    let msgToInit = {
+        type: 'init', from: hypertyURL, to: 'sip://test@rethink-project.eu',
+        body: {source: hypertyURL, schema: _this._objectDescURL}
+    };
+
+    bus.postMessage(msgToInit, (reply) => {
+    });
+
+  }
+
+  // callback when connection Controllers are disconnected
+
+  _removeController(controllers, controller) {
+    let _this = this;
+
+    if (controllers) {
+        //delete controllers[controller];
+
+        console.log('[Connector] removed controller for ', controller);
+      }
   }
 
   _autoSubscribe(event) {
@@ -123,6 +143,7 @@ class Connector {
 
     console.info('---------------- Syncher Subscribe (Auto Subscribe) ---------------- \n');
     console.info('Subscribe URL Object ', event);
+
     syncher.subscribe(_this._objectDescURL, event.url).then(function(dataObjectObserver) {
       console.info('1. Return Subscribe Data Object Observer', dataObjectObserver);
       _this._controllers[event.from].dataObjectObserver = dataObjectObserver;
@@ -137,16 +158,51 @@ class Connector {
 
     console.info('---------------- Syncher Subscribe (Auto Accept) ---------------- \n');
     console.info('Subscribe URL Object ', event);
-    syncher.subscribe(_this._objectDescURL, event.url).then(function(dataObjectObserver) {
+    syncher.subscribe(_this._objectDescURL, event.url ).then(function(dataObjectObserver) {
       console.info('1. Return Subscribe Data Object Observer', dataObjectObserver);
+      let connectionController;
+      if (!event.from.includes('sip')) {
+        _this._GlobalHyperty = event.from;
+        console.log('Non Legacy ');
+        connectionController = new ConnectionController(syncher, _this._domain, _this._configuration,  _this._removeController, _this, event.from);
+        connectionController.connectionEvent = event;
+        connectionController.dataObjectObserver = dataObjectObserver;
 
-      let connectionController = new ConnectionController(syncher, _this._domain, _this._configuration);
-      connectionController.connectionEvent = event;
-      connectionController.dataObjectObserver = dataObjectObserver;
-      _this._controllers[event.from] = connectionController;
+        let identity = event.identity;
 
-      // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
-      if (_this._onInvitation) _this._onInvitation(connectionController, event.identity.userProfile);
+        let ongoingCall;
+
+        if (Object.keys(_this._controllers).length > 0) {      // check if there an ongoing call
+          ongoingCall = true;
+        }
+
+        _this._controllers[event.from] = connectionController;
+
+        if (!identity) {
+          identity = {};
+          identity.userProfile = {
+            avatar: "https://www.mybloggerguides.com/wp-content/uploads/2016/01/anonymous_avatar.png",
+            cn: 'anonymous',
+            userURL: 'anonymous',
+            username: "anonymous"
+              };
+            }
+
+        if (ongoingCall) {
+          // ongoing call lets decline we busy
+          connectionController.decline(486, 'Busy Here');
+        }
+
+        if (_this._onInvitation) {
+          // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
+         _this._onInvitation(connectionController, identity.userProfile);
+        }
+      } else {
+        _this._controllers[_this._GlobalHyperty].dataObjectObserver = dataObjectObserver;
+        connectionController = _this._controllers[_this._GlobalHyperty];
+      }
+
+
 
       console.info('------------------------ END ---------------------- \n');
     }).catch(function(reason) {
@@ -161,13 +217,12 @@ class Connector {
    * @param  {string}             name         is a string to identify the connection.
    * @return {<Promise>ConnectionController}   A ConnectionController object as a Promise.
    */
-  connect(userURL, stream, name, domain) {
+  connect(userURL, stream, name, domain, resource = ['audio', 'video']) {
     // TODO: Pass argument options as a stream, because is specific of implementation;
     // TODO: CHange the hypertyURL for a list of URLS
     let _this = this;
     let syncher = _this._syncher;
     let scheme = ['connection'];
-    let resource = ['audio', 'video'];
 
     console.log('connecting: ', userURL);
 
@@ -175,7 +230,7 @@ class Connector {
 
       let connectionController;
       let selectedHyperty;
-      console.info('------------------------ Syncher Create ---------------------- \n');
+      console.info('------------------------ Syncher Create ----------------------  \n');
 
       _this.search.myIdentity().then(function(identity) {
 
@@ -201,8 +256,9 @@ class Connector {
         _this.connectionObject.owner = _this._hypertyURL;
         _this.connectionObject.peer = selectedHyperty;
         _this.connectionObject.status = '';
+        _this._GlobalHyperty = selectedHyperty;
 
-        return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject);
+        return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject, false, false, name, {}, {resources: resource});
       })
       .catch(function(reason) {
         console.error(reason);
@@ -211,12 +267,11 @@ class Connector {
       .then(function(dataObjectReporter) {
         console.info('1. Return Create Data Object Reporter', dataObjectReporter);
 
-        connectionController = new ConnectionController(syncher, _this._domain, _this._configuration);
+        connectionController = new ConnectionController(syncher, _this._domain, _this._configuration, _this._removeController, _this, selectedHyperty);
         connectionController.mediaStream = stream;
         connectionController.dataObjectReporter = dataObjectReporter;
-
         _this._controllers[selectedHyperty] = connectionController;
-
+        console.log('CONTROLLERS:', _this._controllers);
         resolve(connectionController);
         console.info('--------------------------- END --------------------------- \n');
       })

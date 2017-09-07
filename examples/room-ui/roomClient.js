@@ -11,8 +11,8 @@ function hypertyLoaded(result) {
     hyperty.addEventListener('newRoom', (room) => {
         let appendString =
             "<tr>" +
-            "<td>" + room.data.name + "</td>" +
-            "<td><pre>" + JSON.stringify(room.data, null, 2) + "</pre></td>" +
+            "<td>" + room.name + "</td>" +
+            "<td><pre>" + JSON.stringify(room, null, 2) + "</pre></td>" +
             "</tr>";
         rooms.append(appendString);
     });

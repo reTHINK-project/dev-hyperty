@@ -1,0 +1,11 @@
+{
+  "configuration": {},
+  "constraints": {
+    "browser": true
+  },
+  "objectName": "QBWebRTC",
+  "hypertyType": ["audio", "video"],
+  "dataObjects": [
+    "https://catalogue.rethink.quobis.com/.well-known/dataschema/Connection"
+  ]
+}

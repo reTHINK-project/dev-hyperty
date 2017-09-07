@@ -19,6 +19,26 @@ export function hypertyDeployed(hyperty) {
   let script = '';
 
   switch (hyperty.name) {
+    case 'Discovery':
+      template = 'discovery/discovery';
+      script = 'discovery/dist/discovery.js';
+      break;
+
+    case 'UserAvailabilityObserver':
+      template = 'user-availability/userAvailabilityObserver';
+      script = 'user-availability/UserAvailabilityObserverDemo.js';
+      break;
+
+    case 'UserAvailabilityReporter':
+      template = 'user-availability/userAvailabilityReporter';
+      script = 'user-availability/UserAvailabilityReporterDemo.js';
+      break;
+
+    case 'QBWebRTC':
+      template = 'qbwebrtc/qbwebrtc';
+      script = 'qbwebrtc/dist/qbwebrtc.js';
+      break;
+
     case 'Connector':
       template = 'connector/Connector';
       script = 'connector/demo.js';
@@ -64,9 +84,14 @@ export function hypertyDeployed(hyperty) {
       script = 'notifications/notificationsObserver.js';
       break;
 
-    case 'Location':
+    case 'LocationReporter':
       template = 'location/location';
       script = 'location/location.js';
+      break;
+
+    case 'LocationObserver':
+      template = 'location/locationObserver';
+      script = 'location/locationObserver.js';
       break;
 
     case 'RoomClient':

@@ -32,6 +32,25 @@ class HelloWorldReporter {
 
     _this._syncher = syncher;
 
+    _this._syncher.resumeReporters({}).then((resumeReporters) => {
+
+      if (!resumeReporters) return;
+
+      // lets now observe any changes done in Hello World Object
+      console.log('[hyperty syncher resume] - dataObject', resumeReporters);
+
+      Object.values(resumeReporters).forEach((helloObjtReporter) => {
+        _this.helloObjtReporter = helloObjtReporter;
+
+        this.prepareDataObjectReporter(helloObjtReporter);
+
+        helloObjtReporter.data.hello = 'REPORTER RESUMED';
+
+        console.log(this._onReporterResume);
+        if (this._onReporterResume) this._onReporterResume(helloObjtReporter);
+      })
+
+    });
 
   }
 
@@ -46,19 +65,12 @@ class HelloWorldReporter {
 
     return new Promise(function(resolve, reject) {
 
-
-      syncher.create(_this._objectDescURL, [hypertyURL], hello).then(function(helloObjtReporter) {
+      syncher.create(_this._objectDescURL, [hypertyURL], hello, false, false, 'hello').then(function(helloObjtReporter) {
         console.info('1. Return Created Hello World Data Object Reporter', helloObjtReporter);
 
         _this.helloObjtReporter = helloObjtReporter;
 
-        helloObjtReporter.onSubscription(function(event) {
-          console.info('-------- Hello World Reporter received subscription request --------- \n');
-
-          // All subscription requested are accepted
-
-          event.accept();
-        });
+        _this.prepareDataObjectReporter(helloObjtReporter);
 
         resolve(helloObjtReporter);
 
@@ -69,6 +81,22 @@ class HelloWorldReporter {
       });
 
     });
+  }
+
+  prepareDataObjectReporter(helloObjtReporter) {
+
+    helloObjtReporter.onSubscription(function(event) {
+      console.info('-------- Hello World Reporter received subscription request --------- \n');
+
+      // All subscription requested are accepted
+
+      event.accept();
+    });
+
+    helloObjtReporter.onRead((event) => {
+      event.accept();
+    });
+
   }
 
   /**
@@ -86,6 +114,10 @@ class HelloWorldReporter {
     else {
       _this.helloObjtReporter.data.hello = "bye, bye";
       }
+  }
+
+  onReporterResume(callback) {
+    this._onReporterResume = callback;
   }
 
 

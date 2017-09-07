@@ -1,0 +1,85 @@
+<div class="card-panel teal lighten-2 white-text"></div>
+
+<div class="col s12">
+    <button class="btn waves-effect waves-light create-room-btn" type="button"><i class="material-icons left">room</i>Create Conference call</button>
+    <button class="btn waves-effect waves-light invite-participants-btn" type="button"><i class="material-icons left">call</i>Invite participant(s)</button>
+</div>
+
+<div class="modal modal-fixed-footer groupcall">
+   <div class="modal-content">
+        <div class="conference-name">
+            <h4>Name of conference Room</h4>
+            <input class="input-name" placeholder="conference name" id="name" required aria-required="true" type="text">
+        </div>
+        <div class="participants">
+            <form class="participants-form">
+            </form>
+        </div>
+        <div class="row">
+            <button class="btn waves-effect waves-light btn-add" type="submit" name="action">Add Participant<i class="material-icons right">add</i></button>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button href="#!" class="modal-action modal-close waves-effect waves-green btn-flat btn-cancel">Cancel</button>
+        <button href="#!" class="modal-action modal-close waves-effect waves-green btn-flat btn-create">Create</button>
+    </div>
+</div>
+
+<!-- Modal Structure -->
+<div class="modal modal-fixed-footer create-groupcall">
+    <section class="discover">
+      <h4>Discover Conference Servers</h4>
+      <form class="form col s12">
+        <div class="row">
+          <div class="input-field col s12">
+            <input placeholder="Conference Server ID" id="email" required aria-required="true" type="email" class="friend-email validate">
+            <label for="email" style="width: 100%;" data-error="the email format should be like user@domain.com">search by email</label>
+          </div>
+          <div class="input-field col s12">
+            <input class="input-domain" name="domain" id="domain" type="text">
+            <label for="domain">Conference Server domain</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="input-field col s8">
+            <button class="search waves-effect waves-light btn" type="submit"><i class="material-icons left">search</i>Search</button>
+          </div>
+        </div>
+      </form>
+      <div class="loader"></div>
+      <div class="col s12">
+        <ul class="collection hide">  
+          <li class="collection-header"><h4>User Hyperty</h4></li>
+        </ul>
+        <div class="input-field col s12">
+            <input class="input-roomName" name="roomName" id="roomName" type="text">
+            <label for="roomName">roomName</label>
+        </div> 
+      
+      </div>
+</section>
+</div>
+<div class="video-holder col s12 hide"  id="video-container" style="position: absolute;">
+  <video class="my-video responsive-video" muted style="right: 10px;width: 300px;left: 1090px; margin-top: 50px;" autoplay></video>
+  <div class="row my-video-buttons" style="margin-left: 5px;">
+    <button class="camera waves-effect waves-light btn" style=" padding-left: 10px; padding-right: 5px;"><i class="material-icons left" style="width: 30px;">videocam_off</i></button>
+    <button class="mute waves-effect waves-light btn" style="padding-left: 10px; padding-right: 5px;"><i class="material-icons left" style="width: 30px;">volume_off</i></button>
+    <button class="btn-floating btn-large waves-effect waves-light red darken-4"><i class="material-icons left"><p>record</p></i></button>
+    <button class="mic waves-effect waves-light btn" style=" padding-left: 10px; padding-right: 5px;"><i class="material-icons left" style="width: 30px;">mic</i></button>
+    <button class="hangout waves-effect waves-light btn" style="padding-right: 10px; padding-left: 5px;"><i class="material-icons left" style="width: 30px;">call_end</i></button>
+  </div>
+</div>
+
+<!-- Modal Structure -->
+<div class="modal modal-call">
+  <div class="modal-content">
+    <h4>Call Incoming to join room From </h4>
+    <span class="information"></span>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat btn-reject">Reject</a>
+    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat btn-accept">Accept</a>
+  </div>
+</div>

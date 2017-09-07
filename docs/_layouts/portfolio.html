@@ -1,0 +1,21 @@
+---
+layout: default-rethink
+---
+
+<div class="row">
+  <section id="global-header">
+    <div class="">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="block">
+                    <h1>{{ page.title | escape }}</h1>
+                    <p>{{ page.subtitle | escape }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+  </section>
+
+  {{ content }}
+
+{% include portfolio.html %}

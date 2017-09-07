@@ -1,0 +1,11 @@
+{
+  "configuration": {},
+  "constraints": {
+    "node": true
+  },
+  "objectName": "NodeHypertyObserver",
+  "hypertyType": ["audio", "video"],
+  "dataObjects": [
+    "https://catalogue.localhost/.well-known/dataschema/Connection"
+  ]
+}
