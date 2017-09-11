@@ -1,9 +1,10 @@
 
-import browserConfig from 'config.json';
+import browserConfig from './config.json';
+
 
 window.KJUR = {};
 
-console.info('environment config:', browserConfig);
+console.info('[hyperty-catalogue] environment config:', browserConfig);
 let rethink = browserConfig.ENVIRONMENT === 'core' || browserConfig.ENVIRONMENT === 'all' ? rethinkCore : rethinkBrowser;
 
 let domain = browserConfig.DOMAIN;
