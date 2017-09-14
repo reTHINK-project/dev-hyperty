@@ -3,24 +3,33 @@
 /* global Handlebars */
 /* global Materialize */
 
-var hyperty;
+var hypertyChat;
+var avatar = 'https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg';
 
 function hypertyLoaded(result) {
-  hyperty = result
+
+  let hypertyInfo = '<span class="white-text">' +
+                    '<b>Name:</b> ' + result.name + '</br>' +
+                    '<b>Status:</b> ' + result.status + '</br>' +
+                    '<b>HypertyURL:</b> ' + result.runtimeHypertyURL + '</br>' +
+                    '</span>';
+  $('.card-panel').html(hypertyInfo);
+
+  hypertyChat = result.instance;
+
+  hypertyChat.onInvite(prepareChat)
+
+  let messageChat = $('.chat');
+  messageChat.removeClass('hide');
+
+  let chatSection = $('.chat-section');
+  chatSection.removeClass('hide');
+
   let createBtn = $('.create-room-btn');
+  let joinBtn = $('.join-room-btn');
+
   createBtn.on('click', createRoom);
-  result.instance.onInvite(onInvitation)
 }
-
-function onInvitation(chat) {
-  console.log('On Invitation: ', chat);
-
-    identityReady(hyperty, chat.identity)
-    prepareChat(chat);
-    //processNewUser(user);
-}
-
-
 
 /*
   Create Room actions
@@ -34,6 +43,7 @@ function createRoom(event) {
 
   addParticipantBtn.on('click', addParticipantEvent);
   createRoomBtn.on('click', createRoomEvent);
+
   createRoomModal.openModal();
 }
 
@@ -67,52 +77,54 @@ function createRoomEvent(event) {
 
   let createRoomModal = $('.create-chat');
   let participantsForm = createRoomModal.find('.participants-form');
-  let serializedObject = $(participantsForm).serializeArray();
+
   let participants = [];
-
-  for(var i=0;  i<serializedObject.length; i=i+2){
-      participants.push({email: serializedObject[i].value, domain: serializedObject[i+1].value});
-  }
-
+  let serializedObject = $(participantsForm).serializeObjectArray();
 
   // Prepare the chat
   let name = createRoomModal.find('.input-name').val();
 
+  console.log(serializedObject);
+
+  if (serializedObject.hasOwnProperty('email')) {
+
+    serializedObject.email.forEach(function(value, index) {
+      participants.push({email: value, domain: serializedObject.domain[index]});
+    });
+
+  }
+
   console.log('Participants: ', participants);
 
-  hyperty.instance.create(name, participants).then(function(chatController) {
+  hypertyChat.create(name, participants).then(function(chatGroup) {
 
-    let isOwner = true;
-    identityReady(hyperty, chatController.identity)
-    prepareChat(chatController, isOwner);
-    participantsForm[0].reset();
+    prepareChat(chatGroup);
 
   }).catch(function(reason) {
     console.error(reason);
   });
 }
 
-function prepareChat(chatController, isOwner) {
+function prepareChat(chatGroup) {
+  console.log('Chat Group Controller: ', chatGroup);
 
-  console.log('Chat Group Controller: ', chatController);
-
-  chatController.onMessage(function(message) {
+  chatGroup.onMessage(function(message) {
     console.info('new message recived: ', message);
     processMessage(message);
   });
 
-  Handlebars.getTemplate('group-chat/chat-section').then(function(html) {
 
+  Handlebars.getTemplate('group-chat/chat-section').then(function(html) {
     $('.chat-section').append(html);
 
-    chatManagerReady(chatController, isOwner);
+    chatManagerReady(chatGroup);
+
 
   });
 
 }
 
-
-function chatManagerReady(chatController, isOwner) {
+function chatManagerReady(chatGroup) {
 
   let chatSection = $('.chat-section');
   let addParticipantModal = $('.add-participant');
@@ -131,18 +143,28 @@ function chatManagerReady(chatController, isOwner) {
   });
 
   messageForm.on('submit', function(event) {
-
     event.preventDefault();
 
     let object = $(this).serializeObject();
     let message = object.message;
-
-    chatController.sendMessage(message).then(function(result) {
+    let distance= object.nearest?20:undefined
+    chatGroup.sendMessage(message, distance).then(function(result) {
       console.log('message sent', result);
-      processMessage(result);
       messageForm[0].reset();
     }).catch(function(reason) {
       console.error('message error', reason);
+    });
+
+  });
+
+  btnAdd.on('click', function(event) {
+    event.preventDefault();
+
+    let emailValue = addParticipantModal.find('.input-name').val();
+    chatGroup.addParticipant(emailValue).then(function(result) {
+      console.log('hyperty', result);
+    }).catch(function(reason) {
+      console.error(reason);
     });
 
   });
@@ -153,76 +175,30 @@ function chatManagerReady(chatController, isOwner) {
 
 }
 
-function identityReady(result, identity) {
-  $('.create-room-btn').addClass('hide');
-  let $cardPanel = $('.card-panel');
-  let hypertyInfo = '<div class="row"><span class="white-text">' +
-                    '<b>Name:</b> ' + result.name + '</br>' +
-                    '<b>Status:</b> ' + result.status + '</br>' +
-                    '<b>HypertyURL:</b> ' + result.runtimeHypertyURL + '</br>' +
-                    '</span></div>';
-
-  let userInfo = '<div class="row"><span class="white-text">' +
-                 '<span class="col s2">' +
-                 '<img width="48" height="48" src="' + identity.avatar + '" alt="" class="circle">' +
-                 '</span><span class="col s10">' +
-                 '<b>Name:</b> ' + identity.cn + '</br>' +
-                 '<b>Email:</b> ' + identity.username + '</br>' +
-                 '<b>UserURL:</b> ' + identity.userURL +
-                 '</span></div>';
-
-  $cardPanel.append(userInfo);
-  $cardPanel.append(hypertyInfo);
-
-  let messageChat = $('.chat');
-  messageChat.removeClass('hide');
-
-  let chatSection = $('.chat-section');
-  chatSection.removeClass('hide');
-}
 function processMessage(message) {
 
   let chatSection = $('.chat-section');
   let messagesList = chatSection.find('.messages .collection');
-  let avatar = '';
-  let from = '';
-
-  if (message.identity) {
-    avatar = message.identity.avatar;
-    from = message.identity.cn;
-  }
 
   let list = `<li class="collection-item avatar">
     <img src="` + avatar + `" alt="" class="circle">
-    <span class="title">` + from + `</span>
+    <span class="title">` + message.identity.username + `</span>
     <p>` + message.text.replace(/\n/g, '<br>') + `</p>
   </li>`;
 
   messagesList.append(list);
 }
 
-function processNewUser(event) {
+function addParticipant(participant) {
 
-  console.log('ADD PARTICIPANT: ', event);
+  console.log('ADD PARTICIPANT: ', participant);
 
   let section = $('.conversations');
   let collection = section.find('.participant-list');
-
-  if (event.hasOwnProperty('data') && event.data) {
-
-    let users = event.data;
-
-    users.map(function(user) {
-      collection.append('<li class="chip" data-name="' + user.userURL + '"><img src="' + user.avatar + '" alt="Contact Person">' + user.cn + '<i class="material-icons close">close</i></li>');
-    });
-
-  } else {
-    let user = event;
-    console.log('Add User:', user);
-    collection.append('<li class="chip" data-name="' + user.userURL + '"><img src="' + user.avatar + '" alt="Contact Person">' + user.cn + '<i class="material-icons close">close</i></li>');
-  }
+  let collectionItem = '<li class="chip" data-name="' + participant.hypertyResource + '"><img src="' + avatar + '" alt="Contact Person">' + participant.hypertyResource + '<i class="material-icons close">close</i></li>';
 
   collection.removeClass('center-align');
+  collection.append(collectionItem);
 
   let closeBtn = collection.find('.close');
   closeBtn.on('click', function(e) {

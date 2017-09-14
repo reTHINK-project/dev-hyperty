@@ -2,7 +2,7 @@
 
 // "use strict";
 
-var hyperty;
+var hyperty
 
 function hypertyLoaded(result) {
 
@@ -27,77 +27,45 @@ function hypertyLoaded(result) {
   hello.append(sayHelloTo);
 
   $('.say-hello').on('submit', sayHello);
-
-  hyperty.onReporterResume((helloObject) => {
-    console.log('REPORTER:', helloObject);
-    resumeReporters(helloObject);
-  });
-
 }
 
-function resumeReporters(helloObject) {
-
-  console.log('AQUI:', hyperty);
-
-  prepareHyperty(helloObject);
-
-}
 
 function sayHello(event) {
 
-  event.preventDefault();
+event.preventDefault();
 
-  let toHypertyForm = $(event.currentTarget);
+let toHypertyForm = $(event.currentTarget);
 
-  let toHyperty = toHypertyForm.find('.to-hyperty-input').val();
+let toHyperty = toHypertyForm.find('.to-hyperty-input').val();
 
-  console.log(toHyperty);
+console.log(toHyperty);
 
   hyperty.hello(toHyperty).then(function(helloObject) {
-    prepareHyperty(helloObject);
+
+    console.log('helloUrl: ', helloObject);
+
+    $('.hello-panel').hide();
+
+    var helloUrl = '<p>Hello URL: '+ helloObject.url + '</p>';
+
+    let bye = $('.bye-panel');
+
+    let sayByeTo = '<button class="say-bye">Say Bye</button>';
+
+    bye.append(helloUrl);
+
+    bye.append(sayByeTo);
+
+    $('.bye-panel').on('click', sayBye);
   }).catch(function(reason) {
     console.error(reason);
   });
 
 }
 
-function prepareHyperty(helloObject) {
-
-  console.log('helloUrl: ', helloObject);
-
-  $('.hello-panel').hide();
-
-  var helloUrl = '<p>Hello URL: '+ helloObject.url + '</p>';
-
-  let bye = $('.bye-panel');
-
-  let msgPanel = $('.msg-panel');
-
-  msgPanel.append(helloUrl);
-
-  bye.removeClass('hide');
-
-  $('.say-bye').on('submit', sayBye);
-
-}
-
 function sayBye() {
 
-  event.preventDefault();
-
-  let byeForm = $(event.currentTarget);
-
-  let message = byeForm.find('.message-input').val();
-
-  hyperty.bye(message);
-
-  let msgPanel = $('.msg-panel');
-
-  msgPanel.append('Bye Msg: ', message);
-
-  let bye = $('.bye-panel');
-
-  bye.addClass('hide');
+  hyperty.bye();
 
 }
 

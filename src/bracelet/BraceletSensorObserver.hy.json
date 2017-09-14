@@ -4,12 +4,9 @@
     "heart_rate",
     "sleep"
   ],
-  "constraints": {
-    "browser": true
-  },
   "language": "javascript",
   "signature": "",
   "dataObjects": [
-    "https://catalogue.%domain%/.well-known/dataschema/Context"
+    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Context"
   ]
 }

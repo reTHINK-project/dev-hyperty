@@ -1,3 +1,6 @@
+// TODO: optimize this process
+const DOMAINS = ['hybroker.rethink.ptinovacao.pt', 'rethink.quobis.com'];
+
 class Search {
 
   constructor(discovery, identityManager) {
@@ -32,40 +35,38 @@ class Search {
    * @param  {array<URL.userURL>}  users List of UserUR, like this format user://<ipddomain>/<user-identifier>
    * @return {Promise}
    */
-  users(usersURLs, providedDomains, schemes, resources) {
+  users(usersURLs, providedDomain) {
 
-    if (!usersURLs) throw new Error('You need to provide a list of users');
-    if (!providedDomains) throw new Error('You need to provide a list of domains');
-    if (!resources) throw new Error('You need to provide a list of resources');
-    if (!schemes) throw new Error('You need to provide a list of schemes');
+    if (!usersURLs) throw new Error('You need to provide a list of');
 
     let _this = this;
 
     return new Promise(function(resolve) {
 
-      console.log('Users: ', usersURLs, usersURLs.length);
-      console.log('Domains: ', providedDomains, providedDomains.length);
+      console.log(usersURLs, usersURLs.length);
 
       if (usersURLs.length === 0) {
         console.info('Don\'t have users to discovery');
-
         resolve(usersURLs);
       } else {
+        console.log('Get all users');
         let getUsers = [];
 
-        usersURLs.forEach((userURL, index) => {
-          let currentDomain = providedDomains[index];
-          console.log('Search user ' + userURL + ' for provided domain:', currentDomain);
-          getUsers.push(_this.discovery.discoverHyperty(userURL, schemes, resources, currentDomain));
+        usersURLs.forEach((userURL) => {
+          if (providedDomain) {
+            console.log('Search for provided domain:', providedDomain);
+            getUsers.push(_this.discovery.discoverHyperty(userURL, ['context'], ['steps', 'battery'], providedDomain));
+          } else {
+            DOMAINS.forEach((domain) => {
+              getUsers.push(_this.discovery.discoverHyperty(userURL, ['context'], ['steps', 'battery'], domain));
+            });
+          }
         });
 
         console.info('Requests promises: ', getUsers);
+        Promise.all(getUsers).then((hyperties) => {
 
-        Promise.all(getUsers.map((promise) => {
-          return promise.then((hyperty) => { return hyperty; }, (error) => { return error; });
-        })).then((hyperties) => {
-
-          console.log('Hyperties', hyperties);
+          console.log('Hyperties: ', hyperties);
 
           let result = hyperties.map(function(hyperty) {
 
@@ -81,11 +82,10 @@ class Search {
           });
 
           let clean = result.filter((hyperty) => {
-            return hyperty.hasOwnProperty('hypertyID');
+            return hyperty;
           });
 
           console.info('Requests result: ', clean);
-
           resolve(clean);
 
         }).catch((reason) => {

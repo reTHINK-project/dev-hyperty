@@ -21,10 +21,10 @@ It uses the Context Data schema so it is compatible with any hyperty using the s
 Start monitoring for presence status
 
 #### Syntax
-    promise create(contacts)
+    promise create(participants)
 
 #### Params
-*contacts *
+*participants*
  List of hyperties urls to monitor.
 
 #### How to use it

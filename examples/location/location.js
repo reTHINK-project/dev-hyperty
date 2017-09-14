@@ -5,22 +5,19 @@
 
 
 function hypertyLoaded(result) {
-    console.log("hyperty loaded")
     result.instance.getCurrentPosition()
            .then((position)=>{
-                console.log("current position", position)
-               setTimeout(()=>{
-                   var map = new GMaps({
-                       el: '#map',
-                       lat: position.coords.latitude,
-                       lng: position.coords.longitude
-                   })
+                console.log(position)
+                var map = new GMaps({
+                    el: '#map',
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                })
 
-                   map.addMarker({
-                       lat: position.coords.latitude,
-                       lng: position.coords.longitude,
-                       title: 'Your position'
-                   });
-               }, 1000)
+                map.addMarker({
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude,
+                  title: 'Your position'
+                });
             })
 }

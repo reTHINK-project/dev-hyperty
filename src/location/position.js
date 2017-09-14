@@ -10,7 +10,6 @@ export default function PositionFactory(){
         id: getId(),
         type: "location",
         time: "0",
-        name: 'location',
         values: [
             {
                 name: "latitude",

@@ -12,7 +12,7 @@ function hypertyLoaded(result) {
                     '</span>';
   $('.card-panel').html(hypertyInfo);
 
-  console.log('[BraceletSensorObserver] Observer Waiting!!');
+  console.log('Observer Waiting!!');
 
   let email = $('.email-input');
   let domain = $('.domain-input');
@@ -28,13 +28,13 @@ function hypertyLoaded(result) {
     event.preventDefault();
 
     observer.discovery(email.val(), domain.val()).then(function(result) {
-      console.log('[BraceletSensorObserver] Result:', result[0]);
+      console.log('Result:', result[0]);
 
       let collection = $('.collection');
       let collectionItem;
       collection.empty();
 
-      if (result[0] && result[0].hasOwnProperty('userID')) {
+      if (result[0].hasOwnProperty('userID')) {
         collectionItem = '<li data-url="' + result[0].userID + '" class="collection-item">' +
         '<span class="title"><b>UserURL: </b>' + result[0].userID + '</span>' +
         '<a title="Subscribe to ' + result[0].userID + '" class="waves-effect waves-light btn subscribe-btn secondary-content"><i class="material-icons">import_export</i></a>' +
@@ -44,7 +44,7 @@ function hypertyLoaded(result) {
         '</p></li>';
       } else {
         collectionItem = '<li class="collection-item">' +
-        '<span class="title">' + 'Not Found' + '</span>' +
+        '<span class="title">' + result[0] + '</span>' +
         '</li>';
       }
 
@@ -53,13 +53,13 @@ function hypertyLoaded(result) {
       let subscribe = $('.subscribe-btn');
 
       subscribe.on('click', function(event) {
-        console.log('[BraceletSensorObserver] ON SUBSCRIBEE', event);
+        console.log('ON SUBSCRIBEE', event);
 
         event.preventDefault();
 
-        observer.connect(result[0].hypertyID).then(function(DataObject) {
-          console.log('[BraceletSensorObserver] Subscribed', DataObject);
-          observer.ObserveBracelet(DataObject.url).then(observerDataObject => loadChart(observerDataObject.data.values[observerDataObject.data.values.length - 1].value,observerDataObject.data.values[observerDataObject.data.values.length - 2].value));
+        observer.connect(result[0].hypertyID).then(function(urlDataObject) {
+          console.log('Subscribed', urlDataObject);
+          observer.ObserveBracelet(urlDataObject).then(observerDataObject => loadChart(observerDataObject.data.values[observerDataObject.data.values.length - 1].value,observerDataObject.data.values[observerDataObject.data.values.length - 2].value));
         });
       });
     });
@@ -90,18 +90,18 @@ function hypertyLoaded(result) {
                     stepValue.text(firstValue);
 
                     observer.onChange(function(event) {
-                      console.log('[BraceletSensorObserver] new event', event);
-                      let type = event.data.type;
-                      console.log('[BraceletSensorObserver] type', type);
+                      console.log('new event', event);
+                      let type = event.data[0].type;
+                      console.log('type', type);
                       if (type === 'battery') {
-                        batteryValue.text(event.data.value);
-                        console.log(event.data.value);
+                        batteryValue.text(event.data[0].value);
+                        console.log(event.data[0].value);
                       } else if (type === 'user_steps') {
                         let x = (new Date()).getTime();
-                        series.addPoint([x, event.data.value], true, true);
-                        console.log('[BraceletSensorObserver] series', series);
-                        stepValue.text(event.data.value);
-                        console.log(event.data.value);
+                        series.addPoint([x, event.data[0].value], true, true);
+                        console.log('series', series);
+                        stepValue.text(event.data[0].value);
+                        console.log(event.data[0].value);
                       }
                     });
                   }

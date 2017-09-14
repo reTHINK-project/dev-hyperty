@@ -1,6 +1,6 @@
 import {Syncher} from 'service-framework/dist/Syncher';
 import {divideURL} from '../utils/utils';
-import PersistenceManager from 'service-framework/dist/PersistenceManager';
+import persistenceManager from 'service-framework/dist/PersistenceManager';
 
 class BraceletSensorReporter {
 
@@ -19,7 +19,7 @@ class BraceletSensorReporter {
 
     console.log('Init BraceletSensorReporter: ', hypertyURL);
     _this._syncher = new Syncher(hypertyURL, bus, configuration);
-    _this._persistenceManager = new PersistenceManager(window.localStorage);
+    _this._persistenceManager = persistenceManager;
     console.log('PM', _this._persistenceManager);
   }
 
@@ -74,7 +74,7 @@ class BraceletSensorReporter {
   Connect(id, options) {
     let _this = this;
     return new Promise(function(resolve,reject) {
-      let data = {scheme:'context', resources: ['steps', 'battery'], id: id, time: new Date().getTime(), values: [] };
+      let data = {scheme:'context', id: id, time: new Date().getTime(), values: [] };
 
       let params =  {
         address: id
