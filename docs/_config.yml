@@ -14,7 +14,7 @@ grant: > # this means to ignore newlines until "baseurl:"
   Horizon 2020 Programme for research, technological
   development and demonstration under grant agreement n° 645342
 baseurl: "/dev-hyperty" # the subpath of your site, e.g. /blog
-url: "https://rethink-project.github.io/"
+url: "https://rethink-project.github.io"
 
 twitter_username: rethink_eu
 github_username:  reTHINK-project
