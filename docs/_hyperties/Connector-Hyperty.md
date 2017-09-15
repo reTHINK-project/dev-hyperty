@@ -19,13 +19,13 @@ Connector Hyperty
 
 The Connector Hyperty main functionality is to handle two party audio and voice conversations by using WebRTC technology. Main features:
 
-- invite user for a WebRTC audio or video call
+-- invite user for a WebRTC audio or video call
 
-- accept/reject invitation
+-- accept/reject invitation
 
-- have a cross domain video conversation with another peer eg
+-- have a cross domain video conversation with another peer eg
 
-- interoperability with SIP / IMS User Agents as well as with any reachable public E.164 enabled Mobile or Fixed phone.
+-- interoperability with SIP / IMS User Agents as well as with any reachable public E.164 enabled Mobile or Fixed phone.
 
 This Hyperty handles standard [Connection Data Objects](../specs/datamodel/data-objects/connection).
 [Live Demo Here]()*to be provided*.
@@ -34,8 +34,9 @@ This Hyperty handles standard [Connection Data Objects](../specs/datamodel/data-
 
 The Connector Hyperty implements two Hyperty APIs to be consumed by Applications:
 
-* the Hyperty Connector API manages the creation of new WebRTC connections;
-* the Hyperty ConnectionController API manages a certain WebRTC connection instance.
+-- the Hyperty Connector API manages the creation of new WebRTC connections;
+
+-- the Hyperty ConnectionController API manages a certain WebRTC connection instance.
 
 ### Hyperty Connector API
 

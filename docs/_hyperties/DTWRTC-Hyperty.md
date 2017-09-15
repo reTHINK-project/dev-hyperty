@@ -15,11 +15,11 @@ catalogue: https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/
 ---
 
 
-The DTWebRTC Hyperty provides functionalities for the establishment and handling of WebRTC A/V connections between two peers. It uses the same Data Object scheme as the [Connector Hyperty](https://github.com/reTHINK-project/dev-hyperty/tree/master/docs/connector) and is therefore interoperable with this other hyperty implementation.
+The DTWebRTC Hyperty provides functionalities for the establishment and handling of WebRTC A/V connections between two peers. It uses the same Data Object scheme as the [Connector Hyperty](../Connector-Hyperty) and is therefore interoperable with this other hyperty implementation.
 
 This Hyperty fully encapsulates the WebRTC actions including the calls to the getUserMedia-API. The application can initiate actions of the hyperty via method calls and receives events from the hyperty.
 
-This Hyperty handles standard [Connection Data Objects](https://github.com/reTHINK-project/dev-service-framework/tree/master/docs/datamodel/data-objects/connection).
+This Hyperty handles standard [Connection Data Objects](../../../specs/datamodel/data-objects/connection).
 
 
 ## API

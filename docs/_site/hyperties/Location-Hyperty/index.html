@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1">
 
   <title>Location Hyperty</title>
-  <meta name="description" content="Location Hyperty">
+  <meta name="description" content="Location is an App Hyperty which provides the location of user. In this implementation the location is obtained from the Geolocation APIexposed by the browse...">
 
   <link rel="canonical" href="http://localhost:4000/dev-hyperty/hyperties/Location-Hyperty/">
   <link rel="alternate" type="application/rss+xml" title="Hyperties Catalogue" href="/dev-hyperty/feed.xml">
@@ -157,9 +157,7 @@
         <div class="col-lg-5 col-lg-offset-1">
             <div class="spacing"></div>
 
-            <h2 id="location-hyperty">Location Hyperty</h2>
-
-<p>Location is an App Hyperty which provides the location of user. In this implementation the location is obtained from the <a href="https://dev.w3.org/geo/api/spec-source.html">Geolocation API</a>exposed by the browser.
+            <p>Location is an App Hyperty which provides the location of user. In this implementation the location is obtained from the <a href="https://dev.w3.org/geo/api/spec-source.html">Geolocation API</a>exposed by the browser.
 This hyperty has been developed as a App Hyperty. It means it is executed in the same sandbox as the main web application which uses it. However it is a candidate to become a Service Hyperty (executed in a independient web worker) in further phases of the project.</p>
 
 <p>Note: currently this Hyperty is limited to the browser runtime but it can adapted to be usablein the browser runtime as it uses the Gelocation API exposed by the browser. However it can be adapted to be used in the Node.js and Standalone runtimes.</p>
@@ -201,17 +199,11 @@ This hyperty has been developed as a App Hyperty. It means it is executed in the
 
 <p><em>subscribers</em></p>
 
-<p>List of hyperties urls. These hyperties will receive a <a href="https://github.com/reTHINK-project/dev-service-framework/blob/master/schemas/json-schema/data-objects/Context.json">context</a> data object observer invitation.</p>
+<p>List of hyperties urls. These hyperties will receive a <a href="../../specs/datamodel/data-objects/context/">context</a> data object observer invitation.</p>
 
 <h4 id="how-to-use-it-1">How to use it.</h4>
 
 <p><code class="highlighter-rouge">locationHy.startPositionBroadcast(['&lt;hyperty-runtime-url&gt;', ...])</code></p>
-
-<h2 id="framework-improvement-proposals-derived-from-hyperty-location-development">Framework improvement proposals derived from Hyperty Location development.</h2>
-
-<p>The same described by group-chat hyperty <a href="../group-chat/readme.md">here</a></p>
-
-<p>Since the Hyperty supports the standard context data schema, any Catalog URL for that schema can be used.</p>
 
 
         </div>

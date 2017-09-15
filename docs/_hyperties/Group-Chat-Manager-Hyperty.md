@@ -19,10 +19,14 @@ Group Chat Manager Hyperty
 
 The Group Chat main functionality is to handle Text conversations among groups, including:
 
-* creation of a new Group Chat with possibility to invite users to join it
-* notification about invitation to join a Group Chat with options to accept or reject
-* send message to group
-* receive message from group with identity from sender
+
+-- creation of a new Group Chat with possibility to invite users to join it.
+
+-- notification about invitation to join a Group Chat with options to accept or reject
+
+-- send message to group
+
+-- receive message from group with identity from sender
 
 This Hyperty handles standard [Communication Data Objects](https://github.com/reTHINK-project/dev-service-framework/blob/develop/docs/datamodel/data-objects/communication/readme.md) constrained for Chat Communications i.e. the hypertyResource type is `chat`.
 
@@ -32,8 +36,9 @@ This Hyperty handles standard [Communication Data Objects](https://github.com/re
 
 The Group Chat Hyperty implements two APIs to be consumed by Applications:
 
-* the Group Chat Manager API manages the creation of new Group Chats;
-* the Hyperty Group Chat API manages a certain Group CHat instance.
+1- the Group Chat Manager API manages the creation of new Group Chats;
+
+2- the Hyperty Group Chat API manages a certain Group CHat instance.
 
 
 ### Hyperty Group Chat Manager API
