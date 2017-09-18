@@ -9,55 +9,57 @@
   <link rel="canonical" href="{{ page.url | prepend: site.github.url | replace: 'http://', '//' | replace:'index.html','' | absolute_url }}">
   <link rel="alternate" type="application/rss+xml" title="{{ site.title | escape }}" href="{{ "/feed.xml" | relative_url }}">
 
-  <link rel="apple-touch-icon" sizes="57x57" href="{{ site.github.url | replace: 'http://', '//' }}/assets/img/apple-icon-57x57.png">
-  <link rel="apple-touch-icon" sizes="60x60" href="{{ site.github.url | replace: 'http://', '//' }}/assets/img/apple-icon-60x60.png">
-  <link rel="apple-touch-icon" sizes="72x72" href="{{ site.github.url | replace: 'http://', '//' }}/assets/img/apple-icon-72x72.png">
-  <link rel="apple-touch-icon" sizes="76x76" href="{{ site.github.url | replace: 'http://', '//' }}/assets/img/apple-icon-76x76.png">
-  <link rel="apple-touch-icon" sizes="114x114" href="{{ site.github.url | replace: 'http://', '//' }}/assets/img/apple-icon-114x114.png">
-  <link rel="apple-touch-icon" sizes="120x120" href="{{ site.github.url | replace: 'http://', '//' }}/assets/img/apple-icon-120x120.png">
-  <link rel="apple-touch-icon" sizes="144x144" href="{{ site.github.url | replace: 'http://', '//' }}/assets/img/apple-icon-144x144.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="{{ site.github.url | replace: 'http://', '//' }}/assets/img/apple-icon-152x152.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ site.github.url | replace: 'http://', '//' }}/assets/img/apple-icon-180x180.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="{{ site.github.url | replace: 'http://', '//' }}/assets/img/android-icon-192x192.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ site.github.url | replace: 'http://', '//' }}/assets/img/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="96x96" href="{{ site.github.url | replace: 'http://', '//' }}/assets/img/favicon-96x96.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="{{ site.github.url | replace: 'http://', '//' }}/assets/img/favicon-16x16.png">
-  <link rel="manifest" href="{{ site.github.url | replace: 'http://', '//' }}/manifest.json">
+  {{site.github.url}}
+
+  <link rel="apple-touch-icon" sizes="57x57" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/favicon-16x16.png">
+  <link rel="manifest" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/manifest.json">
   <meta name="msapplication-TileColor" content="#ffffff">
-  <meta name="msapplication-TileImage" content="{{ site.github.url | replace: 'http://', '//' }}/assets/img/ms-icon-144x144.png">
+  <meta name="msapplication-TileImage" content="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
 
   <!-- CSS -->
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="{{ site.github.url | replace: 'http://', '//' }}/assets/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="{{ site.github.url | replace: 'http://', '//' }}/assets/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/css/font-awesome.min.css" />
 
-  <link rel="stylesheet" href="{{ site.github.url | replace: 'http://', '//' }}/assets/css/airspace.css" />
-  <link rel="stylesheet" href="{{ site.github.url | replace: 'http://', '//' }}/assets/css/style.css" />
-  <link rel="stylesheet" href="{{ site.github.url | replace: 'http://', '//' }}/assets/css/ionicons.min.css" />
-  <link rel="stylesheet" href="{{ site.github.url | replace: 'http://', '//' }}/assets/css/animate.css" />
-  <link rel="stylesheet" href="{{ site.github.url | replace: 'http://', '//' }}/assets/css/responsive.css" />
-  <link rel="stylesheet" href="{{ site.github.url | replace: 'http://', '//' }}/assets/css/syntax.css" />
-  <link rel="stylesheet" href="{{ site.github.url | replace: 'http://', '//' }}/assets/css/prism.css" />
+  <link rel="stylesheet" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/css/airspace.css" />
+  <link rel="stylesheet" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/css/style.css" />
+  <link rel="stylesheet" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/css/ionicons.min.css" />
+  <link rel="stylesheet" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/css/animate.css" />
+  <link rel="stylesheet" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/css/responsive.css" />
+  <link rel="stylesheet" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/css/syntax.css" />
+  <link rel="stylesheet" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/css/prism.css" />
 
-  <link rel="stylesheet" href="{{ site.github.url | replace: 'http://', '//' }}/assets/css/rethink.css" />
-  <link rel="stylesheet" href="{{ site.github.url | replace: 'http://', '//' }}/assets/css/owl.carousel.css" />
+  <link rel="stylesheet" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/css/rethink.css" />
+  <link rel="stylesheet" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/css/owl.carousel.css" />
 
   <!-- Js-->
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-  <script src="{{ site.github.url | replace: 'http://', '//' }}/assets/js/plugins.js"></script>
-  <script src="{{ site.github.url | replace: 'http://', '//' }}/assets/js/bootstrap.min.js"></script>
-  <script src="{{ site.github.url | replace: 'http://', '//' }}/assets/js/owl.carousel.min.js"></script>
-  <script src="{{ site.github.url | replace: 'http://', '//' }}/assets/js/min/main.min.js"></script>
-  <script src="{{ site.github.url | replace: 'http://', '//' }}/assets/js/min/waypoints.min.js"></script>
-  <script src="{{ site.github.url | replace: 'http://', '//' }}/assets/js/jquery.counterup.js"></script>
-  <script src="{{ site.github.url | replace: 'http://', '//' }}/assets/js/prism.js"></script>
+  <script src="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/js/plugins.js"></script>
+  <script src="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/js/bootstrap.min.js"></script>
+  <script src="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/js/owl.carousel.min.js"></script>
+  <script src="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/js/min/main.min.js"></script>
+  <script src="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/js/min/waypoints.min.js"></script>
+  <script src="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/js/jquery.counterup.js"></script>
+  <script src="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/js/prism.js"></script>
 
-  <script src="{{ site.github.url | replace: 'http://', '//' }}/assets/js/main.js"></script>
+  <script src="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/js/main.js"></script>
 
   <!-- reTHINK Runtime-->
   <script src="https://hybroker.rethink.ptinovacao.pt/.well-known/runtime/rethink.js"></script>
-  <!-- <script src="{{ site.github.url | replace: 'http://', '//' }}/assets/js/rethink/rethink.js"></script> -->
+  <!-- <script src="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/js/rethink/rethink.js"></script> -->
 
   <!--
   /*
