@@ -10,6 +10,7 @@ const hypertyURI = (hyperty_domain, hyperty) => `hyperty-catalogue://catalogue.$
 let runtime_domain = 'hybroker.rethink.ptinovacao.pt';
 let hyperty_domain = 'hybroker.rethink.ptinovacao.pt';
 let demoTemplate = 'https://rawgit.com/reTHINK-project/dev-hyperty/master/examples/connector/Connector';
+let demoJs = 'https://rawgit.com/reTHINK-project/dev-hyperty/master/examples/connector/demo.js';
 
 let config = {
   domain: hyperty_domain,
@@ -45,7 +46,7 @@ function loadHyperty()
 {
   RUNTIME.requireHyperty(hypertyURI(hyperty_domain, 'Connector')).then((hyperty) => {
     console.log('[ConnectorDemo.loadHyperty', hyperty);
-    getTemplate(demoTemplate, 'demo.js').then(function(template) {
+    getTemplate(demoTemplate, demoJs).then(function(template) {
       let html = template();
       $('.main-content').find('.row').html(html);
 
