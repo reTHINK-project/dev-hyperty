@@ -19,6 +19,9 @@ function getUserMedia(constraints) {
 }
 
 function hypertyLoaded(result) {
+
+  $('.modal').modal();
+
   // Prepare to discover email:
   let search = result.instance.search;
   discoverEmail(search);
@@ -66,7 +69,7 @@ function inviteParticipants(event) {
 
   addParticipantBtn.on('click', addParticipantEvent);
   createRoomBtn.on('click', createRoomEvent);
-  createRoomModal.openModal();
+  createRoomModal.modal('open');
 }
 
 /*
@@ -76,7 +79,7 @@ function inviteParticipants(event) {
 function createRoom(event) {
   event.preventDefault();
   let createRoomModal = $('.create-groupcall');
-  createRoomModal.openModal();
+  createRoomModal.modal('open');
 }
 
 function createRoomEvent(event) {
@@ -206,7 +209,7 @@ function notificationHandler(controller, identity) {
         '</div>';
 
   informationHolder.html(parseInformation);
-  $('.modal-call').openModal();
+  $('.modal-call').modal('open');
 
 }
 

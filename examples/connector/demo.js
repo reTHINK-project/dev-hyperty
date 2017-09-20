@@ -22,6 +22,8 @@ function getUserMedia(constraints) {
 
 function hypertyLoaded(result) {
 
+  $('.modal').modal();
+
   // Prepare to discover email:
   var search = result.instance.search;
   discoverEmail(search);
@@ -126,7 +128,7 @@ function notificationHandler(controller, identity) {
         '</div>';
 
   informationHolder.html(parseInformation);
-  $('.modal-call').openModal();
+  $('.modal-call').modal('open');
 
 }
 
@@ -323,7 +325,7 @@ function processLocalVideo(mediaStream) {
 
 function disconnecting() {
 
-  $('.modal-call').closeModal();
+  $('.modal-call').modal('close');
   var videoHolder = $('.video-holder');
   var myVideo = videoHolder.find('.my-video');
   var video = videoHolder.find('.video');
