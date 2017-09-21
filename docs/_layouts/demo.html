@@ -56,6 +56,10 @@
         height: auto;
       }
 
+      nav ul a {
+        text-transform: uppercase;
+      }
+
       nav .nav-wrapper {
         padding: 0 20px;
         height: 102px;
@@ -115,7 +119,7 @@
                   {% endif %}
                   {% endif %}
                 {% endfor %}
-              </div>
+                </div>
               </li>
               <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit" target="_blank">GitHub</a></li>
               <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit/releases" target="_blank">v{{site.version}}</a></li>
@@ -155,21 +159,6 @@
 
 
       <section class="demo-content">
-        <div class="center-align">
-          <div class="preloader-wrapper big active">
-             <div class="spinner-layer spinner-blue-only">
-               <div class="circle-clipper left">
-                 <div class="circle"></div>
-               </div><div class="gap-patch">
-                 <div class="circle"></div>
-               </div><div class="circle-clipper right">
-                 <div class="circle"></div>
-               </div>
-             </div>
-          </div>
-        </div>
-
-
         {{ content }}
       </div>
     </div>
