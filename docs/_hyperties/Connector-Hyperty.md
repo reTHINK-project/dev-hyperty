@@ -3,7 +3,7 @@ layout: hyperty
 title:  "Connector Hyperty"
 description: "WebRTC Audio and Video Calls"
 date:   2016-01-01
-author: Micael Pedrosa
+author: Vitor Silva
 categories:
 - webrtc
 img: redphone.png
