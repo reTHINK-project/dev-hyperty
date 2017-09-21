@@ -1,0 +1,10 @@
+{
+  "configuration": {
+    "autostart": true
+  },
+  "hypertyType": [],
+  "constraints": {"browser":true},
+  "dataObjects": [
+    "https://catalogue.fokus.fraunhofer.de/.well-known/dataschema/Communication"
+  ]
+}

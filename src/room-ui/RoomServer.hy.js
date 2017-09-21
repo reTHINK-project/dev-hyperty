@@ -8,8 +8,8 @@ import roomJson from "./roomJson";
 
 var l = new Logger("ROOMUI");
 
-var url = "https://praxis:8000";
-var useExampleRoomJson = true;
+var url = "https://hotelguest.fokus.fraunhofer.de:8000";
+var useExampleRoomJson = false;
 
 class RoomServer {
 
@@ -34,15 +34,27 @@ class RoomServer {
         this.bus = bus;
         this.configuration = configuration;
 
+        // get useExampleRoomJson from configuration
+        useExampleRoomJson = configuration["useExampleRoomJson"] || useExampleRoomJson;
+
+        if (configuration["lwm2mUrl"])
+            url = configuration["lwm2mUrl"];
+
+        l.d("lwm2mUrl:", url);
+
         //setup some variables
         this.roomMap = {};
         this.lastDateMap = {};
 
+        // access control
+        this.accessMap = configuration.accessMap || {};
+        l.d("accessMap:", this.accessMap);
+
         // create Context Schema URL
-        this.contextSchemaURL = 'hyperty-catalogue://' + divideURL(hypertyURL).domain + '/.well-known/dataschema/Context';
+        this.contextSchemaURL = 'hyperty-catalogue://catalogue.' + divideURL(hypertyURL).domain + '/.well-known/dataschema/Context';
 
         // make hyperty discoverable
-        this.discovery = new Discovery(hypertyURL, bus);
+        this.discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
 
         // syncher
         this.syncher = new Syncher(hypertyURL, bus, configuration);
@@ -55,9 +67,12 @@ class RoomServer {
         // start polling
         let _this = this;
         _this.polling();
-        setInterval(function () {
-            _this.polling()
-        }, 5000);
+
+        if (!useExampleRoomJson) {
+            setInterval(function () {
+                _this.polling()
+            }, 5000);
+        }
     }
 
     /**
@@ -72,6 +87,7 @@ class RoomServer {
 
         //add listener
         this.bus.addListener(this.hypertyURL, (msg) => {
+            l.d("got a message!:", msg);
             // we are only interested in execute messages
             if (msg.type === "execute") {
                 l.d("got execute message:", msg);
@@ -205,10 +221,10 @@ class RoomServer {
 
     /**
      * Returns a list of object URLs for rooms a certain user can subscribe to
-     * @param {String} user - user identity that is associated to the requesting hyperty
+     * @param {String} token - token that is associated to the requesting hyperty
      * @returns {Array} - list of object URLs
      */
-    getRoomsForRemote(user) {
+    getRoomsForRemote(token) {
         l.d("getRoooms:", arguments);
         let urls = [];
         // iterate through rooms and extract their URLs
@@ -216,7 +232,12 @@ class RoomServer {
         let room;
         for (room in this.roomMap) {
             // TODO: check member array for having user in it
-            urls.push(this.roomMap[room].url);
+            if (this.accessMap[token] != undefined && this.accessMap[token].indexOf(room) != -1) {
+                l.d("token " + token + " has access to room " + room);
+                urls.push(this.roomMap[room].url);
+            } else {
+                l.d("token " + token + " lacks access to room " + room);
+            }
         }
         return urls;
     }
