@@ -71,6 +71,16 @@
         vertical-align: middle;
       }
 
+      .tabs .tab {
+        min-width: 300px;
+        border-right: 1px solid #000;
+      }
+
+      .hyperties-list a {
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+
     </style>
   </head>
 
@@ -92,26 +102,43 @@
             </ul>
             <ul class="side-nav" id="mobile-demo">
               <li><a class="page-link" href="{{site.url}}/specs/" target="_blank">Documentation</a></li>
-              <li><a class="page-link" href="{{site.url}}/dev-hyperty/">Hyperties</a></li>
+              <li>
+                <a class="page-link" href="{{site.url}}/dev-hyperty/">Hyperties</a>
+                {% assign demos = site.pages | where: "layout", 'demo' %}
+                <div class="collection">
+                {% for item in demos %}
+                  {% if item.page_name %}
+                  {% if page.url == item.url %}
+                    <a href="#!" class="collection-item active disabled">{{item.page_name | escape }}</a>
+                  {% else %}
+                    <a href="{{item.url | relative_url }}" class="collection-item">{{item.page_name | escape }}</a>
+                  {% endif %}
+                  {% endif %}
+                {% endfor %}
+              </div>
+              </li>
               <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit" target="_blank">GitHub</a></li>
               <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit/releases" target="_blank">v{{site.version}}</a></li>
             </ul>
           </div>
-
-          <div class="nav-content">
-            <ul class="tabs tabs-transparent">
-              <li class="tab"><a class="black-text" href="{{site.url}}/dev-hyperty/demos/group-chat-manager/">Group Chat Manager</a></li>
-              <li class="tab"><a class="black-text active" href="{{site.url}}/dev-hyperty/demos/connector/">Connector</a></li>
-              <!-- <li class="tab disabled"><a href="#test3">Disabled Tab</a></li>
-              <li class="tab"><a href="#test4">Test 4</a></li> -->
-            </ul>
-          </div>
-
         </nav>
       </div>
     </header>
 
     <div class="container">
+
+      {% assign demos = site.pages | where: "layout", 'demo' %}
+      <ul class="row hyperties-list hide-on-med-and-down">
+      {% for item in demos %}
+        {% if item.page_name %}
+        {% if page.url == item.url %}
+          <li class="col item active"><a class="waves-effect waves-light btn-flat disabled" href="#">{{item.page_name | escape }}</a></li>
+        {% else %}
+          <li class="col item"><a class="waves-effect waves-light btn" href="{{item.url | relative_url }}">{{item.page_name | escape }}</a></li>
+        {% endif %}
+        {% endif %}
+      {% endfor %}
+      </ul>
 
       <section id="global-header">
         <div class="">
@@ -127,18 +154,19 @@
       </section>
 
 
-      <section class="demo-content center-align">
-
-        <div class="preloader-wrapper big active">
-           <div class="spinner-layer spinner-blue-only">
-             <div class="circle-clipper left">
-               <div class="circle"></div>
-             </div><div class="gap-patch">
-               <div class="circle"></div>
-             </div><div class="circle-clipper right">
-               <div class="circle"></div>
+      <section class="demo-content">
+        <div class="center-align">
+          <div class="preloader-wrapper big active">
+             <div class="spinner-layer spinner-blue-only">
+               <div class="circle-clipper left">
+                 <div class="circle"></div>
+               </div><div class="gap-patch">
+                 <div class="circle"></div>
+               </div><div class="circle-clipper right">
+                 <div class="circle"></div>
+               </div>
              </div>
-           </div>
+          </div>
         </div>
 
 

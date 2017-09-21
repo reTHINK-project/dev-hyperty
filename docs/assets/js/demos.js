@@ -1,4 +1,4 @@
-function templateAreReady(path) {
+function templateAreReady(name) {
 
   // var script = document.createElement('script');
   // script.onload = function () {
@@ -12,10 +12,12 @@ function templateAreReady(path) {
 
   Handlebars.getTemplate = function(path) {
 
-   console.log('Get template: ', path);
+   console.log('Get template: ', path, name);
 
-   if (path.indexOf('group-chat-manager') != -1) {
-     path = path.replace('group-chat-manager/', 'https://rawgit.com/reTHINK-project/dev-hyperty/master/examples/group-chat-manager/');
+   if (path.indexOf(name) != -1) {
+     path = path.replace(name + '/', 'https://rawgit.com/reTHINK-project/dev-hyperty/master/examples/' + name + '/');
+   } else {
+     path = './' + path;
    }
 
    console.log('Get template: ', path);
