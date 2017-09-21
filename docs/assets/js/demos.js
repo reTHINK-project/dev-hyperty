@@ -1,14 +1,14 @@
 function templateAreReady(path) {
 
-  var script = document.createElement('script');
-  script.onload = function () {
-      //do stuff with the script
-      console.log('materialize:');
-  };
-
-  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js';
-
-  document.head.appendChild(script);
+  // var script = document.createElement('script');
+  // script.onload = function () {
+  //     //do stuff with the script
+  //     console.log('materialize:');
+  // };
+  //
+  // script.src = 'https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js';
+  //
+  // document.head.appendChild(script);
 
   Handlebars.getTemplate = function(path) {
 
