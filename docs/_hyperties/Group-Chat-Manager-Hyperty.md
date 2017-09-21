@@ -10,7 +10,7 @@ img: messages.jpg
 thumb: messages.jpg
 tagged: chat
 client: reTHINK Project
-demo: https://rethink-project.github.io/
+demo: /demos/group-chat-manager/
 catalogue: https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/GroupChatManager
 ---
 

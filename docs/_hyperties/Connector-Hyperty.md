@@ -10,7 +10,7 @@ img: redphone.png
 thumb: redphone.png
 tagged: webrtc
 client: reTHINK Project
-demo: https://rethink-project.github.io/hyperties/connector
+demo: /demos/connector/
 catalogue: https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/Connector
 ---
 

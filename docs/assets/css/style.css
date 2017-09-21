@@ -32,12 +32,3 @@
 .post-area a:hover {
   color: #0D0017;
 }
-
-.sticky-top {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-
-  z-index: 200;
-}

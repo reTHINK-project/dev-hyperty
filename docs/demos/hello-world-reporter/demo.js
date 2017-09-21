@@ -20,10 +20,11 @@ let config = {
 
 console.log('runtime config: ', config);
 
-$(document).ready(function(){
-    console.log( "ready!" );
-    loadRuntime();
-  });
+$(window).on( "load", function() {
+  console.log('ready');
+
+  loadRuntime();
+});
 
 /**
 * Function to load the Runtime

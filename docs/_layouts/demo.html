@@ -1,0 +1,46 @@
+---
+layout: default
+---
+
+<!-- Compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script> -->
+
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js"></script>
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<!-- reTHINK Runtime script -->
+<script src="https://hybroker.rethink.ptinovacao.pt/.well-known/runtime/rethink.js"></script>
+
+
+<!-- reTHINK Runtime script -->
+<script src="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/js/demos.js"></script>
+
+<section id="global-header">
+  <div class="">
+      <div class="row">
+          <div class="col-sm-12">
+              <div class="block">
+                  <h1>{{ page.title | escape }}</h1>
+                  <p>{{ page.subtitle | escape }}</p>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+
+<section class="demo-content">
+  <div class="progress">
+    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100%" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+      <span class="sr-only">loading hyperty</span>
+    </div>
+  </div>
+
+  {{ content }}
+</div>
+
+<div class="related">
+{% include portfolio.html title="Related Works." limit=5 %}
+</div>

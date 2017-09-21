@@ -1,44 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
+---
+layout: demo
+title: Welcome to WebRTRC Connector Hyperty Demo.
+---
 
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Connector</title>
-
-  <!-- Compiled and minified CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.95.3/css/materialize.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-modal/2.2.6/css/bootstrap-modal.min.css">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-  <!-- Compiled and minified JavaScript -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.95.3/js/materialize.min.js"></script>
-  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-modal/2.2.6/js/bootstrap-modal.min.js"></script>
-
-  <!-- reTHINK Runtime script -->
-  <script src="https://hybroker.rethink.ptinovacao.pt/.well-known/runtime/rethink.js"></script>
-
-  <!-- Connector Demo script -->
-<!--  <script src="https://rawgit.com/reTHINK-project/dev-hyperty/master/examples/connector/demo.js"></script> -->
-  <script src="getTemplate.js"></script>
-
-  <!-- Connector Demo script -->
-  <script src="./demo.js"></script>
- </head>
-<body>
-
-   <div class="card-panel teal lighten-2 center-align">
-    <h3>Welcome to WebRTRC Connector Hyperty Demo.</h3>
-   </div>
-   <div class="main-content container">
-     <div class="row">
-
-       <div class="section notification"></div>
-
-     </div>
-   </div>
-
-</body>
-</html>
+<!-- Connector Demo script -->
+<script src="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/demos/connector/demo.js"></script>
