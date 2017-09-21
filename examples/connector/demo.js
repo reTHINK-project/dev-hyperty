@@ -92,6 +92,7 @@ function notificationHandler(controller, identity) {
 
     controller.decline().then(function(result) {
       console.log(result);
+      disconnecting();
     }).catch(function(reason) {
       console.error(reason);
     });
@@ -143,6 +144,7 @@ function discoverEmail(search) {
 
     var collection = section.find('.collection');
     var collectionItem = '<li class="collection-item item-loader"><div class="preloader-wrapper small active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div></li>';
+    var checkBox = searchForm.find('.checkBox').prop('checked');
 
     collection.empty();
     collection.removeClass('hide');
@@ -154,7 +156,7 @@ function discoverEmail(search) {
 
     console.log('searching for: ', email, ' at domain: ', domain);
 
-    search.users([email], [domain], ['connection'], ['audio', 'video']).then(emailDiscovered).catch(emailDiscoveredError);
+    search.users([email], [domain], ['connection'], ['audio', 'video'], checkBox).then(emailDiscovered).catch(emailDiscoveredError);
 
   });
 }
@@ -179,6 +181,13 @@ function emailDiscovered(result) {
   }
 
   result.forEach((hyperty) => {
+
+    if (!hyperty.userID) {
+      hyperty.userID = hyperty.hypertyID;
+      hyperty.descriptor = 'Interworking';
+      hyperty.resources = ['audio','video'];
+      hyperty.dataSchemes = ['connection'];
+    }
 
     var itemsFound = collection.find('li[data-url="' + hyperty.userID + '"]');
     if (itemsFound.length) {
@@ -275,6 +284,7 @@ function processLocalVideo(mediaStream) {
 
 function disconnecting() {
 
+  $('.modal-call').closeModal();
   var videoHolder = $('.video-holder');
   var myVideo = videoHolder.find('.my-video');
   var video = videoHolder.find('.video');

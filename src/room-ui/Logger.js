@@ -5,6 +5,7 @@ class Logger {
     constructor(name) {
         this.prefix = name + " ";
         this.c = console;
+        this.c.debug = this.c.debug || this.c.log;
     }
 
     d(msg, ...args) {

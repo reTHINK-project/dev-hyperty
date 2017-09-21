@@ -1,6 +1,7 @@
 /* global $, Handlebars */
 
-let hyperty;
+let userStatusHy;
+
 
 function hypertyLoaded(result) {
   console.log('hypertyLoaded', result);
@@ -13,31 +14,32 @@ function hypertyLoaded(result) {
 
   $('.card-panel').html(hypertyInfo);
 
-  hyperty = result.instance;
+  userStatusHy = result.instance;
   let userDirectory = [
       ['openidtest10@gmail.com', 'localhost'],
       ['openidtest20@gmail.com', 'localhost']
   ];
 
-  let participants = [];
+  let contacts = [];
   Handlebars.getTemplate('user-status/user-card').then(function(template) {
     $.each(userDirectory, function(i, v) {
       $('.user-list').append(template({email: v[0]}));
-      participants.push({email: v[0], domain: v[1]});
+      contacts.push({email: v[0], domain: v[1]});
     });
     $('.btn-change-state').on('click', function() {
-      hyperty.setStatus($(this).attr('rel'));
+      userStatusHy.setStatus($(this).attr('rel'));
     });
-    hyperty.create(participants).then(function(res) {
+    
+    userStatusHy.create(contacts).then(function(res) {
       console.info(res);
     }).catch(function(reason) {
       console.error(reason);
     });
   });
 
-  hyperty.addEventListener('statusChange', function(event) {
-    console.log('handle statusChange event for', event);
-    let email = (typeof event !== 'undefined' && typeof event.identity !== 'undefined') ? event.identity.email : 'none';
+  userStatusHy.addEventListener('statusChange', function(event) {
+    console.debug('handle statusChange event for', event);
+    let email = (typeof event !== 'undefined' && typeof event.identity !== 'undefined') ? event.identity.userProfile.username : 'none';
     $('#user-list').children('[rel="' + email + '"]').removeClass('state-available state-unavailable state-busy state-away').addClass('state-' + event.status);
   });
 }

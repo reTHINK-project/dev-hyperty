@@ -1,0 +1,10 @@
+{
+  "configuration": {},
+  "constraints": {
+    "browser": true
+  },
+  "hypertyType": ["users"],
+  "dataObjects": [
+    "https://catalogue.localhost/.well-known/dataschema/Context"
+  ]
+}

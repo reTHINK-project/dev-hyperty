@@ -1,10 +1,10 @@
 {
   "configuration": {},
   "constraints": {
-    "browser": true
+    "browser":true,"windowSandbox":true,"mic":true,"camera":true
   },
   "hypertyType": ["audio", "video"],
   "dataObjects": [
-    "https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/dataschema/Connection"
+    "https://catalogue.%domain%/.well-known/dataschema/Connection"
   ]
 }

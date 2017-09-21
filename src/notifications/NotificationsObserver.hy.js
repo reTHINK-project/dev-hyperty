@@ -4,13 +4,14 @@ import { Syncher} from 'service-framework/dist/Syncher'
 let NotificationsObserver = {
     onNotification (callback) {
         this.syncher.onNotification((event) =>{
-            if(event.schema === this.objectDescURL){
+            if(event.schema === this.objectDescURL && event.value.resources[0]==='notification'){
                 this.syncher.subscribe(this.objectDescURL, event.url)
                     .then((dataObject) => {
                         console.log('notification received', dataObject)
                         dataObject.onAddChild((child)=>{
                             console.log('message received',child)
                             let childData = child.data?child.data:child.value
+                            childData.from = child.identity.userProfile
 
                             this.notifications.push(childData)
                             callback(this.notifications[this.notifications.length-1])
