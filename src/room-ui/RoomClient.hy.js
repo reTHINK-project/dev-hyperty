@@ -10,6 +10,7 @@ import Logger from "./Logger";
 var l = new Logger("ROOMUI");
 var roomServerIdentity = "openidtest10@gmail.com";
 
+var autostart = false;
 
 class RoomClient extends EventEmitter {
 
@@ -36,32 +37,48 @@ class RoomClient extends EventEmitter {
         this.bus = bus;
         this.configuration = configuration;
 
+        autostart = configuration["autostart"] || autostart;
+
+        // l.test(this); 
+
         // create Context Schema URL
-        this.contextSchemaURL = 'hyperty-catalogue://' + divideURL(hypertyURL).domain + '/.well-known/dataschema/Context';
+        this.contextSchemaURL = 'hyperty-catalogue://catalogue.' + divideURL(hypertyURL).domain + '/.well-known/dataschema/Context';
 
         // discovery stuff
-        this.discovery = new Discovery(hypertyURL, bus);
+        this.discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
         this.identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
 
         // Syncher
         this.syncher = new Syncher(hypertyURL, bus, configuration);
 
+        if (autostart) {
+            setTimeout(() => {
+                l.d("forcing START with usertoken");
+                this.start("usertoken");
+            }, 1000)
+        }
+    }
+
+    start(token) {
+        // this.token = configuration.token;
+        this.token = token;
+        l.d("token:", this.token);
+
         // this promise chain represents the complete setup process
         // 1. (a) discover the associated identity and (b) get the URL of the RoomServer hyperty
         // 2. get SyncObject URLs of rooms this identity is allowed to subscribe to from the RoomServer hyperty
         // 3. subscribe to those objects
-        Promise.all([this.discoverIdentity(), this.getRoomServerHypertyURL(roomServerIdentity)])
-            .then(([identity, hypertyURL]) => {
-                this.roomServerURL = hypertyURL;
-                this.identity = identity;
-                return this.requestRoomURLs(identity, hypertyURL);
-            })
-            .then((urls) => {
-                return this.subscribeToRooms(urls)
-            })
-            .then((syncRooms) => {
-                l.d("Initialization done, room SyncObjects:", syncRooms);
-            });
+        this.getRoomServerHypertyURL(roomServerIdentity).then((hypertyURL) => {
+            this.roomServerURL = hypertyURL;
+            return this.requestRoomURLs(this.token, hypertyURL);
+        }).then((urls) => {
+            return this.subscribeToRooms(urls)
+        }).then((syncRooms) => {
+            l.d("Initialization done, room SyncObjects:", syncRooms);
+        }).catch((error) => {
+            l.e(error);
+            this.trigger("error", error);
+        });
     }
 
     /**
@@ -99,22 +116,22 @@ class RoomClient extends EventEmitter {
      */
     getRoomServerHypertyURL(roomServerURL) {
         l.d("getRoomServerHypertyURL:", [roomServerURL]);
-        return this.discovery.discoverHypertiesPerUser(roomServerURL, null).then((hyperties) => {
-            //l.d("found hyperties: ", hyperties);
+        return this.discovery.discoverHyperties(roomServerURL).then((hyperties) => {
+            l.d("found hyperties: ", hyperties);
             let latestRoomServerHyperty;
             let latestDate;
             let hyperty;
             // iterate through hyperties to find most current RoomServer hyperty
             for (hyperty in hyperties) {
                 hyperty = hyperties[hyperty];
-                //l.d("checking hyperty", hyperty);
+                l.d("checking hyperty", hyperty);
                 let name = hyperty.descriptor.substring(hyperty.descriptor.lastIndexOf('/') + 1);
-                //l.d("checking name:", name);
-                if (name === "RoomServer") {
+                l.d("checking name:", name);
+                if (name === "RoomServer" || name === "RoomServerNode") {
                     let date = hyperty.startingTime;
-                    //l.d("is room server hyperty with startingTime:", date);
+                    l.d("is room server hyperty with startingTime:", date);
                     if (!latestDate || date > latestDate) {
-                        //l.d("is new latest hyperty:", date);
+                        l.d("is new latest hyperty:", date);
                         latestDate = date;
                         latestRoomServerHyperty = hyperty;
                     }
@@ -124,7 +141,7 @@ class RoomClient extends EventEmitter {
                 return latestRoomServerHyperty.hypertyID;
             } else {
                 l.e("Unable to find RoomServer hyperty!");
-                throw new Error()
+                throw new Error("Unable to find RoomServer hyperty!");
             }
         });
     }
@@ -147,13 +164,13 @@ class RoomClient extends EventEmitter {
     /**
      * Requests a list of URLs of SyncObjects representing rooms from the desired remote hyperty
      * that the given identity is allowed to monitor & control
-     * @param {string} identity - identity provided to the remote hyperty to decide which URLs it will return (access control)
+     * @param {string} token - token provided to the remote hyperty to decide which URLs it will return (access control)
      * @param {string} remoteHypertyURL - hyperty URL pointing to the remote (RoomServer) hyperty
      * @returns {Promise} - fulfills with an array of SyncObject URLs
      */
-    requestRoomURLs(identity, remoteHypertyURL) {
-        l.d("requestRoomURLs:", [identity, remoteHypertyURL]);
-        return this.executeOnRemote(remoteHypertyURL, "getRooms", [identity]);
+    requestRoomURLs(token, remoteHypertyURL) {
+        l.d("requestRoomURLs:", [token, remoteHypertyURL]);
+        return this.executeOnRemote(remoteHypertyURL, "getRooms", [token]);
     }
 
     /**
@@ -164,24 +181,27 @@ class RoomClient extends EventEmitter {
      * @returns {Promise} - fulfills with the result of the remote function call
      */
     executeOnRemote(remoteHypertyURL, method, params) {
+        l.d("PRINTING THIS:", this);
         return new Promise((resolve, reject) => {
             if (!remoteHypertyURL || !method) {
                 reject("hyperty URL (" + remoteHypertyURL + ") and method (" + method + ") are mandatory!");
                 return;
             }
-            // creat execute message
+            // create execute message
             let msg = {
                 type: 'execute', from: this.hypertyURL, to: remoteHypertyURL,
                 body: {method: method, params: params}
             };
+            // let msg = this.messageFactory.createExecuteMessageRequest(this.hypertyURL, remoteHypertyURL, method, params);
             // send message, resolve on reply
+            l.d("PRINTING THIS AGAIN:", this);
             this.bus.postMessage(msg, (reply) => {
                 l.d("got " + method + " reply!", reply);
                 if (reply.body.code == 200) {
                     let urls = reply.body.value;
                     resolve(urls);
                 } else {
-                    l.e("getRooms request rejected (" + reply.body.code + "):", reply.body.value);
+                    l.e("execute request rejected (" + reply.body.code + "):", reply.body.value);
                     reject(reply.body.value);
                 }
             });
@@ -202,17 +222,17 @@ class RoomClient extends EventEmitter {
             room.onChange('*', (event) => {
                 l.d('onChange received:', event);
                 l.d("current room state:", room);
-                this.trigger('changedRoom', room);
+                this.trigger('changedRoom', room.data);
             });
 
             // trigger the newRoom event
-            this.trigger('newRoom', room);
+            this.trigger('newRoom', room.data);
 
             // make it available for addChild test
             this.room = room;
             return room;
 
-        }).catch(function (reason) {
+        }).catch((reason) => {
             console.error(reason);
         });
     }

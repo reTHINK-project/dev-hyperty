@@ -1,7 +1,12 @@
 const NotificationsTriggerObject = {
-    _getHyFor(identities){
-        return Promise.all(identities.map((p) => {
-            return this._discoveryService.discoverHypertiesPerUser(p.email, p.domain)
+    _getHyFor(profiles){
+        return Promise.all(profiles.map((p) => {
+            console.log('notify profile', p)
+            //let user = p.userURL.substring(p.userURL.lastIndexOf('/')+1, p.userURL.length)
+            //console.log(user)
+            //let path = `user://${user.split('@')[1]}/${user.split('@')[0]}`
+            //console.log(path)
+            return this._discoveryService.discoverHyperty(p.userURL)
                 .then((hyperties)=>{
                     return Object.keys(hyperties)
                         .map((key)=>{return {key:key, descriptor:hyperties[key].descriptor, lastModified:hyperties[key].lastModified}})
@@ -15,11 +20,14 @@ const NotificationsTriggerObject = {
     trigger(recipients, notification){
         return this._getHyFor(recipients)
             .then((hypertyURLs)=>{
-                return this._syncher.create(this._objectDescURL, hypertyURLs, {})
-                    .then((reporter)=>{
+                return this._syncher.create(this._objectDescURL, hypertyURLs, {
+                    children: [],
+                    status: 'open',
+                    participants: hypertyURLs
+                }, true, false, 'NotificationReporter', {}, {resources: ['notification']}).then((reporter)=>{
                         reporter.onSubscription((event)=>event.accept())
                         setTimeout(()=>{
-                        return reporter.addChild('chatmessages', notification)
+                        return reporter.addChild('resources', notification)
                             .then((child)=>{
                                 console.log('notification sended', notification)
                                 return child

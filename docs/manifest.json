@@ -8,7 +8,7 @@
  "display": "browser",
  "icons": [
   {
-   "src": "./assets/img/img/android-icon-36x36.png",
+   "src": "./assets/img/android-icon-36x36.png",
    "sizes": "36x36",
    "type": "image\/png",
    "density": "0.75"

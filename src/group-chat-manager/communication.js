@@ -30,6 +30,19 @@ export const CommunicationStatus = {
 };
 
 export let communicationObject = {
+  startingTime: '',
+  status: '',
+  participants: {}
+};
+
+export let communicationChildren = {
+  "parent" : "communication",
+  "listener" : "resources",
+  "type" : "HypertyResource"
+};
+
+/*
+export let communicationObject = {
   id: '',
   name: '',
   owner: '',
@@ -40,3 +53,4 @@ export let communicationObject = {
   status: '',
   participants: []
 };
+*/

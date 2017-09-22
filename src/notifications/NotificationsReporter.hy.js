@@ -1,4 +1,4 @@
-import HypertyDiscovery from 'service-framework/dist/HypertyDiscovery'
+import HypertyDiscovery from 'service-framework/dist/Discovery'
 import URI from 'urijs'
 import { Syncher} from 'service-framework/dist/Syncher'
 import NotificationsTrigger from './notifications-trigger'
@@ -11,7 +11,7 @@ let NotificationsReporter = {
 
 let NotificationsReporterFactory = function(hypertyURL, bus, config){
     let uri = new URI(hypertyURL)
-    let hypertyDiscovery = new HypertyDiscovery(hypertyURL, bus)
+    let hypertyDiscovery = new HypertyDiscovery(hypertyURL, config.runtimeURL, bus)
     let syncher = new Syncher(hypertyURL, bus, config);
     let notifications = NotificationsTrigger(uri.hostname(), syncher, hypertyDiscovery)
     return Object.assign(Object.create(NotificationsReporter), {

@@ -1,0 +1,14 @@
+{
+  "configuration": {
+    "useExampleRoomJson": false,
+    "accessMap": {
+      "usertoken": ["238"],
+      "admintoken": ["237", "238"]
+    }
+  },
+  "hypertyType": [],
+  "constraints": {"node": true},
+  "dataObjects": [
+    "https://catalogue.fokus.fraunhofer.de/.well-known/dataschema/Communication"
+  ]
+}
