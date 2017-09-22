@@ -295,6 +295,30 @@ function openAudio(hyperty, domain) {
     return connector.connect(toHyperty, mediaStream, '', domain, ['audio']);
   })
   .then(function(controller) {
+
+    showVideo(controller);
+
+    processLocalVideo(localMediaStream);
+
+  }).catch(function(reason) {
+    console.error(reason);
+  });
+}
+
+function openAudio(hyperty, domain) {
+
+  console.log('connecting hyperty: ', hyperty);
+
+  var toHyperty = hyperty;
+  var localMediaStream;
+
+  var options = options || {audio: true};
+  getUserMedia(options).then(function(mediaStream) {
+    console.info('recived media stream: ', mediaStream);
+    localMediaStream = mediaStream;
+    return connector.connect(toHyperty, mediaStream, '', domain, ['audio']);
+  })
+  .then(function(controller) {
     showVideo(controller);
 
     processLocalVideo(localMediaStream);
