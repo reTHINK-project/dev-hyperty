@@ -6,11 +6,11 @@ date:   2017-02-01
 author: Paulo Chainho
 categories:
 - availability
-img: user-availability.jpg
-thumb: user-availability.jpg
+img: user-availability-reporter2.png
+thumb: user-availability-reporter2.png
 tagged: presence
 client: reTHINK Project
-demo: https://rethink-project.github.io/dev-hyperty/demos/user-availability-observer/
+demo: /demos/user-availability-observer/
 catalogue: https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/UserAvailabilityObserver
 ---
 
