@@ -131,15 +131,15 @@ The Chat Controller API is used to control a Group Chat  instance.
 
 This function is used to send a chat message.
 
-`<Promise> Communication.ChatMessage send(HypertyResource message)`
+`<Promise> DataObjectChild send(HypertyResource message)`
 
 **parameters**
 
-*message* is an [HypertyResource](../../specs/datamodel/core/hyperty-resource/readme/) of type 'chat'.
+*message* is an [HypertyResource](../../../specs/datamodel/core/hyperty-resource/readme/) of type 'chat'.
 
 **returns**
 
-It returns the ChatMessage child object created by the Syncher as a Promise.
+It returns the DataObjectChild containing the chat message HypertyResource created by the Syncher as a Promise.
 
 **How to use it**
 
@@ -168,7 +168,7 @@ This function is used to receive new messages.
 
 **parameters**
 
-*message* - is an [HypertyResource](../../specs/datamodel/core/hyperty-resource/readme/) of type 'chat'.
+*message* - is an [HypertyResource](../../../specs/datamodel/core/hyperty-resource/readme/) of type 'chat'.
 
 **How to use it**
 
