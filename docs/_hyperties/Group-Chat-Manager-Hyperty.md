@@ -83,12 +83,18 @@ This function is used to handle notifications about incoming invitations to join
 
 **parameters**
 
-*invitation* - the CreateEvent fired by the Syncher when an invitaion is received
+*invitation* - the CreateEvent fired by the Syncher when an invitaion is received. See [here](../../specs/service-framework/syncher/) documentation about Syncher CreateEvent.
 
 **How to use it**
 
 ```javascript
-chatGroupManager.onInvitation(function(event){...});
+chatGroupManager.onInvitation(function(event){
+
+  console.log('Invitation to join Chat ' + event.value.name + ' from ' + event.identity);
+  event.ack();
+  ...
+
+  });
 ```
 
 #### join
@@ -125,11 +131,11 @@ The Chat Controller API is used to control a Group Chat  instance.
 
 This function is used to send a chat message.
 
-`<Promise> Communication.ChatMessage send(Communication.ChatMessage message)`
+`<Promise> Communication.ChatMessage send(HypertyResource message)`
 
 **parameters**
 
-*message* is the ChatMessage to be sent.
+*message* is an [HypertyResource](../../specs/datamodel/core/hyperty-resource/readme/) of type 'chat'.
 
 **returns**
 
@@ -138,6 +144,12 @@ It returns the ChatMessage child object created by the Syncher as a Promise.
 **How to use it**
 
 ```javascript
+
+let message = {
+  type: 'chat',
+  content: 'Hello World'
+};
+
 chatController.send(message).then(function(sentMessage){
 
 // your source code
@@ -152,16 +164,18 @@ chatController.send(message).then(function(sentMessage){
 
 This function is used to receive new messages.
 
-`onMessage(Communication.ChatMessage message)`
+`onMessage(HypertyResource message)`
 
 **parameters**
 
-*message* - the received message compliant with Communication.ChatMessage.
+*message* - is an [HypertyResource](../../specs/datamodel/core/hyperty-resource/readme/) of type 'chat'.
 
 **How to use it**
 
 ```javascript
-chatController.onMessage(function(message){...});
+chatController.onMessage(function(message){
+  console.log('message received: ', message.content);
+  ...});
 ```
 
 #### onClose
