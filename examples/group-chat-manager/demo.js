@@ -7,6 +7,19 @@ var chatGroupManager;
 
 function hypertyLoaded(result) {
 
+  $('.modal').modal();
+  $('.modal.preview').modal({
+    complete: function() {
+      $('.modal.preview').find('.modal-content').empty();
+    }
+  });
+
+  $('.modal.download').modal({
+    complete: function() {
+      $('.modal.download').find('.modal-content').empty();
+    }
+  });
+
   // Prepare to discover email:
   var search = result.instance.search;
 
@@ -149,7 +162,7 @@ function createRoom(event) {
 
   addParticipantBtn.on('click', addParticipantEvent);
   createRoomBtn.on('click', createRoomEvent);
-  createRoomModal.openModal();
+  createRoomModal.modal('open');
   cancelRoomBtn.on('click', cancelRoomEvent);
 }
 
@@ -279,7 +292,7 @@ function joinRoom(event) {
     });
   });
 
-  joinModal.openModal();
+  joinModal.modal('open');
 
 }
 
@@ -349,6 +362,8 @@ function prepareChat(chatController, isOwner) {
     $('.join-room-btn').show();
   });
 
+  $('.modal').modal();
+
   let inviteBtn = $('.invite-btn');
   inviteBtn.on('click', function(event) {
 
@@ -404,7 +419,7 @@ function inviteParticipants(chatController, isOwner) {
 
   });
 
-  inviteModal.openModal();
+  inviteModal.modal('open');
 
 }
 

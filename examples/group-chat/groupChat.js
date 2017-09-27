@@ -6,6 +6,9 @@
 var hyperty;
 
 function hypertyLoaded(result) {
+
+ $('.modal').modal();
+
   hyperty = result
   let createBtn = $('.create-room-btn');
   createBtn.on('click', createRoom);
@@ -34,7 +37,7 @@ function createRoom(event) {
 
   addParticipantBtn.on('click', addParticipantEvent);
   createRoomBtn.on('click', createRoomEvent);
-  createRoomModal.openModal();
+  createRoomModal.modal('open');
 }
 
 function addParticipantEvent(event) {
