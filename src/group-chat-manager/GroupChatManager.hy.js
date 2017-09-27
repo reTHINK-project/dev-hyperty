@@ -255,8 +255,11 @@ class GroupChatManager {
         console.info('[GroupChatManager] Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
 
-        //let input = Object.assign({resources: ['chat']}, extra);
-        return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false, name, {}, {resources: ['chat']});
+        let input = Object.assign({resources: ['chat']}, extra);
+        delete input.name;
+
+        console.info('[GroupChatManager] input data:', input);
+        return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false, name, {}, input);
 
       }).catch((reason) => {
         console.log('[GroupChatManager] MyIdentity Error:', reason);
