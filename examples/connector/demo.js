@@ -335,7 +335,8 @@ function processVideo(event) {
 
   var videoHolder = $('.video-holder');
   var video = videoHolder.find('.video');
-  video[0].src = URL.createObjectURL(event.stream);
+  video[0].srcObject = event.stream;
+  //video[0].src = URL.createObjectURL(event.stream);
 
 }
 
@@ -344,7 +345,8 @@ function processLocalVideo(mediaStream) {
 
   var videoHolder = $('.video-holder');
   var video = videoHolder.find('.my-video');
-  video[0].src = URL.createObjectURL(mediaStream);
+  video[0].srcObject = mediaStream;
+  // video[0].src = URL.createObjectURL(mediaStream);
 }
 
 function disconnecting() {
