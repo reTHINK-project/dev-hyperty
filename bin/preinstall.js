@@ -35,7 +35,7 @@ function queue(list) {
   console.log(fileObject.dir );
 
   // install folder
-  const sp = cp.spawn('npm', ['i'], { env: process.env, cwd: mod, stdio: 'inherit'});
+  const sp = cp.spawn('npm', ['i'], { env: process.env, cwd: mod, stdio: 'inherit', shell: true});
 
   sp.on('exit', () => {
     current++;

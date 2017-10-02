@@ -5,7 +5,6 @@ import {divideURL} from '../utils/utils';
 import EventEmitter from '../utils/EventEmitter'; // for receiving
 import Search from '../utils/Search';
 import iceconfig from './stunTurnserverConfig';
-import config from '../../config.json';
 import IdentityManager from 'service-framework/dist/IdentityManager';
 
 

@@ -54,9 +54,9 @@ function hypertyReady(result, identity) {
 
   confHyperty = result.instance;
   confHyperty.onInvitation((controller, identity) => {
-    // console.debug('On Invitation: ', controller, identity); 
-      notificationHandler(controller, identity);   
-  }); 
+    // console.debug('On Invitation: ', controller, identity);
+      notificationHandler(controller, identity);
+  });
   createBtn.on('click', createRoom);
   InviteBtn.on('click', inviteParticipants);
 }
@@ -108,15 +108,15 @@ function createRoomEvent(event) {
     users = emailsObject.map((emailObject) => { return emailObject.value; });
     let domainObject = serializedObject.filter((field) => { return field.name === 'domain';});
     domains = domainObject.map((domainObject) => { return domainObject.value; });
-    console.log('users[user] is :',  users[value], domains[value], name) 
+    console.log('users[user] is :',  users[value], domains[value], name)
     search.users([users[value]], [domains[value]], ['connection'], ['audio', 'video']).then((result)=> {
       result.forEach((hyperty) => {
         if (hyperty.hasOwnProperty('userID')) {
-          console.debug('hyperty:', hyperty.userID)   
+          console.debug('hyperty:', hyperty.userID)
            confHyperty.invite(hyperty.userID, name, domains[value]);
         }
-      });    
-    }).catch(emailDiscoveredError); 
+      });
+    }).catch(emailDiscoveredError);
   }
 }
 
@@ -156,11 +156,11 @@ function notificationHandler(controller, identity) {
   // let roomID = controller._connectionEvent.value.roomName;
   let roomID = controller._dataObjectObserver.data.roomName;
   let localMediaStream;
-  
-  acceptBtn.on('click', (e) => {   
+
+  acceptBtn.on('click', (e) => {
     console.log('accepted call from', calleeInfo);
     e.preventDefault();
-  
+
     getUserMedia(options).then((mediaStream) => {
       console.info('recieved media stream: ', mediaStream);
       localMediaStream = mediaStream;
@@ -231,7 +231,7 @@ function discoverEmail(search) {
     collection.removeClass('hide');
     collection.addClass('center-align');
     collection.prepend(collectionItem);
- 
+
     console.log('searching for: ', email, ' at domain: ', domain);
     search.users([email], [domain], ['connection'], ['audio', 'video']).then(emailDiscovered).catch(emailDiscoveredError);
 

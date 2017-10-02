@@ -34,7 +34,7 @@ class HelloWorldObserver extends EventEmitter {
       _this._onNotification(event);
     });
 
-    syncher.resumeObservers({}).then((resumedObservers) => {
+    /*syncher.resumeObservers({}).then((resumedObservers) => {
 
       if (!resumedObservers) return;
       // lets now observe any changes done in Hello World Object
@@ -46,7 +46,7 @@ class HelloWorldObserver extends EventEmitter {
 
     }).catch((reason) => {
       console.log('[hyperty syncher resume] - ', reason);
-    });
+    });*/
 
     _this._syncher = syncher;
   }

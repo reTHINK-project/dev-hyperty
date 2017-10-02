@@ -43,9 +43,9 @@ import { UserInfo } from './UserInfo';
 class GroupChatManager {
 
   constructor(hypertyURL, bus, configuration) {
-    if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
-    if (!bus) throw new Error('The MiniBus is a needed parameter');
-    if (!configuration) throw new Error('The configuration is a needed parameter');
+    if (!hypertyURL) throw new Error('[GroupChatManager.constructor] The hypertyURL is a needed parameter');
+    if (!bus) throw new Error('[GroupChatManager.constructor] The MiniBus is a needed parameter');
+    if (!configuration) throw new Error('[GroupChatManager.constructor] The configuration is a needed parameter');
 
     let _this = this;
     let syncher = new Syncher(hypertyURL, bus, configuration);
@@ -73,8 +73,8 @@ class GroupChatManager {
 
     _this.communicationChildren = communicationChildren;
 
-    console.log('[GroupChatManager] Discover: ', discovery);
-    console.log('[GroupChatManager] Identity Manager : ', identityManager);
+    console.log('[GroupChatManager] Discover ', discovery);
+    console.log('[GroupChatManager] Identity Manager ', identityManager);
 
 
 
@@ -85,7 +85,7 @@ class GroupChatManager {
       if (reportersList.length  > 0) {
 
       Object.keys(reporters).forEach((dataObjectReporterURL) => {
-        console.log('[GroupChatManager].syncher.resumeReporters ', dataObjectReporterURL);
+        console.log('[GroupChatManager.resumeReporters]: ', dataObjectReporterURL);
         // create a new chatController but first get identity
         _this.search.myIdentity().then((identity) => {
           let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, identity, _this);
@@ -102,7 +102,7 @@ class GroupChatManager {
     }
 
     }).catch((reason) => {
-      console.info('Resume Reporter | ', reason);
+      console.info('[GroupChatManager.resumeReporters] ', reason);
     });
 
     syncher.resumeObservers({store: true}).then((observers) => {
@@ -255,8 +255,11 @@ class GroupChatManager {
         console.info('[GroupChatManager] Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
 
-        //let input = Object.assign({resources: ['chat']}, extra);
-        return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false, name, {}, {resources: ['chat']});
+        let input = Object.assign({resources: ['chat']}, extra);
+        delete input.name;
+
+        console.info('[GroupChatManager] input data:', input);
+        return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false, name, {}, input);
 
       }).catch((reason) => {
         console.log('[GroupChatManager] MyIdentity Error:', reason);

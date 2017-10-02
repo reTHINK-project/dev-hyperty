@@ -54,10 +54,13 @@ class ChatController {
 
   set dataObjectReporter(dataObjectReporter) {
 
-    if (!dataObjectReporter) throw new Error('The data object reporter is necessary parameter ');
+    if (!dataObjectReporter) throw new Error('[ChatController] The data object reporter is necessary parameter ');
     let _this = this;
 
     _this.controllerMode = 'reporter';
+
+    // Handler to process received files
+
 
     dataObjectReporter.onSubscription(function(event) {
 
@@ -67,12 +70,7 @@ class ChatController {
       }
     });
 
-    dataObjectReporter.onAddChild(function(child) {
-      _this.child_cseq +=1;
-      console.info('[GroupChatManager.ChatController]Reporter - Add Child:', child);
-      // dataObjectReporter.data.lastModified = new Date().toJSON();
-      if (_this._onMessage) _this._onMessage(child);
-    });
+    _this._setOnAddChildListener(dataObjectReporter);
 
     dataObjectReporter.onRead((event) => {
       event.accept();
@@ -135,11 +133,7 @@ class ChatController {
 
     });
 
-    dataObjectObserver.onAddChild(function(child) {
-      _this.child_cseq +=1;
-      console.info('[GroupChatManager.ChatController]Observer - Add Child: ', child);
-      if (_this._onMessage) _this._onMessage(child);
-    });
+    _this._setOnAddChildListener(dataObjectObserver);
 
     // let childrens = dataObjectObserver.childrens;
     // Object.keys(childrens).forEach((child) => {
@@ -156,6 +150,20 @@ class ChatController {
     let _this = this;
     return _this._dataObjectObserver;
   }
+
+  _setOnAddChildListener(dataObject) {
+
+    let _this = this;
+
+    dataObject.onAddChild(function(child) {
+      _this.child_cseq +=1;
+      console.info('[GroupChatManager.ChatController._setOnAddChildListener] new Child received: ', child);
+
+      if (_this._onMessage) _this._onMessage(child);
+    });
+
+  }
+
 
   get dataObject() {
     return this.controllerMode === 'reporter' ? this.dataObjectReporter : this.dataObjectObserver;
@@ -226,6 +234,35 @@ class ChatController {
     console.log('[GroupChatManager.ChatController.onUnsubscribe - this._onUserRemoved] ', this.onUserRemoved);
     if (this._onUserRemoved) this._onUserRemoved(participant);
   }
+
+  /**
+   * This function is used to send a file.
+   * @param  {string}     file                        Is the file to be sent.
+   * @return {Promise<Communication.ChatMessage>}        It returns the ChatMessage child object created by the Syncher as a Promise.
+   */
+  sendFile(file) {
+
+    let _this = this;
+    let mode = _this.controllerMode;
+    let dataObject = mode === 'reporter' ? _this.dataObjectReporter : _this.dataObjectObserver;
+
+    return new Promise(function(resolve, reject) {
+
+      dataObject.addHypertyResource('resources', 'file',  file).then(function(resourceFile) {
+
+          let identity = {
+              userProfile: _this.myIdentity
+          };
+          let fileSentEvt = { value : resourceFile, identity: identity, resource: resourceFile};
+          resolve(fileSentEvt);
+        });
+    }).catch(function(reason) {
+      console.error('Reason:', reason);
+      reject(reason);
+    });
+
+  }
+
   /**
    * This function is used to send a chat message.
    * @param  {string}     message                        Is the ChatMessage to be sent.

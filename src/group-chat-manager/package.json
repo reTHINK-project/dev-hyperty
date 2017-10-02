@@ -1,17 +1,15 @@
 {
-  "name": "connector",
+  "name": "group-chat-manager",
   "version": "1.0.0",
-  "description": "Hyperty to make webrtc call",
-  "main": "Connector.hy.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "vitor-t-silva@telecom.pt",
-  "license": "ISC",
+  "description": "",
+  "main": "GroupChatManager.hy.js",
   "dependencies": {
     "service-framework": "github:rethink-project/dev-service-framework#develop"
   },
-  "devDependencies": {
-    "webrtc-adapter": "^4.2.2"
-  }
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
 }
