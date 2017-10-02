@@ -758,21 +758,23 @@ function processNewUser(event) {
     user = event;
   }
   console.log('[GroupChatManager.demo.processNewUser]user', user, collection);
+  if (collection.find('[data-name="' + user.identity.userProfile.userURL + '"]').length == 0) {
+    collection.append(`
+      <li class="chip" data-name="${ user.identity.userProfile.userURL }">
+        <img src="${ user.identity.userProfile.avatar }" alt="Contact Person">${ user.identity.userProfile.cn }
+        <i class="material-icons close">close</i>
+      </li>`);
+    collection.removeClass('center-align');
 
-  collection.append(`
-    <li class="chip" data-name="${ user.identity.userProfile.userURL }">
-      <img src="${ user.identity.userProfile.avatar }" alt="Contact Person">${ user.identity.userProfile.cn }
-      <i class="material-icons close">close</i>
-    </li>`);
-  collection.removeClass('center-align');
+    let closeBtn = collection.find('.close');
+    closeBtn.on('click', function(e) {
+      e.preventDefault();
 
-  let closeBtn = collection.find('.close');
-  closeBtn.on('click', function(e) {
-    e.preventDefault();
+      let item = $(e.currentTarget).parent().attr('data-name');
+      removeParticipant(item);
+    });
+  }
 
-    let item = $(e.currentTarget).parent().attr('data-name');
-    removeParticipant(item);
-  });
 }
 
 function removeParticipant(item) {

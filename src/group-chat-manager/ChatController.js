@@ -83,9 +83,17 @@ class ChatController {
             event.accept();
           }).catch(function(reason) {
             console.error('Reason:', reason);
-            reject(reason);
+            event.reject(reason);
           });
           break;
+          case 'removeUser':
+            _this.removeUser(event.params).then(() => {
+              event.accept();
+            }).catch(function(reason) {
+              console.error('Reason:', reason);
+              event.reject(reason);
+            });
+            break;
         default: event.reject('[ChatController.onExecute] Chat method execution not accepted by Reporter');
           break;
       }
@@ -442,8 +450,13 @@ class ChatController {
         return reject('[GroupChatManager.ChatController.addUserReq] only allowed to Chat Observer');
       }
 
-        _this._dataObjectObserver.execute('addUser', [users, domains])
-        .then(() => {
+      let addUser = _this.addUser(users, domains);
+
+      if (_this._dataObjectObserver) {
+        addUser = _this._dataObjectObserver.execute('addUser', [users, domains]);
+      }
+
+      addUser.then(() => {
         console.info('[GroupChatManager.ChatController.addUserReq] Request accepted by Reporter ');
         resolve(true);
       }).catch((reason) => {
