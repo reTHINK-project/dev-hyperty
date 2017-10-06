@@ -20,6 +20,11 @@ function hypertyLoaded(result) {
     }
   });
 
+  chatGroupManager = result.instance;
+  chatGroupManager.onInvitation((event) => {
+    onInvitation(event);
+  });
+
   // Prepare to discover email:
   var search = result.instance.search;
 
@@ -52,10 +57,6 @@ function hypertyReady(result, identity) {
   /*$('.create-room-btn').hide();
   $('.join-room-btn').hide();*/
 
-  chatGroupManager = result.instance;
-  chatGroupManager.onInvitation((event) => {
-    onInvitation(event);
-  });
 
   chatGroupManager.onResumeObserver((chatControllers) => {
 
@@ -220,10 +221,14 @@ function createRoomEvent(event) {
 
   let users = [];
   let domains = [];
+  let participants = [];
 
   if (serializedObject) {
 
-    let emailsObject = serializedObject.filter((field) => { if (field.value !== '') return field.name === 'email'; });
+    let emailsObject = serializedObject.filter((field) => {
+      if (field.value !== '') return field.name === 'email';
+    });
+
     users = emailsObject.map((emailObject) => { return emailObject.value; });
     let domainObject = serializedObject.filter((field) => {
       return field.name === 'domain';
@@ -242,16 +247,23 @@ function createRoomEvent(event) {
       if (domainObject.value) { return domainObject.value; }
       //else return chatGroupManager._domain;
     });
+
+    let part;
+
+    for (part = 0; part < users.length; part ++) {
+      participants[part] = { user: users[part], domain: domains[part] };
+    }
+
   }
 
   // Prepare the chat
   let name = createRoomModal.find('.input-name').val();
 
-  console.log('Participants: ', users, ' domain: ', domains);
+  console.log('Participants: ', participants);
 
   getSectionTpl().then(() => {
-    console.log('[GroupChatManagerDemo - Create Room] - Section Template ready:', name, users);
-    return chatGroupManager.create(name, users, domains);
+    console.log('[GroupChatManagerDemo - Create Room] - Section Template ready:', name, participants);
+    return chatGroupManager.create(name, participants);
   }).then((chatController) => {
 
     let isOwner = true;
@@ -394,7 +406,9 @@ function inviteParticipants(chatController, isOwner) {
 
     if (!domain) { domain = chatController.domain; }
 
-    console.log('[GroupChatManagerDemo.inviteParticipants]: ', userID, ' @ ', domain);
+    let user = { user: userID, domain: domain };
+
+    console.log('[GroupChatManagerDemo.inviteParticipants]: ', user);
 
     /*let usersIDsParsed = [];
     if (usersIDs.includes(',')) {
@@ -410,12 +424,12 @@ function inviteParticipants(chatController, isOwner) {
       domainsParsed.push(domains);
     }*/
 
-    if (isOwner) chatController.addUser([userID], [domain]).then(function(result) {
+    if (isOwner) chatController.addUser([user]).then(function(result) {
       console.log('[GroupChatManager.demo.inviteParticipants] Invitation result: ', result);
     }).catch(function(reason) {
       console.log('Error:', reason);
     });
-    else chatController.addUserReq([userID], [domain]).then(function(result) {
+    else chatController.addUserReq([user]).then(function(result) {
       console.log('[GroupChatManager.demo.inviteParticipants] Request to Reporter result: ', result);
     }).catch(function(reason) {
       console.log('Error:', reason);

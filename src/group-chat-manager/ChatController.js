@@ -31,7 +31,7 @@ import { UserInfo } from './UserInfo';
 
 class ChatController {
 
-  constructor(syncher, discovery, domain, search, identity, manager) {
+  constructor(syncher, discovery, domain, search, identity, manager, invitationsHandler) {
 
     if (!syncher) throw Error('Syncher is a necessary dependecy');
     if (!discovery) throw Error('Discover is a necessary dependecy');
@@ -50,6 +50,8 @@ class ChatController {
     _this._manager = manager;
 
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
+
+    _this._invitationsHandler = invitationsHandler;
   }
 
   set dataObjectReporter(dataObjectReporter) {
@@ -79,7 +81,7 @@ class ChatController {
     dataObjectReporter.onExecute((event) => {
       switch (event.method) {
         case 'addUser':
-          _this.addUser(event.params[0], event.params[1]).then(() => {
+          _this.addUser(event.params[0]).then(() => {
             event.accept();
           }).catch(function(reason) {
             console.error('Reason:', reason);
@@ -372,7 +374,7 @@ class ChatController {
    * @param {URL.UserURL}  users  User to be invited to join the Group Chat that is identified with reTHINK User URL.
    * @return {Promise<boolean>}   It returns as a Promise true if successfully invited or false otherwise.
    */
-  addUser(users, domains) {
+  addUser(users) {
 
     let _this = this;
 
@@ -384,7 +386,7 @@ class ChatController {
     let notFoundElements = (element) => {
       console.log('user not found: ', element);
       return !(element instanceof String);
-    }
+    };
 
     return new Promise(function(resolve, reject) {
 
@@ -392,34 +394,62 @@ class ChatController {
         return reject('Don\'t have users to invite');
       }
 
-      console.info('[GroupChatManager.ChatController]----------------------- Inviting users -------------------- \n');
-      console.info('[GroupChatManager.ChatController]Users: ', users, '\nDomains:', domains);
-      _this.search.users(users, domains, ['comm'], ['chat'])
-      .then((hypertiesIDs) => {
+      console.info('[GroupChatManager.ChatController.addUsers ]: ', users);
 
-        if (hypertiesIDs.filter(notFoundElements).length === 0) {
-          throw 'User(s) not found';
-        }
+      /*_this.search.users(users, domains, ['comm'], ['chat'])
 
-        let selectedHyperties = hypertiesIDs.map((hyperty) => {
-          return hyperty.hypertyID;
+    .then((hypertiesIDs) => {
+
+      if (hypertiesIDs.filter(notFoundElements).length === 0) {
+        throw 'User(s) not found';
+      }
+
+      let selectedHyperties = hypertiesIDs.map((hyperty) => {
+        return hyperty.hypertyID;
+      });*/
+
+      let usersDiscovery = [];
+      let disconnected = [];
+
+      users.forEach((user) => {
+        let userDiscoveryPromise = _this.discovery.discoverHypertiesDO(user.user, ['comm'], ['chat'], user.domain);
+          usersDiscovery.push(userDiscoveryPromise);
+        });
+
+      Promise.all(usersDiscovery).then((userDiscoveryResults) => {
+        console.log('[GroupChatManager.create] Users Discovery Results->', userDiscoveryResults);
+
+        let selectedHyperties = [];
+
+         userDiscoveryResults.forEach((userDiscoveryResult) => {
+
+           userDiscoveryResult.forEach((discovered)=>{
+             if (discovered.data.status === 'live') selectedHyperties.push(discovered.data.hypertyID);
+             else disconnected.push(discovered);
+           });
+
         });
 
         console.info('[GroupChatManager.ChatController]------------------------ Syncher Create ---------------------- \n');
         console.info('[GroupChatManager.ChatController]Selected Hyperties: !!! ', selectedHyperties);
         console.info(`Have ${selectedHyperties.length} users;`);
-        console.info('[GroupChatManager] HypertiesIDs ', hypertiesIDs);
+//        console.info('[GroupChatManager] HypertiesIDs ', hypertiesIDs);
 
         let dataObject = _this.controllerMode === 'reporter' ? _this.dataObjectReporter : _this.dataObjectObserver;
+
+        if (disconnected.length > 0) _this._invitationsHandler._inviteDisconnectedHyperties(disconnected, dataObject);
+
         return dataObject.inviteObservers(selectedHyperties);
-      })
-      .then(() => {
-        console.info('[GroupChatManager.ChatController]Are invited with success ' + users.length + ' users;');
-        resolve(true);
-      }).catch((reason) => {
-        console.error('An error occurred when trying to invite users;\n', reason);
-        reject(reason);
-      });
+        })
+        .then(() => {
+          console.info('[GroupChatManager.ChatController]Are invited with success ' + users.length + ' users;');
+          resolve(true);
+
+
+        }).catch((reason) => {
+          console.error('An error occurred when trying to invite users;\n', reason);
+          reject(reason);
+        });
 
     });
 
@@ -431,7 +461,7 @@ class ChatController {
    * @param {URL.UserURL}  users  User to be invited to join the Group Chat that is identified with reTHINK User URL.
    * @return {Promise<boolean>}   It returns as a Promise true if successfully invited or false otherwise.
    */
-  addUserReq(users, domains) {
+  addUserReq(users) {
 
     let _this = this;
 
@@ -448,12 +478,11 @@ class ChatController {
       }
       if (!_this.controllerMode === 'observer') {
         return reject('[GroupChatManager.ChatController.addUserReq] only allowed to Chat Observer');
-      }
 
-      let addUser = _this.addUser(users, domains);
+      let addUser = _this.addUser(users);
 
       if (_this._dataObjectObserver) {
-        addUser = _this._dataObjectObserver.execute('addUser', [users, domains]);
+        addUser = _this._dataObjectObserver.execute('addUser', users);
       }
 
       addUser.then(() => {
@@ -463,10 +492,11 @@ class ChatController {
         console.error('[GroupChatManager.ChatController.addUserReq] Request rejected by Reporter;\n', reason);
         reject(reason);
       });
+    }
 
-    });
+  });
 
-  }
+}
 
 
   /**
