@@ -1,7 +1,7 @@
 {
   "language": "javascript",
   "signature": "",
-  "configuration": { "expires": 30 },
+  "configuration": { },
   "hypertyType": [
     "chat"
   ],

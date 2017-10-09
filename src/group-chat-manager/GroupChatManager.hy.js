@@ -253,6 +253,7 @@ class GroupChatManager {
         let usersDiscovery = [];
 
         let disconnected = [];
+        let live = {};
 
         users.forEach((user) => {
           let userDiscoveryPromise = _this.discovery.discoverHypertiesDO(user.user, ['comm'], ['chat'], user.domain);
@@ -267,8 +268,10 @@ class GroupChatManager {
            userDiscoveryResults.forEach((userDiscoveryResult) => {
 
              userDiscoveryResult.forEach((discovered)=>{
-               if (discovered.data.status === 'live') selectedHyperties.push(discovered.data.hypertyID);
-               else disconnected.push(discovered);
+               if (discovered.data.status === 'live') {
+                 selectedHyperties.push(discovered.data.hypertyID);
+                 live[discovered.data.hypertyID] = discovered;
+               } else disconnected.push(discovered);
              });
 
           });
@@ -299,8 +302,13 @@ class GroupChatManager {
 
           _this._reportersControllers[dataObjectReporter.url] = chatController;
 
+          // process invitations to handle not received invitations
+          if (dataObjectReporter.invitations.length > 0) {
+            _this._invitationsHandler.processInvitations(live, dataObjectReporter);
+          }
+
           // If any invited User is disconnected let's wait until it is connected again
-          if (disconnected.length > 0) _this._invitationsHandler._inviteDisconnectedHyperties(disconnected, dataObjectReporter);
+          if (disconnected.length > 0) _this._invitationsHandler.inviteDisconnectedHyperties(disconnected, dataObjectReporter);
 
         }).catch(function(reason) {
           reject(reason);

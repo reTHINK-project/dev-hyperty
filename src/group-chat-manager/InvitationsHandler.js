@@ -38,10 +38,16 @@ class InvitationsHandler {
     _this._hypertyURL = hypertyURL;
   }
 
-  _inviteDisconnectedHyperties(disconnected, dataObjectReporter) {
+  /**
+   * This function is used to handle notifications for disconnected Hy+erties.
+   * @param  {DiscoveredObject[]}    disconnected  array of discovered hyperties that are disconnected
+   * @param  {DataObjectReporter}    DataObjectReporter   Data Object Reporter addressed by invitations
+   */
+
+  inviteDisconnectedHyperties(disconnected, dataObjectReporter) {
 
     let _this = this;
-    console.log('[GroupChatManager.InvitationsHandler._invitePreviouslyDisconnectedHyperties] lets invite ', disconnected);
+    console.log('[GroupChatManager.InvitationsHandler.invitePreviouslyDisconnectedHyperties] lets invite ', disconnected);
 
     disconnected.forEach((disconnectedHyperty)=>{
       disconnectedHyperty.onLive(_this._hypertyURL,()=>{
@@ -53,6 +59,27 @@ class InvitationsHandler {
 
       });
 
+    });
+
+  }
+
+  /**
+   * This function is used to process sent invitations. In case invitations are not acknowledge by recipient it will be handled as a disconnected hyperty
+   * @param  {DiscoveredObject[]}    live  array of discovered hyperties that are or were live
+   * @param  {DataObjectReporter}    DataObjectReporter   Data Object Reporter addressed by invitations
+   */
+
+  processInvitations(live, dataObjectReporter) {
+    let _this = this;
+
+    let invitations = dataObjectReporter.invitations;
+
+    console.log('[GroupChatManager.InvitationsHandler.processInvitations] waiting for replies ', invitations);
+
+    invitations.forEach((invitation) => {
+      invitation.then(console.log).catch((result)=>{
+        _this.inviteDisconnectedHyperties([live[result.invited]], dataObjectReporter);
+      });
     });
 
   }

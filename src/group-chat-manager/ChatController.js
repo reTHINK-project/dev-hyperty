@@ -410,6 +410,7 @@ class ChatController {
 
       let usersDiscovery = [];
       let disconnected = [];
+      let live = {};
 
       users.forEach((user) => {
         let userDiscoveryPromise = _this.discovery.discoverHypertiesDO(user.user, ['comm'], ['chat'], user.domain);
@@ -424,7 +425,10 @@ class ChatController {
          userDiscoveryResults.forEach((userDiscoveryResult) => {
 
            userDiscoveryResult.forEach((discovered)=>{
-             if (discovered.data.status === 'live') selectedHyperties.push(discovered.data.hypertyID);
+             if (discovered.data.status === 'live'){
+               selectedHyperties.push(discovered.data.hypertyID);
+               live[discovered.data.hypertyID] = discovered;
+             }
              else disconnected.push(discovered);
            });
 
@@ -437,13 +441,19 @@ class ChatController {
 
         let dataObject = _this.controllerMode === 'reporter' ? _this.dataObjectReporter : _this.dataObjectObserver;
 
-        if (disconnected.length > 0) _this._invitationsHandler._inviteDisconnectedHyperties(disconnected, dataObject);
+        if (disconnected.length > 0) _this._invitationsHandler.inviteDisconnectedHyperties(disconnected, dataObject);
 
-        return dataObject.inviteObservers(selectedHyperties);
+        dataObject.inviteObservers(selectedHyperties);
+
+        if (dataObject.invitations.length > 0) _this._invitationsHandler.processInvitations(live, dataObject);
+
+        return;
+
         })
         .then(() => {
           console.info('[GroupChatManager.ChatController]Are invited with success ' + users.length + ' users;');
           resolve(true);
+
 
 
         }).catch((reason) => {
