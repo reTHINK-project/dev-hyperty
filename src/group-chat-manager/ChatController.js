@@ -52,6 +52,8 @@ class ChatController {
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
 
     _this._invitationsHandler = invitationsHandler;
+
+
   }
 
   set dataObjectReporter(dataObjectReporter) {
@@ -102,6 +104,7 @@ class ChatController {
     });
 
     _this._dataObjectReporter = dataObjectReporter;
+
   }
 
   get dataObjectReporter() {
@@ -182,6 +185,8 @@ class ChatController {
     let _this = this;
     return _this._closeEvent;
   }
+
+
 
   _onSubscribe(event) {
 
@@ -418,7 +423,7 @@ class ChatController {
         });
 
       Promise.all(usersDiscovery).then((userDiscoveryResults) => {
-        console.log('[GroupChatManager.create] Users Discovery Results->', userDiscoveryResults);
+        console.log('[GroupChatManager.ChatController.addUsers] Users Discovery Results->', userDiscoveryResults);
 
         let selectedHyperties = [];
 
@@ -541,13 +546,16 @@ class ChatController {
     return new Promise(function(resolve, reject) {
 
       if (_this.controllerMode === 'reporter') {
-        try {
-          delete _this._manager._reportersControllers[_this.dataObjectReporter.url];
-          _this.dataObjectReporter.delete();
-          resolve(true);
-        } catch (e) {
-          reject(false);
-        }
+          _this._invitationsHandler.cleanInvitations(_this.dataObjectReporter).then(() => {
+            try {
+              delete _this._manager._reportersControllers[_this.dataObjectReporter.url];
+              _this.dataObjectReporter.delete();
+              resolve(true);
+              } catch (e) {
+                reject(false);
+              }
+          });
+
       } else {
         try {
           delete _this._manager._observersControllers[_this.dataObjectObserver.url];

@@ -79,8 +79,6 @@ class GroupChatManager {
     console.log('[GroupChatManager] Discover ', discovery);
     console.log('[GroupChatManager] Identity Manager ', identityManager);
 
-
-
     syncher.resumeReporters({store: true}).then((reporters) => {
 
       let reportersList = Object.keys(reporters);
@@ -91,6 +89,7 @@ class GroupChatManager {
         console.log('[GroupChatManager.resumeReporters]: ', dataObjectReporterURL);
         // create a new chatController but first get identity
         _this.search.myIdentity().then((identity) => {
+
           let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, identity, _this, _this._invitationsHandler);
           chatController.dataObjectReporter = reporters[dataObjectReporterURL];
 
@@ -100,6 +99,8 @@ class GroupChatManager {
           _this._resumeInterworking(chatController.dataObjectReporter);
 
           if (_this._onResumeReporter) _this._onResumeReporter(this._reportersControllers);
+
+          _this._invitationsHandler.resumeDiscoveries(_this.discovery, chatController.dataObjectReporter);
         });
       });
     }
@@ -138,7 +139,7 @@ class GroupChatManager {
       if (event.type === 'create') {
 
         // TODO: replace the 100 for Message.Response
-        event.ack(100);
+        event.ack(200);
 
         if (_this._onInvitation) { _this._onInvitation(event); }
       }
@@ -170,6 +171,7 @@ class GroupChatManager {
     });
 
   }
+
 
   /**
    * This function is used to resume interworking Stubs for participants from legacy chat services

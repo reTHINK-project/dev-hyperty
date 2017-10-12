@@ -27,6 +27,7 @@
 * @version 0.1.0
 */
 
+// TODO: have an instance per ChatController
 
 class InvitationsHandler {
 
@@ -36,6 +37,8 @@ class InvitationsHandler {
 
     let _this = this;
     _this._hypertyURL = hypertyURL;
+
+    _this._pending = {};// All pending invitations
   }
 
   /**
@@ -47,15 +50,24 @@ class InvitationsHandler {
   inviteDisconnectedHyperties(disconnected, dataObjectReporter) {
 
     let _this = this;
-    console.log('[GroupChatManager.InvitationsHandler.invitePreviouslyDisconnectedHyperties] lets invite ', disconnected);
+    console.log('[GroupChatManager.InvitationsHandler.inviteDisconnectedHyperties] lets invite ', disconnected);
 
     disconnected.forEach((disconnectedHyperty)=>{
+
+      if (!_this._pending[dataObjectReporter]) {
+        _this._pending[dataObjectReporter] = {};
+      }
+
+      _this._pending[dataObjectReporter][disconnectedHyperty.data.hypertyID] = disconnectedHyperty;
+
       disconnectedHyperty.onLive(_this._hypertyURL,()=>{
         console.log('[GroupChatManager.create] disconnected Hyperty is back to live', disconnectedHyperty);
 
         dataObjectReporter.inviteObservers([disconnectedHyperty.data.hypertyID]);
 
         disconnectedHyperty.unsubscribeLive(_this._hypertyURL);
+
+        delete _this._pending[dataObjectReporter][disconnectedHyperty.data.hypertyID];
 
       });
 
@@ -84,7 +96,81 @@ class InvitationsHandler {
 
   }
 
+  resumeDiscoveries(discoveryEngine, groupChat) {
+    let _this = this;
 
+    let live = {};
+    let liveHyperties = [];
+    let disconnected = [];
+    let unsubscriptonPromises = [];
+
+    return new Promise((resolve, reject) => {
+      discoveryEngine.resumeDiscoveries().then((discoveries) => {
+
+        console.log('[GroupChatManager.InvitationsHandler.resumeDiscoveries] found: ', discoveries);
+
+        discoveries.forEach((discovery) =>{
+
+          if (discovery.data.resources && discovery.data.resources[0] === 'chat') {
+            console.log('[GroupChatManager.InvitationsHandler.resumeDiscoveries] resuming: ', discovery);
+
+            if (discovery.data.status === 'live' ) {// previously discovered object is now live
+              live[discovery.data.hypertyID] = discovery;
+              liveHyperties.push(discovery.data.hypertyID);
+              unsubscriptonPromises.push( discovery.unsubscribeLive(_this._hypertyURL) );
+            } else {// previously discovered object is still disconnected
+              disconnected.push(discovery);
+            }
+          }
+        });
+        if (disconnected.length > 0) _this.inviteDisconnectedHyperties(disconnected, groupChat);
+
+        if ( Object.keys(live).length > 0) {
+          groupChat.inviteObservers(liveHyperties);
+
+          if (groupChat.invitations.length > 0) _this.processInvitations(live, groupChat);
+
+          Promise.all(unsubscriptonPromises).then(()=>{ resolve()});
+
+        } else resolve();
+
+      });
+    }).catch((reason) => {
+    reject('[GroupChatManager.InvitationsHandler.resumeDiscoveries] failed | ', reason);
+  });
+  }
+
+  /**
+   * This function is used to remove and clean all pending invitations.
+   * @param  {DataObjectReporter}    DataObjectReporter   Data Object Reporter addressed by invitations
+   * @return {Promise} return a promise when all unsubscriptons for pending invitations are finished
+   */
+
+  cleanInvitations(dataObjectReporter) {
+    let _this = this;
+
+    let chatInvitations = _this._pending[dataObjectReporter];
+
+    console.log('[GroupChatManager.InvitationsHandler.cleanInvitations] ', chatInvitations);
+
+    if (chatInvitations) {
+      let pendingInvitations = Object.keys(chatInvitations);
+
+      let unsubscriptonPromises = [];
+
+      return new Promise((resolve, reject) => {
+        pendingInvitations.forEach((invitation)=>{
+          unsubscriptonPromises.push( chatInvitations[invitation].unsubscribeLive(_this._hypertyURL) );
+        });
+
+        Promise.all(pendingInvitations).then(()=>{ resolve(); });
+
+      });
+
+    }
+
+
+  }
 
 }
 
