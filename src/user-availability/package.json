@@ -9,10 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bootstrap": "^4.0.0-alpha.6",
+    "bootstrap": "^4.0.0-beta",
     "service-framework": "github:rethink-project/dev-service-framework#develop"
   },
   "devDependencies": {
-    "urijs": "^1.18.12"
+    "urijs": "^1.19.0"
   }
 }
