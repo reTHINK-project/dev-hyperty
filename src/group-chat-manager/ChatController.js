@@ -112,6 +112,11 @@ class ChatController {
     return _this._dataObjectReporter;
   }
 
+  get messages() {
+
+    return this.controllerMode === 'reporter' ? this._dataObjectReporter._childrenObjects['resources'] : this._dataObjectObserver._childrenObjects['resources'];
+  }
+
   set dataObjectObserver(dataObjectObserver) {
     let _this = this;
 
@@ -296,11 +301,15 @@ class ChatController {
         content : message
       }
 
+      let identity = {
+        userProfile: _this.myIdentity
+      };
+
 
       // TODO: change chatmessages to resource - chat, file
       // TODO: change message to hypertyResource - https://github.com/reTHINK-project/dev-service-framework/tree/develop/docs/datamodel/data-objects/hyperty-resource
       // TODO: handle with multiple resources - if the "message" will be different for each type of resources
-      dataObject.addChild('resources', msg).then(function(dataObjectChild) {
+      dataObject.addChild('resources', msg, identity).then(function(dataObjectChild) {
         console.log('[GroupChatManager.ChatController][addChild - Chat Message]: ', dataObjectChild);
         //resolve(dataObjectChild);
 
@@ -309,9 +318,7 @@ class ChatController {
           from: dataObjectChild._owner,
           value: dataObjectChild.data,
           type: 'create',
-          identity: {
-            userProfile: _this.myIdentity
-          }
+          identity: identity
         };
         resolve(msg);
 

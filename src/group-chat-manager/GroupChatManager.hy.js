@@ -119,12 +119,24 @@ class GroupChatManager {
         console.log('[GroupChatManager].syncher.resumeObservers ', dataObjectObserverURL);
         // create a new chatController but first get indentity
         this.search.myIdentity().then((identity) => {
+
+          let chatObserver = observers[dataObjectObserverURL];
+
           let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, identity, _this, _this._invitationsHandler);
-          chatController.dataObjectObserver = observers[dataObjectObserverURL];
+          chatController.dataObjectObserver = chatObserver;
 
           // Save the chat controllers by dataObjectReporterURL
           this._observersControllers[dataObjectObserverURL] = chatController;
           if (_this._onResumeObserver) _this._onResumeObserver(this._observersControllers);
+
+          chatObserver.sync().then((synched) => {
+
+            if (!synched) {
+              //TODO: subscribe to sync when reporter is live. New synched messages should trigger onMessage ie onChild
+            }
+
+          });
+
         });
       });
       }
