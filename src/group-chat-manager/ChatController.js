@@ -261,7 +261,11 @@ class ChatController {
 
     return new Promise(function(resolve, reject) {
 
-      dataObject.addHypertyResource('resources', 'file',  file).then(function(resourceFile) {
+      let identity = {
+        userProfile: _this.myIdentity
+      };
+
+      dataObject.addHypertyResource('resources', 'file',  file, identity).then(function(resourceFile) {
 
           let identity = {
               userProfile: _this.myIdentity
