@@ -1,18 +1,14 @@
 {
-  "name": "user-availability",
+  "name": "node-hyperty",
   "version": "1.0.0",
-  "description": "The User Availability is comprised by two Hyperties.",
-  "main": "UserAvailabilityObserver.hy.js",
+  "description": "Node Hyperty",
+  "main": "NodeHypertyObserver.hy.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bootstrap": "^4.0.0-beta.2",
     "service-framework": "github:rethink-project/dev-service-framework#develop"
-  },
-  "devDependencies": {
-    "urijs": "^1.19.0"
   }
 }
