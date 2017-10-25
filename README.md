@@ -64,7 +64,7 @@ Because all the files in folder, could be a possible hyperty, with this suffix, 
 
 // Service Framework
 import IdentityManager from 'service-framework/dist/IdentityManager';
-import Discovery from 'service-framework/dist/Discovery';
+import {Discovery} from 'service-framework/dist/Discovery';
 import { Syncher } from 'service-framework/dist/Syncher';
 
 /**

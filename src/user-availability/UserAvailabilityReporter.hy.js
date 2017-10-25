@@ -22,7 +22,7 @@
 **/
 
 // Service Framework
-import Discovery from 'service-framework/dist/Discovery';
+//import {Discovery} from 'service-framework/dist/Discovery';
 import IdentityManager from 'service-framework/dist/IdentityManager';
 import {Syncher} from 'service-framework/dist/Syncher';
 
