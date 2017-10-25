@@ -255,11 +255,13 @@ class ChatController {
 
     return new Promise(function(resolve, reject) {
 
-      dataObject.addHypertyResource('resources', 'file',  file).then(function(resourceFile) {
+      let identity = {
+          userProfile: _this.myIdentity
+      };
 
-          let identity = {
-              userProfile: _this.myIdentity
-          };
+      // children, type, resource, identity, input
+      dataObject.addHypertyResource('resources', 'file',  file, identity).then(function(resourceFile) {
+
           let fileSentEvt = { value : resourceFile, identity: identity, resource: resourceFile};
           resolve(fileSentEvt);
         });
