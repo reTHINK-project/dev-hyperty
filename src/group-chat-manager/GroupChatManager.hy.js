@@ -23,7 +23,7 @@
 
 // Service Framework
 import IdentityManager from 'service-framework/dist/IdentityManager';
-import Discovery from 'service-framework/dist/Discovery';
+import {Discovery, RegistrationStatus} from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
@@ -51,6 +51,7 @@ class GroupChatManager {
     let _this = this;
     let syncher = new Syncher(hypertyURL, bus, configuration);
 
+
     let domain = divideURL(hypertyURL).domain;
     let discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
     let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
@@ -62,6 +63,7 @@ class GroupChatManager {
 
     _this._hypertyURL = hypertyURL;
     _this._bus = bus;
+    _this._runtimeURL = configuration.runtimeURL;
     _this._syncher = syncher;
     _this._domain = domain;
 
@@ -119,12 +121,37 @@ class GroupChatManager {
         console.log('[GroupChatManager].syncher.resumeObservers ', dataObjectObserverURL);
         // create a new chatController but first get indentity
         this.search.myIdentity().then((identity) => {
+
+          let chatObserver = observers[dataObjectObserverURL];
+
           let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, identity, _this, _this._invitationsHandler);
-          chatController.dataObjectObserver = observers[dataObjectObserverURL];
+          chatController.dataObjectObserver = chatObserver;
 
           // Save the chat controllers by dataObjectReporterURL
           this._observersControllers[dataObjectObserverURL] = chatController;
           if (_this._onResumeObserver) _this._onResumeObserver(this._observersControllers);
+
+          let reporterStatus = new RegistrationStatus(chatObserver.url, _this._runtimeURL, _this._hypertyURL, _this._bus );
+
+          // recursive function to sync with chat reporter
+
+          let reporterSync = function(observer, subscriber, status) {
+            let statusOfReporter = status;
+            observer.sync().then((synched) => {
+
+              if (!synched) {
+
+                statusOfReporter.onLive( subscriber, () => {
+                  statusOfReporter.unsubscribeLive(subscriber);
+                  reporterSync(observer, subscriber, statusOfReporter);
+                });
+                //TODO: subscribe to sync when reporter is live. New synched messages should trigger onMessage ie onChild
+              }
+            });
+          }
+
+          reporterSync(chatObserver, _this._hypertyURL, reporterStatus);
+
         });
       });
       }

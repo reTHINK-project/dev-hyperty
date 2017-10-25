@@ -333,7 +333,7 @@ function prepareChat(chatController, isOwner) {
   let dataObject = chatController.dataObjectObserver || chatController.dataObjectReporter || {};
   console.log('[GroupChatManagerDemo prepareChat] dataObject: ', dataObject);
   let users = dataObject.data.participants || {};
-  let msgs = dataObject.childrens || {};
+  let msgs = chatController.messages || {};
 
   Object.keys(users).forEach(function(objectKey, index) {
     var user = users[objectKey];
