@@ -2,7 +2,7 @@
 
 // Service Framework
 import IdentityManager from 'service-framework/dist/IdentityManager';
-import Discovery from 'service-framework/dist/Discovery';
+import {Discovery} from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 import {divideURL} from '../utils/utils';
 import Search from '../utils/Search';

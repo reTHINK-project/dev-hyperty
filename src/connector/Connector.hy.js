@@ -25,7 +25,7 @@
 
 // Service Framework
 import IdentityManager from 'service-framework/dist/IdentityManager';
-import Discovery from 'service-framework/dist/Discovery';
+import {Discovery} from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
@@ -102,7 +102,7 @@ class Connector {
         if (_this._controllers) {
           Object.keys(_this._controllers).forEach((controller) => {
             _this._controllers[controller].deleteEvent = event;
-            //delete _this._controllers[controller];
+            delete _this._controllers[controller];
 
             console.log('deleted Controllers:', _this._controllers);
           });
@@ -131,7 +131,7 @@ class Connector {
     let _this = this;
 
     if (controllers) {
-        //delete controllers[controller];
+        delete controllers[controller];
 
         console.log('[Connector] removed controller for ', controller);
       }

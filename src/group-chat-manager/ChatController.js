@@ -28,6 +28,7 @@
 */
 
 import { UserInfo } from './UserInfo';
+import {RegistrationStatus} from 'service-framework/dist/Discovery';
 
 class ChatController {
 
@@ -110,6 +111,11 @@ class ChatController {
   get dataObjectReporter() {
     let _this = this;
     return _this._dataObjectReporter;
+  }
+
+  get messages() {
+
+    return this.controllerMode === 'reporter' ? this._dataObjectReporter._childrenObjects['resources'] : this._dataObjectObserver._childrenObjects['resources'];
   }
 
   set dataObjectObserver(dataObjectObserver) {
@@ -256,14 +262,35 @@ class ChatController {
     return new Promise(function(resolve, reject) {
 
       let identity = {
-          userProfile: _this.myIdentity
+        userProfile: _this.myIdentity
       };
 
-      // children, type, resource, identity, input
       dataObject.addHypertyResource('resources', 'file',  file, identity).then(function(resourceFile) {
 
+          let identity = {
+              userProfile: _this.myIdentity
+          };
           let fileSentEvt = { value : resourceFile, identity: identity, resource: resourceFile};
-          resolve(fileSentEvt);
+
+          let reporterStatus = new RegistrationStatus(dataObject.url, _this._manager._runtimeURL, _this._manager._hypertyURL, _this._manager._bus );
+
+          // recursive function to sync with chat reporter
+
+            let share2Reporter = function(file, subscriber, evt, status) {
+              let statusOfReporter = status;
+              file.sharingStatus.then(resolve(evt)).catch((result)=>{
+                console.log('[GroupChatManager.ChatController.sendFile] share failed: ', result);
+
+                statusOfReporter.onLive( subscriber, () => {
+                statusOfReporter.unsubscribeLive(subscriber);
+                file.share(true);
+                share2Reporter(file, subscriber, evt, statusOfReporter);
+                });
+                  //TODO: subscribe to sync when reporter is live. New synched messages should trigger onMessage ie onChild
+              });
+            }
+
+            share2Reporter(resourceFile, _this._manager._hypertyURL, fileSentEvt, reporterStatus);
         });
     }).catch(function(reason) {
       console.error('Reason:', reason);
@@ -298,26 +325,49 @@ class ChatController {
         content : message
       }
 
+      let identity = {
+        userProfile: _this.myIdentity
+      };
+
 
       // TODO: change chatmessages to resource - chat, file
       // TODO: change message to hypertyResource - https://github.com/reTHINK-project/dev-service-framework/tree/develop/docs/datamodel/data-objects/hyperty-resource
       // TODO: handle with multiple resources - if the "message" will be different for each type of resources
-      dataObject.addChild('resources', msg).then(function(dataObjectChild) {
+      dataObject.addChild('resources', msg, identity).then(function(dataObjectChild) {
         console.log('[GroupChatManager.ChatController][addChild - Chat Message]: ', dataObjectChild);
         //resolve(dataObjectChild);
+
+        //TODO: move to separate function
+
 
         let msg = {
           childId: dataObjectChild._childId,
           from: dataObjectChild._owner,
           value: dataObjectChild.data,
           type: 'create',
-          identity: {
-            userProfile: _this.myIdentity
-          }
+          identity: identity
         };
-        resolve(msg);
 
-      }).catch(function(reason) {
+        let reporterStatus = new RegistrationStatus(dataObject.url, _this._manager._runtimeURL, _this._manager._hypertyURL, _this._manager._bus );
+
+        // recursive function to sync with chat reporter
+
+          let share2Reporter = function(child, subscriber, msg, status) {
+            let statusOfReporter = status;
+            child.sharingStatus.then(resolve(msg)).catch((result)=>{
+
+                statusOfReporter.onLive( subscriber, () => {
+                  statusOfReporter.unsubscribeLive(subscriber);
+                  child.share(true);
+                  share2Reporter(child, subscriber, msg, statusOfReporter);
+                });
+                //TODO: subscribe to sync when reporter is live. New synched messages should trigger onMessage ie onChild
+            });
+          }
+
+          share2Reporter(dataObjectChild, _this._manager._hypertyURL, msg, reporterStatus);
+
+        }).catch(function(reason) {
         console.error('Reason:', reason);
         reject(reason);
       });

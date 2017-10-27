@@ -1,5 +1,5 @@
 /* jshint undef: true */
-import Discovery from 'service-framework/dist/Discovery';
+import {Discovery} from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 import {divideURL} from '../utils/utils';
 import EventEmitter from '../utils/EventEmitter'; // for receiving
