@@ -167,7 +167,7 @@ class InvitationsHandler {
 
       });
 
-    }
+    } else return Promise.resolve();
 
 
   }
