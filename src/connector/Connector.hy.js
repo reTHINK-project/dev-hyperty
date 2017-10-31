@@ -120,8 +120,8 @@ class Connector {
         body: {source: hypertyURL, schema: _this._objectDescURL}
     };
 
-    bus.postMessage(msgToInit, (reply) => {
-    });
+    // bus.postMessage(msgToInit, (reply) => {
+    // });
 
   }
 
