@@ -200,6 +200,7 @@ class ChatController {
 
     event.accept();
 
+
     console.log('[GroupChatManager.ChatController.onSubscribe] event', event, dataObjectReporter.url);
     console.log('[GroupChatManager.ChatController.onSubscribe] New user has subscribe this object: ', dataObjectReporter.data, event.identity);
 

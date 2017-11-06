@@ -621,7 +621,7 @@ function processMessage(message) {
 
 function readFile(file) {
 
-  file.read().then((result) => {
+  file.read((progress) => {console.log('[GroupChatManager.demo.readFile] progress: ', progress)}).then((result) => {
     console.log('[GroupChatManager.demo.readFile] ', result);
 
     let resourceEl;

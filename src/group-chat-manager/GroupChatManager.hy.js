@@ -283,10 +283,12 @@ class GroupChatManager {
 
         let disconnected = [];
         let live = {};
+        let mutual = true;
 
         users.forEach((user) => {
           let userDiscoveryPromise = _this.discovery.discoverHypertiesDO(user.user, ['comm'], ['chat'], user.domain);
             usersDiscovery.push(userDiscoveryPromise);
+            //if (user.user.includes('://')) mutual = false;
           });
 
         Promise.all(usersDiscovery).then((userDiscoveryResults) => {
@@ -316,7 +318,7 @@ class GroupChatManager {
           console.info('[GroupChatManager] Selected Hyperties: !!! ', selectedHyperties);
           console.info(`Have ${selectedHyperties.length} users;`);
 
-          let input = Object.assign({resources: ['chat']}, extra);
+          let input = Object.assign({resources: ['chat'], mutual: mutual}, extra);
           delete input.name;
 
           console.info('[GroupChatManager] input data:', input);
