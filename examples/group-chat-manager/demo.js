@@ -692,9 +692,9 @@ function readFile(file) {
 
     }
 
-  }).catch((reason) => {
-    console.error('reason:', reason);
-  })
+  }, (error) => {
+    console.log('[GroupChatManagerDemo.readFile] error reading file');
+  });
 }
 
 function dataURLToBlob(dataURL, fileType) {
