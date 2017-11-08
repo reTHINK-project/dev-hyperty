@@ -5,7 +5,6 @@
     "browser": false
   },
   "hypertyType": ["audio", "video"],
-  "objectName": "ServerConference",
   "dataObjects": [
     "https://catalogue.localhost/.well-known/dataschema/Connection"
   ]

@@ -1,3 +1,4 @@
+
 /**
 * Copyright 2016 PT Inovação e Sistemas SA
 * Copyright 2016 INESC-ID
@@ -243,11 +244,9 @@ class GroupChatManager {
 
   /**
    * This function is used to create a new Group Chat providing the name and the identifiers of users to be invited.
-   * @param  {string}           name    Is a string to identify the Group Chat
-   * @param  {URL.userURL[]}    users   users Array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL, like this format user://<ipddomain>/<user-identifier>
-   * @param  {string[]}         domains array of users domain
-   * @param  {Object}           extra   extra informatio to be used like a metadata
-   * @return {Promise<ChatController, Error>} A ChatController object as a Promise.
+   * @param  {string}                     name  Is a string to identify the Group Chat
+   * @param  {array<URL.userURL>}         users Array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL, like this format user://<ipddomain>/<user-identifier>
+   * @return {<Promise>ChatController}    A ChatController object as a Promise.
    */
   create(name, users, extra = {}) {
 

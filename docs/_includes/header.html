@@ -1,0 +1,46 @@
+<!-- Header Start -->
+<header  class="header sticky-top" role="banner" aria-label="Header">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <!-- header Nav Start -->
+        <nav class="navbar navbar-default">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            {% assign default_paths = site.pages | map: "path" %}
+            {% assign page_paths = site.header_pages | default: default_paths %}
+            <a class="site-title" title="{{ site.subtitle }}" href="{{ site.url }}"><img src="{{site.logo | relative_url}}" alt="{{ site.title | escape }}"></a>
+          </div>
+
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            {% if page_paths %}
+              <div class="">
+                <ul class="nav navbar-nav navbar-right">
+                  <li><a class="page-link" href="{{site.ur}}/specs/">Documentation</a></li>
+                  <li>
+                    <a class="page-link" href="{{site.ur}}/dev-hyperty/">Hyperties</a>
+                    <div id="navbar" class="sidebar mobile col-sm-3 col-md-2 hidden-sm hidden-md hidden-lg">
+                      <div class="doc-nav" role="navigation" aria-label="Documentation navigation">
+                        {% include menu.html %}
+                      </div>
+                    </div>
+                  </li>
+                  <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit" target="_blank">GitHub</a></li>
+                  <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit/releases" target="_blank">v{{site.version}}</a></li>
+                </ul>
+              </div>
+
+            {% endif %}
+          </div><!-- /.navbar-collapse -->
+        </nav>
+      </div>
+    </div>
+  </div>
+</header><!-- header close -->

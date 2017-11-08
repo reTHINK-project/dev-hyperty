@@ -2,10 +2,22 @@
 Hyperty Repository
 -------------------------
 
+This repository hosts source code of Hyperties. For more information about Hyperties and reTHINK framework pls read [this](https://github.com/reTHINK-project/dev-hyperty-toolkit/blob/master/README.md).
 
-## Add your hyperty
+### The Repository structure
+
+#### **src** folder
+
+Hold all Hyperty related source code, like hyperty classes and JSON-Schemas. The hyperty class must have the suffix ".hy.js", on the file.
+
+**Example:** Hello.hy.js
+
+**Why?**
+Because all the files in folder, could be a possible hyperty, with this suffix, we can distinguish the main hyperty from others files that complement it;
 
 To expose your hyperty in the Testing Web App you need to go to *function* ***hypertyDeployed*** on **main.js** and add your **hyperty name** and **javascript file** file to the switch cases presented there.
+
+**example:**
 
 ```javascript
 

@@ -392,7 +392,7 @@ function prepareChat(chatController, isOwner) {
 
 }
 
-function inviteParticipants(chatController, isOwner) {
+function inviteParticipants(chatController) {
 
   let inviteModal = $('.invite-chat');
   let inviteBtn = inviteModal.find('.btn-modal-invite');
@@ -461,9 +461,9 @@ function chatManagerReady(chatController, isOwner) {
     let html = template({name: name, resource: resource});
     $('.chat-header').append(html);
 
-/*    if (!isOwner) {
+    if (!isOwner) {
       $('.invite-btn').hide();
-    }*/
+    }
     let closeBtn = $('.close-btn');
     closeBtn.removeClass('hide');
     closeBtn.on('click', function(event) {
@@ -529,10 +529,11 @@ function chatManagerReady(chatController, isOwner) {
 
     let emailValue = addParticipantModal.find('.input-name').val();
     chatController.addParticipant(emailValue).then(function(result) {
-      console.log('[GroupChatManager.demo.addParticipant]', result);
+      console.log('hyperty', result);
     }).catch(function(reason) {
       console.error(reason);
     });
+
   });
 
   btnCancel.on('click', function(event) {

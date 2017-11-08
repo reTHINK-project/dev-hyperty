@@ -9,7 +9,6 @@
   },
   "language": "javascript",
   "signature": "",
-  "objectName": "UserStatus",
   "dataObjects": [
     "https://catalogue.%domain%/.well-known/dataschema/Context"
   ]

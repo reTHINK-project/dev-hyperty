@@ -3,7 +3,6 @@
   "constraints": {
     "browser":true,"windowSandbox":true,"mic":true,"camera":true
   },
-  "objectName": "DTWebRTC",
   "hypertyType": ["audio", "video"],
   "dataObjects": [
     "https://catalogue.%domain%/.well-known/dataschema/Connection"

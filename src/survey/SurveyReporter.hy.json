@@ -8,8 +8,8 @@
   "hypertyType": [
     "survey"
   ],
-  "objectName": "SurveyReporter",
   "dataObjects": [
     "https://catalogue.localhost/.well-known/dataschema/Communication"
   ]
 }
+

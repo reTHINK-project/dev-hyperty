@@ -8,7 +8,6 @@
   "constraints": {
     "browser": true
   },
-  "objectName": "CodeGeneratorReporter",
   "dataObjects": [
     "https://catalogue.%domain%/.well-known/dataschema/CodeGeneratorDataSchema"
   ]

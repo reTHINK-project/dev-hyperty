@@ -4,7 +4,6 @@
     "browser": true
   },
   "hypertyType": ["users"],
-  "objectName": "Discovery",
   "dataObjects": [
     "https://catalogue.localhost/.well-known/dataschema/Context"
   ]

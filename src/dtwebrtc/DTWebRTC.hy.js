@@ -4,7 +4,7 @@ import {Syncher} from 'service-framework/dist/Syncher';
 import {divideURL} from '../utils/utils';
 import EventEmitter from '../utils/EventEmitter'; // for receiving
 import Search from '../utils/Search';
-import iceconfig from './stunTurnserverConfig';
+//import iceconfig from './stunTurnserverConfig';
 import IdentityManager from 'service-framework/dist/IdentityManager';
 
 
