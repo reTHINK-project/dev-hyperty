@@ -2,14 +2,14 @@
 
 // Service Framework
 import IdentityManager from 'service-framework/dist/IdentityManager';
-import Discovery from 'service-framework/dist/Discovery';
+import {Discovery} from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 import {divideURL} from '../utils/utils';
 import Search from '../utils/Search';
 
 /**
-* Hyperty Connector;
-* @author Paulo Chainho [paulo-g-chainho@telecom.pt]
+* Node Hyperty Observer;
+* @author Vitor Silva [vitor-t-silva@telecom.pt]
 * @version 0.1.0
 */
 class NodeHypertyObserver {

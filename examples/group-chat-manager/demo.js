@@ -7,6 +7,24 @@ var chatGroupManager;
 
 function hypertyLoaded(result) {
 
+  $('.modal').modal();
+  $('.modal.preview').modal({
+    complete: function() {
+      $('.modal.preview').find('.modal-content').empty();
+    }
+  });
+
+  $('.modal.download').modal({
+    complete: function() {
+      $('.modal.download').find('.modal-content').empty();
+    }
+  });
+
+  chatGroupManager = result.instance;
+  chatGroupManager.onInvitation((event) => {
+    onInvitation(event);
+  });
+
   // Prepare to discover email:
   var search = result.instance.search;
 
@@ -39,10 +57,6 @@ function hypertyReady(result, identity) {
   /*$('.create-room-btn').hide();
   $('.join-room-btn').hide();*/
 
-  chatGroupManager = result.instance;
-  chatGroupManager.onInvitation((event) => {
-    onInvitation(event);
-  });
 
   chatGroupManager.onResumeObserver((chatControllers) => {
 
@@ -64,7 +78,7 @@ function hypertyReady(result, identity) {
         groupChats.forEach((chatController) => {
 
           chatManagerReady(chatController, false);
-          prepareChat(chatController);
+          prepareChat(chatController, false);
 
         });
       }
@@ -85,7 +99,7 @@ function hypertyReady(result, identity) {
 
         groupChats.forEach((chatController) => {
           chatManagerReady(chatController, true);
-          prepareChat(chatController);
+          prepareChat(chatController, true);
 
         });
 
@@ -128,7 +142,7 @@ function onInvitation(event) {
     $('.create-room-btn').hide();
     $('.join-room-btn').hide();
     chatManagerReady(chatController, false);
-    prepareChat(chatController);
+    prepareChat(chatController, false);
   }).catch(function(reason) {
     console.error('Error connecting to', reason);
   });
@@ -149,7 +163,7 @@ function createRoom(event) {
 
   addParticipantBtn.on('click', addParticipantEvent);
   createRoomBtn.on('click', createRoomEvent);
-  createRoomModal.openModal();
+  createRoomModal.modal('open');
   cancelRoomBtn.on('click', cancelRoomEvent);
 }
 
@@ -207,16 +221,22 @@ function createRoomEvent(event) {
 
   let users = [];
   let domains = [];
+  let participants = [];
 
   if (serializedObject) {
 
-    let emailsObject = serializedObject.filter((field) => { if (field.value !== '') return field.name === 'email';});
-    users = emailsObject.map((emailObject) => { return emailObject.value;});
+    let emailsObject = serializedObject.filter((field) => {
+      if (field.value !== '') return field.name === 'email';
+    });
+
+    users = emailsObject.map((emailObject) => { return emailObject.value; });
     let domainObject = serializedObject.filter((field) => {
       return field.name === 'domain';
+
       /*if (field.value !== '') {
         return field.name === 'domain';
       }*/
+
     });
 
     domainObject.forEach((domain)=>{
@@ -227,16 +247,23 @@ function createRoomEvent(event) {
       if (domainObject.value) { return domainObject.value; }
       //else return chatGroupManager._domain;
     });
+
+    let part;
+
+    for (part = 0; part < users.length; part ++) {
+      participants[part] = { user: users[part], domain: domains[part] };
+    }
+
   }
 
   // Prepare the chat
   let name = createRoomModal.find('.input-name').val();
 
-  console.log('Participants: ', users, ' domain: ', domains);
+  console.log('Participants: ', participants);
 
   getSectionTpl().then(() => {
-    console.log('[GroupChatManagerDemo - Create Room] - Section Template ready:', name, users);
-    return chatGroupManager.create(name, users, domains);
+    console.log('[GroupChatManagerDemo - Create Room] - Section Template ready:', name, participants);
+    return chatGroupManager.create(name, participants);
   }).then((chatController) => {
 
     let isOwner = true;
@@ -269,17 +296,17 @@ function joinRoom(event) {
     let resource = joinModal.find('.input-name').val();
 
     getSectionTpl().then(() => {
-      console.log('[GroupChatManagerDemo - JoinRoom] - Section Template ready:', resource);
+      console.log('[GroupChatManagerDemo - JoinRoom] - Section Template ready: ', resource);
       return chatGroupManager.join(resource)
     }).then(function(chatController) {
       chatManagerReady(chatController, false);
-      prepareChat(chatController);
+      prepareChat(chatController, false);
     }).catch(function(reason) {
       console.error(reason);
     });
   });
 
-  joinModal.openModal();
+  joinModal.modal('open');
 
 }
 
@@ -304,9 +331,9 @@ function prepareChat(chatController, isOwner) {
   console.log('[GroupChatManagerDemo prepareChat] Chat Group Controller: ', chatController);
 
   let dataObject = chatController.dataObjectObserver || chatController.dataObjectReporter || {};
-  console.log('[GroupChatManagerDemo prepareChat] - dataObject: ', dataObject);
+  console.log('[GroupChatManagerDemo prepareChat] dataObject: ', dataObject);
   let users = dataObject.data.participants || {};
-  let msgs = dataObject.childrens || {};
+  let msgs = chatController.messages || {};
 
   Object.keys(users).forEach(function(objectKey, index) {
     var user = users[objectKey];
@@ -314,12 +341,16 @@ function prepareChat(chatController, isOwner) {
   });
 
   Object.keys(msgs).forEach(function(objectKey, index) {
-    var msg = msgs[objectKey];
-    console.log('ProcessMessage: ', msg);
-    processMessage({
+    let msg = {
       value: msgs[objectKey].data,
       identity: msgs[objectKey].identity
-    });
+    };
+
+    if (msgs[objectKey].resourceType) msg.resource = msgs[objectKey];
+
+    console.log('[GroupChatManagerDemo.prepareChat] for msg ', msg);
+
+    processMessage(msg);
   });
 
   chatController.onMessage(function(message) {
@@ -349,13 +380,15 @@ function prepareChat(chatController, isOwner) {
     $('.join-room-btn').show();
   });
 
+  $('.modal').modal();
+
   let inviteBtn = $('.invite-btn');
   inviteBtn.on('click', function(event) {
 
-      event.preventDefault();
+    event.preventDefault();
 
-      inviteParticipants(chatController);
-    });
+    inviteParticipants(chatController, isOwner);
+  });
 
 }
 
@@ -373,7 +406,9 @@ function inviteParticipants(chatController) {
 
     if (!domain) { domain = chatController.domain; }
 
-    console.log('[GroupChatManagerDemo.inviteParticipants]: ', userID, ' @ ', domain);
+    let user = { user: userID, domain: domain };
+
+    console.log('[GroupChatManagerDemo.inviteParticipants]: ', user);
 
     /*let usersIDsParsed = [];
     if (usersIDs.includes(',')) {
@@ -389,17 +424,21 @@ function inviteParticipants(chatController) {
       domainsParsed.push(domains);
     }*/
 
-    chatController.addUser([userID], [domain]).then(function(result) {
-      console.log('Invite emails', result);
+    if (isOwner) chatController.addUser([user]).then(function(result) {
+      console.log('[GroupChatManager.demo.inviteParticipants] Invitation result: ', result);
+    }).catch(function(reason) {
+      console.log('Error:', reason);
+    });
+    else chatController.addUserReq([user]).then(function(result) {
+      console.log('[GroupChatManager.demo.inviteParticipants] Request to Reporter result: ', result);
     }).catch(function(reason) {
       console.log('Error:', reason);
     });
 
     inviteBtn.off('click');
-
   });
 
-  inviteModal.openModal();
+  inviteModal.modal('open');
 
 }
 
@@ -411,6 +450,8 @@ function chatManagerReady(chatController, isOwner) {
   let btnCancel = addParticipantModal.find('.btn-cancel');
 
   let messageForm = chatSection.find('.message-form');
+  let fileForm = chatSection.find('.file-form');
+  //let file = $( "input:file" )
   let textArea = messageForm.find('.materialize-textarea');
 
   Handlebars.getTemplate('group-chat-manager/chat-header').then(function(template) {
@@ -459,6 +500,30 @@ function chatManagerReady(chatController, isOwner) {
 
   });
 
+  fileForm.on('change', function(event) {
+    console.log('send file event: ', event);
+
+    event.preventDefault();
+
+    let object = $(this).serializeObject();
+    let file;
+    if (event.target.files){
+      file = event.target.files[0];
+    } else return;
+
+    console.log('file: ', file);
+
+    chatController.sendFile(file).then(function(result) {
+      console.log('file sent', result);
+      processMessage(result);
+      // processFile(result);
+      fileForm[0].reset();
+    }).catch(function(reason) {
+      console.error('file error', reason);
+    });
+
+  });
+
   btnAdd.on('click', function(event) {
     event.preventDefault();
 
@@ -477,9 +542,11 @@ function chatManagerReady(chatController, isOwner) {
 
 }
 
+var listOf = {};
+
 function processMessage(message) {
 
-  console.log('[GroupChatManager - processMessage] - msg ', message);
+  console.log('[GroupChatManagerDemo - processMessage] - msg ', message);
 
   let chatSection = $('.chat-section');
   let messagesList = chatSection.find('.messages .collection');
@@ -490,17 +557,206 @@ function processMessage(message) {
     avatar = message.identity.userProfile.avatar;
     from = message.identity.userProfile.cn;
   }
-  if (message.value.content) {
-    let list = `<li class="collection-item avatar">
-      <img src="` + avatar + `" alt="" class="circle">
-      <span class="title">` + from + `</span>
-      <p>` + message.value.content.replace(/\n/g, '<br>') + `</p>
-    </li>`;
 
-    console.log('[GroupChatManager - processMessage] - ', messagesList, message, list);
+  if (message.value) {
+    let list = document.createElement('li');
+    list.className = 'collection-item avatar';
+
+    let avatarEl = document.createElement('img');
+    avatarEl.className = 'circle';
+    avatarEl.src = avatar;
+    avatarEl.alt = from;
+
+    let nameSpan = document.createElement('span');
+    let name = document.createTextNode(from);
+    nameSpan.className = 'title';
+    nameSpan.appendChild(name);
+
+    list.appendChild(avatarEl);
+    list.appendChild(nameSpan);
+
+    console.log('[GroupChatManagerDemo - processMessage] - ', messagesList, message, list);
+
+    let messageEl = document.createElement('p');
+    let content;
+
+    if (!message.resource) {
+      messageEl.innerHTML = message.value.content.replace(/\n/g, '<br>');
+      list.appendChild(messageEl);
+    } else {
+
+      listOf[message.resource.resourceType] = {}
+      listOf[message.resource.resourceType][message.resource.metadata.url] = message.resource;
+
+      switch (message.resource.resourceType) {
+
+        case 'file':
+          var link = document.createElement('a');
+          link.addEventListener('click', function(event) {
+            console.log(message.resource.resourceType, message.resource.metadata.name);
+            readFile(message.resource);
+          });
+
+          content = document.createTextNode(message.resource.metadata.name);
+          messageEl.appendChild(content);
+          list.appendChild(messageEl);
+
+          var img = document.createElement('img');
+          img.src = message.resource.metadata.preview;
+          img.alt = message.resource.metadata.name;
+
+          link.appendChild(img);
+
+          list.appendChild(link);
+
+          break;
+        default:
+          break;
+      }
+    }
 
     messagesList.append(list);
   }
+
+}
+
+function readFile(file) {
+
+  file.read((progress) => {console.log('[GroupChatManager.demo.readFile] progress: ', progress)}).then((result) => {
+    console.log('[GroupChatManager.demo.readFile] ', result);
+
+    let resourceEl;
+    let blob;
+
+    if (Array.isArray(result.content)){
+      blob = new Blob(result.content, { type: file.metadata.mimetype} );
+    } else{
+      blob = new Blob([result.content], { type: file.metadata.mimetype} );
+    }
+
+
+
+    let urlCreator = window.URL || window.webkitURL;
+    let url = urlCreator.createObjectURL( blob );
+
+    switch (file.metadata.mimetype) {
+      case 'image/png':
+      case 'image/jpg':
+      case 'image/jpeg':
+      case 'image/gif':
+
+        resourceEl = document.createElement('img');
+        resourceEl.className = 'responsive-img';
+        resourceEl.src = url;
+
+        $('.preview').find('.modal-content').html(resourceEl);
+        $('.preview').modal('open');
+
+        break;
+      case 'video/mp4':
+      case 'video/mkv':
+
+        resourceEl = document.createElement('video');
+        resourceEl.autoplay = true;
+        resourceEl.controls = true;
+        resourceEl.className = 'responsive-video';
+        resourceEl.src = url;
+
+        $('.preview').find('.modal-content').html(resourceEl);
+        $('.preview').modal('open');
+
+        break;
+
+      default:
+        resourceEl = document.createElement('a');
+        resourceEl.className = 'waves-effect waves-light btn';
+        resourceEl.src = url;
+
+        let textContent = document.createTextNode('download ' + file.metadata.name);
+        resourceEl.appendChild(textContent);
+
+        console.log('[GroupChatManagerDemo.readFile] saving file to ', url);
+
+          resourceEl.download = '/sca/' + file.name;
+
+          resourceEl.href = url;
+
+          resourceEl.addEventListener('click', (event) => {
+            console.log('[GroupChatManagerDemo.readFile] saving file to disk ', file);
+
+            //(window.URL || window.webkitURL).revokeObjectURL(resourceEl.href);
+
+            });
+
+          $('.download').find('.modal-content').html(resourceEl);
+          $('.download').modal('open');
+
+    }
+
+  }, (error) => {
+    console.log('[GroupChatManagerDemo.readFile] error reading file');
+  });
+}
+
+function dataURLToBlob(dataURL, fileType) {
+
+  return new Promise(function(resolve, reject) {
+
+            function processInWebWorker() {
+                var blob = URL.createObjectURL(new Blob(['function getBlob(_dataURL, _fileType) {var binary = atob(_dataURL.substr(_dataURL.indexOf(",") + 1)),i = binary.length,view = new Uint8Array(i);while (i--) {view[i] = binary.charCodeAt(i);};postMessage(new Blob([view], {type: _fileType}));};this.onmessage =  function (e) {var data = JSON.parse(e.data); getBlob(data.dataURL, data.fileType);}'], {
+                    type: 'application/javascript'
+                }));
+
+                var worker = new Worker(blob);
+                URL.revokeObjectURL(blob);
+                return worker;
+            }
+
+            if (!!window.Worker) {
+                var webWorker = processInWebWorker();
+
+                webWorker.onmessage = function(event) {
+                    resolve(event.data);
+                };
+
+                webWorker.postMessage(JSON.stringify({
+                    dataURL: dataURL,
+                    fileType: fileType
+                }));
+            } else {
+                var binary = atob(dataURL.substr(dataURL.indexOf(',') + 1)),
+                    i = binary.length,
+                    view = new Uint8Array(i);
+
+                while (i--) {
+                    view[i] = binary.charCodeAt(i);
+                }
+
+                resolve(new Blob([view]));
+            }
+        });
+      }
+
+function dataURItoBlob(dataURI) {
+    // convert base64/URLEncoded data component to raw binary data held in a string
+    var byteString;
+    if (dataURI.split(',')[0].indexOf('base64') >= 0)
+        byteString = atob(dataURI.split(',')[1]);
+    else
+        byteString = unescape(dataURI.split(',')[1]);
+
+    // separate out the mime component
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    // write the bytes of the string to a typed array
+    var ia = new Uint8Array(byteString.length);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([ia], {
+        type: mimeString
+    });
 }
 
 function processNewUser(event) {
@@ -517,21 +773,23 @@ function processNewUser(event) {
     user = event;
   }
   console.log('[GroupChatManager.demo.processNewUser]user', user, collection);
+  if (collection.find('[data-name="' + user.identity.userProfile.userURL + '"]').length == 0) {
+    collection.append(`
+      <li class="chip" data-name="${ user.identity.userProfile.userURL }">
+        <img src="${ user.identity.userProfile.avatar }" alt="Contact Person">${ user.identity.userProfile.cn }
+        <i class="material-icons close">close</i>
+      </li>`);
+    collection.removeClass('center-align');
 
-  collection.append(`
-    <li class="chip" data-name="${ user.identity.userProfile.userURL }">
-      <img src="${ user.identity.userProfile.avatar }" alt="Contact Person">${ user.identity.userProfile.cn }
-      <i class="material-icons close">close</i>
-    </li>`);
-  collection.removeClass('center-align');
+    let closeBtn = collection.find('.close');
+    closeBtn.on('click', function(e) {
+      e.preventDefault();
 
-  let closeBtn = collection.find('.close');
-  closeBtn.on('click', function(e) {
-    e.preventDefault();
+      let item = $(e.currentTarget).parent().attr('data-name');
+      removeParticipant(item);
+    });
+  }
 
-    let item = $(e.currentTarget).parent().attr('data-name');
-    removeParticipant(item);
-  });
 }
 
 function removeParticipant(item) {

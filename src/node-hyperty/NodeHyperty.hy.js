@@ -88,7 +88,7 @@ class NodeHyperty {
 
     });
 
-    syncher.create(this._objectDescURL, [], initialData).then((helloObjtReporter) => {
+    syncher.create(this._objectDescURL, [], initialData, false, false, 'node-hyperty', {}, {resources: ['node']}).then((helloObjtReporter) => {
       console.info('1. Return Created Node Hyperty Data Object Reporter', helloObjtReporter);
 
       helloObjtReporter.onSubscription((event) => {

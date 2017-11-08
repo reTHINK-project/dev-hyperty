@@ -19,10 +19,6 @@ export function hypertyDeployed(hyperty) {
   let script = '';
 
   switch (hyperty.name) {
-    case 'Discovery':
-      template = 'discovery/discovery';
-      script = 'discovery/dist/discovery.js';
-      break;
 
     case 'UserAvailabilityObserver':
       template = 'user-availability/userAvailabilityObserver';
@@ -32,11 +28,6 @@ export function hypertyDeployed(hyperty) {
     case 'UserAvailabilityReporter':
       template = 'user-availability/userAvailabilityReporter';
       script = 'user-availability/UserAvailabilityReporterDemo.js';
-      break;
-
-    case 'QBWebRTC':
-      template = 'qbwebrtc/qbwebrtc';
-      script = 'qbwebrtc/dist/qbwebrtc.js';
       break;
 
     case 'Connector':
@@ -59,80 +50,12 @@ export function hypertyDeployed(hyperty) {
       script = 'hello-world/helloReporter.js';
       break;
 
-    case 'SurveyReporter':
-      template = 'survey/surveyReporter';
-      script = 'survey/surveyReporter.js';
-      break;
-
-    case 'SurveyObserver':
-      template = 'survey/surveyObserver';
-      script = 'survey/surveyObserver.js';
-      break;
-
-    case 'GroupChat':
-      template = 'group-chat/groupChat';
-      script = 'group-chat/groupChat.js';
-      break;
-
-    case 'NotificationsReporter':
-      template = 'notifications/notificationsReporter';
-      script = 'notifications/notificationsReporter.js';
-      break;
-
-    case 'NotificationsObserver':
-      template = 'notifications/notificationsObserver';
-      script = 'notifications/notificationsObserver.js';
-      break;
-
-    case 'LocationReporter':
-      template = 'location/location';
-      script = 'location/location.js';
-      break;
-
-    case 'LocationObserver':
-      template = 'location/locationObserver';
-      script = 'location/locationObserver.js';
-      break;
-
-    case 'RoomClient':
-      template = 'room-ui/roomClient';
-      script = 'room-ui/roomClient.js';
-      break;
-
-    case 'RoomServer':
-      template = 'room-ui/roomServer';
-      script = 'room-ui/roomServer.js';
-      break;
-
-    case 'UserStatus':
-      template = 'user-status/UserStatus';
-      script = 'user-status/user-status.js';
-      break;
-
-    case 'BraceletSensorObserver':
-      template = 'bracelet/bracelet';
-      script = 'bracelet/BraceletSensorObserver.js';
-      break;
-
-    case 'DTWebRTC':
-      template = 'dtwebrtc/dtwebrtc';
-      script = 'dtwebrtc/dtwebrtc.js';
-      break;
 
     case 'NodeHypertyObserver':
       template = 'node-hyperty/NodeHyperty';
       script = 'node-hyperty/NodeHypertyObserver.js';
       break;
 
-    case 'CodeGeneratorReporter':
-      template = 'code-generator/codeGeneratorReporter';
-      script = 'code-generator/codeGeneratorReporter.js';
-      break;
-
-    case 'CodeGeneratorObserver':
-      template = 'code-generator/codeGeneratorObserver';
-      script = 'code-generator/codeGeneratorObserver.js';
-      break;
   }
 
   if (!template) {
@@ -152,6 +75,14 @@ export function hypertyDeployed(hyperty) {
     }
 
     loading = false;
+  }).catch(function(reason) {
+
+    try {
+      eval(reason.responseText);
+    } catch (e) {
+      console.error(e);
+    }
+
   });
 
 }

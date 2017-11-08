@@ -1,6 +1,6 @@
 import IdentityManager from 'service-framework/dist/IdentityManager';
 import {Syncher} from 'service-framework/dist/Syncher';
-import Discovery from 'service-framework/dist/Discovery';
+import {Discovery} from 'service-framework/dist/Discovery';
 import {divideURL} from '../utils/utils';
 import Search from '../utils/Search';
 import EventEmitter from '../utils/EventEmitter';
@@ -104,12 +104,16 @@ resumeDiscoveries() {
         if (discovery.data.resources && discovery.data.resources[0] === 'availability_context') {
           console.log('[UserAvailabilityObserver._resumeDiscoveries] resuming: ', discovery);
 
-          discovery.onLive(_this._url,()=>{
-            console.log('[UserAvailabilityObserver._resumeDiscoveries] disconnected Hyperty is back to live', discovery);
-
+          if (discovery.data.status === 'live' ) {// previously discovered object is now live
             resolve([discovery.data]);
             discovery.unsubscribeLive(_this._url);
-          });
+          } else {// previously discovered object is still disconnected
+            discovery.onLive(_this._url,()=>{
+              console.log('[UserAvailabilityObserver._resumeDiscoveries] disconnected Hyperty is back to live', discovery);
+              resolve([discovery.data]);
+              discovery.unsubscribeLive(_this._url);
+            });
+          }
         }
       });
     });

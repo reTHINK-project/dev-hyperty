@@ -25,7 +25,7 @@
 
 // Service Framework
 import IdentityManager from 'service-framework/dist/IdentityManager';
-import Discovery from 'service-framework/dist/Discovery';
+import {Discovery} from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
@@ -104,7 +104,7 @@ class Connector {
         if (_this._controllers) {
           Object.keys(_this._controllers).forEach((controller) => {
             _this._controllers[controller].deleteEvent = event;
-            //delete _this._controllers[controller];
+            delete _this._controllers[controller];
 
             console.log('Controllers:', _this._controllers);
           });
@@ -116,6 +116,15 @@ class Connector {
     });
 
     _this._syncher = syncher;
+
+    let msgToInit = {
+        type: 'init', from: hypertyURL, to: 'sip://test@rethink-project.eu',
+        body: {source: hypertyURL, schema: _this._objectDescURL}
+    };
+
+    // bus.postMessage(msgToInit, (reply) => {
+    // });
+
   }
 
   // callback when connection Controllers are disconnected
