@@ -1,6 +1,6 @@
 {
   "name": "dev-hyperty",
-  "version": "1.0.0",
+  "version": "0.2.1",
   "description": "Source code of hyperties",
   "main": ".eslintrc.js",
   "directories": {
