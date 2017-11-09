@@ -392,7 +392,7 @@ function prepareChat(chatController, isOwner) {
 
 }
 
-function inviteParticipants(chatController) {
+function inviteParticipants(chatController, isOwner ) {
 
   let inviteModal = $('.invite-chat');
   let inviteBtn = inviteModal.find('.btn-modal-invite');
