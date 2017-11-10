@@ -1,0 +1,147 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+@font-face{
+  font-family: "telegrotesk";
+  src: url('../font/telegrotesk-halbfett.ttf'),
+  url('../font/telegrotesk-normal.ttf');
+}
+
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+  /*font-family: "telegrotesk";*/
+  font-size: 18px;
+}
+
+body > .container {
+  padding: 10px 15px 0;
+}
+
+.active > a {
+  font-weight: bold;
+  color: #e20074 !important;
+}
+
+.container .text-muted {
+  margin: 20px 0;
+}
+
+.navbar-nav > li > a {
+  padding-top: 20px;
+  padding-bottom: 16px;
+}
+
+.navbar-nav > li > a:hover {
+ color: #e20074 !important;
+}
+
+.logo {
+  font-weight: bold;
+  padding: 10px 10px;
+  height: 55px;
+  width: auto;
+}
+
+.big-text {
+  padding-top: 22px;
+  padding-bottom: 12px;
+  padding-left: 33px;
+  font-weight: bold;
+  font-size:22px;
+  text-decoration: none !important;
+}
+.big-text:hover {
+  color: #e20074 !important;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+
+input {
+  display: block;
+  width: 100%;
+}
+
+.fullVideo  {
+    width:98%;
+    height:auto;
+    transition:height 1s;
+    -moz-transition:width 1s; /* Firefox 4 */
+    -webkit-transition:width 1s; /* Safari and Chrome */
+    -o-transition:width 1s; /* Opera */
+}
+.smallVideo  {
+    position: absolute;
+    width:20%;
+    height:auto;
+    top: 5%;
+    left: 5%;
+    transition:height 1s;
+    -moz-transition:width 1s; /* Firefox 4 */
+    -webkit-transition:width 1s; /* Safari and Chrome */
+    -o-transition:width 1s; /* Opera */
+}
+
+.block7 {
+  /*display: block;*/
+  width: 70%;
+}
+
+.block3 {
+ /* display: block;*/
+ width: 30%;
+}
+
+.block2 {
+ /* display: block;*/
+ width: 20%;
+}
+
+.block1 {
+ /* display: block;*/
+ width: 10%;
+}
+
+.avatar img {
+  width: 90px;
+  height: auto;
+}
+
+.btn.btn-default {
+  background-color: #CCCCCC;
+  font-size:14px;
+  font-weight: bold;
+  color: #444444;
+}
+
+.searchemail {
+  margin-top: 10px;
+
+}
+
+
+/*.navbar-fixed-top {
+  max-height: 60px;
+}
+*/
+
+.settings  {
+  float: right;
+  display: none;
+}
+
+.settings input {
+   display: block;
+}
+
+.darktext {
+  color: #777;
+}
