@@ -2,20 +2,26 @@ import { Syncher } from 'service-framework/dist/Syncher';
 import {Discovery} from 'service-framework/dist/Discovery';
 import URI from 'urijs'
 
-const LocationObserverHyperty = (descURL, syncher, discovery, users_position=[], callback) => {
-    let getUsersPosition = () => users_position
-    let watchUsersPosition = (c) => {
-        callback = c
-        callback(users_position)
-    }
+class LocationObserverHyperty {
 
-    discovery.discoverDataObjectsPerName('location')
+  constructor(hypertyURL, bus, config) {
+    let uri = new URI(hypertyURL);
+    this._objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Context`;
+    this._syncher = new Syncher(hypertyURL, bus, config);
+    this._discovery = new Discovery(hypertyURL, config.runtimeURL, bus);
+  }
+
+watchUsersPosition(callback) {
+  this.usersPosition;
+  this.watcher = callback;
+
+    this._discovery.discoverDataObjectsPerName('location')
         .then((dataobjects) => {
             const liveDOs = dataobjects.filter(d => d.status === 'live')
-            console.log('[DiscoveryHyperty]', liveDOs)
+            console.log('[LocationObserver] disocvered', liveDOs)
             liveDOs.forEach(dataobject =>  {
-                syncher.subscribe(descURL, dataobject.url).then(observer=>{
-                    console.log('location ob', observer)
+                this._syncher.subscribe(descURL, dataobject.url).then(observer=>{
+                    console.log('[LocationObserver] observing', observer)
                     //observer.data.values[]
                     //username
                     let position = {
@@ -25,34 +31,30 @@ const LocationObserverHyperty = (descURL, syncher, discovery, users_position=[],
                             longitude: observer.data.values.find(v=>v.name==='longitude').value
                         }
                     }
-                    users_position.push(position)
+                    this.users_position.push(position)
                     observer.onChange('*', (event)=>{
                         if(event.field === 'values'){
                             position.coords.latitude = event.data.find(v=>v.name==='latitude').value
                             position.coords.longitude = event.data.find(v=>v.name==='longitude').value
                         }
-                        if(callback)
-                            callback(users_position)
+                        if(this.watcher)
+                            this.watcher(this.users_position)
                     })
-                    if(callback)
-                        callback(users_position)
+                    if(this.watcher)
+                        this.watcher(this.users_position)
                 })
             })
         }).catch((err)=>{
-            console.error('[DiscoveryHyperty]', err)
+            console.error('[LocationObserver]', err)
         })
+      }
 
-    return { getUsersPosition, watchUsersPosition }
 }
 
 export default function activate(hypertyURL, bus, config){
-    let uri = new URI(hypertyURL)
-    let _objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Context`
-    let _syncher = new Syncher(hypertyURL, bus, config)
-    let _discovery = new Discovery(hypertyURL, config.runtimeURL, bus) //TODO
 
     return {
         name: 'LocationObserver',
-        instance: LocationObserverHyperty(_objectDescURL, _syncher, _discovery)
-    }
+        instance: new LocationObserverHyperty(hypertyURL, bus, config)
+    };
 }
