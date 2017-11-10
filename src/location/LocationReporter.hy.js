@@ -3,7 +3,7 @@ import URI from 'urijs'
 import position from './position'
 import Search from '../utils/Search';
 import IdentityManager from 'service-framework/dist/IdentityManager';
-import Discovery from 'service-framework/dist/Discovery';
+import {Discovery} from 'service-framework/dist/Discovery';
 
 const LocationHypertyFactory = function(hypertyURL, bus, config){
     let uri = new URI(hypertyURL)
@@ -15,12 +15,12 @@ const LocationHypertyFactory = function(hypertyURL, bus, config){
     let currentPosition
     const getCurrentPosition = ()=> currentPosition
 
-    syncher.create(objectDescURL, [], position(), true, false, 'location')
+    syncher.create(objectDescURL, [], position(), true, false, 'location', {}, {resources: ['location-context']})
         .then((reporter)=>{
             reporter.onSubscription((event)=>event.accept())
             search.myIdentity().then(identity => {
                 navigator.geolocation.watchPosition((position)=>{
-                    currentPosition = position 
+                    currentPosition = position
                     reporter.data.values = [
                         { name: 'latitude', unit: 'lat', value: position.coords.latitude},
                         { name: 'longitude', unit: 'lon', value: position.coords.longitude }

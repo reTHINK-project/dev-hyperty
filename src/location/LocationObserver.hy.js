@@ -1,5 +1,5 @@
-import { Syncher } from 'service-framework/dist/Syncher'
-import Discovery from 'service-framework/dist/Discovery';
+import { Syncher } from 'service-framework/dist/Syncher';
+import {Discovery} from 'service-framework/dist/Discovery';
 import URI from 'urijs'
 
 const LocationObserverHyperty = (descURL, syncher, discovery, users_position=[], callback) => {
@@ -11,7 +11,7 @@ const LocationObserverHyperty = (descURL, syncher, discovery, users_position=[],
 
     discovery.discoverDataObjectsPerName('location')
         .then((dataobjects) => {
-            const liveDOs = dataobjects.filter(d => d.status === 'live') 
+            const liveDOs = dataobjects.filter(d => d.status === 'live')
             console.log('[DiscoveryHyperty]', liveDOs)
             liveDOs.forEach(dataobject =>  {
                 syncher.subscribe(descURL, dataobject.url).then(observer=>{

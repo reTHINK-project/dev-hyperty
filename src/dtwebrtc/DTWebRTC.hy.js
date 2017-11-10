@@ -42,6 +42,8 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
     this.partner = null; // hypertyURL of the other hyperty
     this.pc = null; // the peer connection object of WebRTC
     this.mediaStream = null;
+    this.iceconfig = configuration;
+
 
     // receiving starts here
     this._syncher.onNotification((event) => {
@@ -116,7 +118,7 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
       }
 
       // ensure this the objReporter object is created before we create the offer
-      this._syncher.create(this._objectDescURL, [hypertyURL], dataObject).then((objReporter) => {
+      this._syncher.create(this._objectDescURL, [hypertyURL], dataObject, true, false, 'call', {}, {resources: ['audio','video']} ).then((objReporter) => {
           console.info('1. Return Created WebRTC Object Reporter', objReporter);
           this.objReporter = objReporter;
           if (this.sender) {  // offer
@@ -204,7 +206,7 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
 
   // choose ICE-Server(s), if (mode != 0) use only Stun/Turn from Settings-GUI
   setIceServer(ice, mode) {
-    iceconfig.ice = mode ? ice : ice.concat(iceconfig.ice);
+    this.iceconfig.ice = mode ? ice : ice.concat(this.iceconfig.ice);
   }
 
   //create a peer connection with its event handlers
@@ -212,9 +214,7 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
     if ( this.pc )
       return;
 
-    this.pc = new RTCPeerConnection({
-      'iceServers': iceconfig.ice
-    });
+    this.pc = new RTCPeerConnection(this.iceconfig);
     console.log("[DTWebRTC]: created PeerConnection", this.pc);
 
     //event handler for when remote stream is added to peer connection
