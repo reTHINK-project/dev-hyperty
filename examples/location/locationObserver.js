@@ -45,7 +45,7 @@ function hypertyLoaded(result) {
           }
         });
 
-        map.setZoom(10);
+        map.setZoom(8);
 
         if (usersContext) { observeUsersContext(usersContext); }
 
