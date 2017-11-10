@@ -1,19 +1,51 @@
 import { Syncher } from 'service-framework/dist/Syncher';
 import {Discovery} from 'service-framework/dist/Discovery';
 import URI from 'urijs'
+import ContextObserver from './ContextObserver';
 
-class LocationObserverHyperty {
+class LocationObserverHyperty extends ContextObserver {
 
   constructor(hypertyURL, bus, config) {
 //    this._domain = divideURL(hypertyURL).domain;
-    let uri = new URI(hypertyURL);
+
+super(hypertyURL, bus, config,['location-context']);
+
+/*    let uri = new URI(hypertyURL);
     this._users2observe = [];
     this._observers = {};
     this._objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Context`;
     this._syncher = new Syncher(hypertyURL, bus, config);
-    this._discovery = new Discovery(hypertyURL, config.runtimeURL, bus);
+    this._discovery = new Discovery(hypertyURL, config.runtimeURL, bus);*/
   }
 
+start(){
+  console.log('[LocationObserver.start] ');
+  return super.start();
+}
+
+resumeDiscoveries() {
+  return super.resumeDiscoveries();
+}
+
+onResumeObserver(callback) {
+  return super.onResumeObserver(callback);
+}
+
+discoverUsers(email,domain) {
+  return super.discoverUsers(email,domain);
+}
+
+observe(hyperty){
+  return super.observe(hyperty);
+}
+
+unobserve(Context)
+  {
+    return super.unobserve(Context);
+  }
+
+
+/*
 watchUsersPosition(callback) {
   this.usersPosition = [];
   this.watcher = callback;
@@ -50,7 +82,7 @@ watchUsersPosition(callback) {
         }).catch((err)=>{
             console.error('[LocationObserver]', err)
         })
-      }
+      }*/
 
 }
 

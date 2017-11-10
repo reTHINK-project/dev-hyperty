@@ -1,8 +1,7 @@
 {
   "configuration": {},
   "hypertyType": [
-    "heart_rate",
-    "sleep"
+    "location-context"
   ],
   "constraints": {
     "browser": true
