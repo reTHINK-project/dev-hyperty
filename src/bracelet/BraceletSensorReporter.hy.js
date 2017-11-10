@@ -213,7 +213,7 @@ class BraceletSensorReporter {
   ReporterBracelet(initialData) {
     let _this = this;
     console.log('Reporter initialized');
-    _this._syncher.create(_this._objectDescURL, [], initialData).then((reporter) => {
+    _this._syncher.create(_this._objectDescURL, [], initialData, true, false, 'bracelet', {}, {resources: ['heart-rate','user-steps','sleep','battery']}).then((reporter) => {
       console.info('Reporter created', reporter);
       _this.reporter = reporter;
       reporter.onSubscription(function(event) {
