@@ -5,14 +5,17 @@ import URI from 'urijs'
 class LocationObserverHyperty {
 
   constructor(hypertyURL, bus, config) {
+//    this._domain = divideURL(hypertyURL).domain;
     let uri = new URI(hypertyURL);
+    this._users2observe = [];
+    this._observers = {};
     this._objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Context`;
     this._syncher = new Syncher(hypertyURL, bus, config);
     this._discovery = new Discovery(hypertyURL, config.runtimeURL, bus);
   }
 
 watchUsersPosition(callback) {
-  this.usersPosition;
+  this.usersPosition = [];
   this.watcher = callback;
 
     this._discovery.discoverDataObjectsPerName('location')
@@ -20,7 +23,7 @@ watchUsersPosition(callback) {
             const liveDOs = dataobjects.filter(d => d.status === 'live')
             console.log('[LocationObserver] disocvered', liveDOs)
             liveDOs.forEach(dataobject =>  {
-                this._syncher.subscribe(descURL, dataobject.url).then(observer=>{
+                this._syncher.subscribe(this._objectDescURL, dataobject.url).then(observer=>{
                     console.log('[LocationObserver] observing', observer)
                     //observer.data.values[]
                     //username
@@ -31,17 +34,17 @@ watchUsersPosition(callback) {
                             longitude: observer.data.values.find(v=>v.name==='longitude').value
                         }
                     }
-                    this.users_position.push(position)
+                    this.usersPosition.push(position)
                     observer.onChange('*', (event)=>{
                         if(event.field === 'values'){
                             position.coords.latitude = event.data.find(v=>v.name==='latitude').value
                             position.coords.longitude = event.data.find(v=>v.name==='longitude').value
                         }
                         if(this.watcher)
-                            this.watcher(this.users_position)
+                            this.watcher(this.usersPosition)
                     })
                     if(this.watcher)
-                        this.watcher(this.users_position)
+                        this.watcher(this.usersPosition)
                 })
             })
         }).catch((err)=>{

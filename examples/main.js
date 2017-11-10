@@ -56,7 +56,25 @@ export function hypertyDeployed(hyperty) {
       script = 'node-hyperty/NodeHypertyObserver.js';
       break;
 
-  }
+    case 'LocationReporter':
+      template = 'location/location';
+      script = 'location/location.js';
+      break;
+
+    case 'LocationObserver':
+      template = 'location/locationObserver';
+      script = 'location/locationObserver.js';
+      break;
+
+    case 'BraceletSensorObserver':
+      template = 'bracelet/bracelet';
+      script = 'bracelet/BraceletSensorObserver.js';
+      break;
+
+    case 'DTWebRTC':
+      template = 'dtwebrtc/dtwebrtc';
+      script = 'dtwebrtc/dtwebrtc.js';
+      break;  }
 
   if (!template) {
     throw Error('You must need specify the template for your example');
