@@ -1,7 +1,7 @@
 import { Syncher } from 'service-framework/dist/Syncher';
 import {Discovery} from 'service-framework/dist/Discovery';
 import URI from 'urijs'
-import ContextObserver from './ContextObserver';
+import ContextObserver from 'service-framework/dist/ContextManager';
 
 class LocationObserverHyperty extends ContextObserver {
 
