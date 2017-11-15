@@ -181,10 +181,10 @@ function observeUserContext(userContext) {
   //userContext.observe();
 
   if (userContext.data && userContext.data.values && userContext.data.values.length > 0) {
-    console.log('[ContextObserverDemo.observeUserContext] last value :', userContext.data.values);
+    console.log('[ContextObserverDemo.observeUserContext] last value :',  userContext, userContext.data.values);
     //$userContext.addClass('state-' + userContext.data.values[0].value);
     createMap();
-    addMarker(userContext.data.values);
+    addMarker(userContext.data.values,userContext.data.tag);
   }
 
 //  $('.user-list').append($userContext);
@@ -194,7 +194,7 @@ function observeUserContext(userContext) {
 
     if (event.field === "values") {
 
-      addMarker([{value:event.data[0].value}, {value:event.data[1].value}]);
+      addMarker([{value:event.data[0].value}, {value:event.data[1].value}],userContext.data.tag);
 
     }
 
@@ -216,17 +216,26 @@ function createMap() {
   console.log('MAP->', map);
 }
 
-function addMarker(position) {
+function addMarker(position, username) {
 /*
   position.coords.latitude = position.values[0].value
   position.coords.longitude = position.values[1].value*/
-  map.removeMarkers(map.markers);
+  let i = 0;
+  map.markers.forEach( function(index){
+    if(index.title == username)
+    {
+      map.removeMarker(map.markers[i]);
+    }
+    i++;
+  });
+
+  console.log('MAP->', map, position);
   map.addMarker({
       lat: position[0].value,
       lng: position[1].value,
-      title: position.tag,
+      title: username,
       infoWindow: {
-          content: `<p>${position.tag}</p>`
+          content: `<p>${username}</p>`
       }
   });
 }
