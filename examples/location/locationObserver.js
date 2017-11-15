@@ -4,6 +4,7 @@
 let observer;
 let discoveredHyperties = {};
 let map;
+let marker_colors = ['red', 'green', 'orange', 'purple', 'yellow', 'blue', 'ltblue'];
 
 function hypertyLoaded(result) {
 
@@ -221,21 +222,31 @@ function addMarker(position, username) {
   position.coords.latitude = position.values[0].value
   position.coords.longitude = position.values[1].value*/
   let i = 0;
+  let key = -1;
+  let markerColor;
   map.markers.forEach( function(index){
     if(index.title == username)
     {
+      key = i;
+      markerColor = map.markers[i].icon;
       map.removeMarker(map.markers[i]);
     }
     i++;
   });
 
-  console.log('MAP->', map, position);
+  console.log('MAP->', map, position, map.markers);
+
+  if (key == -1) {
+    markerColor = 'https://maps.google.com/mapfiles/ms/icons/'+ marker_colors[map.markers.length]  +'-dot.png';
+  }
+
   map.addMarker({
       lat: position[0].value,
       lng: position[1].value,
       title: username,
       infoWindow: {
           content: `<p>${username}</p>`
-      }
+      },
+      icon: markerColor
   });
 }
