@@ -392,7 +392,7 @@ function prepareChat(chatController, isOwner) {
 
 }
 
-function inviteParticipants(chatController, isOwner ) {
+function inviteParticipants(chatController, isOwner) {
 
   let inviteModal = $('.invite-chat');
   let inviteBtn = inviteModal.find('.btn-modal-invite');
@@ -592,6 +592,8 @@ function processMessage(message) {
 
         case 'file':
           var link = document.createElement('a');
+          link.href = 'javascript:;';
+          link.title = message.resource.metadata.name;
           link.addEventListener('click', function(event) {
             console.log(message.resource.resourceType, message.resource.metadata.name);
             readFile(message.resource);
@@ -601,11 +603,20 @@ function processMessage(message) {
           messageEl.appendChild(content);
           list.appendChild(messageEl);
 
-          var img = document.createElement('img');
-          img.src = message.resource.metadata.preview;
-          img.alt = message.resource.metadata.name;
+          if (message.resource.metadata.preview) {
 
-          link.appendChild(img);
+            var img = document.createElement('img');
+            img.src = message.resource.metadata.preview;
+            img.alt = message.resource.metadata.name;
+            link.appendChild(img);
+          } else {
+            var text = document.createTextNode(message.resource.metadata.name);
+            var icon = document.createElement('i');
+            icon.className = "material-icons left";
+            icon.innerText = 'insert_drive_file'
+            link.appendChild(icon);
+            link.appendChild(text);
+          }
 
           list.appendChild(link);
 
