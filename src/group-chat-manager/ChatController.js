@@ -77,6 +77,40 @@ class ChatController {
 
     _this._setOnAddChildListener(dataObjectReporter);
 
+    dataObjectReporter.onResponse((response) => {
+      console.log('On Response:', response);
+
+      if (!response) { return }
+
+      const code = response.code;
+      const url = response.url;
+
+      if (code && url) {
+        switch (code) {
+          case 100:
+            break;
+
+          case 200:
+            break;
+
+          case 401:
+            _this.dataObjectReporter.delete();
+            break;
+
+          case 404:
+            break
+
+          case 406:
+            _this.dataObjectReporter.delete();
+            break;
+
+          default:
+
+        }
+      }
+
+    })
+
     dataObjectReporter.onRead((event) => {
       event.accept();
     });
@@ -424,6 +458,11 @@ class ChatController {
   onClose(callback) {
     let _this = this;
     _this._onClose = callback;
+  }
+
+  onResponse(callback) {
+    let _this = this;
+    _this._onResponse = callback;
   }
 
   /**

@@ -167,7 +167,7 @@ class GroupChatManager {
       if (event.type === 'create') {
 
         // TODO: replace the 100 for Message.Response
-        event.ack(200);
+        // event.ack(200);
 
         if (_this._onInvitation) { _this._onInvitation(event); }
       }
