@@ -380,10 +380,11 @@ class GroupChatManager {
    */
   join(invitationURL) {
     let _this = this;
-    let syncher = _this._syncher;
 
     return new Promise(function(resolve, reject) {
+      let syncher = _this._syncher;
       let myIdentity;
+
       console.info('[GroupChatManager] ------------------------ Syncher subscribe ---------------------- \n');
       console.info('invitationURL', invitationURL);
       _this.search.myIdentity().then((identity) => {

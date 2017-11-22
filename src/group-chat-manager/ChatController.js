@@ -54,7 +54,6 @@ class ChatController {
 
     _this._invitationsHandler = invitationsHandler;
 
-
   }
 
   set dataObjectReporter(dataObjectReporter) {
@@ -76,40 +75,6 @@ class ChatController {
     });
 
     _this._setOnAddChildListener(dataObjectReporter);
-
-    dataObjectReporter.onResponse((response) => {
-      console.log('On Response:', response);
-
-      if (!response) { return }
-
-      const code = response.code;
-      const url = response.url;
-
-      if (code && url) {
-        switch (code) {
-          case 100:
-            break;
-
-          case 200:
-            break;
-
-          case 401:
-            _this.dataObjectReporter.delete();
-            break;
-
-          case 404:
-            break
-
-          case 406:
-            _this.dataObjectReporter.delete();
-            break;
-
-          default:
-
-        }
-      }
-
-    })
 
     dataObjectReporter.onRead((event) => {
       event.accept();
@@ -605,6 +570,15 @@ class ChatController {
 
 }
 
+  onInvitationResponse(callback) {
+    let _this = this;
+
+    if (callback) {
+      _this._invitationsHandler.invitationResponse = callback;
+    }
+
+  }
+
 
   /**
    * This function is used to remove a user from an existing Group Chat instance.
@@ -643,9 +617,14 @@ class ChatController {
               delete _this._manager._reportersControllers[_this.dataObjectReporter.url];
               _this.dataObjectReporter.delete();
               resolve(true);
-              } catch (e) {
-                reject(false);
-              }
+              if (_this._onClose) _this._onClose({
+                code: 200,
+                desc: 'deleted',
+                url: _this.dataObjectReporter.url
+              })
+            } catch (e) {
+              reject(false);
+            }
           });
 
       } else {

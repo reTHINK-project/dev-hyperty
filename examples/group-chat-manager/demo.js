@@ -137,7 +137,7 @@ function onInvitation(event) {
 
   getSectionTpl().then(() => {
     console.log('[GroupChatManagerDemo - On Invitation] - Section Template ready', event);
-    event.ack(200);
+    event.ack(406);
     return chatGroupManager.join(event.url)
   }).then((chatController) => {
     $('.create-room-btn').hide();
