@@ -379,6 +379,43 @@
 </code></pre>
 </div>
 
+<h4 id="sendfile">sendFile</h4>
+
+<p>This function is used to send a File.</p>
+
+<p><code class="highlighter-rouge">&lt;Promise&gt; DataObjectChild send(File file)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>file</em> is javascript <a href="https://developer.mozilla.org/en-US/docs/Web/API/File">File</a>.</p>
+
+<p><strong>returns</strong></p>
+
+<p>It returns the DataObjectChild containing the file  HypertyResource created by the Syncher as a Promise.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code>
+<span class="c1">// use an HTML form with input type "file" to select the file</span>
+
+<span class="nx">fileForm</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'change'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+
+  <span class="kd">let</span> <span class="nx">file</span><span class="p">;</span>
+  <span class="nx">file</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">files</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+  <span class="nx">chatController</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">message</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">sentMessage</span><span class="p">){</span>
+
+  <span class="c1">// your source code</span>
+
+  <span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
 <h4 id="onmessage">onMessage</h4>
 
 <p>This function is used to receive new messages.</p>
