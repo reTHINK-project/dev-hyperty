@@ -100,7 +100,9 @@ class GroupChatManager {
 
           if (_this._onResumeReporter) _this._onResumeReporter(this._reportersControllers);
 
-          _this.chatController.invitationsHandler.resumeDiscoveries(_this.discovery, chatController.dataObjectReporter);
+          console.log('[GroupChatManager] chatController invitationsHandler: ',   chatController.invitationsHandler)
+
+          chatController.invitationsHandler.resumeDiscoveries(_this.discovery, chatController.dataObjectReporter);
         });
       });
     }
@@ -325,17 +327,20 @@ class GroupChatManager {
 
           let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, myIdentity, _this);
           chatController.dataObjectReporter = dataObjectReporter;
-          resolve(chatController);
 
           _this._reportersControllers[dataObjectReporter.url] = chatController;
 
+          console.log('[GroupChatManager] chatController invitationsHandler: ',   chatController.invitationsHandler)
+
           // process invitations to handle not received invitations
           if (dataObjectReporter.invitations.length > 0) {
-            _this.chatController.invitationsHandler.processInvitations(live, dataObjectReporter);
+            chatController.invitationsHandler.processInvitations(live, dataObjectReporter);
           }
 
           // If any invited User is disconnected let's wait until it is connected again
-          if (disconnected.length > 0) _this.chatController.invitationsHandler.inviteDisconnectedHyperties(disconnected, dataObjectReporter);
+          if (disconnected.length > 0) chatController.invitationsHandler.inviteDisconnectedHyperties(disconnected, dataObjectReporter);
+
+          resolve(chatController);
 
         }).catch(function(reason) {
           reject(reason);

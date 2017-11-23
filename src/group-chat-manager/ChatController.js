@@ -60,7 +60,7 @@ class ChatController {
   }
 
   get invitationsHandler() {
-    return _this._invitationsHandler;
+    return this._invitationsHandler;
   }
 
   set dataObjectReporter(dataObjectReporter) {
@@ -72,6 +72,13 @@ class ChatController {
 
     // Handler to process received files
 
+    // dataObjectReporter.onResponse(function(event) {
+    //   console.log('[DataObjectReporter - onResponse]', event);
+    //   if (_this._onInvitationResponse) {
+    //     _this._onInvitationResponse(event);
+    //   }
+    //
+    // });
 
     dataObjectReporter.onSubscription(function(event) {
 
@@ -579,6 +586,7 @@ class ChatController {
 
   onInvitationResponse(callback) {
     let _this = this;
+    _this._onInvitationResponse = callback;
     _this._invitationsHandler.invitationResponse = callback;
   }
 
