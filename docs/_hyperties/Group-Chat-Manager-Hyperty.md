@@ -26,6 +26,8 @@ The Group Chat main functionality is to handle Text conversations among groups, 
 
 -- send message to group
 
+-- send files to the group using p2p connections (with preview for images).
+
 -- receive message from group with identity from sender
 
 This Hyperty handles standard [Communication Data Objects](https://github.com/reTHINK-project/dev-service-framework/blob/develop/docs/datamodel/data-objects/communication/readme.md) constrained for Chat Communications i.e. the hypertyResource type is `chat`.
