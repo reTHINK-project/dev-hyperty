@@ -29,10 +29,11 @@
 
 import { UserInfo } from './UserInfo';
 import {RegistrationStatus} from 'service-framework/dist/Discovery';
+import InvitationsHandler from './InvitationsHandler';
 
 class ChatController {
 
-  constructor(syncher, discovery, domain, search, identity, manager, invitationsHandler) {
+  constructor(syncher, discovery, domain, search, identity, manager) {
 
     if (!syncher) throw Error('Syncher is a necessary dependecy');
     if (!discovery) throw Error('Discover is a necessary dependecy');
@@ -50,10 +51,16 @@ class ChatController {
 
     _this._manager = manager;
 
+    const hypertyURL = syncher.owner;
+
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
 
-    _this._invitationsHandler = invitationsHandler;
+    _this._invitationsHandler = new InvitationsHandler(hypertyURL);
 
+  }
+
+  get invitationsHandler() {
+    return _this._invitationsHandler;
   }
 
   set dataObjectReporter(dataObjectReporter) {
@@ -572,11 +579,7 @@ class ChatController {
 
   onInvitationResponse(callback) {
     let _this = this;
-
-    if (callback) {
-      _this._invitationsHandler.invitationResponse = callback;
-    }
-
+    _this._invitationsHandler.invitationResponse = callback;
   }
 
 

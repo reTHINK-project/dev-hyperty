@@ -137,7 +137,7 @@ function onInvitation(event) {
 
   getSectionTpl().then(() => {
     console.log('[GroupChatManagerDemo - On Invitation] - Section Template ready', event);
-    event.ack(406);
+    event.ack(200);
     return chatGroupManager.join(event.url)
   }).then((chatController) => {
     $('.create-room-btn').hide();
@@ -353,6 +353,10 @@ function prepareChat(chatController, isOwner) {
 
     processMessage(msg);
   });
+
+  chatController.onInvitationResponse(function(response) {
+    console.info('[GroupChatManagerDemo ] onInvitationResponse: ', response);
+  })
 
   chatController.onMessage(function(message) {
     console.info('[GroupChatManagerDemo ] new message received: ', message);

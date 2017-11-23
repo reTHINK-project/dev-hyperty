@@ -38,7 +38,7 @@ class InvitationsHandler {
     let _this = this;
     _this._hypertyURL = hypertyURL;
 
-    _this._pending = {};// All pending invitations
+    _this._pending = {}; // All pending invitations
   }
 
   set invitationResponse(callback) {
@@ -90,10 +90,11 @@ class InvitationsHandler {
 
     let invitations = dataObjectReporter.invitations;
 
-    console.log('[GroupChatManager.InvitationsHandler.processInvitations] waiting for replies ', invitations);
+    console.log('[GroupChatManager.InvitationsHandler.processInvitations] waiting for replies ', invitations, this._invitationsResponse);
 
     invitations.forEach((invitation) => {
       invitation.then((result) => {
+        console.log('AQUI:', result);
         if (this._invitationsResponse) { this._invitationsResponse(result); }
       }).catch((result) => {
         if (this._invitationsResponse) { this._invitationsResponse(result); }

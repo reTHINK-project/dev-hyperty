@@ -34,7 +34,6 @@ import Search from '../utils/Search';
 // Internals
 import { communicationObject, CommunicationStatus, communicationChildren } from './communication';
 import ChatController from './ChatController';
-import InvitationsHandler from './InvitationsHandler';
 import { UserInfo } from './UserInfo';
 
 /**
@@ -73,8 +72,6 @@ class GroupChatManager {
 
     _this.search = new Search(discovery, identityManager);
 
-    _this._invitationsHandler = new InvitationsHandler(hypertyURL);
-
     _this.communicationObject = communicationObject;
 
     _this.communicationChildren = communicationChildren;
@@ -93,7 +90,7 @@ class GroupChatManager {
         // create a new chatController but first get identity
         _this.search.myIdentity().then((identity) => {
 
-          let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, identity, _this, _this._invitationsHandler);
+          let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, identity);
           chatController.dataObjectReporter = reporters[dataObjectReporterURL];
 
           // Save the chat controllers by dataObjectReporterURL
@@ -103,7 +100,7 @@ class GroupChatManager {
 
           if (_this._onResumeReporter) _this._onResumeReporter(this._reportersControllers);
 
-          _this._invitationsHandler.resumeDiscoveries(_this.discovery, chatController.dataObjectReporter);
+          _this.chatController.invitationsHandler.resumeDiscoveries(_this.discovery, chatController.dataObjectReporter);
         });
       });
     }
@@ -125,7 +122,7 @@ class GroupChatManager {
 
           let chatObserver = observers[dataObjectObserverURL];
 
-          let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, identity, _this, _this._invitationsHandler);
+          let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, identity, _this);
           chatController.dataObjectObserver = chatObserver;
 
           // Save the chat controllers by dataObjectReporterURL
@@ -326,7 +323,7 @@ class GroupChatManager {
 
           console.info('[GroupChatManager] 3. Return Create Data Object Reporter', dataObjectReporter);
 
-          let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, myIdentity, _this, _this._invitationsHandler);
+          let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, myIdentity, _this);
           chatController.dataObjectReporter = dataObjectReporter;
           resolve(chatController);
 
@@ -334,11 +331,11 @@ class GroupChatManager {
 
           // process invitations to handle not received invitations
           if (dataObjectReporter.invitations.length > 0) {
-            _this._invitationsHandler.processInvitations(live, dataObjectReporter);
+            _this.chatController.invitationsHandler.processInvitations(live, dataObjectReporter);
           }
 
           // If any invited User is disconnected let's wait until it is connected again
-          if (disconnected.length > 0) _this._invitationsHandler.inviteDisconnectedHyperties(disconnected, dataObjectReporter);
+          if (disconnected.length > 0) _this.chatController.invitationsHandler.inviteDisconnectedHyperties(disconnected, dataObjectReporter);
 
         }).catch(function(reason) {
           reject(reason);
@@ -394,7 +391,7 @@ class GroupChatManager {
       }).then(function(dataObjectObserver) {
         console.info('Data Object Observer: ', dataObjectObserver);
 
-        let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, myIdentity, _this, _this._invitationsHandler);
+        let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, myIdentity, _this);
         resolve(chatController);
 
         chatController.dataObjectObserver = dataObjectObserver;
