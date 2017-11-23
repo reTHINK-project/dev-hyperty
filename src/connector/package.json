@@ -9,7 +9,7 @@
   "author": "vitor-t-silva@telecom.pt",
   "license": "ISC",
   "dependencies": {
-    "service-framework": "github:rethink-project/dev-service-framework#develop"
+    "service-framework": "github:rethink-project/dev-service-framework#v0.7.3"
   },
   "devDependencies": {
     "webrtc-adapter": "^4.2.2"

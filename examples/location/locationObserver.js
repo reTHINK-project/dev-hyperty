@@ -4,6 +4,7 @@
 let observer;
 let discoveredHyperties = {};
 let map;
+let marker_colors = ['red', 'green', 'orange', 'purple', 'yellow', 'blue', 'ltblue'];
 
 function hypertyLoaded(result) {
 
@@ -24,68 +25,81 @@ function hypertyLoaded(result) {
 
     observer = result.instance;
 
-    observer.start().then((usersContext)=>{
+  observer.start().then((usersContext)=>{
 
-      setTimeout(() => {
-        map = new GMaps({
-          el: '#map',
-          lat: 0,
-          lng:0
-        });
+  console.log('usersContext', usersContext);
 
-        GMaps.geolocate({
-          success: function (position) {
-            map.setCenter(position.coords.latitude, position.coords.longitude)
-          },
-          error: function(error) {
-            alert('Geolocation failed: '+error.message);
-          },
-          not_supported: function() {
-            alert("Your browser does not support geolocation");
-          }
-        });
 
-        map.setZoom(8);
 
-        if (usersContext) { observeUsersContext(usersContext); }
-
-        discoverUsers(observer);
-
-        observer.resumeDiscoveries().then( (discovered) => {
-          console.log('ContextObserverDemo: Discoveries back to live ', discovered);
-          if (discovered) {
-            let collection = $('.collection');
-            collection.empty();
-            collection.show();
-            showDiscoveredUser(discovered[0], collection);
-          }
+    setTimeout(() => {
+      map = new GMaps({
+        el: '#map',
+        lat: 0,
+        lng:0
+      });
+      GMaps.geolocate({
+        success: function (position) {
+          console.log('POSITION;OBSERVER:', position);
+          map.setCenter(position.coords.latitude, position.coords.longitude)
+        },
+        error: function(error) {
+          alert('Geolocation failed: '+error.message);
+        },
+        not_supported: function() {
+          alert("Your browser does not support geolocation");
+        }
       });
 
 
-      }, 1000);
+      map.setZoom(8);
+
+      if (usersContext) { observeUsersContext(usersContext); }
+
+      discoverUsers(observer);
+
+      observer.resumeDiscoveries().then( (discovered) => {
+        console.log('ContextObserverDemo: Discoveries back to live ', discovered);
+        if (discovered) {
+          let collection = $('.collection');
+          collection.empty();
+          collection.show();
+          showDiscoveredUser(discovered[0], collection);
+        }
+    });
+
+
+    }, 1000);
 
   }).catch((reason) => {
     console.info('[ContextObserverDemo] start failed | ', reason);
   });
+
+
+  /*observer.watchUsersPosition((callback) => {
+
+    console.log('on callback', callback);
+
+
+  });*/
 }
 
-function discoverUsers(observer) {
-  let email = $('.email-input');
-  let domain = $('.domain-input');
+  function discoverUsers(observer) {
+    let email = $('.email-input');
+    let domain = $('.domain-input');
 
-  let searchForm = $('.search-form');
-  let discoveryEl = $('.discover');
+    let searchForm = $('.search-form');
+    let discoveryEl = $('.discover');
 
-  observer = observer;
+    observer = observer;
 
-  discoveryEl.removeClass('hide');
+    discoveryEl.removeClass('hide');
 
-  searchForm.on('submit', function(event) {
+    searchForm.on('submit', function(event) {
 
-    event.preventDefault();
+      event.preventDefault();
 
     observer.discoverUsers(email.val(), domain.val()).then(function(result) {
-      console.log('[ContextObserverDemo.discoverUsers] discovered: ', result);
+      console.log('[ContextObserverDemo.discoverUsers] discovered: ', result)
 
       let collection = $('.collection');
       collection.empty();
@@ -168,15 +182,22 @@ function observeUserContext(userContext) {
   //userContext.observe();
 
   if (userContext.data && userContext.data.values && userContext.data.values.length > 0) {
-    console.log('[ContextObserverDemo.observeUserContext] last value :', userContext.data.values);
+    console.log('[ContextObserverDemo.observeUserContext] last value :',  userContext, userContext.data.values);
     //$userContext.addClass('state-' + userContext.data.values[0].value);
-    addMarker(userContext.data);
+    createMap();
+    addMarker(userContext.data.values,userContext.data.tag);
   }
 
 //  $('.user-list').append($userContext);
 
   userContext.onChange('*', (event) => {
     console.log('[ContextObserverDemo.observeUserContext] onChange :', event);
+
+    if (event.field === "values") {
+
+      addMarker([{value:event.data[0].value}, {value:event.data[1].value}],userContext.data.tag);
+
+    }
 
     $userContext.removeClass('state-available state-unavailable state-busy state-away')
     .addClass('state-' + userContext.data.values[0].value);
@@ -185,17 +206,47 @@ function observeUserContext(userContext) {
 
 }
 
-function addMarker(position) {
+function createMap() {
+  if(!map) {
+    map = new GMaps({
+      el: '#map',
+      lat: 0,
+      lng:0
+    });
+  }
+  console.log('MAP->', map);
+}
+
+function addMarker(position, username) {
 /*
   position.coords.latitude = position.values[0].value
   position.coords.longitude = position.values[1].value*/
+  let i = 0;
+  let key = -1;
+  let markerColor;
+  map.markers.forEach( function(index){
+    if(index.title == username)
+    {
+      key = i;
+      markerColor = map.markers[i].icon;
+      map.removeMarker(map.markers[i]);
+    }
+    i++;
+  });
+
+  console.log('MAP->', map, position, map.markers);
+
+  if (key == -1) {
+    markerColor = 'https://maps.google.com/mapfiles/ms/icons/'+ marker_colors[map.markers.length]  +'-dot.png';
+  }
 
   map.addMarker({
-      lat: position.values[0].value,
-      lng: position.values[1].value,
-      title: position.tag,
+      lat: position[0].value,
+      lng: position[1].value,
+      title: username,
       infoWindow: {
-          content: `<p>${position.tag}</p>`
-      }
+          content: `<p>${username}</p>`
+      },
+      icon: markerColor
   });
 }

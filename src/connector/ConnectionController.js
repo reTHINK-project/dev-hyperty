@@ -91,11 +91,12 @@ class ConnectionController {
       };
 
       let data = _this.dataObjectReporter.data;
+      let ices = JSON.parse(JSON.stringify(data.iceCandidates));
 
       console.log('[Connector.ConnectionController] - push iceCandidates: ', data, data.iceCandidates);
 
       // new model
-      data.iceCandidates.push(icecandidate);
+      ices.push(icecandidate);
 
       /*
 
@@ -104,7 +105,7 @@ class ConnectionController {
       } else {
         data.Peer.iceCandidates.push(icecandidate);
       }*/
-
+      _this.dataObjectReporter.data.iceCandidates = ices;
     });
 
     // Add stream to PeerConnection
