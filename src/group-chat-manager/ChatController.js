@@ -634,6 +634,7 @@ class ChatController {
                 url: _this.dataObjectReporter.url
               })
             } catch (e) {
+              console.error(e);
               reject(false);
             }
           });
@@ -644,6 +645,7 @@ class ChatController {
           _this.dataObjectObserver.unsubscribe();
           resolve(true);
         } catch (e) {
+          console.error(e);
           reject(false);
         }
       }
