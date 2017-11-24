@@ -24,101 +24,33 @@
 
 // Service Framework
 import IdentityManager from 'service-framework/dist/IdentityManager';
+import {ChatManager,ChatController} from 'service-framework/dist/ChatManager';
 import {Discovery, RegistrationStatus} from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
-import {divideURL} from '../utils/utils';
-import Search from '../utils/Search';
+/*import {divideURL} from '../utils/utils';
+import Search from '../utils/Search';*/
 
 // Internals
-import { communicationObject, CommunicationStatus, communicationChildren } from './communication';
-import ChatController from './ChatController';
-import { UserInfo } from './UserInfo';
+/*import { communicationObject, CommunicationStatus, communicationChildren } from './communication';
+import { UserInfo } from './UserInfo';*/
 
 /**
 * Hyperty Group Chat Manager API (HypertyChat)
 * @author Vitor Silva [vitor-t-silva@telecom.pt]
 * @version 0.1.0
 */
-class GroupChatManager {
+class GroupChatManager extends ChatManager {
 
   constructor(hypertyURL, bus, configuration) {
-    if (!hypertyURL) throw new Error('[GroupChatManager.constructor] The hypertyURL is a needed parameter');
-    if (!bus) throw new Error('[GroupChatManager.constructor] The MiniBus is a needed parameter');
-    if (!configuration) throw new Error('[GroupChatManager.constructor] The configuration is a needed parameter');
-
-    let _this = this;
-    let syncher = new Syncher(hypertyURL, bus, configuration);
+    super(hypertyURL, bus, configuration);
 
 
-    let domain = divideURL(hypertyURL).domain;
-    let discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
-    let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
-
-    _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
-
-    _this._reportersControllers = {};
-    _this._observersControllers = {};
-
-    _this._hypertyURL = hypertyURL;
-    _this._bus = bus;
-    _this._runtimeURL = configuration.runtimeURL;
-    _this._syncher = syncher;
-    _this._domain = domain;
-
-    _this.discovery = discovery;
-    _this.identityManager = identityManager;
-    _this.currentIdentity;
-
-    _this.search = new Search(discovery, identityManager);
-
-    _this.communicationObject = communicationObject;
-
-    _this.communicationChildren = communicationChildren;
-
-    console.log('[GroupChatManager] Discover ', discovery);
-    console.log('[GroupChatManager] Identity Manager ', identityManager);
-
-    _this._resumeReporters();
-    _this._resumeObservers();
-
-    syncher.onNotification(function(event) {
-
-      console.log('[GroupChatManager] onNotification: ', event);
-
-      if (event.type === 'create') {
-
-        // TODO: replace the 100 for Message.Response
-        // event.ack(200);
-
-        if (_this._onInvitation) { _this._onInvitation(event); }
-      }
-
-      if (event.type === 'delete') {
-        // TODO: replace the 200 for Message.Response
-        event.ack(200);
-
-        _this._observersControllers[event.url].closeEvent = event;
-
-        delete _this._observersControllers[event.url];
-
-        _this._observersControllers.closeEvent = event;
-
-        _this.communicationObject = communicationObject;
+    this._resumeReporters();
+    this._resumeObservers();
 
 
-        for (let url in this._reportersControllers) {
-          this._reportersControllers[url].closeEvent(event);
-        }
-
-        for (let url in this._observersControllers) {
-          this._observersControllers[url].closeEvent(event);
-        }
-
-      }
-
-    });
 
   }
 
@@ -295,111 +227,9 @@ class GroupChatManager {
    * @return {<Promise>ChatController}    A ChatController object as a Promise.
    */
   create(name, users, extra = {}) {
-
-    let _this = this;
-    let syncher = _this._syncher;
-
-    return new Promise((resolve, reject) => {
-
-      _this.communicationObject = communicationObject;
-      _this.communicationObject.cseq = 1;
-      _this.communicationObject.startingTime = new Date().toJSON();
-      _this.communicationObject.status =  CommunicationStatus.OPEN;
-
-      let myIdentity;
-
-      _this.search.myIdentity().then((identity) => {
-        myIdentity = identity;
-        console.log('[GroupChatManager.create ] My Identity', identity);
-
-        // let url = _this.communicationObject.reporter;
-
-        let userInfo = new UserInfo(_this._hypertyURL, _this._domain, identity);
-
-        // Add my identity
-        _this.communicationObject.participants[identity.userURL] = userInfo;
-
-        console.log('[GroupChatManager.create ] participants: ', _this.communicationObject.participants);
-        console.log('[GroupChatManager.create ] communicationObject', _this.communicationObject);
-        console.info('[GroupChatManager.create] searching ' + users);
-
-        //let usersSearch = _this.search.users(users, domains, ['comm'], ['chat']);
-
-        let usersDiscovery = [];
-
-        let disconnected = [];
-        let live = {};
-        let mutual = true;
-
-        users.forEach((user) => {
-          let userDiscoveryPromise = _this.discovery.discoverHypertiesDO(user.user, ['comm'], ['chat'], user.domain);
-          usersDiscovery.push(userDiscoveryPromise);
-
-          //if (user.user.includes('://')) mutual = false;
-        });
-
-        Promise.all(usersDiscovery).then((userDiscoveryResults) => {
-          console.log('[GroupChatManager.create] Users Discovery Results->', userDiscoveryResults);
-
-          let selectedHyperties = [];
-
-          userDiscoveryResults.forEach((userDiscoveryResult) => {
-
-            userDiscoveryResult.forEach((discovered)=>{
-              if (discovered.data.status === 'live') {
-                selectedHyperties.push(discovered.data.hypertyID);
-                live[discovered.data.hypertyID] = discovered;
-              } else disconnected.push(discovered);
-            });
-
-          });
+    return super.create(name, users, extra);
 
 
-          /*        return usersSearch;
-      }).then((hypertiesIDs) => {
-        let selectedHyperties = hypertiesIDs.map((hyperty) => {
-          return hyperty.hypertyID;
-        }); */
-
-          console.info('[GroupChatManager] ---------------------- Syncher Create ---------------------- \n');
-          console.info('[GroupChatManager] Selected Hyperties: !!! ', selectedHyperties);
-          console.info(`Have ${selectedHyperties.length} users;`);
-
-          let input = Object.assign({resources: ['chat'], mutual: mutual}, extra);
-          delete input.name;
-
-          console.info('[GroupChatManager] input data:', input);
-          return syncher.create(_this._objectDescURL, selectedHyperties, _this.communicationObject, true, false, name, {}, input);
-        }).then(function(dataObjectReporter) {
-
-          console.info('[GroupChatManager] 3. Return Create Data Object Reporter', dataObjectReporter);
-
-          let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, myIdentity, _this);
-          chatController.dataObjectReporter = dataObjectReporter;
-
-          _this._reportersControllers[dataObjectReporter.url] = chatController;
-
-          console.log('[GroupChatManager] chatController invitationsHandler: ',   chatController.invitationsHandler);
-
-          // process invitations to handle not received invitations
-          if (dataObjectReporter.invitations.length > 0) {
-            chatController.invitationsHandler.processInvitations(live, dataObjectReporter);
-          }
-
-          // If any invited User is disconnected let's wait until it is connected again
-          if (disconnected.length > 0) chatController.invitationsHandler.inviteDisconnectedHyperties(disconnected, dataObjectReporter);
-
-          resolve(chatController);
-
-        }).catch(function(reason) {
-          reject(reason);
-        });
-
-      }).catch((reason) => {
-        console.log('[GroupChatManager] MyIdentity Error:', reason);
-        return reject(reason);
-      });
-    });
 
   }
 
@@ -409,8 +239,7 @@ class GroupChatManager {
    * @param  {Function} CreateEvent The CreateEvent fired by the Syncher when an invitaion is received
    */
   onInvitation(callback) {
-    let _this = this;
-    _this._onInvitation = callback;
+    return super.onInvitation(callback);
   }
 
   onResumeReporter(callback) {
@@ -429,32 +258,8 @@ class GroupChatManager {
    * @return {<Promise>ChatController}             It returns the ChatController object as a Promise
    */
   join(invitationURL) {
-    let _this = this;
+    return super.join(invitationURL);
 
-    return new Promise(function(resolve, reject) {
-      let syncher = _this._syncher;
-      let myIdentity;
-
-      console.info('[GroupChatManager] ------------------------ Syncher subscribe ---------------------- \n');
-      console.info('invitationURL', invitationURL);
-      _this.search.myIdentity().then((identity) => {
-        myIdentity = identity;
-        return syncher.subscribe(_this._objectDescURL, invitationURL, true, false);
-
-      }).then(function(dataObjectObserver) {
-        console.info('Data Object Observer: ', dataObjectObserver);
-
-        let chatController = new ChatController(syncher, _this.discovery, _this._domain, _this.search, myIdentity, _this);
-        resolve(chatController);
-
-        chatController.dataObjectObserver = dataObjectObserver;
-
-        _this._observersControllers[dataObjectObserver.url] = chatController;
-
-      }).catch(function(reason) {
-        reject(reason);
-      });
-    });
 
   }
 
