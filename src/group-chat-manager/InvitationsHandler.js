@@ -38,7 +38,11 @@ class InvitationsHandler {
     let _this = this;
     _this._hypertyURL = hypertyURL;
 
-    _this._pending = {};// All pending invitations
+    _this._pending = {}; // All pending invitations
+  }
+
+  set invitationResponse(callback) {
+    this._invitationsResponse = callback;
   }
 
   /**
@@ -84,12 +88,17 @@ class InvitationsHandler {
   processInvitations(live, dataObjectReporter) {
     let _this = this;
 
-    let invitations = dataObjectReporter.invitations;
+    let invitations = dataObjectReporter.invitations || [];
 
-    console.log('[GroupChatManager.InvitationsHandler.processInvitations] waiting for replies ', invitations);
+    console.log('[GroupChatManager.InvitationsHandler.processInvitations] waiting for replies ', invitations, this._invitationsResponse);
 
     invitations.forEach((invitation) => {
-      invitation.then(console.log).catch((result)=>{
+      invitation.then((result) => {
+        console.log('[GroupChatManager.InvitationsHandler.processInvitations] - OK: ', result, this._invitationsResponse);
+        if (this._invitationsResponse) { this._invitationsResponse(result); }
+      }).catch((result) => {
+        console.log('[GroupChatManager.InvitationsHandler.processInvitations] - NOT OK: ', result, this._invitationsResponse);
+        if (this._invitationsResponse) { this._invitationsResponse(result); }
         _this.inviteDisconnectedHyperties([live[result.invited]], dataObjectReporter);
       });
     });
@@ -99,12 +108,13 @@ class InvitationsHandler {
   resumeDiscoveries(discoveryEngine, groupChat) {
     let _this = this;
 
-    let live = {};
-    let liveHyperties = [];
-    let disconnected = [];
-    let unsubscriptonPromises = [];
-
     return new Promise((resolve, reject) => {
+
+      let live = {};
+      let liveHyperties = [];
+      let disconnected = [];
+      let unsubscriptonPromises = [];
+
       discoveryEngine.resumeDiscoveries().then((discoveries) => {
 
         console.log('[GroupChatManager.InvitationsHandler.resumeDiscoveries] found: ', discoveries);
@@ -154,11 +164,12 @@ class InvitationsHandler {
     console.log('[GroupChatManager.InvitationsHandler.cleanInvitations] ', chatInvitations);
 
     if (chatInvitations) {
-      let pendingInvitations = Object.keys(chatInvitations);
-
-      let unsubscriptonPromises = [];
 
       return new Promise((resolve, reject) => {
+        let pendingInvitations = Object.keys(chatInvitations);
+
+        let unsubscriptonPromises = [];
+
         pendingInvitations.forEach((invitation)=>{
           unsubscriptonPromises.push( chatInvitations[invitation].unsubscribeLive(_this._hypertyURL) );
         });
