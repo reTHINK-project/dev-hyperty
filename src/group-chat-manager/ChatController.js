@@ -29,10 +29,11 @@
 
 import { UserInfo } from './UserInfo';
 import {RegistrationStatus} from 'service-framework/dist/Discovery';
+import InvitationsHandler from './InvitationsHandler';
 
 class ChatController {
 
-  constructor(syncher, discovery, domain, search, identity, manager, invitationsHandler) {
+  constructor(syncher, discovery, domain, search, identity, manager) {
 
     if (!syncher) throw Error('Syncher is a necessary dependecy');
     if (!discovery) throw Error('Discover is a necessary dependecy');
@@ -50,11 +51,16 @@ class ChatController {
 
     _this._manager = manager;
 
+    const hypertyURL = syncher.owner;
+
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
 
-    _this._invitationsHandler = invitationsHandler;
+    _this._invitationsHandler = new InvitationsHandler(hypertyURL);
 
+  }
 
+  get invitationsHandler() {
+    return this._invitationsHandler;
   }
 
   set dataObjectReporter(dataObjectReporter) {
@@ -66,6 +72,13 @@ class ChatController {
 
     // Handler to process received files
 
+    // dataObjectReporter.onResponse(function(event) {
+    //   console.log('[DataObjectReporter - onResponse]', event);
+    //   if (_this._onInvitationResponse) {
+    //     _this._onInvitationResponse(event);
+    //   }
+    //
+    // });
 
     dataObjectReporter.onSubscription(function(event) {
 
@@ -426,6 +439,11 @@ class ChatController {
     _this._onClose = callback;
   }
 
+  onResponse(callback) {
+    let _this = this;
+    _this._onResponse = callback;
+  }
+
   /**
    * This function is used to add / invite new user on an existing Group Chat instance.
    * Only the Reporter, i.e. the Hyperty that has created the Group Chat, is allowed to use this function.
@@ -566,6 +584,12 @@ class ChatController {
 
 }
 
+  onInvitationResponse(callback) {
+    let _this = this;
+    _this._onInvitationResponse = callback;
+    _this._invitationsHandler.invitationResponse = callback;
+  }
+
 
   /**
    * This function is used to remove a user from an existing Group Chat instance.
@@ -604,9 +628,15 @@ class ChatController {
               delete _this._manager._reportersControllers[_this.dataObjectReporter.url];
               _this.dataObjectReporter.delete();
               resolve(true);
-              } catch (e) {
-                reject(false);
-              }
+              if (_this._onClose) _this._onClose({
+                code: 200,
+                desc: 'deleted',
+                url: _this.dataObjectReporter.url
+              })
+            } catch (e) {
+              console.error(e);
+              reject(false);
+            }
           });
 
       } else {
@@ -615,6 +645,7 @@ class ChatController {
           _this.dataObjectObserver.unsubscribe();
           resolve(true);
         } catch (e) {
+          console.error(e);
           reject(false);
         }
       }

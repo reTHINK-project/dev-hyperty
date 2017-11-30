@@ -233,7 +233,13 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
         sdpMid: e.candidate.sdpMid,
         sdpMLineIndex: e.candidate.sdpMLineIndex
       };
-      this.objReporter.data.iceCandidates.push(icecandidate);
+
+      let data =  this.objReporter.data;
+      let ices = JSON.parse(JSON.stringify(data.iceCandidates));
+
+      ices.push(icecandidate);
+
+      this.objReporter.data.iceCandidates = ices;
     }
 
     // unfortunately onremovestream() didn't recognizes the remove of a stream
