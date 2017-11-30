@@ -40,6 +40,8 @@ function hypertyReady(result, identity) {
   $('.join-room-btn').hide();*/
 
   chatGroupManager = result.instance;
+  chatGroupManager.identity = identity;
+  chatGroupManager.messages = {};
   chatGroupManager.onInvitation((event) => {
     onInvitation(event);
   });
@@ -316,15 +318,29 @@ function prepareChat(chatController, isOwner) {
   Object.keys(msgs).forEach(function(objectKey, index) {
     var msg = msgs[objectKey];
     console.log('ProcessMessage: ', msg);
-    processMessage({
-      value: msgs[objectKey].data,
-      identity: msgs[objectKey].identity
-    });
+    if(msgs[objectKey].data.type=='chat'){
+      processMessage({
+        childId: msgs[objectKey]._url,
+        value: msgs[objectKey].data,
+        identity: msgs[objectKey].identity
+      },chatController);
+    }else if(msgs[objectKey].data.type=='chatobject'){
+      processReaction({
+        childId: msgs[objectKey]._url,
+        value: msgs[objectKey].data,
+        identity: msgs[objectKey].identity
+      });
+    }
   });
 
   chatController.onMessage(function(message) {
     console.info('[GroupChatManagerDemo ] new message received: ', message);
-    processMessage(message);
+    processMessage(message,chatController);
+  });
+
+  chatController.onReaction(function(reaction) {
+    console.info('[GroupChatManagerDemo ] new reaction received: ', reaction);
+    processReaction(reaction);
   });
 
   chatController.onChange(function(event) {
@@ -451,7 +467,7 @@ function chatManagerReady(chatController, isOwner) {
 
     chatController.send(message).then(function(result) {
       console.log('message sent', result);
-      processMessage(result);
+      processMessage(result,chatController);
       messageForm[0].reset();
     }).catch(function(reason) {
       console.error('message error', reason);
@@ -477,7 +493,7 @@ function chatManagerReady(chatController, isOwner) {
 
 }
 
-function processMessage(message) {
+function processMessage(message,chatController) {
 
   console.log('[GroupChatManager - processMessage] - msg ', message);
 
@@ -490,16 +506,94 @@ function processMessage(message) {
     avatar = message.identity.userProfile.avatar;
     from = message.identity.userProfile.cn;
   }
+  message.childId = message.childId.replace(/#/g, '-').replace(/.*:\/\/(.*)\//,'$1_');
   if (message.value.content) {
-    let list = `<li class="collection-item avatar">
+    let list = `<li class="collection-item avatar" id="`+ message.childId +`">
       <img src="` + avatar + `" alt="" class="circle">
       <span class="title">` + from + `</span>
       <p>` + message.value.content.replace(/\n/g, '<br>') + `</p>
+      <div class="secondary-content reactions">
+      <a href="#!" data-msg-id="`+ message.childId + `" class="thumb_up_button tooltipped"
+      data-position="bottom" data-delay="50" data-tooltip="">
+      <i class="material-icons">thumb_up</i></a>
+      <span class="thumb_up_count reaction_count tooltipped"
+      data-position="bottom" data-delay="50" data-tooltip="" style="font-size:15pt;vertical-align:top"></span>
+      <a href="#!" data-msg-id="`+ message.childId + `" class="thumb_down_button">
+      <i class="material-icons">thumb_down</i></a>
+      <span class="thumb_down_count reaction_count tooltipped"
+      data-position="bottom" data-delay="50" data-tooltip="" style="font-size:15pt;vertical-align:top"></span>
+      </div>
     </li>`;
 
     console.log('[GroupChatManager - processMessage] - ', messagesList, message, list);
 
     messagesList.append(list);
+    chatGroupManager.messages[message.childId]={
+      text: message.value.content, 
+      reactions: {}
+    };
+
+    $('#'+message.childId + ' .reactions a').on('click',function(event){
+      let msgId =  $(event.currentTarget).data("msg-id");
+      let reactionType = ''
+      if($(event.currentTarget).hasClass("thumb_up_button")){
+        reactionType = "thumb_up";
+        console.log("Thumbs up!!!!! :) to ",$(event.currentTarget).data("msg-id"));
+      }else if($(event.currentTarget).hasClass("thumb_down_button")){
+        reactionType = "thumb_down";
+        console.log("Thumbs down!!!!! :(");
+      }else {console.log("no thumbs");}
+      chatController.sendReaction(reactionType,msgId).then(function(reaction){
+        let msgId = reaction.value.content.msgId;
+        let reactionType = reaction.value.content.reactionType;
+        //let reaction = { identity: message.identity, content: {msgId: msgId,reactionType: reactionType}};
+        processReaction(reaction);
+      })
+    });
+
+  }
+}
+
+function processReaction(reaction){
+  let msgId = reaction.value.content.msgId;
+  let reactionType = reaction.value.content.reactionType;
+  let message = chatGroupManager.messages[msgId];
+  console.log("cGM messages",chatGroupManager.messages);
+  if(message.reactions[reactionType] == undefined){
+    message.reactions[reactionType] = {};
+  }
+  if(! (reaction.identity.userProfile.userURL in message.reactions[reactionType])){
+    message.reactions[reactionType][reaction.identity.userProfile.userURL] = {
+      name: reaction.identity.userProfile.cn,
+      id: reaction.childId
+    };
+    updateReaction(reaction);
+  }
+}
+
+function processReactionDeletion(reaction){
+  let msgId = reaction.value.content.msgId;
+  let reactionType = reaction.value.content.reactionType;
+  let message = chatGroupManager.messages[msgId];
+
+  message.reactions[reactionType].delete(reaction.identity.userProfile.userURL);
+  updateReaction(reaction);
+}
+
+function updateReaction(reaction){
+  let msgId = reaction.value.content.msgId;
+  let reactionType = reaction.value.content.reactionType;
+  let message = chatGroupManager.messages[msgId];
+  console.log("update count", $('#'+msgId+' .reactions .'+reactionType+'_count'), "to",(message.reactions[reactionType].length));
+  $('#'+msgId+' .reactions .'+reactionType+'_count').html(Object.keys(message.reactions[reactionType]).length);
+  $('#'+msgId+' .reactions .'+reactionType+'_count').attr('data-tooltip',
+            $.map(Object.values(message.reactions[reactionType]),function(user,i){
+              return user.name;
+            }).join(", ")
+  );
+  $('#'+msgId+' .reactions .'+reactionType+'_count').tooltip();
+  if(reaction.identity.userProfile.userURL==chatGroupManager.identity.userURL){
+    $('#'+msgId+' .reactions .'+reactionType+'_button').css('color','#999');  
   }
 }
 

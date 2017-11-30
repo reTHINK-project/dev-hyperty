@@ -3,7 +3,7 @@
   "signature": "",
   "configuration": {},
   "hypertyType": [
-    "chat"
+    "chat","chatobject"
   ],
   "constraints": {
     "browser": true

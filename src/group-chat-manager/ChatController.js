@@ -52,6 +52,19 @@ class ChatController {
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
   }
 
+  _onAddChildGeneric(child){
+    let _this = this;
+    _this.child_cseq +=1;
+    console.info('[GroupChatManager.ChatController] - Add Child: ', child);
+    if (child.value.type == "chat"){
+      if (_this._onMessage) _this._onMessage(child);
+    }else if (child.value.type == "chatobject" && child.value.content.type == "reaction"){
+      if (_this._onReaction) _this._onReaction(child);
+    }else{
+      console.info('[GroupChatManager.ChatController] - Add Child: NOTHING DONE!', child);
+    }
+  }
+
   set dataObjectReporter(dataObjectReporter) {
 
     if (!dataObjectReporter) throw new Error('The data object reporter is necessary parameter ');
@@ -67,11 +80,8 @@ class ChatController {
       }
     });
 
-    dataObjectReporter.onAddChild(function(child) {
-      _this.child_cseq +=1;
-      console.info('[GroupChatManager.ChatController]Reporter - Add Child:', child);
-      // dataObjectReporter.data.lastModified = new Date().toJSON();
-      if (_this._onMessage) _this._onMessage(child);
+    dataObjectReporter.onAddChild(function(child){
+      _this._onAddChildGeneric.call(_this,child)
     });
 
     dataObjectReporter.onRead((event) => {
@@ -112,10 +122,8 @@ class ChatController {
 
     });
 
-    dataObjectObserver.onAddChild(function(child) {
-      _this.child_cseq +=1;
-      console.info('[GroupChatManager.ChatController]Observer - Add Child: ', child);
-      if (_this._onMessage) _this._onMessage(child);
+    dataObjectObserver.onAddChild(function(child){
+      _this._onAddChildGeneric.call(_this,child)
     });
 
     // let childrens = dataObjectObserver.childrens;
@@ -203,6 +211,7 @@ class ChatController {
     console.log('[GroupChatManager.ChatController.onUnsubscribe - this._onUserRemoved] ', this.onUserRemoved);
     if (this._onUserRemoved) this._onUserRemoved(participant);
   }
+
   /**
    * This function is used to send a chat message.
    * @param  {string}     message                        Is the ChatMessage to be sent.
@@ -238,7 +247,7 @@ class ChatController {
         //resolve(dataObjectChild);
 
         let msg = {
-          childId: dataObjectChild._childId,
+          childId: dataObjectChild._url,
           from: dataObjectChild._owner,
           value: dataObjectChild.data,
           type: 'create',
@@ -255,6 +264,41 @@ class ChatController {
 
     });
 
+  }
+
+  sendReaction(reactionType,msgId){
+    let _this = this;
+    let mode = _this.controllerMode;
+    let dataObject = mode === 'reporter' ? _this.dataObjectReporter : _this.dataObjectObserver;
+
+    return new Promise(function(resolve,reject){
+      let _dataObjectChild;
+      _this.child_cseq += 1;
+      let msg = {
+        type : "chatobject",
+        content : {
+          type: 'reaction',
+          reactionType: reactionType,
+          msgId: msgId
+        }
+      }
+
+      dataObject.addChild('resources', msg).then(function(dataObjectChild) {
+        let msg = {
+          childId: dataObjectChild._url,
+          from: dataObjectChild._owner,
+          value: dataObjectChild.data,
+          type: 'create',
+          identity: {
+            userProfile: _this.myIdentity
+          }
+        };
+        resolve(msg);
+      }).catch(function(reason) {
+        console.error('Reason:', reason);
+        reject(reason);
+      });
+    });
   }
 
   /**
@@ -275,6 +319,16 @@ class ChatController {
   onMessage(callback) {
     let _this = this;
     _this._onMessage = callback;
+  }
+
+   /**
+   * This function is used to receive new message reactions.
+   * @param  {Function} callback Function to handle with new message reactions
+   * @return {Communication.ChatMessage} m
+   */
+  onReaction(callback) {
+    let _this = this;
+    _this._onReaction = callback;
   }
 
   /**
