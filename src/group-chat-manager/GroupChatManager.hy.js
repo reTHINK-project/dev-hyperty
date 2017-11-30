@@ -46,9 +46,15 @@ class GroupChatManager extends ChatManager {
   constructor(hypertyURL, bus, configuration) {
     super(hypertyURL, bus, configuration);
 
+    let _this = this;
 
-    this._resumeReporters();
-    this._resumeObservers();
+    _this._syncher.onNotification(function(event) {
+      console.log('[GroupChatManager] noNotification:', event);
+      _this.processNotification(event);
+    });
+
+    _this._resumeReporters();
+    _this._resumeObservers();
 
 
 
@@ -143,7 +149,7 @@ class GroupChatManager extends ChatManager {
             // Save the chat controllers by dataObjectReporterURL
             this._observersControllers[dataObjectObserverURL] = chatController;
 
-            let reporterStatus = new RegistrationStatus(chatObserver.url, _this._runtimeURL, _this._hypertyURL, _this._bus);
+            let reporterStatus = new RegistrationStatus(chatObserver.url, _this._runtimeURL, _this._myUrl, _this._bus);
 
             // recursive function to sync with chat reporter
 
@@ -163,7 +169,7 @@ class GroupChatManager extends ChatManager {
               });
             };
 
-            reporterSync(chatObserver, _this._hypertyURL, reporterStatus);
+            reporterSync(chatObserver, _this._myUrl, reporterStatus);
 
           });
 
@@ -208,7 +214,7 @@ class GroupChatManager extends ChatManager {
           user = user[0] + '://' + user[1].split('/')[1];
 
           let msg = {
-            type: 'create', from: _this._hypertyURL, to: user,
+            type: 'create', from: _this._myUrl, to: user,
             body: { resource: objectUrl, schema: schemaUrl, value: communication.metadata }
           };
 
