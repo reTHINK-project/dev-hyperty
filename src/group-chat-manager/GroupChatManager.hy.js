@@ -49,7 +49,7 @@ class GroupChatManager extends ChatManager {
     let _this = this;
 
     _this._syncher.onNotification(function(event) {
-      console.log('[GroupChatManager] noNotification:', event);
+      console.log('[GroupChatManager] onNotification:', event);
       _this.processNotification(event);
     });
 
