@@ -89,18 +89,18 @@ start(){
 
       //TODO: filter from contexts instead of returning context[0]
 
-      _this.contexts[0] = _this._filterResumedContexts(reporters);
+      _this.contexts['myAvailability'] = _this._filterResumedContexts(reporters);
 
-      console.log('[UserAvailabilityReporter.start] resuming ', reporters);
+      console.log('[UserAvailabilityReporter.start] resuming ', _this.contexts['myAvailability']);
       // set availability to available
 
-      _this._onSubscription(_this.contexts[0]);
+      _this._onSubscription(_this.contexts['myAvailability']);
 
 /*      _this.userAvailability = reporters[reportersList[0]];
 
       _this._onSubscription(_this.userAvailability);*/
 
-      resolve(_this.contexts[0]);
+      resolve(_this.contexts['myAvailability']);
       } else {
         console.log('[UserAvailabilityReporter.start] nothing to resume ', reporters);
         let name = 'myAvailability';
@@ -121,9 +121,9 @@ _filterResumedContexts(reporters) {
   let last = 0;
 
   return Object.keys(reporters)
-    .filter(reporter => reporters[reporter].reporter === this.syncher._owner)
+    .filter(reporter => reporters[reporter].metadata.reporter === this.syncher._owner)
     .reduce((obj, key) => {
-      if (reporters[key].lastModified > last) obj = reporters[key];
+      if (Date.parse(reporters[key].metadata.lastModified) > last) obj = reporters[key];
       return obj;
     }, {});
 }
