@@ -68,7 +68,7 @@ function availabilityReady(availability) {
   userAvailabilityHy.addEventListener('myAvailability-context-update', function(event) {
 
     console.log('[UserAvailabilityReporterDemo.availabilityReady] Updated :', event);
-    $myAvailability.text(event)
+    $myAvailability.text(event[0].value)
 
     });
   userAvailabilityHy.setStatus('available');

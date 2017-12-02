@@ -159,7 +159,9 @@ onResumeReporter(callback) {
   }*/
 
   setStatus(newStatus) {
-    return super.setStatus('myAvailability', newStatus);
+//    _this.contexts[id].data.values[0].value;
+    let newContext = [{value: newStatus}];
+    return super.setContext('myAvailability', newContext);
   }
 
 
