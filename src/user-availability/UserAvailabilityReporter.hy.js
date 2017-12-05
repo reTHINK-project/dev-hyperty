@@ -24,57 +24,54 @@
 // Service Framework
 //import {Discovery} from 'service-framework/dist/Discovery';
 import IdentityManager from 'service-framework/dist/IdentityManager';
-import {Syncher} from 'service-framework/dist/Syncher';
+//import {Syncher} from 'service-framework/dist/Syncher';
+import {ContextReporter} from 'service-framework/dist/ContextManager';
 
 // Utils
-import EventEmitter from '../utils/EventEmitter.js';
-import {divideURL} from '../utils/utils.js';
-import URI from 'urijs';
+//import EventEmitter from '../utils/EventEmitter.js';
+//import {divideURL} from '../utils/utils.js';
+//import URI from 'urijs';
 
 import availability from './availability.js';
 
 /**
-* Hyperty Presence;
-* @author Apizee [dev@apizee.com]
+* Hyperty User Availability;
+* @author Paulo Chainho  [paulo-g-chainho@alticelabs.com]
 * @version 0.1.0
 */
-class UserAvailabilityReporter extends EventEmitter {
+class UserAvailabilityReporter extends ContextReporter {
 
   constructor(hypertyURL, bus, configuration) {
-    if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
-    if (!bus) throw new Error('The MiniBus is a needed parameter');
-    if (!configuration) throw new Error('The configuration is a needed parameter');
 
     super(hypertyURL, bus, configuration);
     let _this = this;
 
     console.info('[UserAvailabilityReporter] started with url: ', hypertyURL);
 
-    this.syncher = new Syncher(hypertyURL, bus, configuration);
+//    this.syncher = new Syncher(hypertyURL, bus, configuration);
 
     //    this.discovery = new Discovery(hypertyURL, bus);
     this.identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
-    this.domain = divideURL(hypertyURL).domain;
+/*    this.domain = divideURL(hypertyURL).domain;
 
     this.userAvailabilityyDescURL = 'hyperty-catalogue://catalogue.' + this.domain + '/.well-known/dataschema/Context';
-
+*/
 
 //    this.heartbeat = [];
 
     this.syncher.onNotification((event) => {
       let _this = this;
-      _this.onNotification(event);
+      _this.processNotification(event);
     });
 
-    //TODO: uncomment when used with service framework develop branch
 
-    this.syncher.onClose((event) => {
+/*    this.syncher.onClose((event) => {
 
       console.log('[UserAvailabilityReporter.onClose]')
       let _this = this;
       _this.setStatus('unavailable');
       event.ack();
-    });
+    });*/
 
   }
 
@@ -82,6 +79,7 @@ start(){
   let _this = this;
 
   return new Promise((resolve, reject) => {
+    console.log('[UserAvailabilityReporter.starting]' );
 
     this.syncher.resumeReporters({store: true}).then((reporters) => {
 
@@ -89,17 +87,24 @@ start(){
 
       if (reportersList.length  > 0) {
 
-      console.log('[UserAvailabilityReporter.start] resuming ', reporters[reportersList[0]]);
+      //TODO: filter from contexts instead of returning context[0]
+
+      _this.contexts['myAvailability'] = _this._filterResumedContexts(reporters);
+
+      console.log('[UserAvailabilityReporter.start] resuming ', _this.contexts['myAvailability']);
       // set availability to available
 
-      _this.userAvailability = reporters[reportersList[0]];
+      _this._onSubscription(_this.contexts['myAvailability']);
 
-      _this._onSubscription(_this.userAvailability);
+/*      _this.userAvailability = reporters[reportersList[0]];
 
-      resolve(_this.userAvailability);
+      _this._onSubscription(_this.userAvailability);*/
+
+      resolve(_this.contexts['myAvailability']);
       } else {
         console.log('[UserAvailabilityReporter.start] nothing to resume ', reporters);
-        resolve(_this._create());
+        let name = 'myAvailability';
+        resolve(_this.create(name, availability(), ['availability_context'], name));
       }
 
     }).catch((reason) => {
@@ -110,11 +115,24 @@ start(){
 });
 }
 
+// return my resumed context
+
+_filterResumedContexts(reporters) {
+  let last = 0;
+
+  return Object.keys(reporters)
+    .filter(reporter => reporters[reporter].metadata.reporter === this.syncher._owner)
+    .reduce((obj, key) => {
+      if (Date.parse(reporters[key].metadata.lastModified) > last) obj = reporters[key];
+      return obj;
+    }, {});
+}
+
 onResumeReporter(callback) {
    let _this = this;
    _this._onResumeReporter = callback;
  }
-
+/*
   onNotification(event) {
     let _this = this;
     console.info('userAvailability Event Received: ', event);
@@ -122,48 +140,28 @@ onResumeReporter(callback) {
 
     event.ack();
 
-  }
+  }*/
 
   /**
    * This function is used to create a new status object syncher
    * @param  {URL.UserURL} contacts List of Users
    * @return {Promise}
    */
-  _create() {
-    let _this = this;
-
-    return new Promise((resolve, reject) => {
-      console.info('[UserAvailabilityReporter.create] lets create a new User availability Context Object ');
-      _this.syncher.create(_this.userAvailabilityyDescURL, [], availability(), true, false, 'myAvailability', null, {resources: ['availability_context'], expires: 30})
-      .then((userAvailability) => {
-        _this.userAvailability = userAvailability;
-
-        _this._onSubscription(userAvailability);
-        resolve(userAvailability);
-
-      }).catch(function(reason) {
-        reject(reason);
-      });
-
-    });
-
+  create(id, init, resources, name = 'myContext') {
+    return super.create(id, init, resources, name);
   }
 
-  _onSubscription(userAvailability){
+/*  _onSubscription(userAvailability){
     userAvailability.onSubscription((event) => {
       console.info('[UserAvailabilityReporterReporter._onSubscription] accepting: ', event);
       event.accept();
     });
-  }
+  }*/
 
   setStatus(newStatus) {
-    let _this = this;
-    console.log('[UserAvailabilityReporterReporter.setStatus] before change :', _this.userAvailability.data);
-
-    _this.userAvailability.data.values[0].value = newStatus;
-    console.debug('[UserAvailabilityReporterReporter.setStatus] after change :', _this.userAvailability.data);
-    _this.trigger('my-availability-update', newStatus);
-
+//    _this.contexts[id].data.values[0].value;
+    let newContext = [{value: newStatus}];
+    return super.setContext('myAvailability', newContext);
   }
 
 
