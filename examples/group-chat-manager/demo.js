@@ -567,7 +567,7 @@ function processMessage(message) {
 
   if (message.value) {
     let list = document.createElement('li');
-    list.className = 'collection-item picture';
+    list.className = 'collection-item avatar';
 
     let pictureEl = document.createElement('img');
     pictureEl.className = 'circle';
