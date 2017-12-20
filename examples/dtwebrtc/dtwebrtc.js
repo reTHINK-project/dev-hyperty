@@ -65,7 +65,7 @@ function hypertyLoaded(result) {
 	hyperty.search.myIdentity().then(function(identity) {
     console.log("[DTWebRTC.main]: registered user is: ", identity);
     hyperty.myIdentity = identity;
-     let info = "Authenticated as:</br>" + identity.cn + ",  " + identity.username + '<img src="' + hyperty.myIdentity.avatar + '" class="logo" /></br>' +
+     let info = "Authenticated as:</br>" + identity.name + ",  " + identity.preferred_username + '<img src="' + hyperty.myIdentity.picture + '" class="logo" /></br>' +
                 "Hyperty URL:</br>" + result.runtimeHypertyURL;
       $('.hyperty-panel').html( info );
   }).catch((reason) => {
@@ -115,12 +115,12 @@ function hangup() {
 }
 
 function fillmodal(calleeInfo) {
-  let picture = calleeInfo.infoToken ? calleeInfo.infoToken.picture : calleeInfo.userProfile ? calleeInfo.userProfile.avatar : "";
-  let name = calleeInfo.infoToken ? calleeInfo.infoToken.name : calleeInfo.userProfile ? calleeInfo.userProfile.cn : "";
-  let email = calleeInfo.infoToken ? calleeInfo.infoToken.email : calleeInfo.userProfile ? calleeInfo.userProfile.username : "";
+  let picture = calleeInfo.infoToken ? calleeInfo.infoToken.picture : calleeInfo.userProfile ? calleeInfo.userProfile.picture : "";
+  let name = calleeInfo.infoToken ? calleeInfo.infoToken.name : calleeInfo.userProfile ? calleeInfo.userProfile.name : "";
+  let email = calleeInfo.infoToken ? calleeInfo.infoToken.email : calleeInfo.userProfile ? calleeInfo.userProfile.preferred_username : "";
   let locale = calleeInfo.infoToken ? calleeInfo.infoToken.locale : calleeInfo.userProfile ? calleeInfo.userProfile.locale : "";
   $('#modalinfo').html(
-    '<div class="container-fluid"><div class="row"><div class="col-sm-2 avatar"><img src="' + picture + '" ></div>' +
+    '<div class="container-fluid"><div class="row"><div class="col-sm-2 picture"><img src="' + picture + '" ></div>' +
     '<div class="col-sm-9 col-sm-offset-1"><div><span class=" black-text">Name: ' + name + '</span></div><div><span class=" black-text">Email: ' + email + '</span></div><div><span class=" black-text">Ort: ' + locale + '</span></div>' +
     '</div></div></div>');
 }
@@ -132,7 +132,7 @@ function initListeners() {
   hyperty.addEventListener('incomingcall', (identity) => {
 		// preparing the modal dialog with the given identity info
     console.log('incomingcall event received from:', identity);
-    $('.invitation-panel').html('<p> Invitation received from:\n ' + identity.email ? identity.email : identity.username + '</p>');
+    $('.invitation-panel').html('<p> Invitation received from:\n ' + identity.email ? identity.email : identity.preferred_username + '</p>');
     fillmodal(identity);
     prepareMediaOptions();
 
@@ -264,7 +264,7 @@ function getIceServers() {
   if (turn)
     iceServers.push({
       urls: "turn:" + turn,
-      username: turn_user,
+      preferred_username: turn_user,
       credential: turn_pass
     });
   hyperty.setIceServer(iceServers, mode);

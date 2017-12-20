@@ -43,10 +43,10 @@ function hypertyReady(result, identity) {
 
   let userInfo = '<div class="row"><span class="white-text">' +
                  '<span class="col s2">' +
-                 '<img width="48" height="48" src="' + identity.avatar + '" alt="" class="circle">' +
+                 '<img width="48" height="48" src="' + identity.picture + '" alt="" class="circle">' +
                  '</span><span class="col s10">' +
-                 '<b>Name:</b> ' + identity.cn + '</br>' +
-                 '<b>Email:</b> ' + identity.username + '</br>' +
+                 '<b>Name:</b> ' + identity.name + '</br>' +
+                 '<b>Email:</b> ' + identity.preferred_username + '</br>' +
                  '<b>UserURL:</b> ' + identity.userURL +
                  '</span></div>';
 
@@ -105,16 +105,16 @@ function notificationHandler(controller, identity) {
   var parseInformation = '<div class="col s12">' +
         '<div class="row valign-wrapper">' +
           '<div class="col s2">' +
-            '<img src="' + calleeInfo.avatar + '" alt="" class="circle responsive-img">' +
+            '<img src="' + calleeInfo.picture + '" alt="" class="circle responsive-img">' +
           '</div>' +
           '<span class="col s10">' +
             '<div class="row">' +
               '<span class="col s3 text-right">Name: </span>' +
-              '<span class="col s9 black-text">' + calleeInfo.cn + '</span>' +
+              '<span class="col s9 black-text">' + calleeInfo.name + '</span>' +
             '</span>' +
             '<span class="row">' +
               '<span class="col s3 text-right">Email: </span>' +
-              '<span class="col s9 black-text">' + calleeInfo.username + '</span>' +
+              '<span class="col s9 black-text">' + calleeInfo.preferred_username + '</span>' +
             '</span>' +
             '<span class="row">' +
               '<span class="col s3 text-right">Locale: </span>' +

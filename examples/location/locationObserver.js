@@ -217,7 +217,7 @@ function createMap() {
   console.log('MAP->', map);
 }
 
-function addMarker(position, username) {
+function addMarker(position, preferred_username) {
 /*
   position.coords.latitude = position.values[0].value
   position.coords.longitude = position.values[1].value*/
@@ -225,7 +225,7 @@ function addMarker(position, username) {
   let key = -1;
   let markerColor;
   map.markers.forEach( function(index){
-    if(index.title == username)
+    if(index.title == preferred_username)
     {
       key = i;
       markerColor = map.markers[i].icon;
@@ -243,9 +243,9 @@ function addMarker(position, username) {
   map.addMarker({
       lat: position[0].value,
       lng: position[1].value,
-      title: username,
+      title: preferred_username,
       infoWindow: {
-          content: `<p>${username}</p>`
+          content: `<p>${preferred_username}</p>`
       },
       icon: markerColor
   });
