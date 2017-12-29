@@ -182,10 +182,10 @@ class Connector {
       if (!identity) {
         identity = {};
         identity.userProfile = {
-          avatar: "https://www.mybloggerguides.com/wp-content/uploads/2016/01/anonymous_avatar.png",
-          cn: 'anonymous',
+          picture: "https://www.mybloggerguides.com/wp-content/uploads/2016/01/anonymous_picture.png",
+          name: 'anonymous',
           userURL: 'anonymous',
-          username: "anonymous"
+          preferred_username: "anonymous"
             };
           }
 
