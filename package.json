@@ -26,5 +26,7 @@
     "eslint": "^4.3.0",
     "eslint-plugin-import": "^2.7.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "all": "0.0.0"
+  }
 }

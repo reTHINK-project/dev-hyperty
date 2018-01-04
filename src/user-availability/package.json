@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bootstrap": "^4.0.0-beta.2",
+    "bootstrap": "^4.0.0-beta.3",
     "service-framework": "github:rethink-project/dev-service-framework#develop"
   },
   "devDependencies": {
