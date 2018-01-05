@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1">
+
+    <title>{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}</title>
+    <meta name="description" content="{{ page.excerpt | default: site.description | strip_html | normalize_whitespace | truncate: 160 | escape }}">
+
+    <link rel="canonical" href="{{ page.url | prepend: site.github.url | replace: 'http://', '//' | replace:'index.html','' | absolute_url }}">
+    <link rel="alternate" type="application/rss+xml" title="{{ site.title | escape }}" href="{{ "/feed.xml" | relative_url }}">
+
+    <link rel="apple-touch-icon" sizes="57x57" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/favicon-16x16.png">
+    <link rel="manifest" href="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/img/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script> -->
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- reTHINK Runtime script -->
+    <script src="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/js/demos.js"></script>
+    <script src="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/js/main.js"></script>
+
+    <!-- reTHINK Runtime-->
+    <script src="https://hybroker.rethink.ptinovacao.pt/.well-known/runtime/rethink.js"></script>
+    <!-- <script src="{{ site.baseurl | replace: 'http://', '//' | prepend: site.github.url }}/assets/js/rethink/rethink.js"></script> -->
+
+    <style>
+      nav {
+        height: auto;
+      }
+
+      nav ul a {
+        text-transform: uppercase;
+      }
+
+      nav .nav-wrapper {
+        padding: 0 20px;
+        height: 102px;
+        line-height: 102px;
+      }
+
+      nav .brand-logo {
+        vertical-align: middle;
+        text-align: center;
+      }
+
+      nav .brand-logo img {
+        vertical-align: middle;
+      }
+
+      .tabs .tab {
+        min-width: 300px;
+        border-right: 1px solid #000;
+      }
+
+      .hyperties-list a {
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+
+    </style>
+  </head>
+
+  <body>
+
+    <!-- Header Start -->
+    <header class="sticky-top black" role="banner">
+      <div class="container-fluid">
+
+        <nav class="black">
+          <div class="nav-wrapper">
+            <a class="brand-logo" title="{{ site.subtitle }}" href="{{ site.baseurl }}/"><img src="{{site.logo | relative_url}}" alt="{{ site.title | escape }}"></a>
+            <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+            <ul class="right hide-on-med-and-down">
+              <li><a class="page-link" href="{{site.url}}/specs/" target="_blank">Documentation</a></li>
+              <li><a class="page-link" href="{{site.url}}/dev-hyperty/">Hyperties</a></li>
+              <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit" target="_blank">GitHub</a></li>
+              <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit/releases" target="_blank">v{{site.version}}</a></li>
+            </ul>
+            <ul class="side-nav" id="mobile-demo">
+              <li><a class="page-link" href="{{site.url}}/specs/" target="_blank">Documentation</a></li>
+              <li>
+                <a class="page-link" href="{{site.url}}/dev-hyperty/">Hyperties</a>
+                {% assign demos = site.pages | where: "layout", 'demo' %}
+                <div class="collection">
+                {% for item in demos %}
+                  {% if item.page_name %}
+                  {% if page.url == item.url %}
+                    <a href="#!" class="collection-item active disabled">{{item.page_name | escape }}</a>
+                  {% else %}
+                    <a href="{{item.url | relative_url }}" class="collection-item">{{item.page_name | escape }}</a>
+                  {% endif %}
+                  {% endif %}
+                {% endfor %}
+                </div>
+              </li>
+              <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit" target="_blank">GitHub</a></li>
+              <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit/releases" target="_blank">v{{site.version}}</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="container">
+
+      {% assign demos = site.pages | where: "layout", 'demo' %}
+      <ul class="row hyperties-list hide-on-med-and-down">
+      {% for item in demos %}
+        {% if item.page_name %}
+        {% if page.url == item.url %}
+          <li class="col item active"><a class="waves-effect waves-light btn-flat disabled" href="#">{{item.page_name | escape }}</a></li>
+        {% else %}
+          <li class="col item"><a class="waves-effect waves-light btn" href="{{item.url | relative_url }}">{{item.page_name | escape }}</a></li>
+        {% endif %}
+        {% endif %}
+      {% endfor %}
+      </ul>
+
+      <section id="global-header">
+        <div class="">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="block">
+                        <h1>{{ page.title | escape }}</h1>
+                        <p>{{ page.subtitle | escape }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </section>
+
+
+      <section class="demo-content">
+        {{ content }}
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+    <script>
+
+      $(window).on( "load", function() {
+        console.log('ready');
+        $(".button-collapse").sideNav();
+      })
+
+    </script>
+
+  </body>
+
+</html>

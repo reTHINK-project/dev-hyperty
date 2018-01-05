@@ -1,0 +1,58 @@
+
+### GENERAL SETTINGS ###
+
+# Site settings
+title: Hyperties Catalogue
+subtitle: Worldwide real-time decentralized communication infra-structure
+email: github@rethink-project.eu
+description: > # this means to ignore newlines until "baseurl:"
+  reTHINK Framework provides the tools to build a global
+  real-time decentralized communication infra-structure
+  where services are inherently inter-operable.
+grant: > # this means to ignore newlines until "baseurl:"
+  This project has received funding from the European
+  Horizon 2020 Programme for research, technological
+  development and demonstration under grant agreement n° 645342
+
+baseurl: "/dev-hyperty" # the subpath of your site, e.g. /blog
+
+url: "https://rethink-project.github.io"
+
+twitter_username: rethink_eu
+github_username:  reTHINK-project
+slack_channel: rethink-project
+version: 0.6.1
+
+# Github configuration
+github: [metadata]
+
+# Build settings
+markdown: kramdown
+theme: minima
+plugins:
+  - jekyll-feed
+
+sass:
+  style: compressed
+  sass_dir: _sass
+
+logo: "assets/img/logo.png"
+
+# Build settings
+markdown: kramdown
+permalink: /:title/
+# excerpt_separator: <!--more--> #use this in posts to define how long the excerpt of the post (that is shown on the Blog page) is
+
+header_pages:
+- icon-github.svg
+
+# Making projects separate from posts
+collections:
+  hyperties:
+    output: true
+    permalink: /hyperties/:title/
+  questions:
+    output: true
+    permalink: /questions/:title/
+
+### CONTACT SETTINGS ###

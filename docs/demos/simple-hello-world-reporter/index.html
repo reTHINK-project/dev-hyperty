@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+  <!-- reTHINK Runtime script -->
+  <script src="https://hybroker.rethink.ptinovacao.pt/.well-known/runtime/rethink.js"></script>
+
+  <!-- Hello World Demo script -->
+ </head>
+<body>
+
+  <script>
+  let config = {
+    "development": true,
+    "runtimeURL": "hyperty-catalogue://hybroker.rethink.ptinovacao.pt/.well-known/runtime/Runtime",
+    "domain": "hybroker.rethink.ptinovacao.pt"
+  }
+
+  let runtime;
+  let hypertyCatalogueURL = 'hyperty-catalogue://'+config.domain + '/.well-known/hyperty/HelloWorldReporter';
+  let observer = 'hyperty://hybroker.rethink.ptinovacao.pt/5a119a40-5782-4c60-8296-2d5e824e6e2c';
+  let helloObj = {}; // it will contain the Hello DataObject to be reported
+
+  rethink.default.install(config).then(function(result) {
+
+    runtime = result;
+
+    deployHyperty();
+
+  }).catch(function(reason) {hello.data
+    console.error(reason);
+  });
+
+
+  function deployHyperty(){
+    runtime.requireHyperty(hypertyCatalogueURL).then( function(hyperty) {
+        startUsingDeployedHperty(hyperty);
+      }).catch(function(reason) {
+      errorMessage(reason);
+    });
+  }
+
+  function startUsingDeployedHperty(hyperty){
+    hyperty.instance.hello(observer).then( function(hello) {
+      helloObj = hello;
+      console.log('[SimpleHelloWorld.hello] ', helloObj.data);
+      setTimeout(function(){ sayBye(hyperty);}, 3000);
+      });
+  }
+
+  function sayBye(hyperty){
+    hyperty.instance.bye();
+    console.log('[SimpleHelloWorld.sayBye] ', helloObj.data);
+    setTimeout(function(){ sayHelloAgain();}, 3000);
+    }
+
+  function sayHelloAgain(){
+      helloObj.data.hello = 'Hello Again :)';
+      console.log('[SimpleHelloWorld.sayHelloAgain] ', helloObj.data);
+      }
+
+
+  </script>
+
+
+</body>
+</html>

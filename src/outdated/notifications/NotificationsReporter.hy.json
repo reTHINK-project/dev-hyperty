@@ -1,0 +1,12 @@
+{
+  "configuration": {},
+  "hypertyType": [],
+  "constraints": {
+    "browser": true
+  },
+  "language": "javascript",
+  "signature": "",
+  "dataObjects": [
+    "https://catalogue.localhost/.well-known/dataschema/Communication"
+  ]
+}

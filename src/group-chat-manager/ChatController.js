@@ -27,9 +27,12 @@
 * @version 0.1.0
 */
 
+import { UserInfo } from './UserInfo';
+import {RegistrationStatus} from 'service-framework/dist/Discovery';
+
 class ChatController {
 
-  constructor(syncher, discovery, domain, search) {
+  constructor(syncher, discovery, domain, search, identity, manager, invitationsHandler) {
 
     if (!syncher) throw Error('Syncher is a necessary dependecy');
     if (!discovery) throw Error('Discover is a necessary dependecy');
@@ -40,40 +43,69 @@ class ChatController {
     _this._syncher = syncher;
     _this.discovery = discovery;
     _this.search = search;
-    _this.myIdentity = null;
+    _this.myIdentity = identity;
+    _this.controllerMode = 'reporter';
+    _this.child_cseq = 0;
+    _this.domain = domain;
+
+    _this._manager = manager;
 
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Communication';
 
-    syncher.onNotification(function(event) {
+    _this._invitationsHandler = invitationsHandler;
 
-      if (event.type === 'delete') {
-        if (_this._onClose) _this._onClose(event);
-      }
 
-    });
   }
 
   set dataObjectReporter(dataObjectReporter) {
 
-    if (!dataObjectReporter) throw new Error('The data object reporter is necessary parameter');
+    if (!dataObjectReporter) throw new Error('[ChatController] The data object reporter is necessary parameter ');
     let _this = this;
 
+    _this.controllerMode = 'reporter';
+
+    // Handler to process received files
+
+
     dataObjectReporter.onSubscription(function(event) {
-      event.accept();
 
-      console.log('New user has subscribe this object: ', event.identity);
-      dataObjectReporter.data.participants.push(event.identity);
-
-      if (_this._onUserAdded) _this._onUserAdded(event.identity);
+      switch (event.type) {
+        case 'subscribe': _this._onSubscribe(event); break;
+        case 'unsubscribe': _this._onUnsubscribe(event); break;
+      }
     });
 
-    dataObjectReporter.onAddChild(function(child) {
-      console.info('Reporter - Add Child: ', child);
-      dataObjectReporter.data.lastModified = new Date().toJSON();
-      if (_this._onMessage) _this._onMessage(child);
+    _this._setOnAddChildListener(dataObjectReporter);
+
+    dataObjectReporter.onRead((event) => {
+      event.accept();
+    });
+
+    dataObjectReporter.onExecute((event) => {
+      switch (event.method) {
+        case 'addUser':
+          _this.addUser(event.params[0]).then(() => {
+            event.accept();
+          }).catch(function(reason) {
+            console.error('Reason:', reason);
+            event.reject(reason);
+          });
+          break;
+          case 'removeUser':
+            _this.removeUser(event.params).then(() => {
+              event.accept();
+            }).catch(function(reason) {
+              console.error('Reason:', reason);
+              event.reject(reason);
+            });
+            break;
+        default: event.reject('[ChatController.onExecute] Chat method execution not accepted by Reporter');
+          break;
+      }
     });
 
     _this._dataObjectReporter = dataObjectReporter;
+
   }
 
   get dataObjectReporter() {
@@ -81,37 +113,47 @@ class ChatController {
     return _this._dataObjectReporter;
   }
 
+  get messages() {
+
+    return this.controllerMode === 'reporter' ? this._dataObjectReporter._childrenObjects['resources'] : this._dataObjectObserver._childrenObjects['resources'];
+  }
+
   set dataObjectObserver(dataObjectObserver) {
     let _this = this;
 
+    _this.controllerMode = 'observer';
+
     _this._dataObjectObserver = dataObjectObserver;
 
-    if (_this._onChange) {
-      dataObjectObserver.onChange(_this._onChange);
-    }
-
     dataObjectObserver.onChange('*', function(event) {
-      console.info('Observer - onChange', event);
-      if (_this._onChange) _this._onChange(event);
-    });
+      console.info('[GroupChatManager.ChatController]Observer - onChange', event);
 
-    dataObjectObserver.onChange('participants.*', function(event) {
+      if (event.field.includes('participants')) {
+        switch (event.cType) {
+          case 'add':
+            if (_this._onUserAdded) _this._onUserAdded(event);
+            break;
 
-      switch (event.cType) {
-        case 'add':
-          if (_this._onUserAdded) _this._onUserAdded(event);
-          break;
-
-        case 'remove':
-          if (_this._onUserRemoved) _this._onUserRemoved(event);
-          break;
+          case 'remove':
+            if (_this._onUserRemoved) _this._onUserRemoved(event);
+            break;
+        }
       }
+
+      if (_this._onChange) _this._onChange(event);
+
     });
 
-    dataObjectObserver.onAddChild(function(child) {
-      console.info('Observer - Add Child: ', child);
-      if (_this._onMessage) _this._onMessage(child);
-    });
+    _this._setOnAddChildListener(dataObjectObserver);
+
+    // let childrens = dataObjectObserver.childrens;
+    // Object.keys(childrens).forEach((child) => {
+    //   if (_this._onMessage) _this._onMessage({
+    //     childId: child,
+    //     identity: childrens[child].identity,
+    //     value: childrens[child].data
+    //   });
+    // })
 
   }
 
@@ -120,9 +162,142 @@ class ChatController {
     return _this._dataObjectObserver;
   }
 
-  get dataObject() {
+  _setOnAddChildListener(dataObject) {
+
     let _this = this;
-    return _this._dataObjectReporter ? _this.dataObjectReporter : _this.dataObjectObserver;
+
+    dataObject.onAddChild(function(child) {
+      _this.child_cseq +=1;
+      console.info('[GroupChatManager.ChatController._setOnAddChildListener] new Child received: ', child);
+
+      if (_this._onMessage) _this._onMessage(child);
+    });
+
+  }
+
+
+  get dataObject() {
+    return this.controllerMode === 'reporter' ? this.dataObjectReporter : this.dataObjectObserver;
+  }
+
+  set closeEvent(event) {
+    let _this = this;
+    _this._closeEvent = event;
+
+    if (_this._onClose) _this._onClose(event);
+  }
+
+  get closeEvent() {
+    let _this = this;
+    return _this._closeEvent;
+  }
+
+
+
+  _onSubscribe(event) {
+
+    let dataObjectReporter = this._dataObjectReporter;
+
+    event.accept();
+
+
+    console.log('[GroupChatManager.ChatController.onSubscribe] event', event, dataObjectReporter.url);
+    console.log('[GroupChatManager.ChatController.onSubscribe] New user has subscribe this object: ', dataObjectReporter.data, event.identity);
+
+    let identity = JSON.parse(JSON.stringify(event.identity));
+
+    if (identity.hasOwnProperty('assertion')) {
+      delete identity.assertion
+    }
+
+    let userInfo = {
+      hypertyURL: event.url,
+      domain: event.domain,
+      identity: identity
+    }
+    let userURL = event.identity.userProfile.userURL;
+
+    console.log('[GroupChatManager.ChatController.onSubscribe]  new participant', userInfo);
+    if (event.identity.legacy) {
+     userInfo.legacy = event.identity.legacy;
+    }
+
+    dataObjectReporter.data.participants[userURL] = userInfo;
+
+    console.log('[GroupChatManager.ChatController.onSubscribe] communicationObject OBJ chatcontroller', dataObjectReporter.data.participants);
+    console.log('[GroupChatManager.ChatController.onSubscribe - onSubscription] ', userInfo);
+    // console.log('[GroupChatManager.ChatController.onSubscribe - this._onUserAdded] ', this._onUserAdded);
+
+    if (this._onUserAdded) this._onUserAdded(userInfo);
+  }
+
+  _onUnsubscribe(event) {
+    let dataObjectReporter = this._dataObjectReporter;
+
+    console.log('[GroupChatManager.ChatController.onUnsubscribe] event', event, dataObjectReporter.url);
+
+    let participant = event.identity.userProfile;
+
+    console.log('[GroupChatManager.ChatController.onUnsubscribe]  participant left', participant);
+    if (event.identity.legacy) {
+      participant.legacy = event.identity.legacy;
+    }
+
+    delete dataObjectReporter.data.participants[participant.userURL];
+
+    console.log('[GroupChatManager.ChatController.onUnsubscribe - this._onUserRemoved] ', this.onUserRemoved);
+    if (this._onUserRemoved) this._onUserRemoved(participant);
+  }
+
+  /**
+   * This function is used to send a file.
+   * @param  {string}     file                        Is the file to be sent.
+   * @return {Promise<Communication.ChatMessage>}        It returns the ChatMessage child object created by the Syncher as a Promise.
+   */
+  sendFile(file) {
+
+    let _this = this;
+    let mode = _this.controllerMode;
+    let dataObject = mode === 'reporter' ? _this.dataObjectReporter : _this.dataObjectObserver;
+
+    return new Promise(function(resolve, reject) {
+
+      let identity = {
+        userProfile: _this.myIdentity
+      };
+
+      dataObject.addHypertyResource('resources', 'file',  file, identity).then(function(resourceFile) {
+
+          let identity = {
+              userProfile: _this.myIdentity
+          };
+          let fileSentEvt = { value : resourceFile, identity: identity, resource: resourceFile};
+
+          let reporterStatus = new RegistrationStatus(dataObject.url, _this._manager._runtimeURL, _this._manager._hypertyURL, _this._manager._bus );
+
+          // recursive function to sync with chat reporter
+
+            let share2Reporter = function(file, subscriber, evt, status) {
+              let statusOfReporter = status;
+              file.sharingStatus.then(resolve(evt)).catch((result)=>{
+                console.log('[GroupChatManager.ChatController.sendFile] share failed: ', result);
+
+                statusOfReporter.onLive( subscriber, () => {
+                statusOfReporter.unsubscribeLive(subscriber);
+                file.share(true);
+                share2Reporter(file, subscriber, evt, statusOfReporter);
+                });
+                  //TODO: subscribe to sync when reporter is live. New synched messages should trigger onMessage ie onChild
+              });
+            }
+
+            share2Reporter(resourceFile, _this._manager._hypertyURL, fileSentEvt, reporterStatus);
+        });
+    }).catch(function(reason) {
+      console.error('Reason:', reason);
+      reject(reason);
+    });
+
   }
 
   /**
@@ -133,46 +308,67 @@ class ChatController {
   send(message) {
 
     let _this = this;
-    let dataObject = _this.dataObjectReporter ? _this.dataObjectReporter : _this.dataObjectObserver;
+    let mode = _this.controllerMode;
+    let dataObject = mode === 'reporter' ? _this.dataObjectReporter : _this.dataObjectObserver;
 
     return new Promise(function(resolve, reject) {
 
       let _dataObjectChild;
+      _this.child_cseq += 1;
+      let msg = {
+/*        url: dataObject.data.url,
+        cseq: _this.child_cseq,
+        reporter: dataObject.data.reporter,
+        schema: dataObject.data.schema,
+        name: dataObject.data.name,
+        created : new Date().toJSON(),*/
+        type : "chat",
+        content : message
+      }
 
-      dataObject.addChild('chatmessages', {message: message})
-      .then(function(dataObjectChild) {
+      let identity = {
+        userProfile: _this.myIdentity
+      };
 
-        console.log('[addChild - Chat Message]: ', dataObjectChild);
-        _dataObjectChild = dataObjectChild;
 
-        let identity = _this.myIdentity;
+      // TODO: change chatmessages to resource - chat, file
+      // TODO: change message to hypertyResource - https://github.com/reTHINK-project/dev-service-framework/tree/develop/docs/datamodel/data-objects/hyperty-resource
+      // TODO: handle with multiple resources - if the "message" will be different for each type of resources
+      dataObject.addChild('resources', msg, identity).then(function(dataObjectChild) {
+        console.log('[GroupChatManager.ChatController][addChild - Chat Message]: ', dataObjectChild);
+        //resolve(dataObjectChild);
 
-        if (!identity) {
-          return _this.search.myIdentity().then((identity) => {
-            return _this.myIdentity = identity;
-          }).catch((reason) => {
-            console.error('Add Child - Get my Identity fails', reason);
-          });
-        } else {
-          return identity;
-        }
+        //TODO: move to separate function
 
-      }).then((myIdentity) => {
-
-        console.log('My Identity: ', myIdentity);
 
         let msg = {
-          childId: _dataObjectChild._childId,
-          from: _dataObjectChild._owner,
-          value: _dataObjectChild.data,
+          childId: dataObjectChild._childId,
+          from: dataObjectChild._owner,
+          value: dataObjectChild.data,
           type: 'create',
-          identity: {
-            userProfile: myIdentity
-          }
+          identity: identity
         };
 
-        resolve(msg);
-      }).catch(function(reason) {
+        let reporterStatus = new RegistrationStatus(dataObject.url, _this._manager._runtimeURL, _this._manager._hypertyURL, _this._manager._bus );
+
+        // recursive function to sync with chat reporter
+
+          let share2Reporter = function(child, subscriber, msg, status) {
+            let statusOfReporter = status;
+            child.sharingStatus.then(resolve(msg)).catch((result)=>{
+
+                statusOfReporter.onLive( subscriber, () => {
+                  statusOfReporter.unsubscribeLive(subscriber);
+                  child.share(true);
+                  share2Reporter(child, subscriber, msg, statusOfReporter);
+                });
+                //TODO: subscribe to sync when reporter is live. New synched messages should trigger onMessage ie onChild
+            });
+          }
+
+          share2Reporter(dataObjectChild, _this._manager._hypertyURL, msg, reporterStatus);
+
+        }).catch(function(reason) {
         console.error('Reason:', reason);
         reject(reason);
       });
@@ -240,22 +436,136 @@ class ChatController {
 
     let _this = this;
 
+    let haveEmptyElements = (element) => {
+      console.log('Element:', element.length);
+      return element.length !== 0;
+    };
+
+    let notFoundElements = (element) => {
+      console.log('user not found: ', element);
+      return !(element instanceof String);
+    };
+
     return new Promise(function(resolve, reject) {
 
-      console.info('----------------------- Inviting users -------------------- \n');
-      _this.search.users(users)
-      .then((hypertiesIDs) => { return _this.dataObject.inviteObservers(hypertiesIDs); })
-      .then(function() {
-        console.info('Are invited with success ' + users.length + ' users;');
-        resolve(true);
-      }).catch(function(reason) {
-        console.error('An error occurred when trying to invite users;\n', reason);
-        reject(false);
-      });
+      if (users.filter(haveEmptyElements).length === 0) {
+        return reject('Don\'t have users to invite');
+      }
+
+      console.info('[GroupChatManager.ChatController.addUsers ]: ', users);
+
+      /*_this.search.users(users, domains, ['comm'], ['chat'])
+
+    .then((hypertiesIDs) => {
+
+      if (hypertiesIDs.filter(notFoundElements).length === 0) {
+        throw 'User(s) not found';
+      }
+
+      let selectedHyperties = hypertiesIDs.map((hyperty) => {
+        return hyperty.hypertyID;
+      });*/
+
+      let usersDiscovery = [];
+      let disconnected = [];
+      let live = {};
+
+      users.forEach((user) => {
+        let userDiscoveryPromise = _this.discovery.discoverHypertiesDO(user.user, ['comm'], ['chat'], user.domain);
+          usersDiscovery.push(userDiscoveryPromise);
+        });
+
+      Promise.all(usersDiscovery).then((userDiscoveryResults) => {
+        console.log('[GroupChatManager.ChatController.addUsers] Users Discovery Results->', userDiscoveryResults);
+
+        let selectedHyperties = [];
+
+         userDiscoveryResults.forEach((userDiscoveryResult) => {
+
+           userDiscoveryResult.forEach((discovered)=>{
+             if (discovered.data.status === 'live'){
+               selectedHyperties.push(discovered.data.hypertyID);
+               live[discovered.data.hypertyID] = discovered;
+             }
+             else disconnected.push(discovered);
+           });
+
+        });
+
+        console.info('[GroupChatManager.ChatController]------------------------ Syncher Create ---------------------- \n');
+        console.info('[GroupChatManager.ChatController]Selected Hyperties: !!! ', selectedHyperties);
+        console.info(`Have ${selectedHyperties.length} users;`);
+//        console.info('[GroupChatManager] HypertiesIDs ', hypertiesIDs);
+
+        let dataObject = _this.controllerMode === 'reporter' ? _this.dataObjectReporter : _this.dataObjectObserver;
+
+        if (disconnected.length > 0) _this._invitationsHandler.inviteDisconnectedHyperties(disconnected, dataObject);
+
+        dataObject.inviteObservers(selectedHyperties);
+
+        if (dataObject.invitations.length > 0) _this._invitationsHandler.processInvitations(live, dataObject);
+
+        return;
+
+        })
+        .then(() => {
+          console.info('[GroupChatManager.ChatController]Are invited with success ' + users.length + ' users;');
+          resolve(true);
+
+
+
+        }).catch((reason) => {
+          console.error('An error occurred when trying to invite users;\n', reason);
+          reject(reason);
+        });
 
     });
 
   }
+
+  /**
+   * This function is used to request the Reporter to add / invite new user on an existing Group Chat instance.
+   * Only Observers are allowed to use this function.
+   * @param {URL.UserURL}  users  User to be invited to join the Group Chat that is identified with reTHINK User URL.
+   * @return {Promise<boolean>}   It returns as a Promise true if successfully invited or false otherwise.
+   */
+  addUserReq(users) {
+
+    let _this = this;
+
+    //check is Observer and invoke observer.execute() with new promise
+    let haveEmptyElements = (element) => {
+      console.log('Element:', element.length);
+      return element.length !== 0;
+    };
+
+    return new Promise(function(resolve, reject) {
+
+      if (users.filter(haveEmptyElements).length === 0) {
+        return reject('[GroupChatManager.ChatController.addUserReq] Don\'t have users to add');
+      }
+      if (!_this.controllerMode === 'observer') {
+        return reject('[GroupChatManager.ChatController.addUserReq] only allowed to Chat Observer');
+
+      let addUser = _this.addUser(users);
+
+      if (_this._dataObjectObserver) {
+        addUser = _this._dataObjectObserver.execute('addUser', users);
+      }
+
+      addUser.then(() => {
+        console.info('[GroupChatManager.ChatController.addUserReq] Request accepted by Reporter ');
+        resolve(true);
+      }).catch((reason) => {
+        console.error('[GroupChatManager.ChatController.addUserReq] Request rejected by Reporter;\n', reason);
+        reject(reason);
+      });
+    }
+
+  });
+
+}
+
 
   /**
    * This function is used to remove a user from an existing Group Chat instance.
@@ -272,7 +582,7 @@ class ChatController {
   removeUser(user) {
 
     // TODO: implement the removeUser;
-    console.log('Not yet implemented: ', user);
+    console.log('[GroupChatManager.ChatController]Not yet implemented: ', user);
 
   }
 
@@ -288,13 +598,26 @@ class ChatController {
 
     return new Promise(function(resolve, reject) {
 
-      try {
-        _this.dataObjectReporter.delete();
-        resolve(true);
-      } catch (e) {
-        reject(false);
-      }
+      if (_this.controllerMode === 'reporter') {
+          _this._invitationsHandler.cleanInvitations(_this.dataObjectReporter).then(() => {
+            try {
+              delete _this._manager._reportersControllers[_this.dataObjectReporter.url];
+              _this.dataObjectReporter.delete();
+              resolve(true);
+              } catch (e) {
+                reject(false);
+              }
+          });
 
+      } else {
+        try {
+          delete _this._manager._observersControllers[_this.dataObjectObserver.url];
+          _this.dataObjectObserver.unsubscribe();
+          resolve(true);
+        } catch (e) {
+          reject(false);
+        }
+      }
     });
 
   }

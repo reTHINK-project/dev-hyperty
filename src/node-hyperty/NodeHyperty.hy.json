@@ -1,0 +1,13 @@
+{
+  "language": "javascript",
+  "signature": "",
+  "configuration": { },
+  "hypertyType": ["audio", "video"],
+  "constraints": {
+    "node": true
+  },
+  "dataObjects": [
+    "https://catalogue.%domain%/.well-known/dataschema/Connection"
+  ],
+  "objectName": "NodeHyperty"
+}

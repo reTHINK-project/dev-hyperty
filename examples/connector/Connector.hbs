@@ -6,15 +6,19 @@
 
     <div class="row">
       <div class="input-field col s12">
-        <input placeholder="your friend's email" id="email" required aria-required="true" type="email" class="friend-email validate">
+        <input placeholder="your friend's email" id="email" required aria-required="true" type="text" class="friend-email validate">
         <label for="email" style="width: 100%;" data-error="the email format should be like user@domain.pt">search by email</label>
       </div>
-      <div class="input-field col s4">
+      <div class="input-field col s12">
         <input class="input-domain" name="domain" id="domain" type="text">
         <label for="domain">Participant domain</label>
       </div>
     </div>
 
+    <div class="row">
+      <input type="checkbox" class="checkBox" id="checkBoxGlobal" />
+      <label for="checkBoxGlobal">Global Discovery Search</label>
+    </div>
     <div class="row">
       <div class="input-field col s8">
         <button class="search waves-effect waves-light btn" type="submit"><i class="material-icons left">search</i>Search</button>
@@ -24,9 +28,11 @@
 
   <div class="loader"></div>
 
-  <ul class="collection with-header hide col s12">
-    <li class="collection-header"><h4>User Hyperty</h4></li>
-  </ul>
+  <div class="col s12">
+    <ul class="collection hide">
+      <li class="collection-header"><h4>User Hyperty</h4></li>
+    </ul>
+  </div>
 
 </section>
 
