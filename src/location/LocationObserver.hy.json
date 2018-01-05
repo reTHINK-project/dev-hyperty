@@ -1,5 +1,5 @@
 {
-  "configuration": {},
+  "configuration": { },
   "hypertyType": [
     "heart_rate",
     "sleep"

@@ -46,13 +46,13 @@ class ConnectionController {
 
     // Private
     _this._syncher = syncher;
-    _this._configuration = configuration.webrtc;
+    _this._configuration = configuration;
     _this._domain = domain;
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Connection';
     _this._clean = clean;
 
     // Prepare the PeerConnection
-    let peerConnection = new RTCPeerConnection(_this._configuration.webrtc);
+    let peerConnection = new RTCPeerConnection(_this._configuration);
 
     peerConnection.addEventListener('signalingstatechange', function(event) {
 
@@ -109,7 +109,7 @@ class ConnectionController {
 
     // Add stream to PeerConnection
     peerConnection.addEventListener('addstream', function(event) {
-      console.info('[Connector.ConnectionController ]Add Stream: ', event, _this._onAddStream);
+      console.info('[Connector.ConnectionController ]Add Stream: ', event);
 
       if (_this._onAddStream) _this._onAddStream(event);
     });
@@ -148,7 +148,12 @@ class ConnectionController {
     _this._dataObjectReporter = dataObjectReporter;
 
     dataObjectReporter.onSubscription(function(event) {
-      event.accept();
+      if (event.type === 'subscribe') event.accept();
+      else {//to handle reject from remote peer
+        _this._removeMediaStream();
+        if (_this._onDisconnect) _this._onDisconnect(event);
+        _this._clean(_this._connector._controllers, _this._remoteHyperty);
+      }
     });
 
     if (_this.mode === 'offer') {
@@ -215,7 +220,7 @@ class ConnectionController {
     _this._deleteEvent = event;
 
     _this._removeMediaStream();
-    if (_this._onDisconnect) _this._onDisconnect(event.identity);
+    if (_this._onDisconnect) _this._onDisconnect(event);
     _this._clean(_this._connector._controllers, _this._remoteHyperty);
   }
 
@@ -402,7 +407,8 @@ class ConnectionController {
 
       try {
         console.info('[Connector.ConnectionController ]------------------------ Syncher Create ---------------------- \n');
-        syncher.create(_this._objectDescURL, [remotePeer], _this.connectionObject)
+
+        syncher.create(_this._objectDescURL, [remotePeer], _this.connectionObject, false, false, remoteData.name, {}, {resources: ['audio', 'video']})
         .then(function(dataObjectReporter) {
           console.info('[Connector.ConnectionController ]2. Return the Data Object Reporter ', dataObjectReporter);
 
@@ -438,9 +444,10 @@ class ConnectionController {
     return new Promise(function(resolve, reject) {
 
       try {
-        _this.connectionEvent.ack(declineReason);
-        _this.disconnect();
-        resolve(true);
+      //  _this.connectionEvent.ack(declineReason);
+        _this.disconnect().then(()=>{
+          resolve(true);
+        });
       } catch (e) {
         console.error(e);
         reject(false);
@@ -527,15 +534,20 @@ class ConnectionController {
 
       try {
         let localStream = _this.peerConnection.getLocalStreams()[0];
-        let videoTrack = localStream.getVideoTracks()[0];
+        let videoTrack = localStream ? localStream.getVideoTracks()[0] : null;
 
-        if (!value) {
-          videoTrack.enabled = videoTrack.enabled ? false : true;
+        if (videoTrack) {
+          if (!value) {
+            videoTrack.enabled = videoTrack.enabled ? false : true;
+          } else {
+            videoTrack.enabled = value;
+          }
+
+          resolve(videoTrack.enabled);
         } else {
-          videoTrack.enabled = value;
+          reject('not ready yet');
         }
 
-        resolve(videoTrack.enabled);
       } catch (e) {
         reject(e);
       }

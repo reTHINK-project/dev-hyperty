@@ -32,7 +32,7 @@ class HelloWorldReporter {
 
     _this._syncher = syncher;
 
-    _this._syncher.resumeReporters({}).then((resumeReporters) => {
+    /*_this._syncher.resumeReporters({}).then((resumeReporters) => {
 
       if (!resumeReporters) return;
 
@@ -50,7 +50,7 @@ class HelloWorldReporter {
         if (this._onReporterResume) this._onReporterResume(helloObjtReporter);
       })
 
-    });
+    });*/
 
   }
 
@@ -65,7 +65,9 @@ class HelloWorldReporter {
 
     return new Promise(function(resolve, reject) {
 
-      syncher.create(_this._objectDescURL, [hypertyURL], hello, false, false, 'hello').then(function(helloObjtReporter) {
+      let input = Object.assign({resources: ['hello']}, {});
+
+      syncher.create(_this._objectDescURL, [hypertyURL], hello, false, false, 'hello', {}, input).then(function(helloObjtReporter) {
         console.info('1. Return Created Hello World Data Object Reporter', helloObjtReporter);
 
         _this.helloObjtReporter = helloObjtReporter;

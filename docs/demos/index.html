@@ -1,0 +1,19 @@
+---
+layout: demo
+title: Welcome Rethink demos
+---
+
+{% assign demos = site.pages | where: "layout", 'demo' %}
+<ul class="collection">
+{% for item in demos %}
+  {% if item.page_name %}
+  <li class="collection-item avatar">
+    <i class="material-icons circle">folder</i>
+    <span class="title">{{item.page_name | escape}}</span>
+    <p>{{item.title}}</p>
+    <a href="{{item.url | relative_url }}" class="secondary-content"><i class="material-icons">send</i></a>
+    <!-- {{item.page_name | escape }} -->
+  </li>
+  {% endif %}
+{% endfor %}
+</ul>

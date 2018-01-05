@@ -22,6 +22,8 @@ function getUserMedia(constraints) {
 
 function hypertyLoaded(result) {
 
+  $('.modal').modal();
+
   // Prepare to discover email:
   var search = result.instance.search;
   discoverEmail(search);
@@ -92,6 +94,7 @@ function notificationHandler(controller, identity) {
 
     controller.decline().then(function(result) {
       console.log(result);
+      disconnecting();
     }).catch(function(reason) {
       console.error(reason);
     });
@@ -125,7 +128,7 @@ function notificationHandler(controller, identity) {
         '</div>';
 
   informationHolder.html(parseInformation);
-  $('.modal-call').openModal();
+  $('.modal-call').modal('open');
 
 }
 
@@ -180,6 +183,13 @@ function emailDiscovered(result) {
   }
 
   result.forEach((hyperty) => {
+
+    if (!hyperty.userID) {
+      hyperty.userID = hyperty.hypertyID;
+      hyperty.descriptor = 'Interworking';
+      hyperty.resources = ['audio','video'];
+      hyperty.dataSchemes = ['connection'];
+    }
 
     var itemsFound = collection.find('li[data-url="' + hyperty.userID + '"]');
     if (itemsFound.length) {
@@ -247,6 +257,30 @@ function openVideo(hyperty, domain) {
     return connector.connect(toHyperty, mediaStream, '', domain);
   })
   .then(function(controller) {
+
+    showVideo(controller);
+
+    processLocalVideo(localMediaStream);
+
+  }).catch(function(reason) {
+    console.error(reason);
+  });
+}
+
+function openAudio(hyperty, domain) {
+
+  console.log('connecting hyperty: ', hyperty);
+
+  var toHyperty = hyperty;
+  var localMediaStream;
+
+  var options = options || {audio: true};
+  getUserMedia(options).then(function(mediaStream) {
+    console.info('recived media stream: ', mediaStream);
+    localMediaStream = mediaStream;
+    return connector.connect(toHyperty, mediaStream, '', domain, ['audio']);
+  })
+  .then(function(controller) {
     showVideo(controller);
 
     processLocalVideo(localMediaStream);
@@ -262,7 +296,8 @@ function processVideo(event) {
 
   var videoHolder = $('.video-holder');
   var video = videoHolder.find('.video');
-  video[0].src = URL.createObjectURL(event.stream);
+  video[0].srcObject = event.stream;
+  //video[0].src = URL.createObjectURL(event.stream);
 
 }
 
@@ -271,11 +306,13 @@ function processLocalVideo(mediaStream) {
 
   var videoHolder = $('.video-holder');
   var video = videoHolder.find('.my-video');
-  video[0].src = URL.createObjectURL(mediaStream);
+  video[0].srcObject = mediaStream;
+  // video[0].src = URL.createObjectURL(mediaStream);
 }
 
 function disconnecting() {
 
+  $('.modal-call').modal('close');
   var videoHolder = $('.video-holder');
   var myVideo = videoHolder.find('.my-video');
   var video = videoHolder.find('.video');

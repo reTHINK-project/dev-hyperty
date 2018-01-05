@@ -1,6 +1,6 @@
 import {Syncher} from 'service-framework/dist/Syncher';
 import {divideURL} from '../utils/utils';
-import PersistenceManager from 'service-framework/dist/PersistenceManager';
+import StorageManager from 'service-framework/dist/StorageManager';
 
 class BraceletSensorReporter {
 
@@ -19,7 +19,7 @@ class BraceletSensorReporter {
 
     console.log('Init BraceletSensorReporter: ', hypertyURL);
     _this._syncher = new Syncher(hypertyURL, bus, configuration);
-    _this._persistenceManager = new PersistenceManager(window.localStorage);
+    _this._persistenceManager = new StorageManager(window.localStorage);
     console.log('PM', _this._persistenceManager);
   }
 
@@ -213,7 +213,7 @@ class BraceletSensorReporter {
   ReporterBracelet(initialData) {
     let _this = this;
     console.log('Reporter initialized');
-    _this._syncher.create(_this._objectDescURL, [], initialData).then((reporter) => {
+    _this._syncher.create(_this._objectDescURL, [], initialData, true, false, 'bracelet', {}, {resources: ['heart-rate','user-steps','sleep','battery']}).then((reporter) => {
       console.info('Reporter created', reporter);
       _this.reporter = reporter;
       reporter.onSubscription(function(event) {

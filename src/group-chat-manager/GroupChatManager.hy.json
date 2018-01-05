@@ -1,7 +1,7 @@
 {
   "language": "javascript",
   "signature": "",
-  "configuration": {},
+  "configuration": { },
   "hypertyType": [
     "chat"
   ],

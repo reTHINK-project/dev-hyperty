@@ -22,7 +22,7 @@
 **/
 
 // Service Framework
-import Discovery from 'service-framework/dist/Discovery';
+//import {Discovery} from 'service-framework/dist/Discovery';
 import IdentityManager from 'service-framework/dist/IdentityManager';
 import {Syncher} from 'service-framework/dist/Syncher';
 
@@ -65,6 +65,17 @@ class UserAvailabilityReporter extends EventEmitter {
       let _this = this;
       _this.onNotification(event);
     });
+
+    //TODO: uncomment when used with service framework develop branch
+
+    this.syncher.onClose((event) => {
+
+      console.log('[UserAvailabilityReporter.onClose]')
+      let _this = this;
+      _this.setStatus('unavailable');
+      event.ack();
+    });
+
   }
 
 start(){
@@ -122,8 +133,8 @@ onResumeReporter(callback) {
     let _this = this;
 
     return new Promise((resolve, reject) => {
-      console.info('[UserAvailabilityReporter.create] lets create a new User availability Context Object');
-      _this.syncher.create(_this.userAvailabilityyDescURL, [], availability(), true, false, 'myAvailability', null, {resources: ['availability_context']})
+      console.info('[UserAvailabilityReporter.create] lets create a new User availability Context Object ');
+      _this.syncher.create(_this.userAvailabilityyDescURL, [], availability(), true, false, 'myAvailability', null, {resources: ['availability_context'], expires: 30})
       .then((userAvailability) => {
         _this.userAvailability = userAvailability;
 

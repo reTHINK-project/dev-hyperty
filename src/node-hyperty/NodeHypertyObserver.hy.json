@@ -1,10 +1,13 @@
 {
-  "configuration": {},
+  "language": "javascript",
+  "signature": "",
+  "configuration": { },
+  "hypertyType": ["audio", "video"],
   "constraints": {
     "browser": true
   },
-  "hypertyType": ["audio", "video"],
   "dataObjects": [
-    "https://catalogue.localhost/.well-known/dataschema/Connection"
-  ]
+    "https://catalogue.%domain%/.well-known/dataschema/Connection"
+  ],
+  "objectName": "NodeHypertyObserver"
 }

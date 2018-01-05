@@ -25,7 +25,7 @@
 
 // Service Framework
 import IdentityManager from 'service-framework/dist/IdentityManager';
-import Discovery from 'service-framework/dist/Discovery';
+import {Discovery} from 'service-framework/dist/Discovery';
 import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
@@ -88,6 +88,7 @@ class Connector {
         if (_this._controllers[event.from]) {
           _this._autoSubscribe(event);
         } else {
+
           _this._autoAccept(event);
         }
 
@@ -103,7 +104,7 @@ class Connector {
         if (_this._controllers) {
           Object.keys(_this._controllers).forEach((controller) => {
             _this._controllers[controller].deleteEvent = event;
-            //delete _this._controllers[controller];
+            delete _this._controllers[controller];
 
             console.log('Controllers:', _this._controllers);
           });
@@ -115,6 +116,15 @@ class Connector {
     });
 
     _this._syncher = syncher;
+
+    let msgToInit = {
+        type: 'init', from: hypertyURL, to: 'sip://test@rethink-project.eu',
+        body: {source: hypertyURL, schema: _this._objectDescURL}
+    };
+
+    // bus.postMessage(msgToInit, (reply) => {
+    // });
+
   }
 
   // callback when connection Controllers are disconnected
@@ -156,10 +166,36 @@ class Connector {
       connectionController.connectionEvent = event;
       connectionController.dataObjectObserver = dataObjectObserver;
 
+      if (Object.keys(_this._controllers).length > 0) {      // check if there an ongoing call
+        ongoingCall = true;
+      }
+
       _this._controllers[event.from] = connectionController;
 
-      // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
-      if (_this._onInvitation) _this._onInvitation(connectionController, event.identity.userProfile);
+      let identity = event.identity;
+
+      let ongoingCall;
+
+
+
+
+      if (!identity) {
+        identity = {};
+        identity.userProfile = {
+          avatar: "https://www.mybloggerguides.com/wp-content/uploads/2016/01/anonymous_avatar.png",
+          cn: 'anonymous',
+          userURL: 'anonymous',
+          username: "anonymous"
+            };
+          }
+
+      if (ongoingCall) {
+        // ongoing call lets decline we busy
+        connectionController.decline(486, 'Busy Here');
+      } else if (_this._onInvitation) {
+        // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
+       _this._onInvitation(connectionController, identity.userProfile);
+      }
 
       console.info('------------------------ END ---------------------- \n');
     }).catch(function(reason) {
@@ -215,7 +251,7 @@ class Connector {
         _this.connectionObject.peer = selectedHyperty;
         _this.connectionObject.status = '';
 
-        return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject);
+        return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject, false, false, name, {}, {resources: ['audio', 'video']});
       })
       .catch(function(reason) {
         console.error(reason);

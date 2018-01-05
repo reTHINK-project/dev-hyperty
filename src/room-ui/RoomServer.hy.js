@@ -1,17 +1,15 @@
 /* jshint undef: true */
 
-import {Syncher} from "service-framework/dist/Syncher";
-import Discovery from "service-framework/dist/Discovery";
-import Logger from "./Logger";
-import {divideURL} from "../utils/utils";
-import roomJson from "./roomJson";
-// import Request from "runtime-nodejs/dist/Request";
+import {Syncher} from 'service-framework/dist/Syncher';
+import Discovery from 'service-framework/dist/Discovery';
+import Logger from './Logger';
 
-let fetch = require('node-fetch');
+import {divideURL} from '../utils/utils';
+import roomJson from './roomJson';
 
 var l = new Logger("ROOMUI");
 
-var url = "https://hotelguest.fokus.fraunhofer.de:8000";
+var url = "https://praxis:8000";
 var useExampleRoomJson = false;
 
 class RoomServer {
@@ -39,29 +37,15 @@ class RoomServer {
         // this.httpRequest = new Request();
 
 
-        // get useExampleRoomJson from configuration
-        let boolFromConf = configuration["useExampleRoomJson"];
-        if (boolFromConf) // triggers only if configuration["useExampleRoomJson"] is true
-            useExampleRoomJson = boolFromConf;
-
-        if (configuration["lwm2mUrl"])
-            url = configuration["lwm2mUrl"];
-
-        l.d("lwm2mUrl:", url);
-
         //setup some variables
         this.roomMap = {};
         this.lastDateMap = {};
 
-        // access control
-        this.accessMap = configuration.accessMap || {};
-        l.d("accessMap:", this.accessMap);
-
         // create Context Schema URL
-        this.contextSchemaURL = 'hyperty-catalogue://catalogue.' + divideURL(hypertyURL).domain + '/.well-known/dataschema/Context';
+        this.contextSchemaURL = 'hyperty-catalogue://' + divideURL(hypertyURL).domain + '/.well-known/dataschema/Context';
 
         // make hyperty discoverable
-        this.discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
+        this.discovery = new Discovery(hypertyURL, bus);
 
         // syncher
         this.syncher = new Syncher(hypertyURL, bus, configuration);
@@ -73,13 +57,7 @@ class RoomServer {
 
         // start polling
         let _this = this;
-        _this.polling();
-
-        if (!useExampleRoomJson) {
-            setInterval(function () {
-                _this.polling()
-            }, 5000);
-        }
+        setInterval(function() {_this.polling()}, 5000);
     }
 
     setFetch(fetchFunc) {
@@ -98,7 +76,6 @@ class RoomServer {
 
         //add listener
         this.bus.addListener(this.hypertyURL, (msg) => {
-            l.d("got a message!:", msg);
             // we are only interested in execute messages
             if (msg.type === "execute") {
                 l.d("got execute message:", msg);
@@ -124,6 +101,8 @@ class RoomServer {
                             l.d("function " + func.name + " returned:", result);
                             this.sendResponse(msg, result);
                         }
+                        // invoke polling manually so changes get reflected on client side faster
+                        this.polling();
                     } catch (e) {
                         l.w("invoking function " + func.name + " with parameters " + msg.body.params + " failed:", e);
                         this.sendResponse(msg, e, 500);
@@ -213,9 +192,6 @@ class RoomServer {
             to: requestMsg.from,
             body: {code: code, value: response}
         });
-
-        // invoke polling manually so changes get reflected on client side faster
-        this.polling();
     }
 
     /**
@@ -232,10 +208,10 @@ class RoomServer {
 
     /**
      * Returns a list of object URLs for rooms a certain user can subscribe to
-     * @param {String} token - token that is associated to the requesting hyperty
+     * @param {String} user - user identity that is associated to the requesting hyperty
      * @returns {Array} - list of object URLs
      */
-    getRoomsForRemote(token) {
+    getRoomsForRemote(user) {
         l.d("getRoooms:", arguments);
         let urls = [];
         // iterate through rooms and extract their URLs
@@ -243,12 +219,7 @@ class RoomServer {
         let room;
         for (room in this.roomMap) {
             // TODO: check member array for having user in it
-            if (this.accessMap[token] != undefined && this.accessMap[token].indexOf(room) != -1) {
-                l.d("token " + token + " has access to room " + room);
-                urls.push(this.roomMap[room].url);
-            } else {
-                l.d("token " + token + " lacks access to room " + room);
-            }
+            urls.push(this.roomMap[room].url);
         }
         return urls;
     }
