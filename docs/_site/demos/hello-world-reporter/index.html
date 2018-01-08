@@ -1,0 +1,250 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1">
+
+    <title>Welcome to Hello World Reporter Hyperty Demo.</title>
+    <meta name="description" content="reTHINK Framework provides the tools to build a global real-time decentralized communication infra-structure where services are inherently inter-operable.">
+
+    <link rel="canonical" href="http://localhost:4000/dev-hyperty/demos/hello-world-reporter/">
+    <link rel="alternate" type="application/rss+xml" title="Hyperties Catalogue" href="/dev-hyperty/feed.xml">
+
+    <link rel="apple-touch-icon" sizes="57x57" href="/dev-hyperty/assets/img/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/dev-hyperty/assets/img/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/dev-hyperty/assets/img/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/dev-hyperty/assets/img/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/dev-hyperty/assets/img/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/dev-hyperty/assets/img/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/dev-hyperty/assets/img/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/dev-hyperty/assets/img/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/dev-hyperty/assets/img/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/dev-hyperty/assets/img/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/dev-hyperty/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/dev-hyperty/assets/img/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/dev-hyperty/assets/img/favicon-16x16.png">
+    <link rel="manifest" href="/dev-hyperty/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/dev-hyperty/assets/img/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script> -->
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- reTHINK Runtime script -->
+    <script src="/dev-hyperty/assets/js/demos.js"></script>
+    <script src="/dev-hyperty/assets/js/main.js"></script>
+
+    <!-- reTHINK Runtime-->
+    <script src="https://hybroker.rethink.ptinovacao.pt/.well-known/runtime/rethink.js"></script>
+    <!-- <script src="/dev-hyperty/assets/js/rethink/rethink.js"></script> -->
+
+    <style>
+      nav {
+        height: auto;
+      }
+
+      nav ul a {
+        text-transform: uppercase;
+      }
+
+      nav .nav-wrapper {
+        padding: 0 20px;
+        height: 102px;
+        line-height: 102px;
+      }
+
+      nav .brand-logo {
+        vertical-align: middle;
+        text-align: center;
+      }
+
+      nav .brand-logo img {
+        vertical-align: middle;
+      }
+
+      .tabs .tab {
+        min-width: 300px;
+        border-right: 1px solid #000;
+      }
+
+      .hyperties-list a {
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+
+    </style>
+  </head>
+
+  <body>
+
+    <!-- Header Start -->
+    <header class="sticky-top black" role="banner">
+      <div class="container-fluid">
+
+        <nav class="black">
+          <div class="nav-wrapper">
+            <a class="brand-logo" title="Worldwide real-time decentralized communication infra-structure" href="/dev-hyperty/"><img src="/dev-hyperty/assets/img/logo.png" alt="Hyperties Catalogue"></a>
+            <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+            <ul class="right hide-on-med-and-down">
+              <li><a class="page-link" href="http://localhost:4000/specs/" target="_blank">Documentation</a></li>
+              <li><a class="page-link" href="http://localhost:4000/dev-hyperty/">Hyperties</a></li>
+              <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit" target="_blank">GitHub</a></li>
+              <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit/releases" target="_blank">v0.6.1</a></li>
+            </ul>
+            <ul class="side-nav" id="mobile-demo">
+              <li><a class="page-link" href="http://localhost:4000/specs/" target="_blank">Documentation</a></li>
+              <li>
+                <a class="page-link" href="http://localhost:4000/dev-hyperty/">Hyperties</a>
+                
+                <div class="collection">
+                
+                  
+                  
+                    <a href="/dev-hyperty/demos/group-chat-manager/" class="collection-item">Group Chat Manager</a>
+                  
+                  
+                
+                  
+                  
+                    <a href="/dev-hyperty/demos/user-availability-observer/" class="collection-item">User Availability Observer</a>
+                  
+                  
+                
+                  
+                  
+                    <a href="/dev-hyperty/demos/connector/" class="collection-item">Connector</a>
+                  
+                  
+                
+                  
+                  
+                    <a href="#!" class="collection-item active disabled">Hello World Reporter</a>
+                  
+                  
+                
+                  
+                  
+                    <a href="/dev-hyperty/demos/hello-world-observer/" class="collection-item">Hello World Observer</a>
+                  
+                  
+                
+                  
+                  
+                    <a href="/dev-hyperty/demos/user-availability-reporter/" class="collection-item">User Availability Reporter</a>
+                  
+                  
+                
+                  
+                
+                </div>
+              </li>
+              <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit" target="_blank">GitHub</a></li>
+              <li><a class="page-link" href="https://github.com/reTHINK-project/dev-hyperty-toolkit/releases" target="_blank">v0.6.1</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="container">
+
+      
+      <ul class="row hyperties-list hide-on-med-and-down">
+      
+        
+        
+          <li class="col item"><a class="waves-effect waves-light btn" href="/dev-hyperty/demos/group-chat-manager/">Group Chat Manager</a></li>
+        
+        
+      
+        
+        
+          <li class="col item"><a class="waves-effect waves-light btn" href="/dev-hyperty/demos/user-availability-observer/">User Availability Observer</a></li>
+        
+        
+      
+        
+        
+          <li class="col item"><a class="waves-effect waves-light btn" href="/dev-hyperty/demos/connector/">Connector</a></li>
+        
+        
+      
+        
+        
+          <li class="col item active"><a class="waves-effect waves-light btn-flat disabled" href="#">Hello World Reporter</a></li>
+        
+        
+      
+        
+        
+          <li class="col item"><a class="waves-effect waves-light btn" href="/dev-hyperty/demos/hello-world-observer/">Hello World Observer</a></li>
+        
+        
+      
+        
+        
+          <li class="col item"><a class="waves-effect waves-light btn" href="/dev-hyperty/demos/user-availability-reporter/">User Availability Reporter</a></li>
+        
+        
+      
+        
+      
+      </ul>
+
+      <section id="global-header">
+        <div class="">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="block">
+                        <h1>Welcome to Hello World Reporter Hyperty Demo.</h1>
+                        <p></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </section>
+
+
+      <section class="demo-content">
+        <!-- Connector Demo script -->
+<script src="/dev-hyperty/demos/hello-world-reporter/demo.js"></script>
+
+<div class="row card-panel teal lighten-4">
+   <div class="col s12 " id="reporter-panel">
+     <div class="reporter-info"></div>
+     <div class="reporter-evt"></div>
+     <div class="hello-panel"></div>
+     <div class="bye-panel"></div>
+     <div class="card-panel teal lighten-5 reporter-msg-panel"></div>
+   </div>
+ </div>
+
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+    <script>
+
+      $(window).on( "load", function() {
+        console.log('ready');
+        $(".button-collapse").sideNav();
+      })
+
+    </script>
+
+  </body>
+
+</html>

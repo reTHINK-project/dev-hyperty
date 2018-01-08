@@ -1,0 +1,15 @@
+{
+  "configuration": { },
+  "hypertyType": [
+    "heart_rate",
+    "sleep"
+  ],
+  "constraints": {
+    "browser": true
+  },
+  "language": "javascript",
+  "signature": "",
+  "dataObjects": [
+    "https://catalogue.localhost/.well-known/dataschema/Context"
+  ]
+}

@@ -64,7 +64,7 @@ class NodeHyperty extends EventEmitter {
     this.discovery = new Discovery(hypertyURL, bus);
     this.identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
     this.configuration = configuration;
-  
+
     this.peer = peer;
     this.objObserver = {};
     this.objReporter = {};
@@ -87,7 +87,7 @@ class NodeHyperty extends EventEmitter {
   }
 
   onNotification(event) {
-     let _this = this;  
+     let _this = this;
 
     console.log(' event is :  '.red, event)
     event.ack();
@@ -120,7 +120,7 @@ class NodeHyperty extends EventEmitter {
    autoSubscribe(event) {
     let _this = this;
     let syncher = _this.syncher;
-  
+
     console.log('---------------- Syncher Subscribe (Auto Subscribe) ---------------- \n');
 
     syncher.subscribe(_this.objectDescURL, event.url).then(function(dataObjectObserver) {
@@ -145,7 +145,7 @@ class NodeHyperty extends EventEmitter {
       roomController.roomName = event.value.roomName;
       roomController.dataObjectObserver = dataObjectObserver;
       _this.roomController[event.from] = roomController;
- 
+
       console.log('_this._controllers[event.from] : ', _this.roomController[event.from])
 
       // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
@@ -168,12 +168,12 @@ class NodeHyperty extends EventEmitter {
 
     let _this = this;
     let syncher = _this.syncher;
-    let toHyperty = toUser.userHypertyURL; 
-    
+    let toHyperty = toUser.userHypertyURL;
+
     console.log('------------ sendMessage:', message ,'to toHyperty : ----------------\n', toHyperty);
 
     return new Promise((resolve, reject) => {
-      
+
       let dataObject = {
         name : 'communication',
         id: message.id,
@@ -189,7 +189,7 @@ class NodeHyperty extends EventEmitter {
         _this.connectionObject.owner = _this.myUrl;
         _this.connectionObject.data = dataObject.data;
         _this.connectionObject.status = '';
-     
+
       console.log('------------ _this.connectionObject: ----------------\n', _this.connectionObject);
       // create ObjectReporter to communicate with specific client hyperty
       syncher.create(_this.objectDescURL, [toHyperty], _this.connectionObject).then((objReporter) => {
@@ -217,9 +217,9 @@ class NodeHyperty extends EventEmitter {
         dataObjectReporter.onSubscription((event) => {
           console.log('-------- Status Reporter received subscription request ---------\n');
           event.accept();
-          resolve(dataObjectReporter);       
+          resolve(dataObjectReporter);
         });
-      
+
       }).catch(function(reason) {
         reject(reason);
       });

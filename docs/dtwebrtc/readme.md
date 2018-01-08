@@ -72,10 +72,6 @@ hyperty.addEventListener('invitation', (identity) => {
 ```
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> cd3f36a3f421da50f8e44d80296a2729ced25569
 #### invitationAccepted
 
 This function is used to accept an incoming call request received by the `incomingcall(data)` event.
@@ -85,36 +81,20 @@ This function is used to accept an incoming call request received by the `incomi
 **parameters**
 
 *data* - the data that was received in the `incomingcall` event
-<<<<<<< HEAD
-=======
 #### acceptCall
 
 This function is used to accept an incoming call request received by the `incomingcall()` event.
 
 `acceptCall()`
 >>>>>>> develop
-=======
->>>>>>> cd3f36a3f421da50f8e44d80296a2729ced25569
 
 
 **How to use it**
 
 ```javascript
-<<<<<<< HEAD
-<<<<<<< HEAD
 hyperty.addEventListener('incomingcall', (data) => {
   $('#myModal').find('#btn-accept').on('click', () => {
     hyperty.invitationAccepted(data);
-=======
-hyperty.addEventListener('incomingcall', () => {
-  $('#myModal').find('#btn-accept').on('click', () => {
-    hyperty.acceptCall();
->>>>>>> develop
-=======
-hyperty.addEventListener('incomingcall', (data) => {
-  $('#myModal').find('#btn-accept').on('click', () => {
-    hyperty.invitationAccepted(data);
->>>>>>> cd3f36a3f421da50f8e44d80296a2729ced25569
   });
 ```
 
@@ -203,8 +183,6 @@ hyperty.disconnect().then(() => {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
-=======
->>>>>>> cd3f36a3f421da50f8e44d80296a2729ced25569
 #### invitation
 
 This event is emitted when the hyperty receives an invitation to subscribe as observer for a remotely created dataObject. It is an "early phase notification" before the synchronization path between calling and called hyperty is established. It carries the identity of the inviting peer user as parameter.
@@ -233,8 +211,6 @@ This event is emitted when the hyperty received an invitation and has establishe
 **parameters**
 
 *data* ... invitation data that must be passed to invitationAccepted (This will change in future versions.)
-<<<<<<< HEAD
-=======
 #### incomingcall
 
 This event is emitted when the hyperty received an invitation and has established the synchronization path between itself and the calling hyperty.  It carries the identity of the inviting peer user as parameter.
@@ -242,28 +218,19 @@ This event is emitted when the hyperty received an invitation and has establishe
 `incomingcall(identity)`
 
 >>>>>>> develop
-=======
->>>>>>> cd3f36a3f421da50f8e44d80296a2729ced25569
 
 **How to use it**
 
 ```javascript
 <<<<<<< HEAD
-<<<<<<< HEAD
 hyperty.addEventListener('incomingcall', (data) => {
   $('#myModal').find('#btn-accept').on('click', () => {
     hyperty.invitationAccepted(data);
-=======
 hyperty.addEventListener('incomingcall', (identity) => {
   // display caller identity and present a modal dialog
   $('#myModal').find('#btn-accept').on('click', () => {
     hyperty.acceptCall();
 >>>>>>> develop
-=======
-hyperty.addEventListener('incomingcall', (data) => {
-  $('#myModal').find('#btn-accept').on('click', () => {
-    hyperty.invitationAccepted(data);
->>>>>>> cd3f36a3f421da50f8e44d80296a2729ced25569
   });
   // show notification dialog
 }

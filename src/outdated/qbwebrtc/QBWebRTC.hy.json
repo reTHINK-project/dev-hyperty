@@ -1,0 +1,10 @@
+{
+  "configuration": {},
+  "constraints": {
+    "browser": true
+  },
+  "hypertyType": ["audio", "video"],
+  "dataObjects": [
+    "https://catalogue.rethink.quobis.com/.well-known/dataschema/Connection"
+  ]
+}

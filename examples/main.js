@@ -64,9 +64,14 @@ export function hypertyDeployed(hyperty) {
       script = 'notifications/notificationsObserver.js';
       break;
 
-    case 'Location':
+    case 'LocationReporter':
       template = 'location/location';
       script = 'location/location.js';
+      break;
+
+    case 'LocationObserver':
+      template = 'location/locationObserver';
+      script = 'location/locationObserver.js';
       break;
 
     case 'RoomClient':
@@ -98,6 +103,16 @@ export function hypertyDeployed(hyperty) {
       template = 'node-hyperty/NodeHyperty';
       script = 'node-hyperty/NodeHypertyObserver.js';
       break;
+
+    case 'CodeGeneratorReporter':
+      template = 'code-generator/codeGeneratorReporter';
+      script = 'code-generator/codeGeneratorReporter.js';
+      break;
+
+    case 'CodeGeneratorObserver':
+      template = 'code-generator/codeGeneratorObserver';
+      script = 'code-generator/codeGeneratorObserver.js';
+      break;
   }
 
   if (!template) {
@@ -117,6 +132,14 @@ export function hypertyDeployed(hyperty) {
     }
 
     loading = false;
+  }).catch(function(reason) {
+
+    try {
+      eval(reason.responseText);
+    } catch (e) {
+      console.error(e);
+    }
+
   });
 
 }
