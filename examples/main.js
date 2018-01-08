@@ -19,29 +19,9 @@ export function hypertyDeployed(hyperty) {
   let script = '';
 
   switch (hyperty.name) {
-    case 'Discovery':
-      template = 'discovery/discovery';
-      script = 'discovery/dist/discovery.js';
-      break;
-
-    case 'UserAvailabilityObserver':
-      template = 'user-availability/userAvailabilityObserver';
-      script = 'user-availability/UserAvailabilityObserverDemo.js';
-      break;
-
-    case 'UserAvailabilityReporter':
-      template = 'user-availability/userAvailabilityReporter';
-      script = 'user-availability/UserAvailabilityReporterDemo.js';
-      break;
-
-    case 'QBWebRTC':
-      template = 'qbwebrtc/qbwebrtc';
-      script = 'qbwebrtc/dist/qbwebrtc.js';
-      break;
-
-    case 'Connector':
-      template = 'connector/Connector';
-      script = 'connector/demo.js';
+    case 'Conference':
+      template = 'Conference/Conference';
+      script = 'Conference/demo.js';
       break;
 
     case 'GroupChatManager':

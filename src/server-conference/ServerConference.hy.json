@@ -4,7 +4,8 @@
   "configuration": { },
   "hypertyType": ["audio", "video"],
   "constraints": {
-    "browser": true
+    "node": true,
+    "browser": false
   },
   "dataObjects": [
     "https://catalogue.%domain%/.well-known/dataschema/Connection"

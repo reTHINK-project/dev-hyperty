@@ -42,7 +42,7 @@ export function divideURL(url) {
 
 
 
-class NodeHyperty extends EventEmitter {
+class ServerConference extends EventEmitter {
 
   /**
   * Create a new roomDataObjectReporter
@@ -64,13 +64,13 @@ class NodeHyperty extends EventEmitter {
     this.discovery = new Discovery(hypertyURL, bus);
     this.identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
     this.configuration = configuration;
-
+  
     this.peer = peer;
     this.objObserver = {};
     this.objReporter = {};
     this.roomsObj = {};// holds room Object by roomName. this.roomsObj[roomName]
     this.roomController = {};
-    this.scheme = ['comm'];
+    this.scheme = ['connection'];
     this.resources = ['audio', 'video'];
     this.connectionObject = connection;
     this.callerIdentity;
@@ -87,13 +87,15 @@ class NodeHyperty extends EventEmitter {
   }
 
   onNotification(event) {
-     let _this = this;
+     let _this = this;  
 
-    console.log(' event is :  '.red, event)
+    console.log('serverConference :: event is :', event);
+    console.log('serverConference :: event.from is :', event.from);
     event.ack();
     _this.callerIdentity = event.identity;
     switch(event.type) {
       case "create":
+        //console.log('serverConference switch create :');
         if (_this.roomController[event.from]) {
           _this.autoSubscribe(event);
         } else {
@@ -117,35 +119,47 @@ class NodeHyperty extends EventEmitter {
 
     }
   }
-   autoSubscribe(event) {
+  
+  autoSubscribe(event) {
+
+    console.log('serverConference :: autoSubscribe');
+
     let _this = this;
     let syncher = _this.syncher;
-
+  
     console.log('---------------- Syncher Subscribe (Auto Subscribe) ---------------- \n');
 
     syncher.subscribe(_this.objectDescURL, event.url).then(function(dataObjectObserver) {
       console.log('1.[autoSubscribe], Return Subscribe Data Object Observer:', dataObjectObserver);
+
+      //console.log('_this.roomController[event.from]:', _this.roomController[event.from]);
+      //console.log('event.from:', event.from);
       _this.roomController[event.from].dataObjectObserver = dataObjectObserver;
+
+      //console.log('autoSubscribe après set dataObjectObserver');
     }).catch(function(reason) {
       console.error(reason);
     });
   }
 
   autoAccept(event) {
+
+    console.log('serverConference :: autoAccept');
+
     let _this = this;
     let syncher = _this.syncher;
     console.log('---------------- Syncher Subscribe (Auto Accept) ---------------- \n');
 
     syncher.subscribe(_this.objectDescURL, event.url ).then(function(dataObjectObserver) {
-      console.log('1. [autoAccept], Return Subscribe Data Object Observer', dataObjectObserver);
+      console.log('1. [autoAccept], Return Subscribe Data Object Observer', dataObjectObserver.data);
 
       let roomController = new RoomController(syncher, _this.domain, _this.configuration);
       roomController.connectionEvent = event;
       // we get the sdp offer
-      roomController.roomName = event.value.roomName;
+      roomController.roomName = dataObjectObserver.data.roomName;
       roomController.dataObjectObserver = dataObjectObserver;
       _this.roomController[event.from] = roomController;
-
+ 
       console.log('_this._controllers[event.from] : ', _this.roomController[event.from])
 
       // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
@@ -168,32 +182,33 @@ class NodeHyperty extends EventEmitter {
 
     let _this = this;
     let syncher = _this.syncher;
-    let toHyperty = toUser.userHypertyURL;
-
+    let toHyperty = toUser.userHypertyURL; 
+    
     console.log('------------ sendMessage:', message ,'to toHyperty : ----------------\n', toHyperty);
 
     return new Promise((resolve, reject) => {
-
-      let dataObject = {
-        name : 'communication',
-        id: message.id,
-        type: "response",
-        from: _this.myUrl,
-        to: toUser,
-        status : "",
-        data : message
-      };
+      
+      // let dataObject = {
+      //   name : 'connection',
+      //   type: "response",
+      //   from: _this.myUrl,
+      //   to: toUser,
+      //   status : "",
+      //   data : message
+      // };
        // Initial data
-        _this.connectionObject.name = 'connection';
-        _this.connectionObject.scheme = 'connection';
-        _this.connectionObject.owner = _this.myUrl;
-        _this.connectionObject.data = dataObject.data;
-        _this.connectionObject.status = '';
-
+      // _this.connectionObject.name = 'connection';
+      // _this.connectionObject.scheme = 'connection';
+       // _this.connectionObject.status = '';
+        let participant = {};
+        participant.owner = _this.myUrl;
+        participant.message = message;
+       
+     
       console.log('------------ _this.connectionObject: ----------------\n', _this.connectionObject);
       // create ObjectReporter to communicate with specific client hyperty
-      syncher.create(_this.objectDescURL, [toHyperty], _this.connectionObject).then((objReporter) => {
-        console.log('Created WebRTC Object Reporter: ', objReporter.data);
+      syncher.create(_this.objectDescURL, [toHyperty], participant).then((objReporter) => {
+        console.log('Create conference participant Object Reporter: ', objReporter.data);
         objReporter.onSubscription((event) => {
           console.log('-------- Receiver peer Hyperty subscription request --------- \n');
           event.accept();
@@ -217,9 +232,9 @@ class NodeHyperty extends EventEmitter {
         dataObjectReporter.onSubscription((event) => {
           console.log('-------- Status Reporter received subscription request ---------\n');
           event.accept();
-          resolve(dataObjectReporter);
+          resolve(dataObjectReporter);       
         });
-
+      
       }).catch(function(reason) {
         reject(reason);
       });
@@ -237,8 +252,8 @@ class NodeHyperty extends EventEmitter {
 export default function activate(hypertyURL, bus, configuration) {
 
   return {
-    name: 'NodeHyperty',
-    instance: new NodeHyperty(hypertyURL, bus, configuration)
+    name: 'ServerConference',
+    instance: new ServerConference(hypertyURL, bus, configuration)
   };
 
 }

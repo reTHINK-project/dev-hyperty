@@ -49,9 +49,14 @@
 
 export let connection = {
   name: '',
+  // id:{},
+  roomName :'',
   scheme: '',
   status: '',
   owner: '',
-  connectionDescription: {},
-  iceCandidates: []
+  Peer: '',
+  ownerPeer: {
+    connectionDescription: {},
+    iceCandidates: []
+  }
 };

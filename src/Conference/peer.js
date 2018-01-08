@@ -21,36 +21,15 @@
 * limitations under the License.
 **/
 
-export const CommunicationStatus = {
-  OPEN: 'open',
-  PENDING: 'pending',
-  CLOSED: 'closed',
-  PAUSED: 'paused',
-  FAILED: 'failed'
-};
-
-export let communicationObject = {
-  startingTime: '',
+let peer = {
   status: '',
-  participants: {}
-};
-
-export let communicationChildren = {
-  "parent" : "communication",
-  "listener" : "resources",
-  "type" : "HypertyResource"
-};
-
-/*
-export let communicationObject = {
-  id: '',
-  name: '',
   owner: '',
-  scheme: 'comm',
-  startingTime: '',
-  lastModified: '',
-  duration: '',
-  status: '',
-  participants: []
+  scheme: '',
+  peer: '',
+  Peer: {
+    connectionDescription: {},
+    iceCandidates: []
+  }
 };
-*/
+
+export default peer;
