@@ -9,8 +9,8 @@ let RUNTIME;
 const hypertyURI = (hyperty_domain, hyperty) => `hyperty-catalogue://catalogue.${hyperty_domain}/.well-known/hyperty/${hyperty}`;
 let runtime_domain = 'hybroker.rethink.ptinovacao.pt';
 let hyperty_domain = 'hybroker.rethink.ptinovacao.pt';
-let demoTemplate = 'https://rawgit.com/reTHINK-project/dev-hyperty/master/examples/user-availability/userAvailabilityObserver';
-let demoJs = 'https://rawgit.com/reTHINK-project/dev-hyperty/master/examples/user-availability/UserAvailabilityObserverDemo.js';
+let demoTemplate = 'https://rawgit.com/reTHINK-project/dev-hyperty/master/examples/location/locationObserver';
+let demoJs = 'https://rawgit.com/reTHINK-project/dev-hyperty/master/examples/location/locationObserver.js';
 
 let config = {
   domain: hyperty_domain,
@@ -45,14 +45,14 @@ function loadRuntime() {
 
 function loadHyperty()
 {
-  RUNTIME.requireHyperty(hypertyURI(hyperty_domain, 'UserAvailabilityObserver')).then((hyperty) => {
-    console.log('[UserAvailabilityObserverDemo.loadHyperty', hyperty);
+  RUNTIME.requireHyperty(hypertyURI(hyperty_domain, 'LocationObserver')).then((hyperty) => {
+    console.log('[LocationObserverDemo.loadHyperty', hyperty);
 
     getTemplate(demoTemplate, demoJs).then(function(template) {
       let html = template();
       $('.demo-content').html(html);
 
-      templateAreReady('user-availability');
+      templateAreReady('location');
 
       if (typeof hypertyLoaded === 'function') {
         hypertyLoaded(hyperty);

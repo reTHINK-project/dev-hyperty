@@ -153,6 +153,18 @@
 
   <li>
     
+      <a href="/dev-hyperty/demos/location-reporter/" class="doc-link" role="link">  Location Reporter </a>
+    
+  </li>
+
+  <li>
+    
+      <a href="/dev-hyperty/demos/location-observer/" class="doc-link" role="link">  Location Observer </a>
+    
+  </li>
+
+  <li>
+    
       <a href="/dev-hyperty/demos/hello-world-observer/" class="doc-link" role="link">  Hello World Observer </a>
     
   </li>
@@ -291,11 +303,17 @@
 
 <p><strong>parameters</strong></p>
 
-<p><em>invitation</em> - the CreateEvent fired by the Syncher when an invitaion is received</p>
+<p><em>invitation</em> - the CreateEvent fired by the Syncher when an invitaion is received. See <a href="../../specs/service-framework/syncher/">here</a> documentation about Syncher CreateEvent.</p>
 
 <p><strong>How to use it</strong></p>
 
-<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">chatGroupManager</span><span class="p">.</span><span class="nx">onInvitation</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">){...});</span>
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">chatGroupManager</span><span class="p">.</span><span class="nx">onInvitation</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">){</span>
+
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Invitation to join Chat '</span> <span class="o">+</span> <span class="nx">event</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s1">' from '</span> <span class="o">+</span> <span class="nx">event</span><span class="p">.</span><span class="nx">identity</span><span class="p">);</span>
+  <span class="nx">event</span><span class="p">.</span><span class="nx">ack</span><span class="p">();</span>
+  <span class="p">...</span>
+
+  <span class="p">});</span>
 </code></pre>
 </div>
 
@@ -333,19 +351,25 @@
 
 <p>This function is used to send a chat message.</p>
 
-<p><code class="highlighter-rouge">&lt;Promise&gt; Communication.ChatMessage send(Communication.ChatMessage message)</code></p>
+<p><code class="highlighter-rouge">&lt;Promise&gt; DataObjectChild send(HypertyResource message)</code></p>
 
 <p><strong>parameters</strong></p>
 
-<p><em>message</em> is the ChatMessage to be sent.</p>
+<p><em>message</em> is an <a href="../../../specs/datamodel/core/hyperty-resource/readme/">HypertyResource</a> of type ‘chat’.</p>
 
 <p><strong>returns</strong></p>
 
-<p>It returns the ChatMessage child object created by the Syncher as a Promise.</p>
+<p>It returns the DataObjectChild containing the chat message HypertyResource created by the Syncher as a Promise.</p>
 
 <p><strong>How to use it</strong></p>
 
-<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">chatController</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">message</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">sentMessage</span><span class="p">){</span>
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code>
+<span class="kd">let</span> <span class="nx">message</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">type</span><span class="p">:</span> <span class="s1">'chat'</span><span class="p">,</span>
+  <span class="na">content</span><span class="p">:</span> <span class="s1">'Hello World'</span>
+<span class="p">};</span>
+
+<span class="nx">chatController</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">message</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">sentMessage</span><span class="p">){</span>
 
 <span class="c1">// your source code</span>
 
@@ -355,19 +379,58 @@
 </code></pre>
 </div>
 
+<h4 id="sendfile">sendFile</h4>
+
+<p>This function is used to send a File.</p>
+
+<p><code class="highlighter-rouge">&lt;Promise&gt; DataObjectChild send(File file)</code></p>
+
+<p><strong>parameters</strong></p>
+
+<p><em>file</em> is javascript <a href="https://developer.mozilla.org/en-US/docs/Web/API/File">File</a>.</p>
+
+<p><strong>returns</strong></p>
+
+<p>It returns the DataObjectChild containing the file  HypertyResource created by the Syncher as a Promise.</p>
+
+<p><strong>How to use it</strong></p>
+
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code>
+<span class="c1">// use an HTML form with input type "file" to select the file</span>
+
+<span class="nx">fileForm</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'change'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+
+  <span class="kd">let</span> <span class="nx">file</span><span class="p">;</span>
+  <span class="nx">file</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">files</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+  <span class="nx">chatController</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">message</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">sentMessage</span><span class="p">){</span>
+
+  <span class="c1">// your source code</span>
+
+  <span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre>
+</div>
+
 <h4 id="onmessage">onMessage</h4>
 
 <p>This function is used to receive new messages.</p>
 
-<p><code class="highlighter-rouge">onMessage(Communication.ChatMessage message)</code></p>
+<p><code class="highlighter-rouge">onMessage(HypertyResource message)</code></p>
 
 <p><strong>parameters</strong></p>
 
-<p><em>message</em> - the received message compliant with Communication.ChatMessage.</p>
+<p><em>message</em> - is an <a href="../../../specs/datamodel/core/hyperty-resource/readme/">HypertyResource</a> of type ‘chat’.</p>
 
 <p><strong>How to use it</strong></p>
 
-<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">chatController</span><span class="p">.</span><span class="nx">onMessage</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">){...});</span>
+<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="nx">chatController</span><span class="p">.</span><span class="nx">onMessage</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">){</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'message received: '</span><span class="p">,</span> <span class="nx">message</span><span class="p">.</span><span class="nx">content</span><span class="p">);</span>
+  <span class="p">...});</span>
 </code></pre>
 </div>
 
@@ -506,7 +569,7 @@
               <p><b>Tagged:</b> chat</p>
               <p><b>Client:</b> reTHINK Project</p>
               <p><b>Catalogue URL: </b> <a href="https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/GroupChatManager">https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/GroupChatManager</a></p>
-              <p><b>Live Demo:</b> <a href="/demos/group-chat-manager/">/demos/group-chat-manager/</a></p>
+              <p><b>Live Demo:</b> <a href="../../demos/group-chat-manager/">/demos/group-chat-manager/</a></p>
           </div>
       </div><!--/row -->
   </div><!--/container -->

@@ -26,6 +26,8 @@ The Group Chat main functionality is to handle Text conversations among groups, 
 
 -- send message to group
 
+-- send files to the group using p2p connections (with preview for images).
+
 -- receive message from group with identity from sender
 
 This Hyperty handles standard [Communication Data Objects](https://github.com/reTHINK-project/dev-service-framework/blob/develop/docs/datamodel/data-objects/communication/readme.md) constrained for Chat Communications i.e. the hypertyResource type is `chat`.
@@ -159,6 +161,42 @@ chatController.send(message).then(function(sentMessage){
 });
 ```
 
+#### sendFile
+
+This function is used to send a File.
+
+`<Promise> DataObjectChild send(File file)`
+
+**parameters**
+
+*file* is javascript [File](https://developer.mozilla.org/en-US/docs/Web/API/File).
+
+**returns**
+
+It returns the DataObjectChild containing the file  HypertyResource created by the Syncher as a Promise.
+
+**How to use it**
+
+```javascript
+
+// use an HTML form with input type "file" to select the file
+
+fileForm.on('change', function(event) {
+
+  event.preventDefault();
+
+  let file;
+  file = event.target.files[0];
+
+  chatController.send(message).then(function(sentMessage){
+
+  // your source code
+
+  }).catch(function(reason) {
+      console.error(reason);
+  });
+});
+```
 
 #### onMessage
 
