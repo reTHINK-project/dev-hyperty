@@ -1,6 +1,6 @@
 {
   "name": "connector",
-  "version": "1.0.0",
+  "version": "0.3.0",
   "description": "Hyperty to make webrtc call",
   "main": "Connector.hy.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "author": "vitor-t-silva@telecom.pt",
   "license": "ISC",
   "dependencies": {
-    "service-framework": "github:rethink-project/dev-service-framework#v0.7.4"
+    "service-framework": "github:rethink-project/dev-service-framework#v0.8.0"
   },
   "devDependencies": {
     "webrtc-adapter": "^4.2.2"

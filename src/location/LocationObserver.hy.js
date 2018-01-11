@@ -1,7 +1,8 @@
 import { Syncher } from 'service-framework/dist/Syncher';
 import {Discovery} from 'service-framework/dist/Discovery';
 import URI from 'urijs'
-import ContextObserver from 'service-framework/dist/ContextManager';
+import {ContextObserver} from 'service-framework/dist/ContextManager';
+
 
 class LocationObserverHyperty extends ContextObserver {
 
@@ -59,9 +60,9 @@ class LocationObserverHyperty extends ContextObserver {
                 this._syncher.subscribe(this._objectDescURL, dataobject.url).then(observer => {
                     console.log('[LocationObserver] observing', observer)
                     //observer.data.values[]
-                    //username
+                    //preferred_username
                     let position = {
-                        username: observer.data.tag,
+                        preferred_username: observer.data.tag,
                         coords:{
                             latitude: observer.data.values.find(v=>v.name==='latitude').value,
                             longitude: observer.data.values.find(v=>v.name==='longitude').value

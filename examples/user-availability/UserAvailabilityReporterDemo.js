@@ -24,10 +24,10 @@ function hypertyReady(result, identity) {
                     '</span>';
   let userInfo = '<div class="row"><span class="white-text">' +
                      '<span class="col s2">' +
-                     '<img width="48" height="48" src="' + identity.avatar + '" alt="" class="circle">' +
+                     '<img width="48" height="48" src="' + identity.picture + '" alt="" class="circle">' +
                      '</span><span class="col s10">' +
-                    '<b>Name:</b> ' + identity.cn + '</br>' +
-                    '<b>Email:</b> ' + identity.username + '</br>' +
+                    '<b>Name:</b> ' + identity.name + '</br>' +
+                    '<b>Email:</b> ' + identity.preferred_username + '</br>' +
                     '<b>UserURL:</b> ' + identity.userURL +
                     '</span></div>';
   $cardPanel.append(userInfo);
@@ -65,10 +65,10 @@ function availabilityReady(availability) {
 
   let $myAvailability = $('.my_availability');
 
-  userAvailabilityHy.addEventListener('my-availability-update', function(event) {
+  userAvailabilityHy.addEventListener('myAvailability-context-update', function(event) {
 
     console.log('[UserAvailabilityReporterDemo.availabilityReady] Updated :', event);
-    $myAvailability.text(event)
+    $myAvailability.text(event[0].value)
 
     });
   userAvailabilityHy.setStatus('available');

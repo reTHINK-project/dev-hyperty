@@ -1,6 +1,6 @@
 {
   "name": "dtwebrtc",
-  "version": "1.0.0",
+  "version": "0.3.0",
   "description": "",
   "main": "DTWebRTC.hy.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "service-framework": "github:rethink-project/dev-service-framework#v0.7.4",
+    "service-framework": "github:rethink-project/dev-service-framework#v0.8.0",
     "webrtc-adapter-test": "^0.2.10"
   }
 }

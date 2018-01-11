@@ -26,9 +26,11 @@ function hypertyLoaded(result) {
   });
 
   // Prepare to discover email:
-  var search = result.instance.search;
+//  var search = result.instance.search;
+  console.log('[GroupChatManagerDemo.hypertyLoaded] getting identity for hyperty ', result.instance);
 
-  search.myIdentity().then(function(identity) {
+
+  result.instance.myIdentity().then(function(identity) {
     hypertyReady(result, identity);
   });
 }
@@ -44,10 +46,10 @@ function hypertyReady(result, identity) {
 
   let userInfo = '<div class="row"><span class="white-text">' +
                  '<span class="col s2">' +
-                 '<img width="48" height="48" src="' + identity.avatar + '" alt="" class="circle">' +
+                 '<img width="48" height="48" src="' + identity.picture + '" alt="" class="circle">' +
                  '</span><span class="col s10">' +
-                 '<b>Name:</b> ' + identity.cn + '</br>' +
-                 '<b>Email:</b> ' + identity.username + '</br>' +
+                 '<b>Name:</b> ' + identity.name + '</br>' +
+                 '<b>Email:</b> ' + identity.preferred_username + '</br>' +
                  '<b>UserURL:</b> ' + identity.userURL +
                  '</span></div>';
 
@@ -555,29 +557,29 @@ function processMessage(message) {
 
   let chatSection = $('.chat-section');
   let messagesList = chatSection.find('.messages .collection');
-  let avatar = '';
+  let picture = '';
   let from = '';
 
   if (message.identity) {
-    avatar = message.identity.userProfile.avatar;
-    from = message.identity.userProfile.cn;
+    picture = message.identity.userProfile.picture;
+    from = message.identity.userProfile.name;
   }
 
   if (message.value) {
     let list = document.createElement('li');
     list.className = 'collection-item avatar';
 
-    let avatarEl = document.createElement('img');
-    avatarEl.className = 'circle';
-    avatarEl.src = avatar;
-    avatarEl.alt = from;
+    let pictureEl = document.createElement('img');
+    pictureEl.className = 'circle';
+    pictureEl.src = picture;
+    pictureEl.alt = from;
 
     let nameSpan = document.createElement('span');
     let name = document.createTextNode(from);
     nameSpan.className = 'title';
     nameSpan.appendChild(name);
 
-    list.appendChild(avatarEl);
+    list.appendChild(pictureEl);
     list.appendChild(nameSpan);
 
     console.log('[GroupChatManagerDemo - processMessage] - ', messagesList, message, list);
@@ -792,7 +794,7 @@ function processNewUser(event) {
   if (collection.find('[data-name="' + user.identity.userProfile.userURL + '"]').length == 0) {
     collection.append(`
       <li class="chip" data-name="${ user.identity.userProfile.userURL }">
-        <img src="${ user.identity.userProfile.avatar }" alt="Contact Person">${ user.identity.userProfile.cn }
+        <img src="${ user.identity.userProfile.picture }" alt="Contact Person">${ user.identity.userProfile.name }
         <i class="material-icons close">close</i>
       </li>`);
     collection.removeClass('center-align');

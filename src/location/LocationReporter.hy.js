@@ -35,7 +35,7 @@ constructor(hypertyURL, bus, config){
                         { name: 'longitude', unit: 'lon', value: position.coords.longitude }
                     ]
                     reporter.data.time = position.timestamp
-                    reporter.data.tag = identity.username
+                    reporter.data.tag = identity.preferred_username
                 })
             })
         })
