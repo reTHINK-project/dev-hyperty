@@ -23,6 +23,8 @@ function hypertyLoaded(result) {
 
     observer = result.instance;
 
+    console.log('[UserAvailabilityObserverDemo] observer Dataobject', observer);
+
     observer.start().then((usersAvailability)=>{
       if (usersAvailability) { observeUsersAvailability(usersAvailability); }
 
@@ -44,9 +46,12 @@ function hypertyLoaded(result) {
 
 function discoverUsers(observer) {
   let email = $('.email-input');
+  let name = $('.subscribe-legacy-name-input');
   let domain = $('.domain-input');
 
   let searchForm = $('.search-form');
+  let subscribeLegacyForm = $('.subscribe-legacy-form');
+  let subscribeLegay = $('.subscribe-legacy');
   let discoveryEl = $('.discover');
 
   observer = observer;
@@ -68,6 +73,15 @@ function discoverUsers(observer) {
         showDiscoveredUser(discoveredUser, collection)
       });
     });
+  });
+  subscribeLegacyForm.on('submit', function(event) {
+    event.preventDefault();
+    console.log('lets susbcribe');
+    observer._discoverAndSubscribeLegacyUsers(name.val()).then(function(resultSubscribe) {
+      console.log('[UserAvailabilityObserverDemo.discoverUsers] result subscribe', resultSubscribe);
+      observeUserAvailability(resultSubscribe);
+    })
+
   });
 }
 
@@ -109,6 +123,7 @@ function subscribeAvailability(event){
         let hyperty = $currEl.attr('hyperty-id');
         //let user = $currEl.attr('user-id');
         $('.collection').hide();
+        console.log('[UserAvailabilityObserverDemo] ON SUBSCRIBE', event, 'toObserve', discoveredHyperties[hyperty], 'using observer', observer);
 
         observer.observe(discoveredHyperties[hyperty]).then(function(availability) {
           console.log('[UserAvailabilityObserverDemo.discoverAvailability] start observing: ', availability);
