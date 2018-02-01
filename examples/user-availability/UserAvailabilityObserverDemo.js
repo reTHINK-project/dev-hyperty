@@ -146,8 +146,7 @@ function observeUserAvailability(userAvailability) {
 
   //TODO: add each availability to user-list collection class
 
-  let availabilityUrl = userAvailability.url;
-
+  let availabilityUrl = 'Url:' + userAvailability.url + '   Name:' + userAvailability.metadata.name;
   let $userAvailability = $('<li/>')
        .addClass('user-list-item')
        .attr('url', availabilityUrl)
