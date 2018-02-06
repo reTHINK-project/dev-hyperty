@@ -579,6 +579,9 @@ function processMessage(message) {
   } else if (typeof message.childId === 'string') {
     toProcess = checkHistory(message.childId);
   }
+  if (message.hasOwnProperty('resource')) {
+    toProcess = true;
+  }
   console.log('[GroupChatManagerDemo - processMessage] - msg ', message, toProcess);
   if (toProcess) {
 
