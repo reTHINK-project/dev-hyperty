@@ -4,6 +4,7 @@
 /* global Materialize */
 
 var chatGroupManager;
+var messageHistoryControl = {};
 
 function hypertyLoaded(result) {
 
@@ -551,91 +552,120 @@ function chatManagerReady(chatController, isOwner) {
 
 var listOf = {};
 
+function checkHistory(url) {
+  var child = url.split('#')[0];
+  var childID = url.split('#')[1];
+
+  if( messageHistoryControl.hasOwnProperty(child)) {
+    var oldID = messageHistoryControl[child].id;
+    if ( oldID !== childID ) {
+      messageHistoryControl[child].id = childID;
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    messageHistoryControl[child] = {id: childID};
+    return true;
+  }
+}
+
 function processMessage(message) {
 
-  console.log('[GroupChatManagerDemo - processMessage] - msg ', message);
+  var toProcess = false;
+  if (typeof message.child === 'object') {
+    toProcess = checkHistory(message.child._childId);
 
-  let chatSection = $('.chat-section');
-  let messagesList = chatSection.find('.messages .collection');
-  let picture = '';
-  let from = '';
-
-  if (message.identity) {
-    picture = message.identity.userProfile.picture;
-    from = message.identity.userProfile.name;
+  } else if (typeof message.childId === 'string') {
+    toProcess = checkHistory(message.childId);
   }
+  if (message.hasOwnProperty('resource')) {
+    toProcess = true;
+  }
+  console.log('[GroupChatManagerDemo - processMessage] - msg ', message, toProcess);
+  if (toProcess) {
 
-  if (message.value) {
-    let list = document.createElement('li');
-    list.className = 'collection-item avatar';
+    let chatSection = $('.chat-section');
+    let messagesList = chatSection.find('.messages .collection');
+    let picture = '';
+    let from = '';
 
-    let pictureEl = document.createElement('img');
-    pictureEl.className = 'circle';
-    pictureEl.src = picture;
-    pictureEl.alt = from;
-
-    let nameSpan = document.createElement('span');
-    let name = document.createTextNode(from);
-    nameSpan.className = 'title';
-    nameSpan.appendChild(name);
-
-    list.appendChild(pictureEl);
-    list.appendChild(nameSpan);
-
-    console.log('[GroupChatManagerDemo - processMessage] - ', messagesList, message, list);
-
-    let messageEl = document.createElement('p');
-    let content;
-
-    if (!message.resource) {
-      messageEl.innerHTML = message.value.content.replace(/\n/g, '<br>');
-      list.appendChild(messageEl);
-    } else {
-
-      listOf[message.resource.resourceType] = {}
-      listOf[message.resource.resourceType][message.resource.metadata.url] = message.resource;
-
-      switch (message.resource.resourceType) {
-
-        case 'file':
-          var link = document.createElement('a');
-          link.href = 'javascript:;';
-          link.title = message.resource.metadata.name;
-          link.addEventListener('click', function(event) {
-            console.log(message.resource.resourceType, message.resource.metadata.name);
-            readFile(message.resource);
-          });
-
-          content = document.createTextNode(message.resource.metadata.name);
-          messageEl.appendChild(content);
-          list.appendChild(messageEl);
-
-          if (message.resource.metadata.preview) {
-
-            var img = document.createElement('img');
-            img.src = message.resource.metadata.preview;
-            img.alt = message.resource.metadata.name;
-            link.appendChild(img);
-          } else {
-            var text = document.createTextNode(message.resource.metadata.name);
-            var icon = document.createElement('i');
-            icon.className = "material-icons left";
-            icon.innerText = 'insert_drive_file'
-            link.appendChild(icon);
-            link.appendChild(text);
-          }
-
-          list.appendChild(link);
-
-          break;
-        default:
-          break;
-      }
+    if (message.identity) {
+      picture = message.identity.userProfile.picture;
+      from = message.identity.userProfile.name;
     }
 
-    messagesList.append(list);
-  }
+    if (message.value) {
+      let list = document.createElement('li');
+      list.className = 'collection-item avatar';
 
+      let pictureEl = document.createElement('img');
+      pictureEl.className = 'circle';
+      pictureEl.src = picture;
+      pictureEl.alt = from;
+
+      let nameSpan = document.createElement('span');
+      let name = document.createTextNode(from);
+      nameSpan.className = 'title';
+      nameSpan.appendChild(name);
+
+      list.appendChild(pictureEl);
+      list.appendChild(nameSpan);
+
+      console.log('[GroupChatManagerDemo - processMessage] - ', messagesList, message, list);
+
+      let messageEl = document.createElement('p');
+      let content;
+
+      if (!message.resource) {
+        messageEl.innerHTML = message.value.content.replace(/\n/g, '<br>');
+        list.appendChild(messageEl);
+      } else {
+
+        listOf[message.resource.resourceType] = {}
+        listOf[message.resource.resourceType][message.resource.metadata.url] = message.resource;
+
+        switch (message.resource.resourceType) {
+
+          case 'file':
+            var link = document.createElement('a');
+            link.href = 'javascript:;';
+            link.title = message.resource.metadata.name;
+            link.addEventListener('click', function(event) {
+              console.log(message.resource.resourceType, message.resource.metadata.name);
+              readFile(message.resource);
+            });
+
+            content = document.createTextNode(message.resource.metadata.name);
+            messageEl.appendChild(content);
+            list.appendChild(messageEl);
+
+            if (message.resource.metadata.preview) {
+
+              var img = document.createElement('img');
+              img.src = message.resource.metadata.preview;
+              img.alt = message.resource.metadata.name;
+              link.appendChild(img);
+            } else {
+              var text = document.createTextNode(message.resource.metadata.name);
+              var icon = document.createElement('i');
+              icon.className = "material-icons left";
+              icon.innerText = 'insert_drive_file'
+              link.appendChild(icon);
+              link.appendChild(text);
+            }
+
+            list.appendChild(link);
+
+            break;
+          default:
+            break;
+        }
+      }
+
+      messagesList.append(list);
+    }
+  }
 }
 
 function readFile(file) {
