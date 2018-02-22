@@ -24,6 +24,10 @@ export function hypertyDeployed(hyperty) {
       template = 'user-availability/userAvailabilityObserver';
       script = 'user-availability/UserAvailabilityObserverDemo.js';
       break;
+    case 'UserKwhObserver':
+      template = 'observer-kwh/UserKwhObserver';
+      script = 'observer-kwh/UserKwhObserver.js';
+      break;
 
     case 'UserAvailabilityReporter':
       template = 'user-availability/userAvailabilityReporter';
@@ -61,6 +65,11 @@ export function hypertyDeployed(hyperty) {
       script = 'location/location.js';
       break;
 
+    case 'LocationReporterDSM':
+      template = 'location-dsm/location';
+      script = 'location-dsm/location.js';
+      break;
+
     case 'LocationObserver':
       template = 'location/locationObserver';
       script = 'location/locationObserver.js';
@@ -74,7 +83,8 @@ export function hypertyDeployed(hyperty) {
     case 'DTWebRTC':
       template = 'dtwebrtc/dtwebrtc';
       script = 'dtwebrtc/dtwebrtc.js';
-      break;  }
+      break;
+  }
 
   if (!template) {
     throw Error('You must need specify the template for your example');
