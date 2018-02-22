@@ -52,16 +52,16 @@ class LocationHypertyFactory {
               let resources = 'kwh';
               let url = 'school://vertx-app/stream/announcements';
               let announcementMessage = {
-                id: '123', type: 'create', to: 'school://vertx-app/announcement', from: this.hypertyURL,
+                type: 'forward', to: 'school://vertx-app/announcement', from: this.hypertyURL,
                 body: {
                   idtoken: idtoken,
                   events: [{
-                    type: 'type',
+                    type: type,
                     resources: [resources],
-                    url: url
-                  }]
+                    url: reporter._url }],
+                  from: this.hypertyURL
                 }};
-              console.log('DSM - sending message to protostub');
+              console.log('WHATISGOINGON! hyperty', announcementMessage);
               this.bus.postMessage(announcementMessage);
 
 
