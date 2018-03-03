@@ -1,23 +1,25 @@
 ---
 layout: hyperty
-title:  "Location Observer Hyperty"
-description: "Observes Geolocation info from users"
-date:   2016-01-01
-author: David Vilchez
+title:  "Building Observer Hyperty"
+description: "Observes data captured from sensors in a building"
+date:   2018-04-01
+author: ?
 categories:
-- geolocation
-img: whereami.jpg
-thumb: whereami.jpg
-tagged: geolocation
-client: reTHINK Project
-demo: /demos/location-observer/
-catalogue: https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/Location
+- iot
+img: building.jpg
+thumb: building.jpg
+tagged: iot
+client: Sharing Cities Project
+demo: /demos/building-observer/
+catalogue: https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/Building
 ---
 
 
-The Location Observer provides the monitoring of Location from multiple users. It enables the discovery of users publishing its Location through the Location Reporter and the option to subscribe to it.
+The Building Observer monitors data collected from multiple buildings. It enables the discovery of buildings publishing its Data through the Building Reporter and the option to subscribe to it.
 
 This Hyperty handles a standard [Context Data Object](https://github.com/reTHINK-project/dev-service-framework/tree/master/docs/datamodel/data-objects/context) with:
+
+*to be completed*
 
 **Hyperty Resource Type**
 

@@ -4,7 +4,7 @@
 
 
   <!-- reTHINK Runtime script -->
-  <script src="https://hybroker.rethink.ptinovacao.pt/.well-known/runtime/rethink.js"></script>
+  <script src="https://hysmart.rethink.ptinovacao.pt/.well-known/runtime/rethink.js"></script>
 
   <!-- Hello World Demo script -->
  </head>
@@ -12,14 +12,14 @@
 
   <script>
   let config = {
-    "development": true,
-    "runtimeURL": "hyperty-catalogue://hybroker.rethink.ptinovacao.pt/.well-known/runtime/Runtime",
-    "domain": "hybroker.rethink.ptinovacao.pt"
+    "development": false,
+    "runtimeURL": "hyperty-catalogue://hysmart.rethink.ptinovacao.pt/.well-known/runtime/Runtime",
+    "domain": "hysmart.rethink.ptinovacao.pt"
   }
 
   let runtime;
   let hypertyCatalogueURL = 'hyperty-catalogue://'+config.domain + '/.well-known/hyperty/HelloWorldReporter';
-  let observer = 'hyperty://hybroker.rethink.ptinovacao.pt/5a119a40-5782-4c60-8296-2d5e824e6e2c';
+  let observer = 'hyperty://hysmart.rethink.ptinovacao.pt/9322846d-2aa7-49fd-be70-5904ca87730b';
   let helloObj = {}; // it will contain the Hello DataObject to be reported
 
   rethink.default.install(config).then(function(result) {
