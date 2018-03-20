@@ -16,8 +16,7 @@ catalogue: https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/
 
 The Wallet Hyperty manages a user's cryptocurrency wallet.
 
-This Hyperty observes a standard [Wallet Data Object](https://github.com/reTHINK-project/dev-service-framework/tree/master/docs/datamodel/data-objects/wallet) with:
-
+This Hyperty observes a standard [Wallet Data Object](https://github.com/reTHINK-project/specs/tree/master/datamodel/data-objects/wallet) with:
 
 **example**
 
@@ -28,14 +27,15 @@ This Hyperty observes a standard [Wallet Data Object](https://github.com/reTHINK
 }
 ```
 
-
 ## API
 
-The Wallet Hyperty provides an API to create and delete wallets, to monitor wallet balance and wallet transactions and to transfer tokens. This API should be compliant with [ERC20 API](https://theethereum.wiki/w/index.php/ERC20_Token_Standard)
+The Wallet Hyperty provides an API to create and delete wallets, to monitor wallet balance and wallet transactions and to transfer tokens. This API should be compliant with [ERC20 API](https://theethereum.wiki/w/index.php/ERC20_Token_Standard).
 
 ### start
 
 *to be completed*
+
+this function
 
 ```javascript
 <Promise> Wallet start()
@@ -48,8 +48,6 @@ No input parameter.
 **returns**
 
 A promise with the Wallet DataObject.
-
-
 
 ### Descriptor
 
