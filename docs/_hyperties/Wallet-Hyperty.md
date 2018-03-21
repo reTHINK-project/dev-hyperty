@@ -20,6 +20,8 @@ This Hyperty observes a standard [Wallet Data Object](https://github.com/reTHINK
 
 **example**
 
+To be completed.
+
 ```json
 {
  "scheme": "wallet",
@@ -29,16 +31,32 @@ This Hyperty observes a standard [Wallet Data Object](https://github.com/reTHINK
 
 ## API
 
-The Wallet Hyperty provides an API to create and delete wallets, to monitor wallet balance and wallet transactions and to transfer tokens. This API should be compliant with [ERC20 API](https://theethereum.wiki/w/index.php/ERC20_Token_Standard).
+The Wallet Hyperty provides an API to create and delete wallets, to monitor wallet balance and wallet transactions and to transfer tokens to other wallets. This API should be compliant with [ERC20 API](https://theethereum.wiki/w/index.php/ERC20_Token_Standard).
 
-### start
+### configuration
+
+The Wallet Manager configuration comprises:
+
+```
+{
+  walletManager: <wallet manager address>
+}
+```
+
+
+### start function
 
 *to be completed*
 
-this function
+This function requests the resume of a wallet created in previous sessions (Observation resume).
+
+If the resume returns empty it means it is the first time and it requests the Wallet manager to create a new Wallet by sending the following the message specified here.
+
+If the wallet is successfuly created, the wallet address is returned and subscribed.
+
 
 ```javascript
-<Promise> Wallet start()
+<Promise> Wallet start( )
 ```
 
 **parameters**
@@ -48,6 +66,18 @@ No input parameter.
 **returns**
 
 A promise with the Wallet DataObject.
+
+### transfer function
+
+*to be implemented in phase 2*
+
+It requests to transfer a certain amount of tokens to another wallet.
+
+```javascript
+<Promise> transaction transfer( recipient, amount, description )
+```
+
+
 
 ### Descriptor
 
