@@ -1,8 +1,8 @@
 {
-  "name": "wallet-dsm",
+  "name": "WalletDSM",
   "version": "0.3.0",
   "description": "The User Location is comprised by two Hyperties.",
-  "main": "walletDSM.hy.js",
+  "main": "WalletDSM.hy.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

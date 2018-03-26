@@ -24,6 +24,12 @@ export function hypertyDeployed(hyperty) {
       template = 'user-availability/userAvailabilityObserver';
       script = 'user-availability/UserAvailabilityObserverDemo.js';
       break;
+
+    case 'WalletDSM':
+      template = 'wallet-dsm/WalletDSM';
+      script = 'wallet-dsm/wallet.js';
+      break;
+
     case 'UserKwhObserver':
       template = 'observer-kwh/UserKwhObserver';
       script = 'observer-kwh/UserKwhObserver.js';
@@ -82,11 +88,6 @@ export function hypertyDeployed(hyperty) {
     case 'DTWebRTC':
       template = 'dtwebrtc/dtwebrtc';
       script = 'dtwebrtc/dtwebrtc.js';
-      break;
-
-    case 'walletDSM':
-      template = 'wallet-dsm/walletDSM';
-      script = 'wallet-dsm/wallet.js';
       break;
   }
 
