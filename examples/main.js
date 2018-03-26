@@ -54,7 +54,6 @@ export function hypertyDeployed(hyperty) {
       script = 'hello-world/helloReporter.js';
       break;
 
-
     case 'NodeHypertyObserver':
       template = 'node-hyperty/NodeHyperty';
       script = 'node-hyperty/NodeHypertyObserver.js';
@@ -83,6 +82,11 @@ export function hypertyDeployed(hyperty) {
     case 'DTWebRTC':
       template = 'dtwebrtc/dtwebrtc';
       script = 'dtwebrtc/dtwebrtc.js';
+      break;
+
+    case 'walletDSM':
+      template = 'wallet-dsm/walletDSM';
+      script = 'wallet-dsm/wallet.js';
       break;
   }
 

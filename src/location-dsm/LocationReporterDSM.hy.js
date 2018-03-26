@@ -50,9 +50,9 @@ class LocationHypertyFactory {
               let idtoken =  'citizen';
               let type = 'newstream';
               let resources = 'kwh';
-              let url = 'school://vertx-app/stream/announcements';
+              let url = 'school://sharing-cities-dsm/stream/announcements';
               let announcementMessage = {
-                type: 'forward', to: 'school://vertx-app/announcement', from: this.hypertyURL,
+                type: 'forward', to: 'hyperty://sharing-cities-dsm/location-url', from: this.hypertyURL,
                 body: {
                   idtoken: idtoken,
                   events: [{
@@ -61,6 +61,7 @@ class LocationHypertyFactory {
                     url: reporter._url }],
                   from: this.hypertyURL
                 }};
+
               console.log('WHATISGOINGON! hyperty', announcementMessage);
               this.bus.postMessage(announcementMessage);
 
