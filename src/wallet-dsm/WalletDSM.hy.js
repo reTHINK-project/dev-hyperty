@@ -17,24 +17,45 @@ class WalletDSM {
     this.bus = bus;
     this.hypertyURL = hypertyURL;
 
-
-    let announcementMessage = {
-      type: 'forward', to: 'hyperty://sharing-cities-dsm/location-url', from: this.hypertyURL,
-      body: {
-        events: [{
-          type: 'create',
-          resources: ['adssadas'],
-          url: 'asdsadas' }],
-        from: this.hypertyURL
-      }};
-
-    console.log('WHATISGOINGON! hyperty DSM', announcementMessage);
-    this.bus.postMessage(announcementMessage);
-
+    this.start();
   }
 
-}
 
+  start(){
+    let _this = this;
+
+    let userURL = 'user://sharing-cities-dsm/userWalletIdentity';
+    let createMessage = {
+      type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
+      identity: { userProfile : { userURL: userURL }},
+      body: {
+        from: _this.hypertyURL,
+        to: 'hyperty://sharing-cities-dsm/wallet-manager',
+        type: 'create'
+      }};
+
+    console.log('WalletDSM create message', createMessage);
+
+    _this.bus.postMessage(createMessage,  (reply) => {
+
+      console.log('WalletDSM create Reply', reply);
+      if (reply.body.code == 200) {
+        let subscriptionURL = reply.body.newWallet.address + '/subscription';
+
+        let subscribeMessage = {
+          type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
+          identity: { userProfile : { userURL: userURL }},
+          body: {
+            from: _this.hypertyURL,
+            to: subscriptionURL,
+            type: 'create'
+          },
+          address: reply.body.newWallet.address};
+          _this.bus.postMessage(subscribeMessage,  (reply2) => { console.log('WalletDSM subscription Reply', reply2); });
+      }
+    });
+  }
+}
 export default function activate(hypertyURL, bus, config) {
   return {
     name: 'WalletDSM',

@@ -18,8 +18,27 @@ class LocationHypertyFactory {
     this.bus = bus;
     this.hypertyURL = hypertyURL;
 
+
+
+    let userURL = 'user://sharing-cities-dsm/userWalletIdentity';
+    let createMessage = {
+      type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: this.hypertyURL,
+      identity: { userProfile : { userURL: userURL }},
+      body: {
+        from: this.hypertyURL,
+        to: 'token-rating-checkin',
+        type: 'create'
+      }};
+
+    console.log('WalletDSM create message', createMessage);
+
+    this.bus.postMessage(createMessage,  (reply) => {
+      console.log('token-rating-checkin create Reply', reply);
+    });
+
   }
 
+/*
   getCurrentPosition() {
 
     return new Promise((resolve) => {
@@ -30,23 +49,6 @@ class LocationHypertyFactory {
           this.search.myIdentity().then(identity => {
             navigator.geolocation.watchPosition((position)=>{
 
-              // send announcement message
-              /*
-              {
-              idtoken: "jhhhgjg",
-              [
-              {"type": 'newstream',"resources": [<resource-type>], url: <stream address> },
-              {"type": 'newsetting',"key": <setting-name>, "value": <setting-vale> }, ]
-            }
-            */
-              /*
-           idtoken - should include the required id to validate the citizen id. It should be compliant with OIDC.
-          type  - identifies the type of announcement including newstream and newsetting
-          resources - identifies the type of resources to be produced in the stream eg location-context . See here
-          url - the stream address
-          key -  name of attribute eg cause-name
-          value -  value of attribute eg School-A
-            */
               let idtoken =  'citizen';
               let type = 'newstream';
               let resources = 'kwh';
@@ -81,7 +83,7 @@ class LocationHypertyFactory {
 
     });
 
-  }
+  }*/
 
 }
 
