@@ -17,24 +17,60 @@ class LocationHypertyFactory {
     this.currentPosition;
     this.bus = bus;
     this.hypertyURL = hypertyURL;
+    this.vertxInvited = false;
+    this.userURL = 'user://sharing-cities-dsm/userWalletIdentity';
+    console.log('token-rating-checkin', this);
+    this._inviteVertx();
+
+  }
 
 
+  _inviteVertx() {
+    let _this = this;
 
-    let userURL = 'user://sharing-cities-dsm/userWalletIdentity';
     let createMessage = {
-      type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: this.hypertyURL,
-      identity: { userProfile : { userURL: userURL }},
+      type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
+      identity: { userProfile : { userURL: _this.userURL }},
       body: {
-        from: this.hypertyURL,
+        from: _this.hypertyURL,
         to: 'token-rating-checkin',
         type: 'create'
       }};
 
-    console.log('WalletDSM create message', createMessage);
+    console.log('token-rating-checkin', createMessage);
 
-    this.bus.postMessage(createMessage,  (reply) => {
+    _this.bus.postMessage(createMessage,  (reply) => {
+      if (reply.body.code == 200) {
+        _this.vertxInvited = true;
+      }
       console.log('token-rating-checkin create Reply', reply);
     });
+  }
+
+  _doCheckIN(latitude, longitude, shopID){
+
+    let _this = this;
+
+    let checkInData = { latitude: latitude,
+                          longitude: longitude,
+                          userID: _this.userURL,
+                          shopID: shopID
+    };
+
+    let checkInMessage = {
+      type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
+      identity: { userProfile : { userURL: _this.userURL }},
+      body: {
+        from: _this.hypertyURL,
+        to: _this.userURL,
+        type: 'create',
+        data: checkInData
+      }};
+
+      _this.bus.postMessage(checkInMessage,  (reply) => {
+
+        console.log('token-rating-checkin Reply-checkin', reply);
+      });
 
   }
 
