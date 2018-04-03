@@ -16,8 +16,11 @@ class WalletDSM {
     this.currentPosition;
     this.bus = bus;
     this.hypertyURL = hypertyURL;
-
+    this.myWallet = null;
     this.start();
+    bus.addListener(hypertyURL, (msg) => {
+      console.log('WalletDSM new msg', msg);
+    });
   }
 
 
@@ -38,9 +41,11 @@ class WalletDSM {
 
     _this.bus.postMessage(createMessage,  (reply) => {
 
+
       console.log('WalletDSM create Reply', reply);
       if (reply.body.code == 200) {
-        let subscriptionURL = reply.body.newWallet.address + '/subscription';
+        _this.myWallet = reply.body.wallet;
+        let subscriptionURL = reply.body.wallet.address + '/subscription';
 
         let subscribeMessage = {
           type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
@@ -50,8 +55,10 @@ class WalletDSM {
             to: subscriptionURL,
             type: 'create'
           },
-          address: reply.body.newWallet.address};
-          _this.bus.postMessage(subscribeMessage,  (reply2) => { console.log('WalletDSM subscription Reply', reply2); });
+          address: reply.body.wallet.address};
+          _this.bus.postMessage(subscribeMessage,  (reply2) => {
+            console.log('WalletDSM subscription Reply', reply2);
+           });
       }
     });
   }

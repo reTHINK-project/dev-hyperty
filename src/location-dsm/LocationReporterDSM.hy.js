@@ -20,12 +20,14 @@ class LocationHypertyFactory {
     this.vertxInvited = false;
     this.userURL = 'user://sharing-cities-dsm/userWalletIdentity';
     console.log('token-rating-checkin', this);
-    this._inviteVertx();
+
+    //TODO: app should call this function
+    this._inviteVertx('token-rating-checkin');
 
   }
 
-
-  _inviteVertx() {
+  //TODO: url should be 'token-rating-checkin' checkin case
+  _inviteVertx(toInviteURL) {
     let _this = this;
 
     let createMessage = {
@@ -33,7 +35,7 @@ class LocationHypertyFactory {
       identity: { userProfile : { userURL: _this.userURL }},
       body: {
         from: _this.hypertyURL,
-        to: 'token-rating-checkin',
+        to: toInviteURL,
         type: 'create'
       }};
 
