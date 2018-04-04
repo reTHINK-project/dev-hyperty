@@ -5,8 +5,9 @@
 
 
 function hypertyLoaded(result) {
-    console.log("hyperty loaded")
-    result.instance.getCurrentPosition().then((position)=> {
+    console.log("hyperty loaded", result.instance);
+
+  /*  result.instance.getCurrentPosition().then((position)=> {
 
       console.log("[LocationReporter.demo] current position: ", position)
        setTimeout(()=>{
@@ -34,5 +35,6 @@ function hypertyLoaded(result) {
       //      alert("Your browser does not support geolocation");
       //    }
       //  });
-    });
+    });*/
+    result.instance.initPosition();
 }

@@ -76,6 +76,7 @@ class LocationHypertyFactory {
 
   }
 
+
 /*
   getCurrentPosition() {
 

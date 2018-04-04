@@ -6,6 +6,9 @@
 
 function hypertyLoaded(result) {
     console.log("hyperty loaded")
+
+    
+
     result.instance.getCurrentPosition().then((position)=> {
 
       console.log("[LocationReporter.demo] current position: ", position)
