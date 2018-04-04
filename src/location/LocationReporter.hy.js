@@ -3,7 +3,8 @@ import URI from 'urijs';
 import position from './position';
 import Search from '../utils/Search';
 import IdentityManager from 'service-framework/dist/IdentityManager';
-import {Discovery} from 'service-framework/dist/Discovery';
+import { Discovery } from 'service-framework/dist/Discovery';
+import { callbackify } from 'util';
 
 class LocationHypertyFactory {
 
@@ -20,34 +21,63 @@ class LocationHypertyFactory {
     this.bus = bus;
     this.hypertyURL = hypertyURL;
     this.reporter = null;
+    this.watchID = null;
   }
+
   //FOR invite checkin  -> vertx://sharing-cities-dsm/token-rating-checkin
   invite(observer) {
+
     let _this = this;
-      _this.reporter.inviteObservers([observer]);
+    _this.reporter.inviteObservers([observer]);
+  }
+
+  watchMyLocation(callback) {
+
+    function success(pos) {
+      var crd = pos.coords;
+      callback(crd);
+    }
+
+    function error(err) {
+      console.warn('ERROR(' + err.code + '): ' + err.message);
+    }
+
+    const options = {
+      enableHighAccuracy: true
+
+      // timeout: 5000,
+      // maximumAge: 0
+    };
+
+    this.watchID = navigator.geolocation.watchPosition(success, error, options);
+  }
+
+  removeWatchMyLocation() {
+    navigator.geolocation.clearWatch(this.watchID);
   }
 
   initPosition() {
     let _this = this;
-    _this.syncher.create(_this.objectDescURL, [], position(), true, false, 'location', {}, {resources: ['location-context']})
-      .then((reporter)=>{
+    _this.syncher.create(_this.objectDescURL, [], position(), true, false, 'location', {}, { resources: ['location-context'] })
+      .then((reporter) => {
         _this.reporter = reporter;
         console.log('[LocationReporter]  DataObjectReporter', _this.reporter);
-        reporter.onSubscription((event)=>event.accept());
+        reporter.onSubscription((event) => event.accept());
         _this.search.myIdentity().then(identity => {
           _this.identity = identity;
-          navigator.geolocation.watchPosition((position)=>{
+          navigator.geolocation.watchPosition((position) => {
             console.log('[LocationReporter] my position: ', position);
             _this.currentPosition = position;
+
             // reporter.data.values = [
             //   { name: 'latitude', unit: 'lat', value: position.coords.latitude},
             //   { name: 'longitude', unit: 'lon', value: position.coords.longitude }
             // ];
             // reporter.data.time = position.timestamp;
             // reporter.data.tag = identity.preferred_username;
+          });
         });
       });
-    });
   }
 
   updateLocation() {
@@ -69,7 +99,7 @@ class LocationHypertyFactory {
     _this.reporter.data.values = [
       { name: 'latitude', unit: 'lat', value: latitude },
       { name: 'longitude', unit: 'lon', value: longitude },
-      { name: 'checkin', unit: 'checkin', value: spotId },
+      { name: 'checkin', unit: 'checkin', value: spotId }
     ];
     _this.reporter.data.time = _this.currentPosition.timestamp;
     _this.reporter.data.tag = _this.identity.preferred_username;
@@ -86,12 +116,13 @@ class LocationHypertyFactory {
         body: {
           from: _this.hypertyURL,
           type: 'read'
-        }};
+        }
+      };
 
 
       console.log('location-reporter-retrieveSpots()', createMessage);
 
-      _this.bus.postMessage(createMessage,  (reply) => {
+      _this.bus.postMessage(createMessage, (reply) => {
         resolve(reply);
         console.log('location-reporter-retrieveSpots() reply: ', reply);
       });
