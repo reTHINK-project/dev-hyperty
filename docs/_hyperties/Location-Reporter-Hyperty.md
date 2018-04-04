@@ -20,17 +20,59 @@ For simplification purposes, subscription requests from the Location Observer Hy
 
 It uses the Context Data schema so it is compatible with any hyperty using the same data schema.
 
-## Configuration
-
-The Hyperty configuration may include the data object URL where to retrieve data about locations to be shown in the map.
-
-spots : <data-object-url>
 
 ## API
 
+### watchMyLocation
+
+Setup watch to receive updates anytime user's location is changed but without broadcasting it to observers.
+
+#### Syntax
+
+   `locationHy.watchMyLocation(callback)`
+
+#### How to use it.
+
+```javascript
+   locationHyp.watchMyLocation(
+       (position)=>{
+           console.log(position)
+       });
+```
+
+### removeWatchMyLocation
+
+Removes watch of MyLocation
+
+#### Syntax
+
+   `locationHy.removeWatchMyLocation()`
+
+#### How to use it.
+
+```javascript
+   locationHyp.removeWatchMyLocation();
+```
+
+### getLocation
+
+Returns current position without broadcasting it to observers.
+
+#### Syntax
+
+   `Context locationHy.getLocation()`
+
+Returns the [ContextLocation Data Object](https://rethink-project.github.io/specs/datamodel/data-objects/context/readme/).
+
+#### How to use it.
+
+```javascript
+   myLocation = locationHyp.getLocation()
+```
+
 ### updateLocation
 
-Returns current position
+Returns and broadcasts my current position
 
 #### Syntax
 
@@ -97,7 +139,7 @@ Spots Location Id where user is trying to perform checkin.
 
 ### startPositionBroadcast
 
-Notify every position change to subscribed hyperties
+Notify every position change to subscribed hyperties ie observers.
 
 #### Syntax
 
