@@ -36,5 +36,5 @@ function hypertyLoaded(result) {
       //    }
       //  });
     });*/
-    result.instance.initPosition();
+    result.instance.startPositionBroadcast();
 }

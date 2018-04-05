@@ -56,6 +56,35 @@ class LocationHypertyFactory {
     navigator.geolocation.clearWatch(this.watchID);
   }
 
+  getLocation() {
+    return this.currentPosition;
+  }
+
+  startPositionBroadcast() {
+    let _this = this;
+    _this.syncher.create(_this.objectDescURL, [], position(), true, false, 'location', {}, { resources: ['location-context'] })
+      .then((reporter) => {
+        _this.reporter = reporter;
+        console.log('[LocationReporter]  DataObjectReporter', _this.reporter);
+        reporter.onSubscription((event) => event.accept());
+        _this.search.myIdentity().then(identity => {
+          _this.identity = identity;
+          navigator.geolocation.watchPosition((position) => {
+            console.log('[LocationReporter] my position: ', position);
+            _this.currentPosition = position;
+
+            reporter.data.values = [
+              { name: 'latitude', unit: 'lat', value: position.coords.latitude},
+              { name: 'longitude', unit: 'lon', value: position.coords.longitude }
+            ];
+            reporter.data.time = position.timestamp;
+            reporter.data.tag = identity.preferred_username;
+          });
+        });
+      });
+
+  }
+
   initPosition() {
     let _this = this;
     _this.syncher.create(_this.objectDescURL, [], position(), true, false, 'location', {}, { resources: ['location-context'] })
