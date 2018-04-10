@@ -130,8 +130,6 @@ class LocationHypertyFactory {
       { name: 'longitude', unit: 'lon', value: longitude },
       { name: 'checkin', unit: 'checkin', value: spotId }
     ];
-    _this.reporter.data.time = _this.currentPosition.timestamp;
-    _this.reporter.data.tag = _this.identity.preferred_username;
   }
 
   // can call with 'data://sharing-cities-dsm/shops'
