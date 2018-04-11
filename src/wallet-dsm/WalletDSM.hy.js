@@ -18,8 +18,9 @@ class WalletDSM {
     this.hypertyURL = hypertyURL;
     this.myWallet = null;
     console.log(this.identityManager);
+
     //debugger;
-    this.start();
+    // this.start();
 
     bus.addListener(hypertyURL, (msg) => {
       console.log('WalletDSM new msg', msg);
@@ -27,25 +28,25 @@ class WalletDSM {
   }
 
 
-  start() {
+  start(callback) {
     let _this = this;
+
 
     // send request to create wallet (to subscription manager in Vertx P2P Stub)
 
 
-
-/*
-    _this.identityManager.discoverUserRegistered().then(result => {
-      console.log('asd',result);
-      debugger;
-    }).catch(result => {
-      console.log('asd',result);
-      debugger;
-    });*/
+    /*
+        _this.identityManager.discoverUserRegistered().then(result => {
+          console.log('asd',result);
+          debugger;
+        }).catch(result => {
+          console.log('asd',result);
+          debugger;
+        });*/
 
 
     // TODO - userUrl
-    let userURL = 'user://google.com/lduarte.suil@gmail.com';
+    let userURL = 'user://google.com/rafaelfelgueiras1993@gmail.com';
 
 
     let createMessage = {
@@ -67,54 +68,55 @@ class WalletDSM {
       console.log('WalletDSM create Reply', reply);
       if (reply.body.code == 200) {
 
-        _this.syncher.subscribe( _this.objectDescURL, reply.body.reporter_url, true, false, true, null).then(function (obj) {
+        _this.syncher.subscribe(_this.objectDescURL, reply.body.reporter_url, true, false, true, null).then(function(obj) {
           console.log('[WalletDSM] subscribe result :', obj);
+
+          callback(obj.data.balance);
+
           obj.onChange('*', (event) => {
             console.log('[VertxAppProtoStub] New Change :', event);
-            debugger;
+
+            callback(event.data);
+
 
           });
 
-        }).catch(function (error) {
-          debugger;
+        }).catch(function(error) {
+
           console.log('[VertxAppProtoStub] error', error);
         });
 
 
-/*
+        /*
 
-        // wallet was created -> subscribe
-        _this.myWallet = reply.body.wallet;
-        let subscriptionURL = reply.body.wallet.address + '/subscription';
+                // wallet was created -> subscribe
+                _this.myWallet = reply.body.wallet;
+                let subscriptionURL = reply.body.wallet.address + '/subscription';
 
-        let subscribeMessage = {
-          type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
-          identity: { userProfile: { userURL: userURL } },
-          body: {
-            from: _this.hypertyURL,
-            to: subscriptionURL,
-            type: 'create'
-          },
-          address: reply.body.wallet.address
-        };
-        _this.bus.postMessage(subscribeMessage, (reply2) => {
-          console.log('WalletDSM subscription Reply', reply2);
+                let subscribeMessage = {
+                  type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
+                  identity: { userProfile: { userURL: userURL } },
+                  body: {
+                    from: _this.hypertyURL,
+                    to: subscriptionURL,
+                    type: 'create'
+                  },
+                  address: reply.body.wallet.address
+                };
+                _this.bus.postMessage(subscribeMessage, (reply2) => {
+                  console.log('WalletDSM subscription Reply', reply2);
 
-          if (reply2.body.code == 200) {
-            // TODO - listen for updates
-            _this.bus.addListener(_this.hypertyURL + '/changes', (msg) => {
-              _this.update(msg);
-            });
-          }
-        });*/
+                  if (reply2.body.code == 200) {
+                    // TODO - listen for updates
+                    _this.bus.addListener(_this.hypertyURL + '/changes', (msg) => {
+                      _this.update(msg);
+                    });
+                  }
+                });*/
       }
     });
   }
 
-  update(msg) {
-    console.log('WalletDSM update', msg);
-
-  }
 }
 export default function activate(hypertyURL, bus, config) {
   return {
