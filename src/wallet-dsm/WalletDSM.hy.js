@@ -8,7 +8,7 @@ class WalletDSM {
 
   constructor(hypertyURL, bus, config) {
     let uri = new URI(hypertyURL);
-    this.objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Context`;
+    this.objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Wallet`;
     this.syncher = new Syncher(hypertyURL, bus, config);
     this.identityManager = new IdentityManager(hypertyURL, config.runtimeURL, bus);
     this.discovery = new Discovery(hypertyURL, config.runtimeURL, bus);
@@ -17,7 +17,10 @@ class WalletDSM {
     this.bus = bus;
     this.hypertyURL = hypertyURL;
     this.myWallet = null;
+    console.log(this.identityManager);
+    //debugger;
     this.start();
+
     bus.addListener(hypertyURL, (msg) => {
       console.log('WalletDSM new msg', msg);
     });
@@ -28,15 +31,21 @@ class WalletDSM {
     let _this = this;
 
     // send request to create wallet (to subscription manager in Vertx P2P Stub)
-    /*
-    _this.search.myIdentity().then(identity => {
-      _this.identity = identity;
-      console.log('WalletDSM identity', identity);
-    });
-    */
+
+
+
+/*
+    _this.identityManager.discoverUserRegistered().then(result => {
+      console.log('asd',result);
+      debugger;
+    }).catch(result => {
+      console.log('asd',result);
+      debugger;
+    });*/
+
 
     // TODO - userUrl
-    let userURL = 'user://sharing-cities-dsm/userWalletIdentity';
+    let userURL = 'user://google.com/lduarte.suil@gmail.com';
 
 
     let createMessage = {
@@ -56,10 +65,24 @@ class WalletDSM {
 
 
       console.log('WalletDSM create Reply', reply);
-      
       if (reply.body.code == 200) {
-        
-        debugger;
+
+        _this.syncher.subscribe( _this.objectDescURL, reply.body.reporter_url, true, false, true, null).then(function (obj) {
+          console.log('[WalletDSM] subscribe result :', obj);
+          obj.onChange('*', (event) => {
+            console.log('[VertxAppProtoStub] New Change :', event);
+            debugger;
+
+          });
+
+        }).catch(function (error) {
+          debugger;
+          console.log('[VertxAppProtoStub] error', error);
+        });
+
+
+/*
+
         // wallet was created -> subscribe
         _this.myWallet = reply.body.wallet;
         let subscriptionURL = reply.body.wallet.address + '/subscription';
@@ -83,7 +106,7 @@ class WalletDSM {
               _this.update(msg);
             });
           }
-        });
+        });*/
       }
     });
   }
