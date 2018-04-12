@@ -18,7 +18,10 @@ function hypertyReady(result, identity) {
 
   function afterUpdate(event){
       console.log('WAllet new update', event);
-      $('.token-value').text(event);
+      if (event.field == 'balance') {
+        $('.token-value').text(event.data);
+
+      }
   }
   result.instance.start(afterUpdate, identity);
 }

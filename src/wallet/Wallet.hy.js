@@ -48,12 +48,17 @@ class Wallet {
       if (reply.body.code == 200) {
         _this.syncher.subscribe(_this.objectDescURL, reply.body.reporter_url, true, false, true, null).then(function(obj) {
           console.log('[Wallet] subscribe result :', obj);
+          
+          let updateBalance = {
+            field : "balance",
+            data : obj.data.balance
+          }
 
-          callback(obj.data.balance);
+          callback(updateBalance);
 
           obj.onChange('*', (event) => {
             console.log('[Wallet] New Change :', event);
-            callback(event.data);
+            callback(event);
           });
 
         }).catch(function(error) {
