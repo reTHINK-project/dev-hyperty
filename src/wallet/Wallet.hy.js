@@ -4,7 +4,7 @@ import Search from '../utils/Search';
 import IdentityManager from 'service-framework/dist/IdentityManager';
 import { Discovery } from 'service-framework/dist/Discovery';
 
-class WalletDSM {
+class Wallet {
 
   constructor(hypertyURL, bus, config) {
     let uri = new URI(hypertyURL);
@@ -23,7 +23,7 @@ class WalletDSM {
     // this.start();
 
     bus.addListener(hypertyURL, (msg) => {
-      console.log('WalletDSM new msg', msg);
+      console.log('Wallet new msg', msg);
     });
   }
 
@@ -60,16 +60,16 @@ class WalletDSM {
     };
 
 
-    console.log('WalletDSM create message', createMessage);
+    console.log('Wallet create message', createMessage);
 
     _this.bus.postMessage(createMessage, (reply) => {
 
 
-      console.log('WalletDSM create Reply', reply);
+      console.log('Wallet create Reply', reply);
       if (reply.body.code == 200) {
 
         _this.syncher.subscribe(_this.objectDescURL, reply.body.reporter_url, true, false, true, null).then(function(obj) {
-          console.log('[WalletDSM] subscribe result :', obj);
+          console.log('[Wallet] subscribe result :', obj);
 
           callback(obj.data.balance);
 
@@ -104,7 +104,7 @@ class WalletDSM {
                   address: reply.body.wallet.address
                 };
                 _this.bus.postMessage(subscribeMessage, (reply2) => {
-                  console.log('WalletDSM subscription Reply', reply2);
+                  console.log('Wallet subscription Reply', reply2);
 
                   if (reply2.body.code == 200) {
                     // TODO - listen for updates
@@ -120,7 +120,7 @@ class WalletDSM {
 }
 export default function activate(hypertyURL, bus, config) {
   return {
-    name: 'WalletDSM',
-    instance: new WalletDSM(hypertyURL, bus, config)
+    name: 'Wallet',
+    instance: new Wallet(hypertyURL, bus, config)
   };
 }

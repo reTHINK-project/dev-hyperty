@@ -25,9 +25,9 @@ export function hypertyDeployed(hyperty) {
       script = 'user-availability/UserAvailabilityObserverDemo.js';
       break;
 
-    case 'WalletDSM':
-      template = 'wallet-dsm/WalletDSM';
-      script = 'wallet-dsm/wallet.js';
+    case 'Wallet':
+      template = 'wallet/Wallet';
+      script = 'wallet/wallet.js';
       break;
 
     case 'UserKwhObserver':
@@ -68,11 +68,6 @@ export function hypertyDeployed(hyperty) {
     case 'LocationReporter':
       template = 'location/location';
       script = 'location/location.js';
-      break;
-
-    case 'LocationReporterDSM':
-      template = 'location-dsm/location';
-      script = 'location-dsm/location.js';
       break;
 
     case 'LocationObserver':
