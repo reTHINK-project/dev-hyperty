@@ -5,7 +5,7 @@ import {getTemplate, serialize} from './utils';
 
 let loading = false;
 
-export function hypertyDeployed(hyperty) {
+export function hypertyDeployed(hyperty, runtimeLoader = null) {
 
   let $el = $('.main-content .notification');
   removeLoader($el);
@@ -95,7 +95,7 @@ export function hypertyDeployed(hyperty) {
     $mainContent.html(html);
 
     if (typeof hypertyLoaded === 'function') {
-      hypertyLoaded(hyperty);
+      hypertyLoaded(hyperty, runtimeLoader);
     } else {
       let msg = 'If you need pass the hyperty to your template, create a function called hypertyLoaded';
       console.info(msg);

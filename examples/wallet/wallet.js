@@ -1,10 +1,14 @@
 
-function hypertyLoaded(result) {
-    console.log("Wallet hyperty loaded", result.instance);
+function hypertyLoaded(result, runtimeLoader) {
+
+    console.log("Wallet hyperty loaded", result.instance, runtimeLoader);
+    runtimeLoader.requireProtostub('sharing-cities-dsm');
 
     result.instance.identityManager.discoverUserRegistered().then(function(identity) {
       hypertyReady(result, identity);
     });
+
+
 }
 
 function hypertyReady(result, identity) {
