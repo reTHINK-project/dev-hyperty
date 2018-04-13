@@ -50,7 +50,7 @@ The Wallet Manager configuration comprises:
 
 This function requests the resume of a wallet created in previous sessions (Observation resume).
 
-If the resume returns empty it means it is the first time and it requests the Wallet manager to create a new Wallet by sending the following the message specified here.
+If the resume returns empty it means it is the first time and it requests the Wallet manager to create a new Wallet by sending the message specified [here](https://github.com/reTHINK-project/specs/blob/master/messages/wallet-messages.md#wallet-creation-request).
 
 If the wallet is successfuly created, the wallet address is returned and subscribed.
 
@@ -68,8 +68,6 @@ No input parameter.
 A promise with the Wallet DataObject.
 
 ### transfer function
-
-*to be implemented in phase 2*
 
 It requests to transfer a certain amount of tokens to another wallet.
 
