@@ -103,7 +103,8 @@ This function connects to a certain previously discovered bracelet and starts re
 *options* is of type SensorOptions defined in [W3C Generic Sensor API](https://www.w3.org/TR/generic-sensor/#api) where measurement frequency is defined.
 
 **returns**
-Since the Hyperty supports the standard context data schema, any Catalog URL for that schema can be used.
+
+returns as a promise the subscribed Context Data Object.
 
 
 ## Descriptor
