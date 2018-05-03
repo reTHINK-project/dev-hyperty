@@ -81,7 +81,7 @@ function hypertyReady(result, identity) {
         groupChats.forEach((chatController) => {
 
           chatManagerReady(chatController, false);
-          prepareChat(chatController, false);
+          prepareChat(chatController, false, true);
 
         });
       }
@@ -99,10 +99,9 @@ function hypertyReady(result, identity) {
         $('.create-room-btn').hide();
         $('.join-room-btn').hide();
 
-
         groupChats.forEach((chatController) => {
           chatManagerReady(chatController, true);
-          prepareChat(chatController, true);
+          prepareChat(chatController, true, true);
 
         });
 
@@ -330,7 +329,7 @@ function getSectionTpl() {
 
 }
 
-function prepareChat(chatController, isOwner) {
+function prepareChat(chatController, isOwner, toReload = null) {
 
   console.log('[GroupChatManagerDemo prepareChat] Chat Group Controller: ', chatController);
 
@@ -354,7 +353,7 @@ function prepareChat(chatController, isOwner) {
 
     console.log('[GroupChatManagerDemo.prepareChat] for msg ', msg);
 
-    processMessage(msg);
+    processMessage(msg, toReload);
   });
 
   chatController.onInvitationResponse(function(response) {
@@ -570,7 +569,7 @@ function checkHistory(url) {
   }
 }
 
-function processMessage(message) {
+function processMessage(message, onResume = null) {
 
   var toProcess = false;
   if (typeof message.child === 'object') {
@@ -583,7 +582,7 @@ function processMessage(message) {
     toProcess = true;
   }
   console.log('[GroupChatManagerDemo - processMessage] - msg ', message, toProcess);
-  if (toProcess) {
+  if (toProcess || onResume != null) {
 
     let chatSection = $('.chat-section');
     let messagesList = chatSection.find('.messages .collection');

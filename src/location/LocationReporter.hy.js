@@ -66,6 +66,7 @@ class LocationHypertyFactory {
               if (identity.userURL == reporters[dataObjectReporterURL].metadata.subscriberUsers[0] && reporters[dataObjectReporterURL].metadata.name == 'location') {
                 //debugger;
                 _this.reporter = reporters[dataObjectReporterURL];
+                _this.reporter.onSubscription((event) => event.accept());
                 return resolve(true);
               } else {
                 return resolve(false);
@@ -81,7 +82,7 @@ class LocationHypertyFactory {
     });
   }
 
-  //FOR invite checkin  -> vertx://sharing-cities-dsm/token-rating-checkin
+  //FOR invite checkin  -> hyperty://sharing-cities-dsm/checkin-rating
   invite(observer) {
 
     let _this = this;
@@ -119,26 +120,21 @@ class LocationHypertyFactory {
 
   startPositionBroadcast() {
     let _this = this;
-    _this.syncher.create(_this.objectDescURL, [], position(), true, false, 'location', {}, { resources: ['location-context'] })
-      .then((reporter) => {
-        _this.reporter = reporter;
-        console.log('[LocationReporter]  DataObjectReporter', _this.reporter);
-        reporter.onSubscription((event) => event.accept());
-        _this.search.myIdentity().then(identity => {
-          _this.identity = identity;
-          navigator.geolocation.watchPosition((position) => {
-            console.log('[LocationReporter] my position: ', position);
-            _this.currentPosition = position;
-
-            reporter.data.values = [
-              { name: 'latitude', unit: 'lat', value: position.coords.latitude},
-              { name: 'longitude', unit: 'lon', value: position.coords.longitude }
-            ];
-            reporter.data.time = position.timestamp;
-            reporter.data.tag = identity.preferred_username;
+    if (_this.reporter == null) {
+      _this.syncher.create(_this.objectDescURL, [], position(), true, false, 'location', {}, { resources: ['location-context'] })
+        .then((reporter) => {
+          _this.reporter = reporter;
+          console.log('[LocationReporter]  DataObjectReporter', _this.reporter);
+          reporter.onSubscription((event) => event.accept());
+          _this.search.myIdentity().then(identity => {
+            _this.identity = identity;
+            _this.broadcastMyPosition();
           });
         });
-      });
+    } else {
+      _this.broadcastMyPosition();
+    }
+
 
   }
 
@@ -170,6 +166,21 @@ class LocationHypertyFactory {
     });
   }
 
+  broadcastMyPosition() {
+    let _this = this;
+    navigator.geolocation.watchPosition((position) => {
+      console.log('[LocationReporter] my position: ', position);
+      _this.currentPosition = position;
+      _this.reporter.data.values = [
+        { name: 'latitude', unit: 'lat', value: position.coords.latitude},
+        { name: 'longitude', unit: 'lon', value: position.coords.longitude }
+      ];
+      _this.reporter.data.time = position.timestamp;
+      _this.reporter.data.tag = _this.identity.preferred_username;
+      //debugger;
+    });
+  }
+
   updateLocation() {
     let _this = this;
     let latitude = _this.currentPosition.coords.latitude;
@@ -191,6 +202,7 @@ class LocationHypertyFactory {
       { name: 'longitude', unit: 'lon', value: longitude },
       { name: 'checkin', unit: 'checkin', value: spotId }
     ];
+
   }
 
   // can call with 'data://sharing-cities-dsm/shops'
