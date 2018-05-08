@@ -68,10 +68,9 @@ class LocationHypertyFactory {
                 _this.reporter = reporters[dataObjectReporterURL];
                 _this.reporter.onSubscription((event) => event.accept());
                 return resolve(true);
-              } else {
-                return resolve(false);
               }
             });
+            return resolve(false);
           });
         } else {
           return resolve(false);
