@@ -122,7 +122,7 @@ class Wallet {
           observersList.forEach((dataObjectObserverURL) => {
             console.log('[VertxAppProtoStub].syncher.resumeObserver: ', dataObjectObserverURL);
             if (walletURL == dataObjectObserverURL) {
-              resolve(observers[dataObjectObserverURL]);
+              return resolve(observers[dataObjectObserverURL]);
             }
           });
         } else {
