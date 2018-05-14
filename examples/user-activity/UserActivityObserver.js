@@ -6,6 +6,7 @@ function hypertyLoaded(result, runtimeLoader = null) {
   if (runtimeLoader != null) {
     runtimeLoader.requireProtostub('sharing-cities-dsm');
     runtimeLoader.requireProtostub('fitness.google.com');
+
     const walletUrl = 'hyperty-catalogue://catalogue.localhost/.well-known/hyperty/Wallet';
     runtimeLoader.requireHyperty(walletUrl).then(function(res) {
       // your code
@@ -33,26 +34,30 @@ function hypertyLoaded(result, runtimeLoader = null) {
       window.wallet = wallet;
 
       function afterUpdate(event) {
-        console.log('wallet event: ', event.data.transactions);
-        const activities = event.data.transactions.filter(trans => trans.source === 'user_activity');
+        
+        if (event.field === 'transactions') {
+          console.log('wallet event: ', event.data);
+          const activities = event.data.filter(trans => trans.source === 'user_activity');
 
-        // walking
-        const walkingActivities = activities.filter(activ => activ.data.activity === 'user_walking_context');
+          // walking
+          const walkingActivities = activities.filter(activ => activ.data.activity === 'user_walking_context');
 
-        // distance for activity
-        const walkingDistance = getDistance(walkingActivities);
-        $('.walking-distance').text(walkingDistance);
+          // distance for activity
+          const walkingDistance = getDistance(walkingActivities);
+          $('.walking-distance').text(walkingDistance);
 
-        // tokens for activity
-        const walkingTokens = getTokens(walkingActivities);
-        $('.walking-tokens').text(walkingTokens);
+          // tokens for activity
+          const walkingTokens = getTokens(walkingActivities);
+          $('.walking-tokens').text(walkingTokens);
 
-        // biking
-        const bikingActivities = activities.filter(activ => activ.data.activity === 'user_biking_context');
+          // biking
+          const bikingActivities = activities.filter(activ => activ.data.activity === 'user_biking_context');
 
 
-        // TODO - parse and show info on sessions
-        $('.token-amount').text(event.data.balance);
+          // TODO - parse and show info on sessions
+          $('.token-amount').text(event.data.balance);
+        }
+
 
       }
 
