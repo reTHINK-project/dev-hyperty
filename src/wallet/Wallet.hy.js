@@ -26,7 +26,7 @@ class Wallet {
 
     let createMessage = {
       type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
-      identity: { userProfile: { userURL: identity.userURL } },
+      identity: { userProfile: { userURL: identity.userURL, guid: identity.guid } },
       body: {
         type: 'create',
         from: _this.hypertyURL
