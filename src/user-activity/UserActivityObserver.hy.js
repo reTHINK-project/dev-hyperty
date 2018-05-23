@@ -90,6 +90,14 @@ class UserActivityObserver extends ContextObserver {
         },
         schema: 'hyperty-catalogue://catalogue.localhost/.well-known/dataschema/Communication'
       }
+    }, (reply) => {
+      if (reply.body.code === 200) {
+        console.log('[UserActivityObserver] GFit auth granted');
+        callback(true);
+      } else {
+        console.log('[UserActivityObserver] GFit auth not granted');
+        callback(false);
+      }
     });
 
 
