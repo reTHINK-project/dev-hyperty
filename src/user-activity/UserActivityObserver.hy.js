@@ -75,6 +75,7 @@ class UserActivityObserver extends ContextObserver {
     let _this = this;
 
     // get GFit access token (token received by protostub)
+    /*
     _this.bus.postMessage({
       type: 'create',
       from: _this.hypertyURL,
@@ -99,6 +100,9 @@ class UserActivityObserver extends ContextObserver {
         callback(false);
       }
     });
+    */
+
+    // call runtimeUAstub authorise
 
 
     // send user profile

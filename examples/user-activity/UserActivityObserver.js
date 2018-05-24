@@ -7,6 +7,9 @@ function hypertyLoaded(result, runtimeLoader = null) {
     runtimeLoader.requireProtostub('sharing-cities-dsm');
     runtimeLoader.requireProtostub('fitness.google.com');
 
+
+    runtimeLoader.authorise('google.com', 'https://www.googleapis.com/auth/fitness.activity.read');
+
     const walletUrl = 'hyperty-catalogue://catalogue.localhost/.well-known/hyperty/Wallet';
     runtimeLoader.requireHyperty(walletUrl).then(function(res) {
       // your code
@@ -34,7 +37,7 @@ function hypertyLoaded(result, runtimeLoader = null) {
       window.wallet = wallet;
 
       function afterUpdate(event) {
-        
+
         if (event.field === 'transactions') {
           console.log('wallet event: ', event.data);
           const activities = event.data.filter(trans => trans.source === 'user_activity');
