@@ -26,12 +26,13 @@ class Wallet {
 
     let createMessage = {
       type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
-      identity: { userProfile: { userURL: identity.userURL } },
+      identity: { userProfile: { userURL: identity.userURL, guid: identity.guid } },
       body: {
         type: 'create',
         from: _this.hypertyURL
       }
     };
+
     /*Create Message should be like THIS
     *
     *  let createMessage = {
@@ -46,26 +47,93 @@ class Wallet {
 
       console.log('[Wallet] create Reply', reply);
       if (reply.body.code == 200) {
-        _this.syncher.subscribe(_this.objectDescURL, reply.body.reporter_url, true, false, true, null).then(function(obj) {
-          console.log('[Wallet] subscribe result :', obj);
-          
-          let updateBalance = {
-            field : "balance",
-            data : obj.data.balance
+        _this._resumeObservers(reply.body.reporter_url).then(function(result) {
+
+        //  debugger;
+
+          if (result != false) {
+            console.log('[Wallet] Resume result :', result);
+
+            let updateBalance = {
+              field: 'balance',
+              data: result.data.balance
+            };
+
+            let updateTransactions = {
+              field: 'transactions',
+              data: result.data.transactions
+            };
+
+            callback(updateBalance);
+            callback(updateTransactions);
+
+            result.onChange('*', (event) => {
+              console.log('[Wallet] New Change :', event);
+              callback(event);
+            });
+
+          } else {
+            _this.syncher.subscribe(_this.objectDescURL, reply.body.reporter_url, true, false, true, null).then(function(obj) {
+              console.log('[Wallet] subscribe result :', obj);
+
+              let updateBalance = {
+                field: 'balance',
+                data: obj.data.balance
+              };
+
+              let updateTransactions = {
+                field: 'transactions',
+                data: obj.data.transactions
+              };
+
+              callback(updateBalance);
+              callback(updateTransactions);
+
+              obj.onChange('*', (event) => {
+                console.log('[Wallet] New Change :', event);
+                callback(event);
+              });
+
+            }).catch(function(error) {
+              console.log('[Wallet] error', error);
+            });
           }
-
-          callback(updateBalance);
-
-          obj.onChange('*', (event) => {
-            console.log('[Wallet] New Change :', event);
-            callback(event);
-          });
-
         }).catch(function(error) {
-          console.log('[Wallet] error', error);
+
         });
 
       }
+    });
+  }
+
+  _resumeObservers(walletURL) {
+    let _this = this;
+
+    return new Promise((resolve, reject) => {
+      //debugger;
+      _this.syncher.resumeObservers({store: true}).then((observers) => {
+
+
+        console.log('[VertxAppProtoStub] Resuming observer : ', observers, _this);
+
+        let observersList = Object.keys(observers);
+        if (observersList.length  > 0) {
+          //debugger;
+          observersList.forEach((dataObjectObserverURL) => {
+            console.log('[VertxAppProtoStub].syncher.resumeObserver: ', dataObjectObserverURL);
+            if (walletURL == dataObjectObserverURL) {
+              return resolve(observers[dataObjectObserverURL]);
+            }
+          });
+        } else {
+          resolve(false);
+        }
+        resolve(false);
+
+      }).catch((reason) => {
+        console.info('[GroupChatManager] Resume Observer | ', reason);
+
+      });
     });
   }
 

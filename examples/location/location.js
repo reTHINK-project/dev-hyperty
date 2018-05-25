@@ -6,7 +6,7 @@
 
 function hypertyLoaded(result) {
     console.log("hyperty loaded", result.instance);
-
+    let locationHyperty = result.instance
   /*  result.instance.getCurrentPosition().then((position)=> {
 
       console.log("[LocationReporter.demo] current position: ", position)
@@ -36,5 +36,10 @@ function hypertyLoaded(result) {
       //    }
       //  });
     });*/
-    result.instance.initPosition();
+
+    locationHyperty._resumeReporters().then(function(result) {
+          console.log('[LocationReporter] Reporter Resumed', result)
+          locationHyperty.startPositionBroadcast();
+    });
+
 }

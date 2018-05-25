@@ -30,6 +30,11 @@ export function hypertyDeployed(hyperty, runtimeLoader = null) {
       script = 'wallet/wallet.js';
       break;
 
+    case 'UserActivityObserver':
+      template = 'user-activity/UserActivityObserver';
+      script = 'user-activity/UserActivityObserver.js';
+      break;
+
     case 'UserKwhObserver':
       template = 'observer-kwh/UserKwhObserver';
       script = 'observer-kwh/UserKwhObserver.js';
