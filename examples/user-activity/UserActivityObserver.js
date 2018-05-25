@@ -8,7 +8,11 @@ function hypertyLoaded(result, runtimeLoader = null) {
     runtimeLoader.requireProtostub('fitness.google.com');
 
 
-    runtimeLoader.authorise('google.com', 'https://www.googleapis.com/auth/fitness.activity.read');
+    runtimeLoader.authorise('google.com', 'user_activity_context').then(function(value) {
+    }).catch(function(err) {
+      log.log(err);
+
+    });
 
     const walletUrl = 'hyperty-catalogue://catalogue.localhost/.well-known/hyperty/Wallet';
     runtimeLoader.requireHyperty(walletUrl).then(function(res) {
