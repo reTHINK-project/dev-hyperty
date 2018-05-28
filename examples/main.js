@@ -44,6 +44,10 @@ export function hypertyDeployed(hyperty, runtimeLoader = null) {
       template = 'user-availability/userAvailabilityReporter';
       script = 'user-availability/UserAvailabilityReporterDemo.js';
       break;
+    case 'ElearningPlayer':
+      template = 'learning/learningPlayer';
+      script = 'learning/learningPlayerDemo.js';
+      break;
 
     case 'Connector':
       template = 'connector/Connector';
