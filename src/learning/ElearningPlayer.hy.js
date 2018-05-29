@@ -31,10 +31,10 @@ class ElearningPlayer {
 
     return new Promise((resolve, reject) => {
       _this.identityManager.discoverUserRegistered().then((identity) => {
-        console.log('[LocationReporter] GET MY IDENTITY:', identity);
+        console.log('[ElearningPlayer] GET MY IDENTITY:', identity);
         resolve(identity);
       }).catch((error) => {
-        console.error('[LocationReporter] ERROR:', error);
+        console.error('[ElearningPlayer] ERROR:', error);
         reject(error);
       });
     });
@@ -47,7 +47,7 @@ class ElearningPlayer {
     //debugger;
     return new Promise((resolve, reject) => {
       _this.syncher.resumeReporters({store: true}).then((reporters) => {
-        console.log('[LocationReporter] Reporters resumed', reporters);
+        console.log('[ElearningPlayer] Reporters resumed', reporters);
 
         let reportersList = Object.keys(reporters);
 
@@ -59,10 +59,10 @@ class ElearningPlayer {
               //debugger;
               console.log(identity);
               _this.identity = identity;
-              console.log('[LocationReporter] ', dataObjectReporterURL);
-              console.log('[LocationReporter]', reporters[dataObjectReporterURL]);
+              console.log('[ElearningPlayer] ', dataObjectReporterURL);
+              console.log('[ElearningPlayer]', reporters[dataObjectReporterURL]);
 
-              if (identity.userURL == reporters[dataObjectReporterURL].metadata.subscriberUsers[0] && reporters[dataObjectReporterURL].metadata.name == 'location') {
+              if (identity.userURL == reporters[dataObjectReporterURL].metadata.subscriberUsers[0] && reporters[dataObjectReporterURL].metadata.name == 'elearning') {
                 //debugger;
                 _this.reporter = reporters[dataObjectReporterURL];
                 _this.reporter.onSubscription((event) => event.accept());
@@ -75,132 +75,42 @@ class ElearningPlayer {
           return resolve(false);
         }
       }).catch((reason) => {
-        console.info('[LocationReporter] Reporters:', reason);
+        console.info('[ElearningPlayer] Reporters:', reason);
       });
     });
   }
 
-  //FOR invite checkin  -> hyperty://sharing-cities-dsm/checkin-rating
+  //FOR invite elearning  -> hyperty://sharing-cities-dsm/elearning
   invite(observer) {
 
     let _this = this;
     _this.reporter.inviteObservers([observer]);
   }
 
-  watchMyLocation(callback) {
 
-    function success(pos) {
-      var crd = pos.coords;
-      callback(crd);
-    }
-
-    function error(err) {
-      console.warn('ERROR(' + err.code + '): ' + err.message);
-    }
-
-    const options = {
-      enableHighAccuracy: true
-
-      // timeout: 5000,
-      // maximumAge: 0
-    };
-
-    this.watchID = navigator.geolocation.watchPosition(success, error, options);
-  }
-
-  removeWatchMyLocation() {
-    navigator.geolocation.clearWatch(this.watchID);
-  }
-
-  getLocation() {
-    return this.currentPosition;
-  }
-
-  startPositionBroadcast() {
-    let _this = this;
-    if (_this.reporter == null) {
-      _this.syncher.create(_this.objectDescURL, [], position(), true, false, 'location', {}, { resources: ['location-context'] })
-        .then((reporter) => {
-          _this.reporter = reporter;
-          console.log('[LocationReporter]  DataObjectReporter', _this.reporter);
-          reporter.onSubscription((event) => event.accept());
-          _this.search.myIdentity().then(identity => {
-            _this.identity = identity;
-            _this.broadcastMyPosition();
-          });
-        });
-    } else {
-      _this.broadcastMyPosition();
-    }
-
-
-  }
-
-  initPosition() {
+  initQuizSubmission() {
     //debugger;
     let _this = this;
     if (_this.reporter == null) {
-      _this.syncher.create(_this.objectDescURL, [], position(), true, false, 'location', {}, { resources: ['location-context'] })
+      _this.syncher.create(_this.objectDescURL, [], {}, true, false, 'elearning', {}, { resources: ['learning-context'] })
         .then((reporter) => {
           _this.reporter = reporter;
-          console.log('[LocationReporter]  DataObjectReporter', _this.reporter);
+          console.log('[ElearningPlayer]  DataObjectReporter', _this.reporter);
           reporter.onSubscription((event) => event.accept());
           _this.search.myIdentity().then(identity => {
             _this.identity = identity;
-            _this.setCurrentPosition();
           });
         });
     } else {
-      _this.setCurrentPosition();
     }
   }
 
-  setCurrentPosition() {
+
+  answer(id, answers) {
     let _this = this;
-    navigator.geolocation.watchPosition((position) => {
-      console.log('[LocationReporter] my position: ', position);
-      _this.currentPosition = position;
-
-      //debugger;
-    });
-  }
-
-  broadcastMyPosition() {
-    let _this = this;
-    navigator.geolocation.watchPosition((position) => {
-      console.log('[LocationReporter] my position: ', position);
-      _this.currentPosition = position;
-      _this.reporter.data.values = [
-        { name: 'latitude', unit: 'lat', value: position.coords.latitude},
-        { name: 'longitude', unit: 'lon', value: position.coords.longitude }
-      ];
-      _this.reporter.data.time = position.timestamp;
-      _this.reporter.data.tag = _this.identity.preferred_username;
-
-      //debugger;
-    });
-  }
-
-  updateLocation() {
-    let _this = this;
-    let latitude = _this.currentPosition.coords.latitude;
-    let longitude = _this.currentPosition.coords.longitude;
+    let date = new Date();
     _this.reporter.data.values = [
-      { name: 'latitude', unit: 'lat', value: latitude },
-      { name: 'longitude', unit: 'lon', value: longitude }
-    ];
-    _this.reporter.data.time = _this.currentPosition.timestamp;
-    _this.reporter.data.tag = _this.identity.preferred_username;
-  }
-
-  checkin(spotId) {
-    let _this = this;
-    let latitude = _this.currentPosition.coords.latitude;
-    let longitude = _this.currentPosition.coords.longitude;
-    _this.reporter.data.values = [
-      { name: 'latitude', unit: 'lat', value: latitude },
-      { name: 'longitude', unit: 'lon', value: longitude },
-      { name: 'checkin', unit: 'checkin', value: spotId }
+      { id: id, date: date, answers: answers },
     ];
 
   }
@@ -218,8 +128,6 @@ class ElearningPlayer {
           type: 'read'
         }
       };
-
-
       console.log('elearning-player-retrieveQuizzes()', createMessage);
 
       _this.bus.postMessage(createMessage, (reply) => {

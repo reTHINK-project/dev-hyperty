@@ -1,18 +1,29 @@
 // jshint browser:true, jquery: true
 // jshint varstmt: false
 
-let observer;
+let elearningPlayer;
 
 function hypertyLoaded(result) {
 
   console.log('LearningPlayer hyperty loaded!! ', result);
 
-  observer = result.instance;
+  elearningPlayer = result.instance;
 
-  observer.retrieveQuizzes('data://sharing-cities-dsm/elearning').then((result) => {
+  elearningPlayer.retrieveQuizzes('data://sharing-cities-dsm/elearning').then((result) => {
 
     console.info('[LearningPlayerDemo] quizzes: ', result);
 
+
+  }).catch((reason) => {
+    console.info('[LearningPlayerDemo] start failed | ', reason);
+  });
+
+  elearningPlayer._resumeReporters().then((result) => {
+
+    elearningPlayer.initQuizSubmission();
+
+    
+    
 
   }).catch((reason) => {
     console.info('[LearningPlayerDemo] start failed | ', reason);
