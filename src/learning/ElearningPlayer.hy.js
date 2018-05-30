@@ -46,12 +46,12 @@ class ElearningPlayer {
 
     //debugger;
     return new Promise((resolve, reject) => {
-      _this.syncher.resumeReporters({store: true}).then((reporters) => {
+      _this.syncher.resumeReporters({ store: true }).then((reporters) => {
         console.log('[ElearningPlayer] Reporters resumed', reporters);
 
         let reportersList = Object.keys(reporters);
 
-        if (reportersList.length  > 0) {
+        if (reportersList.length > 0) {
 
           _this._getRegisteredUser().then((identity) => {
 
@@ -89,20 +89,25 @@ class ElearningPlayer {
 
 
   initQuizSubmission() {
-    //debugger;
-    let _this = this;
-    if (_this.reporter == null) {
-      _this.syncher.create(_this.objectDescURL, [], {}, true, false, 'elearning', {}, { resources: ['learning-context'] })
-        .then((reporter) => {
-          _this.reporter = reporter;
-          console.log('[ElearningPlayer]  DataObjectReporter', _this.reporter);
-          reporter.onSubscription((event) => event.accept());
-          _this.search.myIdentity().then(identity => {
-            _this.identity = identity;
+    return new Promise((resolve) => {
+
+
+      let _this = this;
+      if (_this.reporter == null) {
+        _this.syncher.create(_this.objectDescURL, [], {}, true, false, 'elearning', {}, { resources: ['learning-context'] })
+          .then((reporter) => {
+            _this.reporter = reporter;
+            console.log('[ElearningPlayer]  DataObjectReporter', _this.reporter);
+            reporter.onSubscription((event) => event.accept());
+            _this.search.myIdentity().then(identity => {
+              _this.identity = identity;
+            });
+            resolve(true);
           });
-        });
-    } else {
-    }
+      } else {
+        resolve(true);
+      }
+    });
   }
 
 
