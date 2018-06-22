@@ -84,7 +84,26 @@ class ElearningPlayer {
   invite(observer) {
 
     let _this = this;
-    _this.reporter.inviteObservers([observer]);
+
+    return new Promise((resolve) => {
+
+      function keepTrying() {
+        _this.reporter.invitations = [];
+        _this.reporter.inviteObservers([observer]);
+
+        let promises = _this.reporter.invitations;
+
+        Promise.all(promises).then(result => {
+          resolve();
+        }).catch(e => {
+          setTimeout(function() {
+            keepTrying();
+          }, 100);
+        });
+      }
+      keepTrying();
+    });
+
   }
 
 
@@ -115,7 +134,7 @@ class ElearningPlayer {
     let _this = this;
     let date = new Date();
     _this.reporter.data.values = [
-      { id: id, date: date, answers: answers },
+      { id: id, date: date, answers: answers }
     ];
 
   }

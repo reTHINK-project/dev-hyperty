@@ -47,12 +47,12 @@ class LocationHypertyFactory {
     let _this = this;
     //debugger;
     return new Promise((resolve, reject) => {
-      _this.syncher.resumeReporters({store: true}).then((reporters) => {
+      _this.syncher.resumeReporters({ store: true }).then((reporters) => {
         console.log('[LocationReporter] Reporters resumed', reporters);
 
         let reportersList = Object.keys(reporters);
 
-        if (reportersList.length  > 0) {
+        if (reportersList.length > 0) {
 
           _this._getRegisteredUser().then((identity) => {
 
@@ -85,7 +85,25 @@ class LocationHypertyFactory {
   invite(observer) {
 
     let _this = this;
-    _this.reporter.inviteObservers([observer]);
+
+    return new Promise((resolve) => {
+
+      function keepTrying() {
+        _this.reporter.invitations = [];
+        _this.reporter.inviteObservers([observer]);
+
+        let promises = _this.reporter.invitations;
+
+        Promise.all(promises).then(result => {
+          resolve();
+        }).catch(e => {
+          setTimeout(function () {
+            keepTrying();
+          }, 100);
+        });
+      }
+      keepTrying();
+    });
   }
 
   watchMyLocation(callback) {
@@ -150,11 +168,11 @@ class LocationHypertyFactory {
             _this.identity = identity;
             _this.setCurrentPosition();
           });
-      });
+        });
     } else {
       _this.setCurrentPosition();
     }
-}
+  }
 
   setCurrentPosition() {
     let _this = this;
@@ -171,7 +189,7 @@ class LocationHypertyFactory {
       console.log('[LocationReporter] my position: ', position);
       _this.currentPosition = position;
       _this.reporter.data.values = [
-        { name: 'latitude', unit: 'lat', value: position.coords.latitude},
+        { name: 'latitude', unit: 'lat', value: position.coords.latitude },
         { name: 'longitude', unit: 'lon', value: position.coords.longitude }
       ];
       _this.reporter.data.time = position.timestamp;
