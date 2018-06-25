@@ -75,21 +75,16 @@ class UserActivityObserver extends ContextObserver {
     let _this = this;
 
     // get GFit access token (token received by protostub)
-    /*
+
     _this.bus.postMessage({
       type: 'create',
       from: _this.hypertyURL,
       to: 'fitness://lduarte.suil@google.com',
       body: {
-        identity: { userProfile: { userURL: identity.userURL } },
-        p2p: false,
-        source: _this.hypertyURL,
+
         value: {
-          identity: {},
-          resources: ['chat'],
-          schema: 'hyperty-catalogue://catalogue.localhost/.well-known/dataschema/Communication'
-        },
-        schema: 'hyperty-catalogue://catalogue.localhost/.well-known/dataschema/Communication'
+          resources: ['user_activity_context']
+        }
       }
     }, (reply) => {
       if (reply.body.code === 200) {
@@ -100,12 +95,13 @@ class UserActivityObserver extends ContextObserver {
         callback(false);
       }
     });
-    */
+
 
     // call runtimeUAstub authorise
 
-
+/*
     // send user profile
+    debugger;
     const stubURL = 'runtime://fitness.google.com/user-activity';
     let createMessage = {
       type: 'forward', to: stubURL, from: _this.hypertyURL,
@@ -115,7 +111,7 @@ class UserActivityObserver extends ContextObserver {
         from: _this.hypertyURL
       }
     };
-    _this.bus.postMessage(createMessage);
+    _this.bus.postMessage(createMessage);*/
   }
 
 }
