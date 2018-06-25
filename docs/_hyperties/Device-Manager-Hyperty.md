@@ -1,23 +1,23 @@
 ---
 layout: hyperty
-title:  "Building Observer Hyperty"
-description: "Observes data captured from sensors in a building"
+title:  "Device Manager Hyperty"
+description: "Manages IoT Devices and Observes data captured from its sensors"
 date:   2018-04-01
 author: ?
 categories:
 - iot
-img: building.jpg
-thumb: building.jpg
+img: device.jpg
+thumb: device.jpg
 tagged: iot
 client: Sharing Cities Project
-demo: /demos/building-observer/
-catalogue: https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/Building
+demo: /demos/device-observer/
+catalogue: https://catalogue.hybroker.rethink.ptinovacao.pt/.well-known/hyperty/Device
 ---
 
 
-The Building Observer monitors data collected from multiple buildings. It enables the discovery of buildings publishing its Data through the Building Reporter and the option to subscribe to it.
+The Device Manager is able to manage IoT devices with its sensors / actuators (eg create, remove). It also allows to monitor data collected from these devices.
 
-This Hyperty handles a standard [Context Data Object](https://github.com/reTHINK-project/dev-service-framework/tree/master/docs/datamodel/data-objects/context) with:
+This Hyperty handles a standard [Device Data Object](https://github.com/reTHINK-project/dev-service-framework/tree/master/docs/datamodel/data-objects/device) with:
 
 *to be completed*
 
@@ -55,7 +55,7 @@ This Hyperty handles a standard [Context Data Object](https://github.com/reTHINK
 
 ## API
 
-The Location Observer Hyperty provides an API to discover and observe multiple users publishing location info. The App has to set one listener per observed user to receive events about location change.
+The Device Observer Hyperty provides an API to discover and observe multiple users publishing location info. The App has to set one listener per observed user to receive events about location change.
 
 ### start
 
