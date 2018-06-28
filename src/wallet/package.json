@@ -9,7 +9,7 @@
   "author": "",
   "license": "Apache 2.0",
   "dependencies": {
-    "bootstrap": "^4.0.0-beta.2",
+    "bootstrap": "^4.1.1",
     "service-framework": "github:rethink-project/dev-service-framework#develop"
   },
   "devDependencies": {

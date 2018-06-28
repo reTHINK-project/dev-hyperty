@@ -7,7 +7,7 @@
     "service-framework": "github:rethink-project/dev-service-framework#develop"
   },
   "devDependencies": {
-    "eslint-plugin-import": "^2.8.0"
+    "eslint-plugin-import": "^2.12.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

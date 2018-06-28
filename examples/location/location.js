@@ -39,7 +39,7 @@ function hypertyLoaded(result) {
 
     locationHyperty._resumeReporters().then(function(result) {
           console.log('[LocationReporter] Reporter Resumed', result)
-          locationHyperty.startPositionBroadcast();
+          locationHyperty.initPosition();
     });
 
 }

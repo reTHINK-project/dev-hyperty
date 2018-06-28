@@ -25,6 +25,11 @@ export function hypertyDeployed(hyperty, runtimeLoader = null) {
       script = 'user-availability/UserAvailabilityObserverDemo.js';
       break;
 
+      case 'DeviceManager':
+        template = 'device-manager/DeviceManager';
+        script = 'device-manager/DeviceManagerDemo.js';
+        break;
+
     case 'Wallet':
       template = 'wallet/Wallet';
       script = 'wallet/wallet.js';
