@@ -19,18 +19,10 @@ The Device Manager is able to manage IoT devices with its sensors / actuators (e
 
 This Hyperty handles a standard [Device Data Object](https://github.com/reTHINK-project/dev-service-framework/tree/master/docs/datamodel/data-objects/device) with:
 
-*to be completed*
-
-**Hyperty Resource Type**
-
-* LOCATION_CONTEXT
-
-**ContextUnit**
-
--	lat
-- lon
 
 **example**
+
+*to be updated*
 
 ```json
 {
@@ -52,17 +44,25 @@ This Hyperty handles a standard [Device Data Object](https://github.com/reTHINK-
 }
 ```
 
+## Configuration
+
+The Device Manager configuration comprises:
+
+```
+  deviceManager: <wallet manager server address>
+```
 
 ## API
 
-The Device Observer Hyperty provides an API to discover and observe multiple users publishing location info. The App has to set one listener per observed user to receive events about location change.
+The Device Manager Hyperty provides an API to create and remove devices, as well as to create and remove endpoints associated to it.
 
-### start
 
-This function starts location observation and returns one array of Location instances. For each one, the App has to set a onChange event handler (see below). If no users exist to observe, it returns `false`.
+### createDevice
+
+This function creates one device. 
 
 ```javascript
-<Promise> Context[] || boolean start()
+<Promise> createDevice()
 ```
 
 **parameters**
@@ -71,67 +71,83 @@ No input parameter.
 
 **returns**
 
-A promise with an array of Context data objects.
+A promise with the new created Device data object.
 
-### discoverUsers
+#### Implementation notes
 
-This function discovers Hyperties used by users to publish Location info.
+A execute type message is sent torwards `<wallet manager server address>` set in the configuration, having in the body `createDevice` function name.
+
+### removeDevice
+
+This function removes one device. 
 
 ```javascript
-<Promise> HypertyInstance[] discoverUsers( string email, string ?domain )
+boolean removeDevice(string deviceId)
 ```
 
 **parameters**
 
-*email* the user identifier
-*domain* (optional) the domain providing the Hyperty
+*deviceId* - the id of the device to be removed.
 
 **returns**
 
-A promise with an array of discovered HypertyInstance.
+A boolean is returned where true is for a successfull remove and false for a failed remove.
 
-### observe
+#### Implementation notes
 
-This function starts the observation of the location managed by a certain Hyperty.
+A execute type message is sent torwards `<wallet manager server address>` set in the configuration, having in the body `removeDevice` function name and associated parameter.
+
+### createEndpoint
+
+This function creates one endpoint at one device. 
 
 ```javascript
-<Promise> ContextDataObject observe( HypertyURL hypertyID )
+<Promise> createEndpoint(string deviceId, string type, string name, string ?extId)
 ```
 
 **parameters**
 
-*hyperty* the DiscoveredObject of the Hyperty to be observed
+*deviceId* - the id of the device where the endpoint is created.
+
+*type* - endpoint type ie "sensor" or "actuator".
+
+*name* - name to be given to the endpoint.
+
+*extId* - (optional) to be used in case this is a virtual endpoint and data is coming from a separated device or plataform.
 
 **returns**
 
-A promise with the Location Data Object Observer for a certain user.
+A promise with the new created Endpoint  object.
 
-### unobserve
+#### Implementation notes
 
-This function stops the observation of the location for a certain user.
+A execute type message is sent torwards `<wallet manager server address>` set in the configuration, having in the body `createEndpoint` function name with associated parameters.
+
+### removeEndpoint
+
+This function removes one endpoint from the device. 
 
 ```javascript
-unobserve( ContextURL location )
+boolean removeEndpoint(string name)
 ```
 
 **parameters**
 
-*location* the Location Data Object Observer URL to be unobserved
+*name* - the id of the Endpoint to be removed.
 
+**returns**
 
-### Monitor changes to Location info
+A boolean is returned where true is for a successfull remove and false for a failed remove.
 
-Every change of the location triggers a `onChange` event of the observed Data:
+#### Implementation notes
 
-```javascript
-location.onChange('*', (event) => {
-	console.log('New User location :', location.data.values);
+A execute type message is sent torwards `<wallet manager server address>` set in the configuration, having in the body `removeEndpoint` function name and associated parameter.
 
-});
-```
 
 
 ### Descriptor
+
+*to be updated*
 
 The Hyperty descriptor is:
 
