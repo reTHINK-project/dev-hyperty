@@ -24,9 +24,17 @@ class Wallet {
   start(callback, identity) {
     let _this = this;
 
+    let userProfile;
+    if (identity.profile !== undefined) {
+      userProfile = { userURL: identity.userURL, guid: identity.guid, info: identity.profile };
+    } else {
+      userProfile = { userURL: identity.userURL, guid: identity.guid };
+    }
+
+
     let createMessage = {
       type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
-      identity: { userProfile: { userURL: identity.userURL, guid: identity.guid } },
+      identity: { userProfile: userProfile },
       body: {
         type: 'create',
         from: _this.hypertyURL
@@ -49,7 +57,7 @@ class Wallet {
       if (reply.body.code == 200) {
         _this._resumeObservers(reply.body.reporter_url).then(function(result) {
 
-        //  debugger;
+          //  debugger;
 
           if (result != false) {
             console.log('[Wallet] Resume result :', result);
@@ -111,13 +119,13 @@ class Wallet {
 
     return new Promise((resolve, reject) => {
       //debugger;
-      _this.syncher.resumeObservers({store: true}).then((observers) => {
+      _this.syncher.resumeObservers({ store: true }).then((observers) => {
 
 
         console.log('[VertxAppProtoStub] Resuming observer : ', observers, _this);
 
         let observersList = Object.keys(observers);
-        if (observersList.length  > 0) {
+        if (observersList.length > 0) {
           //debugger;
           observersList.forEach((dataObjectObserverURL) => {
             console.log('[VertxAppProtoStub].syncher.resumeObserver: ', dataObjectObserverURL);
