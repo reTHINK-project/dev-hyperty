@@ -24,7 +24,7 @@ function hypertyReady(result, identity) {
     }
   }
 
-  const profileInfo = { ageRange: '18-25', workplace: 'Lisbon' };
+  const profileInfo = { ageRange: '18-25', workplace: 'Lisbon', cause: '0' };
   identity.profile = profileInfo;
   result.instance.start(afterUpdate, identity);
 }

@@ -37,7 +37,8 @@ class Wallet {
       identity: { userProfile: userProfile },
       body: {
         type: 'create',
-        from: _this.hypertyURL
+        from: _this.hypertyURL,
+        resource: 'wallet'
       }
     };
 
