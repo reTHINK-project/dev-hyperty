@@ -24,9 +24,16 @@ class Wallet {
   start(callback, identity) {
     let _this = this;
 
+
     let userProfile;
+    let publicWallets = false;
     if (identity.profile !== undefined) {
-      userProfile = { userURL: identity.userURL, guid: identity.guid, info: identity.profile };
+      if (identity.profile.guid === 'user-guid://public-wallets') {
+        userProfile = identity.profile;
+        publicWallets = true;
+      } else {
+        userProfile = { userURL: identity.userURL, guid: identity.guid, info: identity.profile };
+      }
     } else {
       userProfile = { userURL: identity.userURL, guid: identity.guid };
     }
@@ -63,18 +70,27 @@ class Wallet {
           if (result != false) {
             console.log('[Wallet] Resume result :', result);
 
-            let updateBalance = {
-              field: 'balance',
-              data: result.data.balance
-            };
+            if (publicWallets === true) {
+              let updateWallets = {
+                field: 'wallets',
+                data: result.data.wallets
+              };
 
-            let updateTransactions = {
-              field: 'transactions',
-              data: result.data.transactions
-            };
+              callback(updateWallets);
+            } else {
+              let updateBalance = {
+                field: 'balance',
+                data: result.data.balance
+              };
 
-            callback(updateBalance);
-            callback(updateTransactions);
+              let updateTransactions = {
+                field: 'transactions',
+                data: result.data.transactions
+              };
+
+              callback(updateBalance);
+              callback(updateTransactions);
+            }
 
             result.onChange('*', (event) => {
               console.log('[Wallet] New Change :', event);
@@ -85,18 +101,29 @@ class Wallet {
             _this.syncher.subscribe(_this.objectDescURL, reply.body.reporter_url, true, false, true, null).then(function(obj) {
               console.log('[Wallet] subscribe result :', obj);
 
-              let updateBalance = {
-                field: 'balance',
-                data: obj.data.balance
-              };
 
-              let updateTransactions = {
-                field: 'transactions',
-                data: obj.data.transactions
-              };
+              if (publicWallets === true) {
+                let updateWallets = {
+                  field: 'wallets',
+                  data: obj.data.wallets
+                };
 
-              callback(updateBalance);
-              callback(updateTransactions);
+                callback(updateWallets);
+              } else {
+
+                let updateBalance = {
+                  field: 'balance',
+                  data: obj.data.balance
+                };
+
+                let updateTransactions = {
+                  field: 'transactions',
+                  data: obj.data.transactions
+                };
+
+                callback(updateBalance);
+                callback(updateTransactions);
+              }
 
               obj.onChange('*', (event) => {
                 console.log('[Wallet] New Change :', event);
