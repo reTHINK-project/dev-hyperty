@@ -41,7 +41,7 @@ class DeviceManager {
 
     _this.bus.postMessage(createMessage, (reply) => {
 
-      console.log('[DeviceManager] create Reply', reply);
+      console.log('[DeviceManager] create device Reply', reply);
     });
   }
 
@@ -57,7 +57,8 @@ class DeviceManager {
         from: _this.hypertyURL,
         resource: 'stream',
         platformID: 'edp',
-        platformUID: 'luisuserID'
+        platformUID: 'luisuserID',
+        ratingType: 'private'
       }
     };
 
@@ -66,7 +67,46 @@ class DeviceManager {
 
     _this.bus.postMessage(createMessage, (reply) => {
 
-      console.log('[DeviceManager] create Reply', reply);
+      console.log('[DeviceManager] create stream Reply', reply);
+
+  /*    if (reply.body.code == 200) {
+
+        let objURL = 'context://sharing-cities-dsm/' + createMessage.body.platformID + '/' + createMessage.body.platformUID;
+
+        _this._resumeObservers(objURL).then(function(result) {
+
+          //  debugger;
+
+          if (result != false) {
+            console.log('[DeviceManager] Resume result :', result);
+
+
+            result.onChange('*', (event) => {
+              console.log('[DeviceManager] New Change :', event);
+            });
+
+          } else {
+            _this.syncher.subscribe(_this.objectDescURL, objURL, true, false, true, null).then(function(obj) {
+              console.log('[DeviceManager] subscribe result :', obj);
+
+
+              obj.onChange('*', (event) => {
+                console.log('[Wallet] New Change :', event);
+                callback(event);
+              });
+
+            }).catch(function(error) {
+              console.log('[Wallet] error', error);
+            });
+          }
+        }).catch(function(error) {
+
+        });
+
+
+      }*/
+
+
     });
   }
 
