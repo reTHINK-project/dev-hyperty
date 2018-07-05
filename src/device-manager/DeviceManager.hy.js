@@ -22,59 +22,63 @@ class DeviceManager {
     this.identity = null;
   }
 
-  start(callback, identity) {
+  start(identity) {
     let _this = this;
     _this.identity = identity;
+  }
 
+  createDevice() {
+    let _this = this;
 
-    let createMessage = {
-      type: 'forward', to: 'runtime://sharing-cities-dsm/protostub/smart-iot', from: _this.hypertyURL,
-      identity: { userProfile: { userURL: _this.identity.userURL, guid: _this.identity.guid } },
-      body: {
-        type: 'create',
-        from: _this.hypertyURL,
-        resource: 'device',
-        name: 'device Name',
-        description: 'device description'
-      }
-    };
-    console.log('[DeviceManager] create device message', createMessage);
+    return new Promise(function(resolve, reject) {
+      let createMessage = {
+        type: 'forward', to: 'runtime://sharing-cities-dsm/protostub/smart-iot', from: _this.hypertyURL,
+        identity: { userProfile: { userURL: _this.identity.userURL, guid: _this.identity.guid } },
+        body: {
+          type: 'create',
+          from: _this.hypertyURL,
+          resource: 'device',
+          name: 'device Name',
+          description: 'device description'
+        }
+      };
+      console.log('[DeviceManager] create device message', createMessage);
 
-    _this.bus.postMessage(createMessage, (reply) => {
+      _this.bus.postMessage(createMessage, (reply) => {
+        console.log('[DeviceManager] create device Reply', reply);
+        resolve(reply);
+      });
 
-      console.log('[DeviceManager] create device Reply', reply);
     });
+
   }
 
   //'edp', 'luisuserID'
-  createStream(platformID, platformUID) {
+  createEndpoint(platformID, platformUID) {
     let _this = this;
 
+    return new Promise(function(resolve, reject) {
 
-    let createMessage = {
-      type: 'forward', to: 'runtime://sharing-cities-dsm/protostub/smart-iot', from: _this.hypertyURL,
-      identity: { userProfile: { userURL: _this.identity.userURL, guid: _this.identity.guid } },
-      body: {
-        type: 'create',
-        from: _this.hypertyURL,
-        resource: 'stream',
-        platformID: 'edp',
-        platformUID: platformID,
-        ratingType: platformUID
-      }
-    };
+      let createMessage = {
+        type: 'forward', to: 'runtime://sharing-cities-dsm/protostub/smart-iot', from: _this.hypertyURL,
+        identity: { userProfile: { userURL: _this.identity.userURL, guid: _this.identity.guid } },
+        body: {
+          type: 'create',
+          from: _this.hypertyURL,
+          resource: 'stream',
+          platformID: 'edp',
+          platformUID: platformID,
+          ratingType: platformUID
+        }
+      };
 
+      console.log('[DeviceManager] create device message', createMessage);
 
-    console.log('[DeviceManager] create device message', createMessage);
+      _this.bus.postMessage(createMessage, (reply) => {
 
-    _this.bus.postMessage(createMessage, (reply) => {
-
-      console.log('[DeviceManager] create stream Reply', reply);
-
-  /*    if (reply.body.code == 200) {
-
-      }*/
-
+        console.log('[DeviceManager] create stream Reply', reply);
+        resolve(reply);
+      });
 
     });
   }

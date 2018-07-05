@@ -16,8 +16,5 @@ function hypertyLoaded(result, runtimeLoader = null) {
 function hypertyReady(result, identity) {
 
   console.log('DeviceManager hyperty Ready', result, identity);
-  function afterUpdate(event) {
-    console.log('DeviceManager new update', event);
-  }
-  result.instance.start(afterUpdate, identity);
+  result.instance.start(identity);
 }
