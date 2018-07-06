@@ -66,9 +66,9 @@ class DeviceManager {
           type: 'create',
           from: _this.hypertyURL,
           resource: 'stream',
-          platformID: 'edp',
-          platformUID: platformID,
-          ratingType: platformUID
+          platformID: platformID,
+          platformUID: platformUID,
+          ratingType: 'private'
         }
       };
 
@@ -77,6 +77,60 @@ class DeviceManager {
       _this.bus.postMessage(createMessage, (reply) => {
 
         console.log('[DeviceManager] create stream Reply', reply);
+        resolve(reply);
+      });
+
+    });
+  }
+
+  removeEndpoint(name) {
+    let _this = this;
+
+    return new Promise(function(resolve, reject) {
+
+      let createMessage = {
+        type: 'forward', to: 'runtime://sharing-cities-dsm/protostub/smart-iot', from: _this.hypertyURL,
+        identity: { userProfile: { userURL: _this.identity.userURL, guid: _this.identity.guid } },
+        body: {
+          type: 'delete',
+          from: _this.hypertyURL,
+          resource: 'stream',
+          value: name
+        }
+      };
+
+      console.log('[DeviceManager] remove stream message', createMessage);
+
+      _this.bus.postMessage(createMessage, (reply) => {
+
+        console.log('[DeviceManager] remove stream Reply', reply);
+        resolve(reply);
+      });
+
+    });
+  }
+
+  removeDevice(deviceID) {
+    let _this = this;
+
+    return new Promise(function(resolve, reject) {
+
+      let createMessage = {
+        type: 'forward', to: 'runtime://sharing-cities-dsm/protostub/smart-iot', from: _this.hypertyURL,
+        identity: { userProfile: { userURL: _this.identity.userURL, guid: _this.identity.guid } },
+        body: {
+          type: 'delete',
+          from: _this.hypertyURL,
+          resource: 'device',
+          value: deviceID
+        }
+      };
+
+      console.log('[DeviceManager] remove device message', createMessage);
+
+      _this.bus.postMessage(createMessage, (reply) => {
+
+        console.log('[DeviceManager] remove device Reply', reply);
         resolve(reply);
       });
 
