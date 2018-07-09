@@ -65,32 +65,22 @@ class Wallet {
       if (reply.body.code == 200) {
         _this._resumeObservers(reply.body.reporter_url).then(function(result) {
 
-          //  debugger;
-
           if (result != false) {
             console.log('[Wallet] Resume result :', result);
 
-            if (publicWallets === true) {
-              let updateWallets = {
-                field: 'wallets',
-                data: result.data.wallets
-              };
+            let updateBalance = {
+              field: 'balance',
+              data: result.data.balance
+            };
 
-              callback(updateWallets);
-            } else {
-              let updateBalance = {
-                field: 'balance',
-                data: result.data.balance
-              };
+            let updateTransactions = {
+              field: 'transactions',
+              data: result.data.transactions
+            };
 
-              let updateTransactions = {
-                field: 'transactions',
-                data: result.data.transactions
-              };
+            callback(updateBalance);
+            callback(updateTransactions);
 
-              callback(updateBalance);
-              callback(updateTransactions);
-            }
 
             result.onChange('*', (event) => {
               console.log('[Wallet] New Change :', event);
@@ -98,32 +88,22 @@ class Wallet {
             });
 
           } else {
+
             _this.syncher.subscribe(_this.objectDescURL, reply.body.reporter_url, true, false, true, null).then(function(obj) {
               console.log('[Wallet] subscribe result :', obj);
 
+              let updateBalance = {
+                field: 'balance',
+                data: obj.data.balance
+              };
 
-              if (publicWallets === true) {
-                let updateWallets = {
-                  field: 'wallets',
-                  data: obj.data.wallets
-                };
+              let updateTransactions = {
+                field: 'transactions',
+                data: obj.data.transactions
+              };
 
-                callback(updateWallets);
-              } else {
-
-                let updateBalance = {
-                  field: 'balance',
-                  data: obj.data.balance
-                };
-
-                let updateTransactions = {
-                  field: 'transactions',
-                  data: obj.data.transactions
-                };
-
-                callback(updateBalance);
-                callback(updateTransactions);
-              }
+              callback(updateBalance);
+              callback(updateTransactions);
 
               obj.onChange('*', (event) => {
                 console.log('[Wallet] New Change :', event);
@@ -134,9 +114,49 @@ class Wallet {
               console.log('[Wallet] error', error);
             });
           }
+
+          _this._resumeObservers(reply.body.publics_url).then(function(result) {
+            if (result != false) {
+              console.log('[Wallet] Resume public wallets :', result);
+
+              let updateWallets = {
+                field: 'wallets',
+                data: result.data.wallets
+              };
+
+              callback(updateWallets);
+
+              result.onChange('*', (event) => {
+                console.log('[Wallet] New Change :', event);
+                callback(event);
+              });
+
+            } else {
+              _this.syncher.subscribe(_this.objectDescURL, reply.body.publics_url, true, false, true, null).then(function(obj) {
+                console.log('[Wallet] subscription result public wallets :', result);
+                let updateWallets = {
+                  field: 'wallets',
+                  data: obj.data.wallets
+                };
+
+                callback(updateWallets);
+
+                obj.onChange('*', (event) => {
+                  console.log('[Wallet] New Change :', event);
+                  callback(event);
+                });
+              });
+            }
+
+          });
+
         }).catch(function(error) {
 
         });
+
+
+
+
 
       }
     });
