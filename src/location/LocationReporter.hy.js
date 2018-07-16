@@ -138,7 +138,7 @@ class LocationHypertyFactory {
   startPositionBroadcast() {
     let _this = this;
     if (_this.reporter == null) {
-      _this.syncher.create(_this.objectDescURL, [], position(), true, false, 'location', {}, { resources: ['location-context'] })
+      _this.syncher.create(_this.objectDescURL, [], position(), true, false, 'location', {}, { resources: ['location-context'], "domain_registration": false })
         .then((reporter) => {
           _this.reporter = reporter;
           console.log('[LocationReporter]  DataObjectReporter', _this.reporter);
@@ -159,7 +159,7 @@ class LocationHypertyFactory {
     //debugger;
     let _this = this;
     if (_this.reporter == null) {
-      _this.syncher.create(_this.objectDescURL, [], position(), true, false, 'location', {}, { resources: ['location-context'] })
+      _this.syncher.create(_this.objectDescURL, [], position(), true, false, 'location', {}, { resources: ['location-context'], "domain_registration": false })
         .then((reporter) => {
           _this.reporter = reporter;
           console.log('[LocationReporter]  DataObjectReporter', _this.reporter);
