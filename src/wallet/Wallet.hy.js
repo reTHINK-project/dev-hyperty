@@ -8,7 +8,7 @@ class Wallet {
 
   constructor(hypertyURL, bus, config) {
     let uri = new URI(hypertyURL);
-    this.objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Wallet`;
+    this.objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/WalletData`;
     this.syncher = new Syncher(hypertyURL, bus, config);
     this.identityManager = new IdentityManager(hypertyURL, config.runtimeURL, bus);
     this.discovery = new Discovery(hypertyURL, config.runtimeURL, bus);

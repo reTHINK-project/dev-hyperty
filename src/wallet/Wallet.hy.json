@@ -11,6 +11,6 @@
   "language": "javascript",
   "signature": "",
   "dataObjects": [
-    "https://catalogue.%domain%/.well-known/dataschema/Wallet"
+    "https://catalogue.%domain%/.well-known/dataschema/WalletData"
   ]
 }
