@@ -71,6 +71,8 @@ function hypertyLoaded(result, runtimeLoader = null) {
       res.instance.identityManager
         .discoverUserRegistered()
         .then(function(identity) {
+          let profileInfo = {};
+          identity.profile = profileInfo;
           wallet.start(afterUpdate, identity);
         });
     })

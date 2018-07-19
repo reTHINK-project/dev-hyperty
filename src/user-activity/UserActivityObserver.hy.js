@@ -74,9 +74,10 @@ class UserActivityObserver extends ContextObserver {
   start(callback, identity) {
     let _this = this;
 
+    callback(true);
     // get GFit access token (token received by protostub)
 
-    _this.bus.postMessage({
+/*    _this.bus.postMessage({
       type: 'create',
       from: _this.hypertyURL,
       to: 'fitness://lduarte.suil@google.com',
@@ -94,7 +95,7 @@ class UserActivityObserver extends ContextObserver {
         console.log('[UserActivityObserver] GFit auth not granted');
         callback(false);
       }
-    });
+    });*/
 
 
     // call runtimeUAstub authorise
