@@ -71,6 +71,8 @@ class UserActivityObserver extends ContextObserver {
 
   }
 
+
+
   start(callback, identity) {
     let _this = this;
 
@@ -79,7 +81,7 @@ class UserActivityObserver extends ContextObserver {
     _this.bus.postMessage({
       type: 'create',
       from: _this.hypertyURL,
-      to: 'fitness://lduarte.suil@google.com',
+      to: 'fitness://sharinglisboa@google.com',
       body: {
 
         value: {
@@ -99,19 +101,42 @@ class UserActivityObserver extends ContextObserver {
 
     // call runtimeUAstub authorise
 
-/*
-    // send user profile
-    debugger;
-    const stubURL = 'runtime://fitness.google.com/user-activity';
-    let createMessage = {
-      type: 'forward', to: stubURL, from: _this.hypertyURL,
-      identity: { userProfile: { userURL: identity.userURL } },
+    /*
+        // send user profile
+        debugger;
+        const stubURL = 'runtime://fitness.google.com/user-activity';
+        let createMessage = {
+          type: 'forward', to: stubURL, from: _this.hypertyURL,
+          identity: { userProfile: { userURL: identity.userURL } },
+          body: {
+            type: 'create',
+            from: _this.hypertyURL
+          }
+        };
+        _this.bus.postMessage(createMessage);*/
+  }
+
+
+  /* 
+    Stop GoogleProtoStub from querying sessions.
+  */
+  stop() {
+    let _this = this;
+
+    _this.bus.postMessage({
+      type: 'delete',
+      from: _this.hypertyURL,
+      to: 'fitness://sharinglisboa@google.com',
       body: {
-        type: 'create',
-        from: _this.hypertyURL
+        value: {
+          resources: ['user_activity_context']
+        }
       }
-    };
-    _this.bus.postMessage(createMessage);*/
+    }, (reply) => {
+      if (reply.body.code === 200) {
+      } else {
+      }
+    });
   }
 
 }

@@ -3,6 +3,22 @@ function hypertyLoaded(result, runtimeLoader = null) {
 
   console.log('UserActivityObserver hyperty loaded', result.instance);
 
+  $('.stop-hyperty').click(function() {
+    result.instance.stop();
+  }); 
+
+  $('.restart-hyperty').click(function () {
+    function afterUpdate(event) {
+      console.log('UserActivityObserver new update', event);
+      if (event.field == 'balance') {
+        $('.token-value').text(event.data);
+
+      }
+    }
+    result.instance.start(afterUpdate, null);
+  }); 
+
+
   if (runtimeLoader != null) {
     runtimeLoader.requireProtostub('sharing-cities-dsm');
     runtimeLoader.requireProtostub('fitness.google.com');
