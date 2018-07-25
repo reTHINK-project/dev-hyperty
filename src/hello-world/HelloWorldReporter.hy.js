@@ -22,7 +22,6 @@ class HelloWorldReporter {
     if (!configuration) throw new Error('The configuration is a needed parameter');
     if (!factory) throw new Error('The factory is a needed parameter');
 
-
     let _this = this;
 
     let domain = divideURL(hypertyURL).domain;
@@ -131,6 +130,10 @@ class HelloWorldReporter {
 
 
 export default function activate(hypertyURL, bus, configuration, factory) {
+
+ // console.log('Hello World Activate', factory);
+//  debugger;
+
 
   return {
     name: 'HelloWorldReporter',
