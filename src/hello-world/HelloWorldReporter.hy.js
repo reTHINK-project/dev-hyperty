@@ -28,7 +28,8 @@ class HelloWorldReporter {
     _this._domain = domain;
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/HelloWorldDataSchema';
     _this._factory = factory;
-    debugger;
+
+    console.log('HelloWorldReporter configuration', configuration);
 
     let syncher = _this._factory.createSyncher(hypertyURL, bus, configuration);
 
