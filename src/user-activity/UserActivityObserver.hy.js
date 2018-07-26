@@ -1,8 +1,8 @@
-import { Syncher } from 'service-framework/dist/Syncher';
+//import { Syncher } from 'service-framework/dist/Syncher';
 import URI from 'urijs';
-import Search from '../utils/Search';
+//import Search from '../utils/Search';
 import IdentityManager from 'service-framework/dist/IdentityManager';
-import { Discovery } from 'service-framework/dist/Discovery';
+//import { Discovery } from 'service-framework/dist/Discovery';
 import { ContextObserver } from 'service-framework/dist/ContextManager';
 
 
@@ -19,10 +19,10 @@ class UserActivityObserver extends ContextObserver {
     let uri = new URI(hypertyURL);
 
     this.objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Context`;
-    this.syncher = new Syncher(hypertyURL, bus, config);
+//   this.syncher = new Syncher(hypertyURL, bus, config);
     this.identityManager = new IdentityManager(hypertyURL, config.runtimeURL, bus);
-    this.discovery = new Discovery(hypertyURL, config.runtimeURL, bus);
-    this.search = new Search(this.discovery, this.identityManager);
+//    this.discovery = new Discovery(hypertyURL, config.runtimeURL, bus);
+//    this.search = new Search(this.discovery, this.identityManager);
     this.bus = bus;
     this.hypertyURL = hypertyURL;
     bus.addListener(hypertyURL, (msg) => {
