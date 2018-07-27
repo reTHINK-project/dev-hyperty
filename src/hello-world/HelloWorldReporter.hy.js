@@ -1,7 +1,7 @@
 /* jshint undef: true */
 
 //import {Syncher} from 'service-framework/dist/Syncher';
-import {divideURL} from '../utils/utils';
+//import {divideURL} from '../utils/utils';
 import hello from './hello';
 
 /**
@@ -24,7 +24,7 @@ class HelloWorldReporter {
 
     let _this = this;
 
-    let domain = divideURL(hypertyURL).domain;
+    let domain = factory.divideURL(hypertyURL).domain;
     _this._domain = domain;
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/HelloWorldDataSchema';
     _this._factory = factory;
