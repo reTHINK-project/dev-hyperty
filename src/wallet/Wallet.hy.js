@@ -90,7 +90,7 @@ class Wallet {
 
           } else {
 
-            _this.syncher.subscribe(_this.objectDescURL, reply.body.reporter_url, true, false, true, null).then(function(obj) {
+            _this.syncher.subscribe(_this.objectDescURL, reply.body.reporter_url, true, false, true, false, null).then(function(obj) {
               console.log('[Wallet] subscribe result :', obj);
 
               let updateBalance = {
@@ -133,7 +133,7 @@ class Wallet {
               });
 
             } else {
-              _this.syncher.subscribe(_this.objectDescURL, reply.body.publics_url, true, false, true, null).then(function(obj) {
+              _this.syncher.subscribe(_this.objectDescURL, reply.body.publics_url, true, false, true, false, null).then(function(obj) {
                 console.log('[Wallet] subscription result public wallets :', result);
                 let updateWallets = {
                   field: 'wallets',
