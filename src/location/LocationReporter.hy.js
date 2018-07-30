@@ -155,7 +155,7 @@ class LocationHypertyFactory {
 
   }
 
-  initPosition() {
+  initPosition(watchPosition = true) {
     //debugger;
     let _this = this;
     if (_this.reporter == null) {
@@ -166,17 +166,19 @@ class LocationHypertyFactory {
           reporter.onSubscription((event) => event.accept());
           _this.search.myIdentity().then(identity => {
             _this.identity = identity;
-            _this.setCurrentPosition();
+            if (watchPosition)
+              _this.setCurrentPosition();
           });
         });
     } else {
-      _this.setCurrentPosition();
+      if (watchPosition)
+        _this.setCurrentPosition();
     }
   }
 
   setCurrentPosition() {
     let _this = this;
-    navigator.geolocation.watchPosition((position) => {
+    this.watchID = navigator.geolocation.watchPosition((position) => {
       console.log('[LocationReporter] my position: ', position);
       _this.currentPosition = position;
       //debugger;
@@ -185,7 +187,7 @@ class LocationHypertyFactory {
 
   broadcastMyPosition() {
     let _this = this;
-    navigator.geolocation.watchPosition((position) => {
+    this.watchID = navigator.geolocation.watchPosition((position) => {
       console.log('[LocationReporter] my position: ', position);
       _this.currentPosition = position;
       _this.reporter.data.values = [
