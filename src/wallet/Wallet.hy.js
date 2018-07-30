@@ -19,6 +19,7 @@ class Wallet {
     bus.addListener(hypertyURL, (msg) => {
       console.log('[Wallet] new msg', msg);
     });
+    this.messageRetries = config.retries;
   }
 
   start(callback, identity) {
@@ -59,7 +60,7 @@ class Wallet {
     */
     console.log('[Wallet] create message', createMessage);
 
-    _this.bus.postMessage(createMessage, (reply) => {
+    _this.bus.postMessageWithRetries(createMessage, _this.messageRetries, (reply) => {
 
       console.log('[Wallet] create Reply', reply);
       if (reply.body.code == 200) {
@@ -153,9 +154,6 @@ class Wallet {
         }).catch(function(error) {
 
         });
-
-
-
 
 
       }
