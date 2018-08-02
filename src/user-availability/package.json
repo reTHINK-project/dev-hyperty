@@ -1,6 +1,6 @@
 {
   "name": "user-availability",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "The User Availability is comprised by two Hyperties.",
   "main": "UserAvailabilityObserver.hy.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "bootstrap": "^4.1.1",
-    "service-framework": "github:rethink-project/dev-service-framework#v0.9.0"
+    "service-framework": "github:rethink-project/dev-service-framework#develop"
   },
   "devDependencies": {
     "urijs": "^1.19.0"
