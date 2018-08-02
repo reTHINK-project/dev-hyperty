@@ -10,7 +10,7 @@
   "license": "Apache 2.0",
   "dependencies": {
     "bootstrap": "^4.1.1",
-    "service-framework": "github:rethink-project/dev-service-framework#v0.9.0"
+    "service-framework": "github:rethink-project/dev-service-framework#sandboxFactory"
   },
   "devDependencies": {
     "urijs": "^1.19.0"
