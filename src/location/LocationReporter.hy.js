@@ -108,9 +108,13 @@ class LocationHypertyFactory {
 
   watchMyLocation(callback) {
 
-    function success(pos) {
-      var crd = pos.coords;
+    let _this = this;
+
+    function success(position) {
+      var crd = position.coords;
       callback(crd);
+      console.log('[LocationReporter] my position: ', position);
+      _this.currentPosition = position;
     }
 
     function error(err) {
@@ -124,7 +128,7 @@ class LocationHypertyFactory {
       // maximumAge: 0
     };
 
-    this.watchID = navigator.geolocation.watchPosition(success, error, options);
+    this.watchID = navigator.geolocation.watchPosition(success, error, options)
   }
 
   removeWatchMyLocation() {
@@ -155,28 +159,36 @@ class LocationHypertyFactory {
 
   }
 
-  initPosition() {
-    //debugger;
-    let _this = this;
-    if (_this.reporter == null) {
-      _this.syncher.create(_this.objectDescURL, [], position(), true, false, 'location', {}, { resources: ['location-context'], "domain_registration": false })
-        .then((reporter) => {
-          _this.reporter = reporter;
-          console.log('[LocationReporter]  DataObjectReporter', _this.reporter);
-          reporter.onSubscription((event) => event.accept());
-          _this.search.myIdentity().then(identity => {
-            _this.identity = identity;
-            _this.setCurrentPosition();
+  initPosition(watchPosition = true) {
+
+    return new Promise((resolve) => {
+
+      let _this = this;
+      if (_this.reporter == null) {
+        _this.syncher.create(_this.objectDescURL, [], position(), true, false, 'location', {}, { resources: ['location-context'], "domain_registration": false })
+          .then((reporter) => {
+            _this.reporter = reporter;
+            console.log('[LocationReporter]  DataObjectReporter', _this.reporter);
+            reporter.onSubscription((event) => event.accept());
+            _this.search.myIdentity().then(identity => {
+              _this.identity = identity;
+              if (watchPosition) {
+                _this.setCurrentPosition();
+              }
+              resolve(true);
+            });
           });
-        });
-    } else {
-      _this.setCurrentPosition();
-    }
+      } else {
+        if (watchPosition)
+          _this.setCurrentPosition();
+        resolve(true);
+      }
+    });
   }
 
   setCurrentPosition() {
     let _this = this;
-    navigator.geolocation.watchPosition((position) => {
+    this.watchID = navigator.geolocation.watchPosition((position) => {
       console.log('[LocationReporter] my position: ', position);
       _this.currentPosition = position;
       //debugger;
@@ -185,7 +197,7 @@ class LocationHypertyFactory {
 
   broadcastMyPosition() {
     let _this = this;
-    navigator.geolocation.watchPosition((position) => {
+    this.watchID = navigator.geolocation.watchPosition((position) => {
       console.log('[LocationReporter] my position: ', position);
       _this.currentPosition = position;
       _this.reporter.data.values = [
