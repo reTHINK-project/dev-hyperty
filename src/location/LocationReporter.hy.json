@@ -1,5 +1,7 @@
 {
-  "configuration": {},
+  "configuration": {
+    "domain_registration": false
+  },
   "hypertyType": [
     "location-context"
   ],

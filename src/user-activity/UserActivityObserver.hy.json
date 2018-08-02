@@ -1,0 +1,18 @@
+{
+  "configuration": {
+    "discoveryProviders": ["fitness.google.com"],
+    "domain_registration": false
+  },
+  "hypertyType": [
+    "user_activity_context"
+  ],
+  "description": "Descriptor of UserActivityObserver Hyperty",
+  "constraints": {
+    "browser": true
+  },
+  "language": "javascript",
+  "signature": "",
+  "dataObjects": [
+    "https://catalogue.%domain%/.well-known/dataschema/Context"
+  ]
+}

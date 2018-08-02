@@ -109,7 +109,7 @@ function loadHyperty(event) {
   addLoader($el);
 
   runtimeLoader.requireHyperty(hypertyPath, true).then((hyperty) => {
-    hypertyDeployed(hyperty);
+    hypertyDeployed(hyperty, runtimeLoader);
     loading = false;
   }).catch((reason) => {
     hypertyFail(reason);

@@ -5,7 +5,7 @@ import {getTemplate, serialize} from './utils';
 
 let loading = false;
 
-export function hypertyDeployed(hyperty) {
+export function hypertyDeployed(hyperty, runtimeLoader = null) {
 
   let $el = $('.main-content .notification');
   removeLoader($el);
@@ -25,9 +25,33 @@ export function hypertyDeployed(hyperty) {
       script = 'user-availability/UserAvailabilityObserverDemo.js';
       break;
 
+      case 'DeviceManager':
+        template = 'device-manager/DeviceManager';
+        script = 'device-manager/DeviceManagerDemo.js';
+        break;
+
+    case 'Wallet':
+      template = 'wallet/Wallet';
+      script = 'wallet/wallet.js';
+      break;
+
+    case 'UserActivityObserver':
+      template = 'user-activity/UserActivityObserver';
+      script = 'user-activity/UserActivityObserver.js';
+      break;
+
+    case 'UserKwhObserver':
+      template = 'observer-kwh/UserKwhObserver';
+      script = 'observer-kwh/UserKwhObserver.js';
+      break;
+
     case 'UserAvailabilityReporter':
       template = 'user-availability/userAvailabilityReporter';
       script = 'user-availability/UserAvailabilityReporterDemo.js';
+      break;
+    case 'ElearningPlayer':
+      template = 'learning/learningPlayer';
+      script = 'learning/learningPlayerDemo.js';
       break;
 
     case 'Connector':
@@ -49,7 +73,6 @@ export function hypertyDeployed(hyperty) {
       template = 'hello-world/helloWorld';
       script = 'hello-world/helloReporter.js';
       break;
-
 
     case 'NodeHypertyObserver':
       template = 'node-hyperty/NodeHyperty';
@@ -74,7 +97,8 @@ export function hypertyDeployed(hyperty) {
     case 'DTWebRTC':
       template = 'dtwebrtc/dtwebrtc';
       script = 'dtwebrtc/dtwebrtc.js';
-      break;  }
+      break;
+  }
 
   if (!template) {
     throw Error('You must need specify the template for your example');
@@ -85,7 +109,7 @@ export function hypertyDeployed(hyperty) {
     $mainContent.html(html);
 
     if (typeof hypertyLoaded === 'function') {
-      hypertyLoaded(hyperty);
+      hypertyLoaded(hyperty, runtimeLoader);
     } else {
       let msg = 'If you need pass the hyperty to your template, create a function called hypertyLoaded';
       console.info(msg);

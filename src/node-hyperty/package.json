@@ -1,6 +1,6 @@
 {
   "name": "node-hyperty",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Node Hyperty",
   "main": "NodeHypertyObserver.hy.js",
   "scripts": {
@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "service-framework": "github:rethink-project/dev-service-framework#v0.8.0"
+    "service-framework": "github:rethink-project/dev-service-framework#v0.9.0"
   }
 }

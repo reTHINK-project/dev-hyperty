@@ -1,0 +1,17 @@
+{
+  "configuration": {
+    "domain_registration": false,
+    "retries": 10
+  },
+  "hypertyType": [
+    "location-context"
+  ],
+  "constraints": {
+    "browser": true
+  },
+  "language": "javascript",
+  "signature": "",
+  "dataObjects": [
+    "https://catalogue.%domain%/.well-known/dataschema/WalletData"
+  ]
+}

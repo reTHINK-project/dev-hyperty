@@ -1,0 +1,57 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-intro {
+  font-size: 30px;
+  /* padding: 3em; */
+  text-align: center;
+}
+
+/* button{
+  font-size: 18px;
+  font-weight: bold;
+  border: 1px solid #333;
+  border-radius: 3px;
+  background: #eee;
+  margin: 1.2em;
+  padding: .5em;
+} */
+
+/* .number{
+  font-weight: bold;
+  font-size: 2em;
+} */
+
+/* @keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+} */
+
+/* input[type="text"]{
+  font-size: 1.5em;
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #eee;
+} */
+/* input[type="checkbox"]{
+  font-size: 4em;
+} */
+
+/* ul{
+  list-style-type: none;
+  text-align: left;
+} */
