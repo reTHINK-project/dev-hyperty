@@ -1,21 +1,21 @@
-import { Syncher } from 'service-framework/dist/Syncher';
+//import { Syncher } from 'service-framework/dist/Syncher';
 import URI from 'urijs';
 import position from './position';
-import Search from '../utils/Search';
-import IdentityManager from 'service-framework/dist/IdentityManager';
-import { Discovery } from 'service-framework/dist/Discovery';
-import { callbackify } from 'util';
+//import Search from '../utils/Search';
+//import IdentityManager from 'service-framework/dist/IdentityManager';
+//import { Discovery } from 'service-framework/dist/Discovery';
+//import { callbackify } from 'util';
 
 class LocationHypertyFactory {
 
 
-  constructor(hypertyURL, bus, config) {
+  constructor(hypertyURL, bus, config, factory) {
     let uri = new URI(hypertyURL);
     this.objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Context`;
-    this.syncher = new Syncher(hypertyURL, bus, config);
-    this.identityManager = new IdentityManager(hypertyURL, config.runtimeURL, bus);
-    this.discovery = new Discovery(hypertyURL, config.runtimeURL, bus);
-    this.search = new Search(this.discovery, this.identityManager);
+    this.syncher = factory.createSyncher(hypertyURL, bus, config);
+    this.identityManager = factory.createIdentityManager(hypertyURL, config.runtimeURL, bus);
+    this.discovery = factory.createDiscovery(hypertyURL, config.runtimeURL, bus);
+    this.search = factory.createSearch(this.discovery, this.identityManager);
     this.currentPosition = null;
     this.identity = null;
     this.bus = bus;
@@ -262,9 +262,9 @@ class LocationHypertyFactory {
 
 }
 
-export default function activate(hypertyURL, bus, config) {
+export default function activate(hypertyURL, bus, config, factory) {
   return {
     name: 'LocationReporter',
-    instance: new LocationHypertyFactory(hypertyURL, bus, config)
+    instance: new LocationHypertyFactory(hypertyURL, bus, config, factory)
   };
 }
