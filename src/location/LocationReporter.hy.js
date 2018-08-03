@@ -231,8 +231,20 @@ class LocationHypertyFactory {
       { name: 'longitude', unit: 'lon', value: longitude },
       { name: 'checkin', unit: 'checkin', value: spotId }
     ];
+  }
+
+  collect(bonusID, spotID) {
+    let _this = this;
+    // let latitude = _this.currentPosition.coords.latitude;
+    // let longitude = _this.currentPosition.coords.longitude;
+    _this.reporter.data.values = [
+      { name: 'bonus', unit: 'checkin', value: bonusID },
+      { name: 'checkin', unit: 'checkin', value: spotID }
+    ];
 
   }
+
+
 
   // can call with 'data://sharing-cities-dsm/shops'
   retrieveSpots(spotsURL) {
