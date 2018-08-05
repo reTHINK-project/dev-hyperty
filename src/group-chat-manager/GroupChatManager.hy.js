@@ -23,10 +23,10 @@
 **/
 
 // Service Framework
-import IdentityManager from 'service-framework/dist/IdentityManager';
+//import IdentityManager from 'service-framework/dist/IdentityManager';
 import {ChatManager,ChatController} from 'service-framework/dist/ChatManager';
-import {Discovery, RegistrationStatus} from 'service-framework/dist/Discovery';
-import {Syncher} from 'service-framework/dist/Syncher';
+import { RegistrationStatus} from 'service-framework/dist/Discovery';
+//import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
 /*import {divideURL} from '../utils/utils';
@@ -43,8 +43,8 @@ import { UserInfo } from './UserInfo';*/
 */
 class GroupChatManager extends ChatManager {
 
-  constructor(hypertyURL, bus, configuration) {
-    super(hypertyURL, bus, configuration);
+  constructor(hypertyURL, bus, configuration, factory) {
+    super(hypertyURL, bus, configuration, factory);
 
     let _this = this;
 
@@ -271,11 +271,11 @@ class GroupChatManager extends ChatManager {
 
 }
 
-export default function activate(hypertyURL, bus, configuration) {
+export default function activate(hypertyURL, bus, configuration, factory) {
 
   return {
     name: 'GroupChatManager',
-    instance: new GroupChatManager(hypertyURL, bus, configuration)
+    instance: new GroupChatManager(hypertyURL, bus, configuration, factory)
   };
 
 }

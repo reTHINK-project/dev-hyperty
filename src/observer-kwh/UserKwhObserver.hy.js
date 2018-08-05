@@ -1,16 +1,16 @@
-import IdentityManager from 'service-framework/dist/IdentityManager';
-import {Syncher} from 'service-framework/dist/Syncher';
-import {Discovery} from 'service-framework/dist/Discovery';
+//import IdentityManager from 'service-framework/dist/IdentityManager';
+//import {Syncher} from 'service-framework/dist/Syncher';
+//import {Discovery} from 'service-framework/dist/Discovery';
 import {ContextObserver} from 'service-framework/dist/ContextManager';
-import {divideURL} from '../utils/utils';
-import Search from '../utils/Search';
-import EventEmitter from '../utils/EventEmitter';
+//import {divideURL} from '../utils/utils';
+//import Search from '../utils/Search';
+//import EventEmitter from '../utils/EventEmitter';
 
 class UserKwhObserver extends ContextObserver {
 
-  constructor(hypertyURL, bus, configuration) {
+  constructor(hypertyURL, bus, configuration, factory) {
 
-    super(hypertyURL, bus, configuration, ['availability_context']);
+    super(hypertyURL, bus, configuration, ['availability_context'], factory);
 
   }
 
@@ -71,9 +71,9 @@ resumeDiscoveries() {
 
 }
 
-export default function activate(hypertyURL, bus, configuration) {
+export default function activate(hypertyURL, bus, configuration, factory) {
   return {
     name: 'UserKwhObserver',
-    instance: new UserKwhObserver(hypertyURL, bus, configuration)
+    instance: new UserKwhObserver(hypertyURL, bus, configuration, factory)
   };
 }
