@@ -83,10 +83,17 @@ class Wallet {
                 field: 'ranking',
                 data: result.data.ranking
               };
+
+              let updateBonusCredit = {
+                field: 'bonus-credit',
+                data: result.data['bonus-credit']
+              };
   
               callback(updateBalance);
               callback(updateTransactions);
               callback(updateRanking);
+              callback(updateBonusCredit);
+              debugger;
   
   
               result.onChange('*', (event) => {
@@ -114,10 +121,16 @@ class Wallet {
                   field: 'ranking',
                   data: obj.data.ranking
                 };
+
+                let updateBonusCredit = {
+                  field: 'bonus-credit',
+                  data: obj.data['bonus-credit']
+                };
   
                 callback(updateBalance);
                 callback(updateTransactions);
                 callback(updateRanking);
+                callback(updateBonusCredit);
   
                 obj.onChange('*', (event) => {
                   console.log('[Wallet] New Change :', event);

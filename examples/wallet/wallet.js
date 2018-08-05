@@ -26,9 +26,12 @@ function hypertyReady(result, identity) {
     else if (event.field == 'ranking') {
       $('.wallet-ranking').text(event.data);
     }
+    else if (event.field == 'bonus-credit') {
+      $('.bonus-credit').text(event.data);
+    }
   }
 
-  const profileInfo = { ageRange: '18-25', workplace: 'Lisbon', cause: '0' };
+  const profileInfo = { ageRange: '18-25', workplace: 'Lisbon', cause: '0', balance: 10 };
   identity.profile = profileInfo;
   result.instance.start(afterUpdate, identity);
 
