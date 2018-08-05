@@ -23,7 +23,7 @@
 
 // Service Framework
 //import {Discovery} from 'service-framework/dist/Discovery';
-import IdentityManager from 'service-framework/dist/IdentityManager';
+//import IdentityManager from 'service-framework/dist/IdentityManager';
 //import {Syncher} from 'service-framework/dist/Syncher';
 import {ContextReporter} from 'service-framework/dist/ContextManager';
 
@@ -41,9 +41,9 @@ import availability from './availability.js';
 */
 class UserAvailabilityReporter extends ContextReporter {
 
-  constructor(hypertyURL, bus, configuration) {
+  constructor(hypertyURL, bus, configuration, factory) {
 
-    super(hypertyURL, bus, configuration);
+    super(hypertyURL, bus, configuration, factory);
     let _this = this;
 
     console.info('[UserAvailabilityReporter] started with url: ', hypertyURL);
@@ -51,7 +51,7 @@ class UserAvailabilityReporter extends ContextReporter {
 //    this.syncher = new Syncher(hypertyURL, bus, configuration);
 
     //    this.discovery = new Discovery(hypertyURL, bus);
-    this.identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
+    this.identityManager = factory.createIdentityManager(hypertyURL, configuration.runtimeURL, bus);
 /*    this.domain = divideURL(hypertyURL).domain;
 
     this.userAvailabilityyDescURL = 'hyperty-catalogue://catalogue.' + this.domain + '/.well-known/dataschema/Context';
@@ -167,11 +167,11 @@ onResumeReporter(callback) {
 
 }
 
-export default function activate(hypertyURL, bus, configuration) {
+export default function activate(hypertyURL, bus, configuration, factory) {
 
   return {
     name: 'UserAvailabilityReporter',
-    instance: new UserAvailabilityReporter(hypertyURL, bus, configuration)
+    instance: new UserAvailabilityReporter(hypertyURL, bus, configuration, factory)
   };
 
 }

@@ -1,7 +1,8 @@
 {
   "configuration": {
     "discoveryProviders": ["fitness.google.com"],
-    "domain_registration": false
+    "domain_registration": false,
+    "domain_routing": false
   },
   "hypertyType": [
     "user_activity_context"

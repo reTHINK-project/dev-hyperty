@@ -19,7 +19,7 @@ class UserActivityObserver extends ContextObserver {
     let uri = new URI(hypertyURL);
 
     this.objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Context`;
-    this.syncher = factory.createSyncher(hypertyURL, bus, config);
+//    this.syncher = factory.createSyncher(hypertyURL, bus, config);
     this.identityManager = factory.createIdentityManager(hypertyURL, config.runtimeURL, bus);
     this.discovery = factory.createDiscovery(hypertyURL, config.runtimeURL, bus);
     this.search = factory.createSearch(this.discovery, this.identityManager);

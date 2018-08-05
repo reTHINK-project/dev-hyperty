@@ -24,12 +24,12 @@
 /* jshint undef: true */
 
 // Service Framework
-import IdentityManager from 'service-framework/dist/IdentityManager';
-import {Discovery} from 'service-framework/dist/Discovery';
-import {Syncher} from 'service-framework/dist/Syncher';
+//import IdentityManager from 'service-framework/dist/IdentityManager';
+//import {Discovery} from 'service-framework/dist/Discovery';
+//import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
-import {divideURL} from '../utils/utils';
+//import {divideURL} from '../utils/utils';
 
 // Internals
 import ConnectionController from './ConnectionController';
@@ -45,7 +45,7 @@ class Connector {
   * Create a new Hyperty Connector
   * @param  {Syncher} syncher - Syncher provided from the runtime core
   */
-  constructor(hypertyURL, bus, configuration) {
+  constructor(hypertyURL, bus, configuration, factory) {
 
     if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
     if (!bus) throw new Error('The MiniBus is a needed parameter');
@@ -55,25 +55,25 @@ class Connector {
     _this._hypertyURL = hypertyURL;
     _this._bus = bus;
     _this._configuration = configuration;
-    _this._domain = divideURL(hypertyURL).domain;
+    _this._domain = factory.divideURL(hypertyURL).domain;
 
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + _this._domain + '/.well-known/dataschema/Connection';
 
     _this._controllers = {};
     _this.connectionObject = connection;
 
-    let discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
-    let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
+    let discovery = factory.createDiscovery(hypertyURL, configuration.runtimeURL, bus);
+    let identityManager = factory.createIdentityManager(hypertyURL, configuration.runtimeURL, bus);
 
     _this.discovery = discovery;
     _this.identityManager = identityManager;
 
-    _this.search = new Search(discovery, identityManager);
+    _this.search = factory.createSearch(discovery, identityManager);
 
     console.log('Discover: ', discovery);
     console.log('Identity Manager: ', identityManager);
 
-    let syncher = new Syncher(hypertyURL, bus, configuration);
+    let syncher = factory.createSyncher(hypertyURL, bus, configuration);
 
     syncher.onNotification((event) => {
 
@@ -295,11 +295,11 @@ class Connector {
  * @param  {MiniBus} bus          Minibus used to make the communication between hyperty and runtime;
  * @param  {object} configuration configuration
  */
-export default function activate(hypertyURL, bus, configuration) {
+export default function activate(hypertyURL, bus, configuration, factory) {
 
   return {
     name: 'Connector',
-    instance: new Connector(hypertyURL, bus, configuration)
+    instance: new Connector(hypertyURL, bus, configuration, factory)
   };
 
 }
