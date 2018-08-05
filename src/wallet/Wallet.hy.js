@@ -78,9 +78,15 @@ class Wallet {
                 field: 'transactions',
                 data: result.data.transactions
               };
+
+              let updateRanking = {
+                field: 'ranking',
+                data: result.data.ranking
+              };
   
               callback(updateBalance);
               callback(updateTransactions);
+              callback(updateRanking);
   
   
               result.onChange('*', (event) => {
@@ -103,9 +109,15 @@ class Wallet {
                   field: 'transactions',
                   data: obj.data.transactions
                 };
+
+                let updateRanking = {
+                  field: 'ranking',
+                  data: obj.data.ranking
+                };
   
                 callback(updateBalance);
                 callback(updateTransactions);
+                callback(updateRanking);
   
                 obj.onChange('*', (event) => {
                   console.log('[Wallet] New Change :', event);
