@@ -24,7 +24,7 @@
 
 // Service Framework
 //import IdentityManager from 'service-framework/dist/IdentityManager';
-import {ChatManager,ChatController} from 'service-framework/dist/ChatManager';
+import {ChatManager,ChatController} from 'runtime-core/dist/ChatManager';
 import { RegistrationStatus} from 'service-framework/dist/Discovery';
 //import {Syncher} from 'service-framework/dist/Syncher';
 

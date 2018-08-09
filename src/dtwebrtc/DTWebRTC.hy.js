@@ -1,11 +1,11 @@
 /* jshint undef: true */
-import {Discovery} from 'service-framework/dist/Discovery';
-import {Syncher} from 'service-framework/dist/Syncher';
-import {divideURL} from '../utils/utils';
+//import {Discovery} from 'service-framework/dist/Discovery';
+//import {Syncher} from 'service-framework/dist/Syncher';
+//import {divideURL} from '../utils/utils';
 import EventEmitter from '../utils/EventEmitter'; // for receiving
-import Search from '../utils/Search';
+//import Search from '../utils/Search';
 //import iceconfig from './stunTurnserverConfig';
-import IdentityManager from 'service-framework/dist/IdentityManager';
+//import IdentityManager from 'service-framework/dist/IdentityManager';
 
 
 import 'webrtc-adapter-test';
