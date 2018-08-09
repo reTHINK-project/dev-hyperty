@@ -26,7 +26,7 @@ function hypertyReady(result, identity) {
     else if (event.field == 'ranking') {
       $('.wallet-ranking').text(event.data);
     }
-    else if (event.field == 'bonusCredit') {
+    else if (event.field == 'bonus-credit') {
       $('.bonus-credit').text(event.data);
     }
   }

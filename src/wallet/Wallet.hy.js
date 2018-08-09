@@ -85,8 +85,8 @@ class Wallet {
               };
 
               let updateBonusCredit = {
-                field: 'bonusCredit',
-                data: result.data['bonusCredit']
+                field: 'bonus-credit',
+                data: result.data['bonus-credit']
               };
   
               callback(updateBalance);
@@ -122,8 +122,8 @@ class Wallet {
                 };
 
                 let updateBonusCredit = {
-                  field: 'bonusCredit',
-                  data: obj.data['bonusCredit']
+                  field: 'bonus-credit',
+                  data: obj.data['bonus-credit']
                 };
   
                 callback(updateBalance);
