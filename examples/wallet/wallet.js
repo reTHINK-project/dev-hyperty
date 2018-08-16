@@ -36,6 +36,13 @@ function hypertyReady(result, identity) {
   result.instance.start(afterUpdate, identity);
 
 
+  $('.wallet-delete').click(function () {
+    result.instance.removeWallet().then(function (result) {
+      console.log('Wallet removed from DB');
+    });
+  });
+
+
   // get public wallets
   /*
   console.log('Wallet hyperty Ready', result, identity);
