@@ -4,11 +4,8 @@
   "description": "",
   "main": "GroupChatManager.hy.js",
   "dependencies": {
-    "runtime-core": "github:rethink-project/dev-runtime-core#framework2core"
   },
-  "devDependencies": {
-    "eslint-plugin-import": "^2.12.0"
-  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

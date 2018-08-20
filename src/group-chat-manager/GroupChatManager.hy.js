@@ -24,8 +24,8 @@
 
 // Service Framework
 //import IdentityManager from 'service-framework/dist/IdentityManager';
-import {ChatManager,ChatController} from 'runtime-core/dist/ChatManager';
-import { RegistrationStatus} from 'service-framework/dist/Discovery';
+//import {ChatManager,ChatController} from 'runtime-core/dist/ChatManager';
+//import { RegistrationStatus} from 'service-framework/dist/Discovery';
 //import {Syncher} from 'service-framework/dist/Syncher';
 
 // Utils
@@ -41,13 +41,16 @@ import { UserInfo } from './UserInfo';*/
 * @author Vitor Silva [vitor-t-silva@telecom.pt]
 * @version 0.1.0
 */
-class GroupChatManager extends ChatManager {
+class GroupChatManager {
 
   constructor(hypertyURL, bus, configuration, factory) {
-    super(hypertyURL, bus, configuration, factory);
+//    super(hypertyURL, bus, configuration, factory);
 
     let _this = this;
+    _this._factory = factory;
+    _this._syncher = factory.createSyncher(hypertyURL, bus, configuration);
 
+    _this._manager = factory.createChatManager(hypertyURL, bus, configuration, _this._syncher);
     _this._syncher.onNotification(function(event) {
       console.log('[GroupChatManager] onNotification:', event);
       _this.processNotification(event);
@@ -99,7 +102,7 @@ class GroupChatManager extends ChatManager {
 
             console.log('[GroupChatManager.resumeReporter]: ', dataObjectReporterURL);
 
-            let chatController = new ChatController(_this._syncher, _this.discovery, _this._domain, _this.search, identity, _this);
+            let chatController = _this._factory.createChatController(_this._syncher, _this.discovery, _this._domain, _this.search, identity, _this);
             chatController.dataObjectReporter = reporters[dataObjectReporterURL];
 
             // Save the chat controllers by dataObjectReporterURL
@@ -143,13 +146,13 @@ class GroupChatManager extends ChatManager {
 
             let chatObserver = observers[dataObjectObserverURL];
 
-            let chatController = new ChatController(_this._syncher, _this.discovery, _this._domain, _this.search, identity, _this);
+            let chatController = _this._factory.createChatController(_this._syncher, _this.discovery, _this._domain, _this.search, identity, _this);
             chatController.dataObjectObserver = chatObserver;
 
             // Save the chat controllers by dataObjectReporterURL
             this._observersControllers[dataObjectObserverURL] = chatController;
 
-            let reporterStatus = new RegistrationStatus(chatObserver.url, _this._runtimeURL, _this._myUrl, _this._bus);
+            let reporterStatus = _this._factory.createRegistrationStatus(chatObserver.url, _this._runtimeURL, _this._myUrl, _this._bus);
 
             // recursive function to sync with chat reporter
 
@@ -233,7 +236,7 @@ class GroupChatManager extends ChatManager {
    * @return {<Promise>ChatController}    A ChatController object as a Promise.
    */
   create(name, users, extra = {}) {
-    return super.create(name, users, extra);
+    return this._manager.create(name, users, extra);
 
 
 
@@ -245,7 +248,7 @@ class GroupChatManager extends ChatManager {
    * @param  {Function} CreateEvent The CreateEvent fired by the Syncher when an invitaion is received
    */
   onInvitation(callback) {
-    return super.onInvitation(callback);
+    return this._manager.onInvitation(callback);
   }
 
   onResumeReporter(callback) {
@@ -264,7 +267,7 @@ class GroupChatManager extends ChatManager {
    * @return {<Promise>ChatController}             It returns the ChatController object as a Promise
    */
   join(invitationURL) {
-    return super.join(invitationURL);
+    return this._manager.join(invitationURL);
 
 
   }
