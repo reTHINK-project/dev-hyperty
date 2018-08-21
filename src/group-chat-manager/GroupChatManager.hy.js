@@ -51,6 +51,13 @@ class GroupChatManager {
     _this._syncher = factory.createSyncher(hypertyURL, bus, configuration);
 
     _this._manager = factory.createChatManager(hypertyURL, bus, configuration, _this._syncher);
+    _this.discovery = _this._manager.discovery;
+    _this.identityManager = _this._manager.identityManager;
+    _this.search = _this._manager.search;
+    _this._domain = _this._manager._domain;
+    _this._myUrl = hypertyURL;
+    _this._runtimeURL = configuration.runtimeURL;
+
     _this._syncher.onNotification(function(event) {
       console.log('[GroupChatManager] onNotification:', event);
       _this.processNotification(event);
@@ -68,11 +75,11 @@ class GroupChatManager {
 
     return new Promise((resolve, reject) => {
 
-      if (_this.currentIdentity) {
-        resolve(_this.currentIdentity);
+      if (_this._manager.currentIdentity) {
+        resolve(_this._manager.currentIdentity);
       } else {
         // create a new chatController but first get identity
-        _this.identityManager.discoverUserRegistered().then((identity) => {
+        _this._manager.identityManager.discoverUserRegistered().then((identity) => {
           console.log('[GroupChatManager] GET MY IDENTITY:', identity);
           resolve(identity);
         }).catch((error) => {
@@ -102,21 +109,21 @@ class GroupChatManager {
 
             console.log('[GroupChatManager.resumeReporter]: ', dataObjectReporterURL);
 
-            let chatController = _this._factory.createChatController(_this._syncher, _this.discovery, _this._domain, _this.search, identity, _this);
+            let chatController = _this._factory.createChatController(_this._syncher, _this.discovery, _this._domain, _this.search, identity, _this._manager);
             chatController.dataObjectReporter = reporters[dataObjectReporterURL];
 
             // Save the chat controllers by dataObjectReporterURL
-            this._reportersControllers[dataObjectReporterURL] = chatController;
+            this._manager._reportersControllers[dataObjectReporterURL] = chatController;
 
             _this._resumeInterworking(chatController.dataObjectReporter);
 
             console.log('[GroupChatManager] chatController invitationsHandler: ',   chatController.invitationsHandler);
 
-            chatController.invitationsHandler.resumeDiscoveries(_this.discovery, chatController.dataObjectReporter);
+            chatController.invitationsHandler.resumeDiscoveries(_this._manager.discovery, chatController.dataObjectReporter);
 
           });
 
-          if (_this._onResumeReporter) _this._onResumeReporter(this._reportersControllers);
+          if (_this._onResumeReporter) _this._onResumeReporter(this._manager._reportersControllers);
 
         });
 
@@ -146,11 +153,11 @@ class GroupChatManager {
 
             let chatObserver = observers[dataObjectObserverURL];
 
-            let chatController = _this._factory.createChatController(_this._syncher, _this.discovery, _this._domain, _this.search, identity, _this);
+            let chatController = _this._factory.createChatController(_this._syncher, _this._manager.discovery, _this._domain, _this.search, identity, _this._manager);
             chatController.dataObjectObserver = chatObserver;
 
             // Save the chat controllers by dataObjectReporterURL
-            this._observersControllers[dataObjectObserverURL] = chatController;
+            this._manager._observersControllers[dataObjectObserverURL] = chatController;
 
             let reporterStatus = _this._factory.createRegistrationStatus(chatObserver.url, _this._runtimeURL, _this._myUrl, _this._bus);
 
@@ -176,7 +183,7 @@ class GroupChatManager {
 
           });
 
-          if (_this._onResumeObserver) _this._onResumeObserver(this._observersControllers);
+          if (_this._onResumeObserver) _this._onResumeObserver(this._manager._observersControllers);
 
         });
 
@@ -268,6 +275,33 @@ class GroupChatManager {
    */
   join(invitationURL) {
     return this._manager.join(invitationURL);
+
+
+  }
+  /**
+   * This function is used to retrieve my identity.
+   * @return {<Promise>Identity}             It returns the Identity object as a Promise
+   */
+  myIdentity(identity) {
+    console.log('[GroupChatManager.myIdentity] ', identity);
+    return this._manager.myIdentity(identity);
+
+
+  }
+  /**
+   * This function is used to process incoming messages.
+   */
+  processNotification(event) {
+    return this._manager.processNotification(event);
+
+
+  }
+
+  /**
+   * This function is used to process incoming messages.
+   */
+  onInvitation(callback) {
+    return this._manager.onInvitation(callback);
 
 
   }
