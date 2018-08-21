@@ -8,8 +8,7 @@
   },
   "author": "vitor-t-silva@telecom.pt",
   "license": "ISC",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "webrtc-adapter": "^4.2.2"
   }
