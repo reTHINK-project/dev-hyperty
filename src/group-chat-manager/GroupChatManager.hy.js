@@ -57,6 +57,7 @@ class GroupChatManager {
     _this._domain = _this._manager._domain;
     _this._myUrl = hypertyURL;
     _this._runtimeURL = configuration.runtimeURL;
+    _this._bus = bus;
 
     _this._syncher.onNotification(function(event) {
       console.log('[GroupChatManager] onNotification:', event);
