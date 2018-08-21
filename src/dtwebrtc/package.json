@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "service-framework": "github:rethink-project/dev-service-framework#develop",
     "webrtc-adapter-test": "^0.2.10"
   }
 }

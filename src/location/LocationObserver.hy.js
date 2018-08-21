@@ -1,15 +1,15 @@
 //import { Syncher } from 'service-framework/dist/Syncher';
 //import {Discovery} from 'service-framework/dist/Discovery';
 //import URI from 'urijs'
-import {ContextObserver} from 'service-framework/dist/ContextManager';
+//import {ContextObserver} from 'service-framework/dist/ContextManager';
 
 
-class LocationObserverHyperty extends ContextObserver {
+class LocationObserverHyperty {
 
   constructor(hypertyURL, bus, config, factory) {
     //    this._domain = divideURL(hypertyURL).domain;
-
-    super(hypertyURL, bus, config,['location-context'], factory);
+    
+    this._context = factory.createContextObserver(hypertyURL, bus, config,['location-context']);
 
     /*    let uri = new URI(hypertyURL);
         this._users2observe = [];
@@ -23,28 +23,28 @@ class LocationObserverHyperty extends ContextObserver {
 
   start(callback) {
     console.log('[LocationObserver.start] ');
-    return super.start();
+    return this._context.start();
   }
 
   resumeDiscoveries() {
-    return super.resumeDiscoveries();
+    return this._context.resumeDiscoveries();
   }
 
   onResumeObserver(callback) {
-    return super.onResumeObserver(callback);
+    return this._context.onResumeObserver(callback);
   }
 
   discoverUsers(email,domain) {
-    return super.discoverUsers(email, domain);
+    return this._context.discoverUsers(email, domain);
   }
 
   observe(hyperty) {
-    return super.observe(hyperty);
+    return this._context.observe(hyperty);
   }
 
   unobserve(Context)
   {
-    return super.unobserve(Context);
+    return this._context.unobserve(Context);
   }
 
 

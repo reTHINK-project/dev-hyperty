@@ -1,16 +1,16 @@
 //import IdentityManager from 'service-framework/dist/IdentityManager';
 //import {Syncher} from 'service-framework/dist/Syncher';
 //import {Discovery} from 'service-framework/dist/Discovery';
-import {ContextObserver} from 'service-framework/dist/ContextManager';
+//import {ContextObserver} from 'service-framework/dist/ContextManager';
 //import {divideURL} from '../utils/utils';
 //import Search from '../utils/Search';
 //import EventEmitter from '../utils/EventEmitter';
 
-class UserKwhObserver extends ContextObserver {
+class UserKwhObserver  {
 
   constructor(hypertyURL, bus, configuration, factory) {
 
-    super(hypertyURL, bus, configuration, ['availability_context'], factory);
+    this._context = factory.createContextObserver(hypertyURL, bus, configuration,['availability_context']);
 
   }
 
@@ -26,22 +26,22 @@ class UserKwhObserver extends ContextObserver {
 
     let resumedInit = [{value: 'unavailable'}];
 
-    return super.start(resumedInit, resumedCallback);
+    return this._context.start(resumedInit, resumedCallback);
   }
 
 resumeDiscoveries() {
-  return super.resumeDiscoveries();
+  return this._context.resumeDiscoveries();
 
 }
 
   onResumeObserver(callback) {
-    return super.onResumeObserver(callback);
+    return this._context.onResumeObserver(callback);
    }
 
 
   discoverUsers(email,domain)
   {
-    return super.discoverUsers(email,domain);
+    return this._context.discoverUsers(email,domain);
 
   }
 
@@ -53,7 +53,7 @@ resumeDiscoveries() {
 
   observe(hyperty)
     {
-      return super.observe(hyperty);
+      return this._context.observe(hyperty);
 
   }
 
@@ -65,7 +65,7 @@ resumeDiscoveries() {
 
   unobserve(availability)
     {
-      return super.unobserve(availability);
+      return this._context.unobserve(availability);
 
   }
 

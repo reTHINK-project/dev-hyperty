@@ -25,7 +25,7 @@
 //import {Discovery} from 'service-framework/dist/Discovery';
 //import IdentityManager from 'service-framework/dist/IdentityManager';
 //import {Syncher} from 'service-framework/dist/Syncher';
-import {ContextReporter} from 'service-framework/dist/ContextManager';
+//import {ContextReporter} from 'service-framework/dist/ContextManager';
 
 // Utils
 //import EventEmitter from '../utils/EventEmitter.js';
@@ -39,11 +39,11 @@ import availability from './availability.js';
 * @author Paulo Chainho  [paulo-g-chainho@alticelabs.com]
 * @version 0.1.0
 */
-class UserAvailabilityReporter extends ContextReporter {
+class UserAvailabilityReporter {
 
   constructor(hypertyURL, bus, configuration, factory) {
 
-    super(hypertyURL, bus, configuration, factory);
+    this._context = new ContextReporter(hypertyURL, bus, configuration);
     let _this = this;
 
     console.info('[UserAvailabilityReporter] started with url: ', hypertyURL);
@@ -148,7 +148,7 @@ onResumeReporter(callback) {
    * @return {Promise}
    */
   create(id, init, resources, name = 'myContext') {
-    return super.create(id, init, resources, name);
+    return this._context.create(id, init, resources, name);
   }
 
 /*  _onSubscription(userAvailability){
@@ -161,7 +161,7 @@ onResumeReporter(callback) {
   setStatus(newStatus) {
 //    _this.contexts[id].data.values[0].value;
     let newContext = [{value: newStatus}];
-    return super.setContext('myAvailability', newContext);
+    return this._context.setContext('myAvailability', newContext);
   }
 
 

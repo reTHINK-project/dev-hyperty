@@ -3,7 +3,7 @@ import URI from 'urijs';
 //import Search from '../utils/Search';
 //import IdentityManager from 'service-framework/dist/IdentityManager';
 //import { Discovery } from 'service-framework/dist/Discovery';
-import { ContextObserver } from 'service-framework/dist/ContextManager';
+//import { ContextObserver } from 'service-framework/dist/ContextManager';
 
 
 /**
@@ -11,10 +11,11 @@ import { ContextObserver } from 'service-framework/dist/ContextManager';
  * These functions are only required to be used once.
  * By default, the Hyperty automatically connects and starts reading sources that were connected the last time.
  */
-class UserActivityObserver extends ContextObserver {
+class UserActivityObserver {
 
   constructor(hypertyURL, bus, config, factory) {
-    super(hypertyURL, bus, config, ['availability_context'], factory);
+//    super(hypertyURL, bus, config, ['availability_context'], factory);
+    this._context = factory.createContextObserver(hypertyURL, bus, config,['availability_context']);
 
     let uri = new URI(hypertyURL);
 
