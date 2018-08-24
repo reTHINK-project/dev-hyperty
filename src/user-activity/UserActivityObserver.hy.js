@@ -29,6 +29,7 @@ class UserActivityObserver {
     bus.addListener(hypertyURL, (msg) => {
       console.log('[UserActivityObserver] new msg', msg);
     });
+    this.callback = null;
   }
 
   /**
@@ -76,9 +77,8 @@ class UserActivityObserver {
 
   start(callback, identity) {
     let _this = this;
-
+    _this.callback = callback;
     // get GFit access token (token received by protostub)
-
     _this.bus.postMessage({
       type: 'create',
       from: _this.hypertyURL,
@@ -92,6 +92,16 @@ class UserActivityObserver {
     }, (reply) => {
       if (reply.body.code === 200) {
         console.log('[UserActivityObserver] GFit auth granted');
+        console.log(_this);
+        let googleStubUrlStatus = reply.body.runtimeURL + '/status'
+        console.log('[UserActivityObserver] listener added on ', googleStubUrlStatus);
+        _this.bus.addListener(googleStubUrlStatus, newMsg => {
+          console.log('[UserActivityObserver] googleStatusChanged', newMsg);
+          if (newMsg.hasOwnProperty('body') && newMsg.body.hasOwnProperty('desc') && newMsg.body.desc.hasOwnProperty('error') ){
+            callback(newMsg.body.desc.error);
+          }
+
+        });
         callback(true);
       } else {
         console.log('[UserActivityObserver] GFit auth not granted');
@@ -118,7 +128,7 @@ class UserActivityObserver {
   }
 
 
-  /* 
+  /*
     Stop GoogleProtoStub from querying sessions.
   */
   stop() {
