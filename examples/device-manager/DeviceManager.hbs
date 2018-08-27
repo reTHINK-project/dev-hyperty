@@ -1,6 +1,36 @@
-<div cla'hyperties:descriptor'ss="result-pannel">
-    <H3>Wallet Hyperty Deployed</H3>
-</div>
+<div class="device-details">
+    <H3>Device Manager</H3>
+    <h5>Device Info</h5>
+    <button class="create-device-btn waves-effect waves-light btn"><i class="material-icons left"></i>Create Device</button>
+    <br>
+    <a class="device-data hide"></a>
+    <br>
+    <br>
+    <h5 class="streams-label hide">Streams Info</h5>
+    <h6 class="streams-label hide">List</h6>
+    <ul id="streams-list" class="streams-list"></ul>
+    <button class="create-stream-btn waves-effect waves-light btn hide"><i class="material-icons left"></i>Add new Stream</button>
 
-<a class="token-label">Wallet Tokens</a>
-<a class="token-value">X</a>
+  <div class="create-stream hide">
+      <form class="form col s12">
+
+        <div class="row">
+          <div class="input-field col s12">
+            <input placeholder="Platform ID, for example edp" required aria-required="true" type="text" class="platformID" >
+            <label  style="width: 100%;">Platform ID</label>
+          </div>
+          <div class="input-field col s12">
+            <input class="platformUID" name="platformUID" type="text">
+            <label for="platformUID">platform User ID</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s8">
+            <button class="new-stream-btn waves-effect waves-light btn" type="submit">Create</button>
+          </div>
+        </div>
+      </form>
+  </div>
+
+
+</div>
