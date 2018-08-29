@@ -43,7 +43,7 @@ class UserAvailabilityReporter {
 
   constructor(hypertyURL, bus, configuration, factory) {
 
-    this._context = new ContextReporter(hypertyURL, bus, configuration);
+    this._context = factory.createContextReporter(hypertyURL, bus, configuration);
     let _this = this;
 
     console.info('[UserAvailabilityReporter] started with url: ', hypertyURL);
@@ -59,9 +59,9 @@ class UserAvailabilityReporter {
 
 //    this.heartbeat = [];
 
-    this.syncher.onNotification((event) => {
+    this.context.syncher.onNotification((event) => {
       let _this = this;
-      _this.processNotification(event);
+      _this.context.processNotification(event);
     });
 
 
@@ -75,13 +75,17 @@ class UserAvailabilityReporter {
 
   }
 
+get context() {
+  return this._context;
+}
+
 start(){
   let _this = this;
 
   return new Promise((resolve, reject) => {
     console.log('[UserAvailabilityReporter.starting]' );
 
-    this.syncher.resumeReporters({store: true}).then((reporters) => {
+    _this.context.syncher.resumeReporters({store: true}).then((reporters) => {
 
       let reportersList = Object.keys(reporters);
 
@@ -89,18 +93,18 @@ start(){
 
       //TODO: filter from contexts instead of returning context[0]
 
-      _this.contexts['myAvailability'] = _this._filterResumedContexts(reporters);
+      _this.context.contexts['myAvailability'] = _this._filterResumedContexts(reporters);
 
-      console.log('[UserAvailabilityReporter.start] resuming ', _this.contexts['myAvailability']);
+      console.log('[UserAvailabilityReporter.start] resuming ', _this.context.contexts['myAvailability']);
       // set availability to available
 
-      _this._onSubscription(_this.contexts['myAvailability']);
+      _this.context._onSubscription(_this.context.contexts['myAvailability']);
 
 /*      _this.userAvailability = reporters[reportersList[0]];
 
       _this._onSubscription(_this.userAvailability);*/
 
-      resolve(_this.contexts['myAvailability']);
+      resolve(_this.context.contexts['myAvailability']);
       } else {
         console.log('[UserAvailabilityReporter.start] nothing to resume ', reporters);
         let name = 'myAvailability';
@@ -121,7 +125,7 @@ _filterResumedContexts(reporters) {
   let last = 0;
 
   return Object.keys(reporters)
-    .filter(reporter => reporters[reporter].metadata.reporter === this.syncher._owner)
+    .filter(reporter => reporters[reporter].metadata.reporter === this.context.syncher._owner)
     .reduce((obj, key) => {
       if (Date.parse(reporters[key].metadata.lastModified) > last) obj = reporters[key];
       return obj;
@@ -130,7 +134,7 @@ _filterResumedContexts(reporters) {
 
 onResumeReporter(callback) {
    let _this = this;
-   _this._onResumeReporter = callback;
+   _this.context._onResumeReporter = callback;
  }
 /*
   onNotification(event) {
@@ -148,7 +152,7 @@ onResumeReporter(callback) {
    * @return {Promise}
    */
   create(id, init, resources, name = 'myContext') {
-    return this._context.create(id, init, resources, name);
+    return this.context.create(id, init, resources, name);
   }
 
 /*  _onSubscription(userAvailability){
