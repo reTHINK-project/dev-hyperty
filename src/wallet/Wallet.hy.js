@@ -1,18 +1,18 @@
-import { Syncher } from 'service-framework/dist/Syncher';
+//import { Syncher } from 'service-framework/dist/Syncher';
 import URI from 'urijs';
-import Search from '../utils/Search';
-import IdentityManager from 'service-framework/dist/IdentityManager';
-import { Discovery } from 'service-framework/dist/Discovery';
+//import Search from '../utils/Search';
+//import IdentityManager from 'service-framework/dist/IdentityManager';
+//import { Discovery } from 'service-framework/dist/Discovery';
 
 class Wallet {
 
-  constructor(hypertyURL, bus, config) {
+  constructor(hypertyURL, bus, config, factory) {
     let uri = new URI(hypertyURL);
     this.objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/WalletData`;
-    this.syncher = new Syncher(hypertyURL, bus, config);
-    this.identityManager = new IdentityManager(hypertyURL, config.runtimeURL, bus);
-    this.discovery = new Discovery(hypertyURL, config.runtimeURL, bus);
-    this.search = new Search(this.discovery, this.identityManager);
+    this.syncher = factory.createSyncher(hypertyURL, bus, config);
+    this.identityManager = factory.createIdentityManager(hypertyURL, config.runtimeURL, bus);
+    this.discovery = factory.createDiscovery(hypertyURL, config.runtimeURL, bus);
+    this.search = factory.createSearch(this.discovery, this.identityManager);
     this.currentPosition;
     this.bus = bus;
     this.hypertyURL = hypertyURL;
@@ -22,10 +22,11 @@ class Wallet {
     this.messageRetries = config.retries;
   }
 
+
   start(callback, identity) {
     let _this = this;
 
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       let userProfile;
       let publicWallets = false;
       if (identity.profile !== undefined) {
@@ -38,8 +39,8 @@ class Wallet {
       } else {
         userProfile = { userURL: identity.userURL, guid: identity.guid };
       }
-  
-  
+
+
       let createMessage = {
         type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
         identity: { userProfile: userProfile },
@@ -49,7 +50,7 @@ class Wallet {
           resource: 'wallet'
         }
       };
-  
+
       /*Create Message should be like THIS
       *
       *  let createMessage = {
@@ -59,111 +60,164 @@ class Wallet {
       *
       */
       console.log('[Wallet] create message', createMessage);
-  
+
       _this.bus.postMessageWithRetries(createMessage, _this.messageRetries, (reply) => {
-  
+
+        // store address
+        _this.walletAddress = reply.body.wallet.address;
+
         console.log('[Wallet] create Reply', reply);
         if (reply.body.code == 200) {
-          _this._resumeObservers(reply.body.reporter_url).then(function(result) {
-  
+          _this._resumeObservers(reply.body.reporter_url).then(function (result) {
+
             if (result != false) {
               console.log('[Wallet] Resume result :', result);
-  
+
               let updateBalance = {
                 field: 'balance',
                 data: result.data.balance
               };
-  
+
               let updateTransactions = {
                 field: 'transactions',
                 data: result.data.transactions
               };
-  
+
+              let updateRanking = {
+                field: 'ranking',
+                data: result.data.ranking
+              };
+
+              let updateBonusCredit = {
+                field: 'bonus-credit',
+                data: result.data['bonus-credit']
+              };
+
               callback(updateBalance);
               callback(updateTransactions);
-  
-  
+              callback(updateRanking);
+              callback(updateBonusCredit);
+
+
               result.onChange('*', (event) => {
                 console.log('[Wallet] New Change :', event);
                 callback(event);
               });
               resolve();
-  
+
             } else {
-  
-              _this.syncher.subscribe(_this.objectDescURL, reply.body.reporter_url, true, false, true, false, null).then(function(obj) {
+
+              _this.syncher.subscribe(_this.objectDescURL, reply.body.reporter_url, true, false, true, false, null).then(function (obj) {
                 console.log('[Wallet] subscribe result :', obj);
-  
+
                 let updateBalance = {
                   field: 'balance',
                   data: obj.data.balance
                 };
-  
+
                 let updateTransactions = {
                   field: 'transactions',
                   data: obj.data.transactions
                 };
-  
+
+                let updateRanking = {
+                  field: 'ranking',
+                  data: obj.data.ranking
+                };
+
+                let updateBonusCredit = {
+                  field: 'bonus-credit',
+                  data: obj.data['bonus-credit']
+                };
+
                 callback(updateBalance);
                 callback(updateTransactions);
-  
+                callback(updateRanking);
+                callback(updateBonusCredit);
+
                 obj.onChange('*', (event) => {
                   console.log('[Wallet] New Change :', event);
                   callback(event);
                 });
                 resolve();
 
-  
-              }).catch(function(error) {
+
+              }).catch(function (error) {
                 console.log('[Wallet] error', error);
                 reject();
 
               });
             }
-  
-            _this._resumeObservers(reply.body.publics_url).then(function(result) {
+
+            _this._resumeObservers(reply.body.publics_url).then(function (result) {
               if (result != false) {
                 console.log('[Wallet] Resume public wallets :', result);
-  
+
                 let updateWallets = {
                   field: 'wallets',
                   data: result.data.wallets
                 };
-  
+
                 callback(updateWallets);
-  
+
                 result.onChange('*', (event) => {
                   console.log('[Wallet] New Change :', event);
                   callback(event);
                 });
-  
+
               } else {
-                _this.syncher.subscribe(_this.objectDescURL, reply.body.publics_url, true, false, true, false, null).then(function(obj) {
+                _this.syncher.subscribe(_this.objectDescURL, reply.body.publics_url, true, false, true, false, null).then(function (obj) {
                   console.log('[Wallet] subscription result public wallets :', result);
                   let updateWallets = {
                     field: 'wallets',
                     data: obj.data.wallets
                   };
-  
+
                   callback(updateWallets);
-  
+
                   obj.onChange('*', (event) => {
                     console.log('[Wallet] New Change :', event);
                     callback(event);
                   });
                 });
               }
-  
+
             });
-  
-          }).catch(function(error) {
-  
+
+          }).catch(function (error) {
+
           });
-  
-  
+
+
         }
       });
     });
+
+  }
+
+  removeWallet() {
+
+    let _this = this;
+
+    return new Promise((resolve, reject) => {
+
+      let deleteMessage = {
+        type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
+        // identity: { userProfile: userProfile },
+        body: {
+          type: 'delete',
+          from: _this.hypertyURL,
+          resource: 'wallet',
+          value: _this.walletAddress,
+        }
+      };
+
+      console.log('[Wallet] delete message', deleteMessage);
+
+      _this.bus.postMessage(deleteMessage, _this.messageRetries);
+      resolve(true);
+
+    })
 
   }
 
@@ -199,9 +253,9 @@ class Wallet {
   }
 
 }
-export default function activate(hypertyURL, bus, config) {
+export default function activate(hypertyURL, bus, config, factory) {
   return {
     name: 'Wallet',
-    instance: new Wallet(hypertyURL, bus, config)
+    instance: new Wallet(hypertyURL, bus, config, factory)
   };
 }

@@ -1,5 +1,6 @@
 {
-  "configuration": {    "domain_registration": false
+  "configuration": {    "domain_registration": false,
+    "domain_routing": false
   },
   "hypertyType": [
     "location-context"

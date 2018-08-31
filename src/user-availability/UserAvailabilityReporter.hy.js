@@ -23,9 +23,9 @@
 
 // Service Framework
 //import {Discovery} from 'service-framework/dist/Discovery';
-import IdentityManager from 'service-framework/dist/IdentityManager';
+//import IdentityManager from 'service-framework/dist/IdentityManager';
 //import {Syncher} from 'service-framework/dist/Syncher';
-import {ContextReporter} from 'service-framework/dist/ContextManager';
+//import {ContextReporter} from 'service-framework/dist/ContextManager';
 
 // Utils
 //import EventEmitter from '../utils/EventEmitter.js';
@@ -39,11 +39,11 @@ import availability from './availability.js';
 * @author Paulo Chainho  [paulo-g-chainho@alticelabs.com]
 * @version 0.1.0
 */
-class UserAvailabilityReporter extends ContextReporter {
+class UserAvailabilityReporter {
 
-  constructor(hypertyURL, bus, configuration) {
+  constructor(hypertyURL, bus, configuration, factory) {
 
-    super(hypertyURL, bus, configuration);
+    this._context = factory.createContextReporter(hypertyURL, bus, configuration);
     let _this = this;
 
     console.info('[UserAvailabilityReporter] started with url: ', hypertyURL);
@@ -51,7 +51,7 @@ class UserAvailabilityReporter extends ContextReporter {
 //    this.syncher = new Syncher(hypertyURL, bus, configuration);
 
     //    this.discovery = new Discovery(hypertyURL, bus);
-    this.identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
+    this.identityManager = factory.createIdentityManager(hypertyURL, configuration.runtimeURL, bus);
 /*    this.domain = divideURL(hypertyURL).domain;
 
     this.userAvailabilityyDescURL = 'hyperty-catalogue://catalogue.' + this.domain + '/.well-known/dataschema/Context';
@@ -59,9 +59,9 @@ class UserAvailabilityReporter extends ContextReporter {
 
 //    this.heartbeat = [];
 
-    this.syncher.onNotification((event) => {
+    this.context.syncher.onNotification((event) => {
       let _this = this;
-      _this.processNotification(event);
+      _this.context.processNotification(event);
     });
 
 
@@ -75,13 +75,17 @@ class UserAvailabilityReporter extends ContextReporter {
 
   }
 
+get context() {
+  return this._context;
+}
+
 start(){
   let _this = this;
 
   return new Promise((resolve, reject) => {
     console.log('[UserAvailabilityReporter.starting]' );
 
-    this.syncher.resumeReporters({store: true}).then((reporters) => {
+    _this.context.syncher.resumeReporters({store: true}).then((reporters) => {
 
       let reportersList = Object.keys(reporters);
 
@@ -89,18 +93,18 @@ start(){
 
       //TODO: filter from contexts instead of returning context[0]
 
-      _this.contexts['myAvailability'] = _this._filterResumedContexts(reporters);
+      _this.context.contexts['myAvailability'] = _this._filterResumedContexts(reporters);
 
-      console.log('[UserAvailabilityReporter.start] resuming ', _this.contexts['myAvailability']);
+      console.log('[UserAvailabilityReporter.start] resuming ', _this.context.contexts['myAvailability']);
       // set availability to available
 
-      _this._onSubscription(_this.contexts['myAvailability']);
+      _this.context._onSubscription(_this.context.contexts['myAvailability']);
 
 /*      _this.userAvailability = reporters[reportersList[0]];
 
       _this._onSubscription(_this.userAvailability);*/
 
-      resolve(_this.contexts['myAvailability']);
+      resolve(_this.context.contexts['myAvailability']);
       } else {
         console.log('[UserAvailabilityReporter.start] nothing to resume ', reporters);
         let name = 'myAvailability';
@@ -121,7 +125,7 @@ _filterResumedContexts(reporters) {
   let last = 0;
 
   return Object.keys(reporters)
-    .filter(reporter => reporters[reporter].metadata.reporter === this.syncher._owner)
+    .filter(reporter => reporters[reporter].metadata.reporter === this.context.syncher._owner)
     .reduce((obj, key) => {
       if (Date.parse(reporters[key].metadata.lastModified) > last) obj = reporters[key];
       return obj;
@@ -130,7 +134,7 @@ _filterResumedContexts(reporters) {
 
 onResumeReporter(callback) {
    let _this = this;
-   _this._onResumeReporter = callback;
+   _this.context._onResumeReporter = callback;
  }
 /*
   onNotification(event) {
@@ -148,7 +152,7 @@ onResumeReporter(callback) {
    * @return {Promise}
    */
   create(id, init, resources, name = 'myContext') {
-    return super.create(id, init, resources, name);
+    return this.context.create(id, init, resources, name);
   }
 
 /*  _onSubscription(userAvailability){
@@ -161,17 +165,17 @@ onResumeReporter(callback) {
   setStatus(newStatus) {
 //    _this.contexts[id].data.values[0].value;
     let newContext = [{value: newStatus}];
-    return super.setContext('myAvailability', newContext);
+    return this._context.setContext('myAvailability', newContext);
   }
 
 
 }
 
-export default function activate(hypertyURL, bus, configuration) {
+export default function activate(hypertyURL, bus, configuration, factory) {
 
   return {
     name: 'UserAvailabilityReporter',
-    instance: new UserAvailabilityReporter(hypertyURL, bus, configuration)
+    instance: new UserAvailabilityReporter(hypertyURL, bus, configuration, factory)
   };
 
 }

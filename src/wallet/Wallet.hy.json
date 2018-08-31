@@ -1,6 +1,7 @@
 {
   "configuration": {
     "domain_registration": false,
+    "domain_routing": false,
     "retries": 10
   },
   "hypertyType": [

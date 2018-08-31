@@ -1,7 +1,7 @@
 /* jshint undef: true */
 
-import {Syncher} from 'service-framework/dist/Syncher';
-import {divideURL} from '../utils/utils';
+// import {Syncher} from 'service-framework/dist/Syncher';
+// import {divideURL} from '../utils/utils';
 import EventEmitter from '../utils/EventEmitter';
 
 /**
@@ -15,21 +15,22 @@ class HelloWorldObserver extends EventEmitter {
   * Create a new HelloWorldObserver
   * @param  {Syncher} syncher - Syncher provided from the runtime core
   */
-  constructor(hypertyURL, bus, configuration) {
+  constructor(hypertyURL, bus, configuration, factory) {
 
     if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
     if (!bus) throw new Error('The MiniBus is a needed parameter');
     if (!configuration) throw new Error('The configuration is a needed parameter');
+    if (!factory) throw new Error('The factory is a needed parameter');
 
     super();
 
     let _this = this;
-    let domain = divideURL(hypertyURL).domain;
+    let domain = factory.divideURL(hypertyURL).domain;
     _this._domain = domain;
 
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/HelloWorldDataSchema';
 
-    let syncher = new Syncher(hypertyURL, bus, configuration);
+    let syncher = factory.createSyncher(hypertyURL, bus, configuration);
     syncher.onNotification(function(event) {
       _this._onNotification(event);
     });
@@ -100,11 +101,11 @@ class HelloWorldObserver extends EventEmitter {
 
 }
 
-export default function activate(hypertyURL, bus, configuration) {
+export default function activate(hypertyURL, bus, configuration, factory) {
 
   return {
     name: 'HelloWorldObserver',
-    instance: new HelloWorldObserver(hypertyURL, bus, configuration)
+    instance: new HelloWorldObserver(hypertyURL, bus, configuration, factory)
   };
 
 }

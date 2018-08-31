@@ -1,7 +1,7 @@
 /* jshint undef: true */
 
-import {Syncher} from 'service-framework/dist/Syncher';
-import {divideURL} from '../utils/utils';
+//import {Syncher} from 'service-framework/dist/Syncher';
+//import {divideURL} from '../utils/utils';
 import hello from './hello';
 
 /**
@@ -15,20 +15,23 @@ class HelloWorldReporter {
   * Create a new HelloWorldReporter
   * @param  {Syncher} syncher - Syncher provided from the runtime core
   */
-  constructor(hypertyURL, bus, configuration) {
+  constructor(hypertyURL, bus, configuration, factory) {
 
     if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
     if (!bus) throw new Error('The MiniBus is a needed parameter');
     if (!configuration) throw new Error('The configuration is a needed parameter');
-
+    if (!factory) throw new Error('The factory is a needed parameter');
 
     let _this = this;
 
-    let domain = divideURL(hypertyURL).domain;
+    let domain = factory.divideURL(hypertyURL).domain;
     _this._domain = domain;
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/HelloWorldDataSchema';
+    _this._factory = factory;
 
-    let syncher = new Syncher(hypertyURL, bus, configuration);
+    console.log('HelloWorldReporter configuration', configuration);
+
+    let syncher = _this._factory.createSyncher(hypertyURL, bus, configuration);
 
     _this._syncher = syncher;
 
@@ -127,11 +130,15 @@ class HelloWorldReporter {
 
 
 
-export default function activate(hypertyURL, bus, configuration) {
+export default function activate(hypertyURL, bus, configuration, factory) {
+
+ // console.log('Hello World Activate', factory);
+//  debugger;
+
 
   return {
     name: 'HelloWorldReporter',
-    instance: new HelloWorldReporter(hypertyURL, bus, configuration)
+    instance: new HelloWorldReporter(hypertyURL, bus, configuration, factory)
   };
 
 }

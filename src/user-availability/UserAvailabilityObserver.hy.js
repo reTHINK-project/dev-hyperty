@@ -1,17 +1,17 @@
-import IdentityManager from 'service-framework/dist/IdentityManager';
-import {Syncher} from 'service-framework/dist/Syncher';
-import {Discovery} from 'service-framework/dist/Discovery';
-import {ContextObserver} from 'service-framework/dist/ContextManager';
-import {divideURL} from '../utils/utils';
-import Search from '../utils/Search';
-import EventEmitter from '../utils/EventEmitter';
+//import IdentityManager from 'service-framework/dist/IdentityManager';
+//import {Syncher} from 'service-framework/dist/Syncher';
+//import {Discovery} from 'service-framework/dist/Discovery';
+//import {ContextObserver} from 'service-framework/dist/ContextManager';
+//import {divideURL} from '../utils/utils';
+//import Search from '../utils/Search';
+//import EventEmitter from '../utils/EventEmitter';
 
-class UserAvailabilityObserver extends ContextObserver {
+class UserAvailabilityObserver {
 
-  constructor(hypertyURL, bus, configuration) {
+  constructor(hypertyURL, bus, configuration, factory) {
 
-    super(hypertyURL, bus, configuration, ['availability_context']);
-
+//    super(hypertyURL, bus, configuration, ['availability_context'], factory);
+    this._context = factory.createContextObserver(hypertyURL, bus, configuration,['availability_context']);
   }
 
 
@@ -26,22 +26,22 @@ class UserAvailabilityObserver extends ContextObserver {
 
     let resumedInit = [{value: 'unavailable'}];
 
-    return super.start(resumedInit, resumedCallback);
+    return this._context.start(resumedInit, resumedCallback);
   }
 
 resumeDiscoveries() {
-  return super.resumeDiscoveries();
+  return this._context.resumeDiscoveries();
 
 }
 
   onResumeObserver(callback) {
-    return super.onResumeObserver(callback);
+    return this._context.onResumeObserver(callback);
    }
 
 
   discoverUsers(email,domain)
   {
-    return super.discoverUsers(email,domain);
+    return this._context.discoverUsers(email,domain);
 
   }
 
@@ -53,7 +53,7 @@ resumeDiscoveries() {
 
   observe(hyperty)
     {
-      return super.observe(hyperty);
+      return this._context.observe(hyperty);
 
   }
 
@@ -65,15 +65,15 @@ resumeDiscoveries() {
 
   unobserve(availability)
     {
-      return super.unobserve(availability);
+      return this._context.unobserve(availability);
 
   }
 
 }
 
-export default function activate(hypertyURL, bus, configuration) {
+export default function activate(hypertyURL, bus, configuration, factory) {
   return {
     name: 'UserAvailabilityObserver',
-    instance: new UserAvailabilityObserver(hypertyURL, bus, configuration)
+    instance: new UserAvailabilityObserver(hypertyURL, bus, configuration, factory)
   };
 }

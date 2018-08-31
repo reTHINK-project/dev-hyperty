@@ -1,9 +1,9 @@
 //import { Syncher } from 'service-framework/dist/Syncher';
 import URI from 'urijs';
 //import Search from '../utils/Search';
-import IdentityManager from 'service-framework/dist/IdentityManager';
+//import IdentityManager from 'service-framework/dist/IdentityManager';
 //import { Discovery } from 'service-framework/dist/Discovery';
-import { ContextObserver } from 'service-framework/dist/ContextManager';
+//import { ContextObserver } from 'service-framework/dist/ContextManager';
 
 
 /**
@@ -11,23 +11,25 @@ import { ContextObserver } from 'service-framework/dist/ContextManager';
  * These functions are only required to be used once.
  * By default, the Hyperty automatically connects and starts reading sources that were connected the last time.
  */
-class UserActivityObserver extends ContextObserver {
+class UserActivityObserver {
 
-  constructor(hypertyURL, bus, config) {
-    super(hypertyURL, bus, config, ['availability_context']);
+  constructor(hypertyURL, bus, config, factory) {
+//    super(hypertyURL, bus, config, ['availability_context'], factory);
+    this._context = factory.createContextObserver(hypertyURL, bus, config,['availability_context']);
 
     let uri = new URI(hypertyURL);
 
     this.objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Context`;
-//   this.syncher = new Syncher(hypertyURL, bus, config);
-    this.identityManager = new IdentityManager(hypertyURL, config.runtimeURL, bus);
-//    this.discovery = new Discovery(hypertyURL, config.runtimeURL, bus);
-//    this.search = new Search(this.discovery, this.identityManager);
+//    this.syncher = factory.createSyncher(hypertyURL, bus, config);
+    this.identityManager = factory.createIdentityManager(hypertyURL, config.runtimeURL, bus);
+    this.discovery = factory.createDiscovery(hypertyURL, config.runtimeURL, bus);
+    this.search = factory.createSearch(this.discovery, this.identityManager);
     this.bus = bus;
     this.hypertyURL = hypertyURL;
     bus.addListener(hypertyURL, (msg) => {
       console.log('[UserActivityObserver] new msg', msg);
     });
+    this.callback = null;
   }
 
   /**
@@ -75,9 +77,8 @@ class UserActivityObserver extends ContextObserver {
 
   start(callback, identity) {
     let _this = this;
-
+    _this.callback = callback;
     // get GFit access token (token received by protostub)
-
     _this.bus.postMessage({
       type: 'create',
       from: _this.hypertyURL,
@@ -91,6 +92,16 @@ class UserActivityObserver extends ContextObserver {
     }, (reply) => {
       if (reply.body.code === 200) {
         console.log('[UserActivityObserver] GFit auth granted');
+        console.log(_this);
+        let googleStubUrlStatus = reply.body.runtimeURL + '/status'
+        console.log('[UserActivityObserver] listener added on ', googleStubUrlStatus);
+        _this.bus.addListener(googleStubUrlStatus, newMsg => {
+          console.log('[UserActivityObserver] googleStatusChanged', newMsg);
+          if (newMsg.hasOwnProperty('body') && newMsg.body.hasOwnProperty('desc') && newMsg.body.desc.hasOwnProperty('error') ){
+            callback(newMsg.body.desc.error);
+          }
+
+        });
         callback(true);
       } else {
         console.log('[UserActivityObserver] GFit auth not granted');
@@ -117,7 +128,7 @@ class UserActivityObserver extends ContextObserver {
   }
 
 
-  /* 
+  /*
     Stop GoogleProtoStub from querying sessions.
   */
   stop() {
@@ -140,9 +151,9 @@ class UserActivityObserver extends ContextObserver {
   }
 
 }
-export default function activate(hypertyURL, bus, config) {
+export default function activate(hypertyURL, bus, config, factory) {
   return {
     name: 'UserActivityObserver',
-    instance: new UserActivityObserver(hypertyURL, bus, config)
+    instance: new UserActivityObserver(hypertyURL, bus, config, factory)
   };
 }

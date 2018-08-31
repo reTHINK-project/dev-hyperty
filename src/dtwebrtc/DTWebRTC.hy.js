@@ -1,30 +1,30 @@
 /* jshint undef: true */
-import {Discovery} from 'service-framework/dist/Discovery';
-import {Syncher} from 'service-framework/dist/Syncher';
-import {divideURL} from '../utils/utils';
+//import {Discovery} from 'service-framework/dist/Discovery';
+//import {Syncher} from 'service-framework/dist/Syncher';
+//import {divideURL} from '../utils/utils';
 import EventEmitter from '../utils/EventEmitter'; // for receiving
-import Search from '../utils/Search';
+//import Search from '../utils/Search';
 //import iceconfig from './stunTurnserverConfig';
-import IdentityManager from 'service-framework/dist/IdentityManager';
+//import IdentityManager from 'service-framework/dist/IdentityManager';
 
 
 import 'webrtc-adapter-test';
 
 class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to recieve events
 
-  constructor(hypertyURL, bus, configuration) {
+  constructor(hypertyURL, bus, configuration, factory) {
     if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
     if (!bus) throw new Error('The MiniBus is a needed parameter');
     if (!configuration) throw new Error('The configuration is a needed parameter');
     super(); // call event emitter constructor to be able to receive things
 
-    this._domain = divideURL(hypertyURL).domain;
+    this._domain = factory.divideURL(hypertyURL).domain;
     this._objectDescURL = 'hyperty-catalogue://catalogue.' + this._domain + '/.well-known/dataschema/Connection';
-    this._syncher = new Syncher(hypertyURL, bus, configuration);
-    this.discovery = new Discovery(hypertyURL, configuration.runtimeURL, bus);
+    this._syncher = factory.createSyncher(hypertyURL, bus, configuration);
+    this.discovery = factory.createDiscovery(hypertyURL, configuration.runtimeURL, bus);
     console.log("[DTWebRTC] [constructor] >>>>> Discovery object is:", this.discovery);
-    let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
-    this.search = new Search(this.discovery, identityManager);
+    let identityManager = factory.createIdentityManager(hypertyURL, configuration.runtimeURL, bus);
+    this.search = factory.createSearch(this.discovery, identityManager);
     this.objObserver;
     this.objReporter;
     this.callerIdentity;
@@ -364,9 +364,9 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
 }
 
 
-export default function activate(hypertyURL, bus, configuration) {
+export default function activate(hypertyURL, bus, configuration, factory) {
   return {
     name: 'DTWebRTC',
-    instance: new DTWebRTC(hypertyURL, bus, configuration)
+    instance: new DTWebRTC(hypertyURL, bus, configuration, factory)
   };
 }
