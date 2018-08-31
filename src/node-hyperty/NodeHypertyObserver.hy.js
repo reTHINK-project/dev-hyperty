@@ -1,9 +1,9 @@
 /* jshint undef: true */
 
 // Service Framework
-import IdentityManager from 'service-framework/dist/IdentityManager';
-import {Discovery} from 'service-framework/dist/Discovery';
-import {Syncher} from 'service-framework/dist/Syncher';
+//import IdentityManager from 'service-framework/dist/IdentityManager';
+//import {Discovery} from 'service-framework/dist/Discovery';
+//import {Syncher} from 'service-framework/dist/Syncher';
 import {divideURL} from '../utils/utils';
 import Search from '../utils/Search';
 
@@ -18,7 +18,7 @@ class NodeHypertyObserver {
   * Create a new HelloWorldReporter
   * @param  {Syncher} syncher - Syncher provided from the runtime core
   */
-  constructor(hypertyURL, bus, configuration) {
+  constructor(hypertyURL, bus, configuration, factory) {
 
     if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
     if (!bus) throw new Error('The MiniBus is a needed parameter');
@@ -30,25 +30,21 @@ class NodeHypertyObserver {
     _this._domain = domain;
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/Connection';
 
-    let discovery = new Discovery(hypertyURL, bus);
-    let identityManager = new IdentityManager(hypertyURL, configuration.runtimeURL, bus);
+    _this.syncher = factory.createSyncher(hypertyURL, bus, config);
+    _this.identityManager = factory.createIdentityManager(hypertyURL, config.runtimeURL, bus);
+    _this.discovery = factory.createDiscovery(hypertyURL, config.runtimeURL, bus);
 
-    _this.discovery = discovery;
-    _this.identityManager = identityManager;
 
     _this.search = new Search(discovery, identityManager);
 
-    let syncher = new Syncher(hypertyURL, bus, configuration);
 
     console.log('HELLO: ', this._objectDescURL);
 
-    syncher.onNotification((event) => {
+    _this.syncher.onNotification((event) => {
       event.ack();
 
       // this.join(event.url);
     });
-
-    _this.syncher = syncher;
   }
 
   /**

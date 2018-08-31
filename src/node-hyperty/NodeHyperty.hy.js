@@ -1,7 +1,7 @@
 /* jshint undef: true */
 
 import os from 'os';
-import {Syncher} from 'service-framework/dist/Syncher';
+//import {Syncher} from 'service-framework/dist/Syncher';
 
 export function divideURL(url) {
 
@@ -45,7 +45,7 @@ class NodeHyperty {
   * Create a new HelloWorldReporter
   * @param  {Syncher} syncher - Syncher provided from the runtime core
   */
-  constructor(hypertyURL, bus, configuration) {
+  constructor(hypertyURL, bus, configuration, factory) {
 
     if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
     if (!bus) throw new Error('The MiniBus is a needed parameter');
@@ -57,8 +57,7 @@ class NodeHyperty {
 
     this._interval;
 
-    let syncher = new Syncher(hypertyURL, bus, configuration);
-    this.syncher = syncher;
+    this.syncher = factory.createSyncher(hypertyURL, bus, config);
 
     let mbTotal = bytesToSize(os.totalmem());
     let mbFree = bytesToSize(os.freemem());

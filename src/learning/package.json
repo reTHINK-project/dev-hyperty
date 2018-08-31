@@ -1,6 +1,6 @@
 {
   "name": "location",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "The User Location is comprised by two Hyperties.",
   "main": "LocationReporter.hy.js",
   "scripts": {
