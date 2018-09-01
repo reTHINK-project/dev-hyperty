@@ -28,6 +28,7 @@ class HelloWorldReporter {
     _this._domain = domain;
     _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/HelloWorldDataSchema';
     _this._factory = factory;
+    _this._backup = configuration.hasOwnProperty('backup') ? configuration.backup : false;
 
     console.log('HelloWorldReporter configuration', configuration);
 
@@ -69,6 +70,7 @@ class HelloWorldReporter {
     return new Promise(function(resolve, reject) {
 
       let input = Object.assign({resources: ['hello']}, {});
+      input.backup = _this._backup;
 
       syncher.create(_this._objectDescURL, [hypertyURL], hello, false, false, 'hello', {}, input).then(function(helloObjtReporter) {
         console.info('1. Return Created Hello World Data Object Reporter', helloObjtReporter);

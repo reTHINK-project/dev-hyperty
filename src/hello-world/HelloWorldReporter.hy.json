@@ -1,7 +1,9 @@
 {
   "language": "javascript",
   "signature": "",
-  "configuration": {},
+  "configuration": {
+    "backup": true
+  },
   "constraints": {
     "browser": true
   },
