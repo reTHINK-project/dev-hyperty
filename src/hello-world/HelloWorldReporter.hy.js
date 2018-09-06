@@ -72,7 +72,7 @@ class HelloWorldReporter {
       let input = Object.assign({resources: ['hello']}, {});
       input.backup = _this._backup;
 
-      syncher.create(_this._objectDescURL, [hypertyURL], hello, false, false, 'hello', {}, input).then(function(helloObjtReporter) {
+      syncher.create(_this._objectDescURL, [hypertyURL], hello, true, false, 'hello', {}, input).then(function(helloObjtReporter) {
         console.info('1. Return Created Hello World Data Object Reporter', helloObjtReporter);
 
         _this.helloObjtReporter = helloObjtReporter;
