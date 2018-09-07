@@ -15,6 +15,7 @@ class Wallet {
     this.search = factory.createSearch(this.discovery, this.identityManager);
     this.currentPosition;
     this.bus = bus;
+    this.identity = null;
     this.hypertyURL = hypertyURL;
     bus.addListener(hypertyURL, (msg) => {
       console.log('[Wallet] new msg', msg);
@@ -39,7 +40,7 @@ class Wallet {
       } else {
         userProfile = { userURL: identity.userURL, guid: identity.guid };
       }
-
+      _this.identity = { userProfile: userProfile };
 
       let createMessage = {
         type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
@@ -191,6 +192,40 @@ class Wallet {
 
         }
       });
+    });
+
+  }
+
+  update(source, value) {
+    let _this = this;
+
+    return new Promise((resolve, reject) => {
+
+      if (_this.identity != null ) {
+        let updateMessage = {
+          type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
+          identity: _this.identity,
+          body: {
+            type: 'update',
+            from: _this.hypertyURL,
+            resource: source,
+            value: value
+          }
+        };
+
+        console.log('[Wallet] update message', updateMessage);
+
+        _this.bus.postMessageWithRetries(updateMessage, _this.messageRetries, (reply) => {
+
+          console.log('[Wallet] update Reply', reply);
+          resolve(true);
+
+        });
+      } else {
+        resolve(false);
+      }
+
+
     });
 
   }
