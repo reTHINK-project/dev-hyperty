@@ -1,6 +1,6 @@
 {
   "name": "group-chat-manager",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "",
   "main": "GroupChatManager.hy.js",
   "dependencies": {},
