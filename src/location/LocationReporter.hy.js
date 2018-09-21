@@ -106,18 +106,20 @@ class LocationHypertyFactory {
     });
   }
 
-  watchMyLocation(callback) {
+  watchMyLocation(successCallback, errorCallback) {
 
     let _this = this;
 
     function success(position) {
       var crd = position.coords;
-      callback(crd);
+      successCallback(crd);
       console.log('[LocationReporter] my position: ', position);
       _this.currentPosition = position;
     }
 
     function error(err) {
+      if (errorCallback)
+        errorCallback(err);
       console.warn('ERROR(' + err.code + '): ' + err.message);
     }
 
