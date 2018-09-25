@@ -56,6 +56,7 @@ class GroupChatManager {
     _this.search = _this._manager.search;
     _this._domain = _this._manager._domain;
     _this._myUrl = hypertyURL;
+    _this.hypertyURL = hypertyURL;
     _this._runtimeURL = configuration.runtimeURL;
     _this._bus = bus;
 
@@ -72,6 +73,8 @@ class GroupChatManager {
   }
 
   register(CRMaddress, code, identity) {
+    let _this = this;
+    debugger;
     const msgIdentity = { userProfile: { guid: identity.guid, userURL: identity.userURL, info: { code: code } } };
     let createMessage = {
       type: 'forward', to: CRMaddress, from: _this.hypertyURL,
@@ -82,7 +85,7 @@ class GroupChatManager {
         identity: msgIdentity
       }
     };
-    _this.bus.postMessage(createMessage);
+    _this._bus.postMessage(createMessage);
   }
 
   _getRegisteredUser() {
