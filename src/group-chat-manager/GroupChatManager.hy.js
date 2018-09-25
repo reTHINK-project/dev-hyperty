@@ -71,15 +71,15 @@ class GroupChatManager {
 
   }
 
-  register(CRMaddress, code) {
-    const identity = { userProfile: { guid: identity.guid, userURL: identity.userURL, info: { code: code } } };
+  register(CRMaddress, code, identity) {
+    const msgIdentity = { userProfile: { guid: identity.guid, userURL: identity.userURL, info: { code: code } } };
     let createMessage = {
       type: 'forward', to: CRMaddress, from: _this.hypertyURL,
-      identity: identity,
+      identity: msgIdentity,
       body: {
         type: 'create',
         from: _this.hypertyURL,
-        identity: identity
+        identity: msgIdentity
       }
     };
     _this.bus.postMessage(createMessage);
