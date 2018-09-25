@@ -44,7 +44,7 @@ import { UserInfo } from './UserInfo';*/
 class GroupChatManager {
 
   constructor(hypertyURL, bus, configuration, factory) {
-//    super(hypertyURL, bus, configuration, factory);
+    //    super(hypertyURL, bus, configuration, factory);
 
     let _this = this;
     _this._factory = factory;
@@ -59,7 +59,7 @@ class GroupChatManager {
     _this._runtimeURL = configuration.runtimeURL;
     _this._bus = bus;
 
-    _this._syncher.onNotification(function(event) {
+    _this._syncher.onNotification(function (event) {
       console.log('[GroupChatManager] onNotification:', event);
       _this.processNotification(event);
     });
@@ -69,6 +69,20 @@ class GroupChatManager {
 
 
 
+  }
+
+  register(CRMaddress, code) {
+    const identity = { userProfile: { guid: identity.guid, userURL: identity.userURL, info: { code: code } } };
+    let createMessage = {
+      type: 'forward', to: CRMaddress, from: _this.hypertyURL,
+      identity: identity,
+      body: {
+        type: 'create',
+        from: _this.hypertyURL,
+        identity: identity
+      }
+    };
+    _this.bus.postMessage(createMessage);
   }
 
   _getRegisteredUser() {
@@ -98,11 +112,11 @@ class GroupChatManager {
   _resumeReporters() {
     let _this = this;
 
-    _this._syncher.resumeReporters({store: true}).then((reporters) => {
+    _this._syncher.resumeReporters({ store: true }).then((reporters) => {
 
       let reportersList = Object.keys(reporters);
 
-      if (reportersList.length  > 0) {
+      if (reportersList.length > 0) {
 
         _this._getRegisteredUser().then((identity) => {
 
@@ -118,7 +132,7 @@ class GroupChatManager {
 
             _this._resumeInterworking(chatController.dataObjectReporter);
 
-            console.log('[GroupChatManager] chatController invitationsHandler: ',   chatController.invitationsHandler);
+            console.log('[GroupChatManager] chatController invitationsHandler: ', chatController.invitationsHandler);
 
             chatController.invitationsHandler.resumeDiscoveries(_this._manager.discovery, chatController.dataObjectReporter);
 
@@ -139,12 +153,12 @@ class GroupChatManager {
   _resumeObservers() {
     let _this = this;
 
-    _this._syncher.resumeObservers({store: true}).then((observers) => {
+    _this._syncher.resumeObservers({ store: true }).then((observers) => {
 
       console.log('[GroupChatManager] resuming observers : ', observers, _this, _this._onResume);
 
       let observersList = Object.keys(observers);
-      if (observersList.length  > 0) {
+      if (observersList.length > 0) {
 
         _this._getRegisteredUser().then((identity) => {
 
@@ -164,7 +178,7 @@ class GroupChatManager {
 
             // recursive function to sync with chat reporter
 
-            let reporterSync = function(observer, subscriber, status) {
+            let reporterSync = function (observer, subscriber, status) {
               let statusOfReporter = status;
               observer.sync().then((synched) => {
 
