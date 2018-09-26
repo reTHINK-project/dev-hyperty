@@ -89,34 +89,6 @@ class GroupChatManager {
     _this._bus.postMessage(createMessage);
   }
 
-  newTicket(CRMaddress, topic, message, identity) {
-    let _this = this;
-    const msgIdentity = { userProfile: { guid: identity.guid, userURL: identity.userURL, info: {} } };
-
-    let newTicketMsg = {
-      type: 'create',
-      identity: msgIdentity,
-      from: _this.hypertyURL,
-      body: {
-        ticket: {
-          'creation': new Date().getTime(),
-          'user': identity,
-          'lastModified': new Date().getTime(),
-          'message': message
-        }
-      }
-    }
-    let createMessage = {
-      type: 'forward',
-      to: CRMaddress,
-      from: _this.hypertyURL,
-      identity: msgIdentity,
-      body: newTicketMsg
-    };
-    debugger;
-    _this._bus.postMessage(createMessage);
-  }
-
   _getRegisteredUser() {
     let _this = this;
 
