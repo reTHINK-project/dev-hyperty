@@ -122,6 +122,8 @@ class GroupChatManager {
 
             console.log('[GroupChatManager] chatController invitationsHandler: ',   chatController.invitationsHandler);
 
+//            chatController.dataObjectReporter.sync();
+
             chatController.invitationsHandler.resumeDiscoveries(_this._manager.discovery, chatController.dataObjectReporter);
 
           });
