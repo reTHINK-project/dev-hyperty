@@ -15,7 +15,9 @@ class Wallet {
     this.search = factory.createSearch(this.discovery, this.identityManager);
     this.currentPosition;
     this.bus = bus;
+    this.identity = null;
     this.hypertyURL = hypertyURL;
+    this.pubsUrl = 'user://public-wallets';
     bus.addListener(hypertyURL, (msg) => {
       console.log('[Wallet] new msg', msg);
     });
@@ -39,7 +41,7 @@ class Wallet {
       } else {
         userProfile = { userURL: identity.userURL, guid: identity.guid };
       }
-
+      _this.identity = { userProfile: userProfile };
 
       let createMessage = {
         type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
@@ -50,15 +52,77 @@ class Wallet {
           resource: 'wallet'
         }
       };
+      let  resumedPrivate = false;
+      let  resumedPublic = false;
 
-      /*Create Message should be like THIS
-      *
-      *  let createMessage = {
-      *    type: 'create', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
-      *    identity: { userProfile: { userURL: userURL } },
-      *  };
-      *
-      */
+      _this._resumeObservers(_this.identity.userProfile.userURL).then(function (result) {
+          console.log('[Wallet] private Resume result :', result);
+        if (result != false) {
+          resumedPrivate = true;
+
+
+          let updateBalance = {
+            field: 'balance',
+            data: result.data.balance
+          };
+
+          let updateTransactions = {
+            field: 'transactions',
+            data: result.data.transactions
+          };
+
+          let updateRanking = {
+            field: 'ranking',
+            data: result.data.ranking
+          };
+
+          let updateBonusCredit = {
+            field: 'bonus-credit',
+            data: result.data['bonus-credit']
+          };
+
+          callback(updateBalance);
+          callback(updateTransactions);
+          callback(updateRanking);
+          callback(updateBonusCredit);
+
+
+          result.onChange('*', (event) => {
+            console.log('[Wallet] New Change :', event);
+            callback(event);
+          });
+
+        }
+
+      }).catch(function (error) {
+        console.log('[Wallet] ', error);
+      });
+
+      _this._resumeObservers(_this.pubsUrl).then(function (result) {
+
+        console.log('[Wallet] public resume wallets :', result);
+        if (result != false) {
+          resumedPublic = true;
+
+          let updateWallets = {
+            field: 'wallets',
+            data: result.data.wallets
+          };
+
+          callback(updateWallets);
+
+          result.onChange('*', (event) => {
+            console.log('[Wallet] New Change :', event);
+            callback(event);
+          });
+        }
+
+      }).catch(function (error) {
+        console.log('[Wallet] ', error);
+      });
+
+
+
       console.log('[Wallet] create message', createMessage);
 
       _this.bus.postMessageWithRetries(createMessage, _this.messageRetries, (reply) => {
@@ -68,29 +132,29 @@ class Wallet {
 
         console.log('[Wallet] create Reply', reply);
         if (reply.body.code == 200) {
-          _this._resumeObservers(reply.body.reporter_url).then(function (result) {
-
-            if (result != false) {
-              console.log('[Wallet] Resume result :', result);
+          if (! resumedPrivate) {
+            console.log('[Wallet] subscribe private');
+            _this.syncher.subscribe(_this.objectDescURL, reply.body.reporter_url, true, false, true, false, null).then(function (obj) {
+              console.log('[Wallet] subscribe result :', obj);
 
               let updateBalance = {
                 field: 'balance',
-                data: result.data.balance
+                data: obj.data.balance
               };
 
               let updateTransactions = {
                 field: 'transactions',
-                data: result.data.transactions
+                data: obj.data.transactions
               };
 
               let updateRanking = {
                 field: 'ranking',
-                data: result.data.ranking
+                data: obj.data.ranking
               };
 
               let updateBonusCredit = {
                 field: 'bonus-credit',
-                data: result.data['bonus-credit']
+                data: obj.data['bonus-credit']
               };
 
               callback(updateBalance);
@@ -98,99 +162,77 @@ class Wallet {
               callback(updateRanking);
               callback(updateBonusCredit);
 
-
-              result.onChange('*', (event) => {
+              obj.onChange('*', (event) => {
                 console.log('[Wallet] New Change :', event);
                 callback(event);
               });
-              resolve();
-
-            } else {
-
-              _this.syncher.subscribe(_this.objectDescURL, reply.body.reporter_url, true, false, true, false, null).then(function (obj) {
-                console.log('[Wallet] subscribe result :', obj);
-
-                let updateBalance = {
-                  field: 'balance',
-                  data: obj.data.balance
-                };
-
-                let updateTransactions = {
-                  field: 'transactions',
-                  data: obj.data.transactions
-                };
-
-                let updateRanking = {
-                  field: 'ranking',
-                  data: obj.data.ranking
-                };
-
-                let updateBonusCredit = {
-                  field: 'bonus-credit',
-                  data: obj.data['bonus-credit']
-                };
-
-                callback(updateBalance);
-                callback(updateTransactions);
-                callback(updateRanking);
-                callback(updateBonusCredit);
-
-                obj.onChange('*', (event) => {
-                  console.log('[Wallet] New Change :', event);
-                  callback(event);
-                });
-                resolve();
 
 
-              }).catch(function (error) {
-                console.log('[Wallet] error', error);
-                reject();
 
-              });
-            }
-
-            _this._resumeObservers(reply.body.publics_url).then(function (result) {
-              if (result != false) {
-                console.log('[Wallet] Resume public wallets :', result);
-
-                let updateWallets = {
-                  field: 'wallets',
-                  data: result.data.wallets
-                };
-
-                callback(updateWallets);
-
-                result.onChange('*', (event) => {
-                  console.log('[Wallet] New Change :', event);
-                  callback(event);
-                });
-
-              } else {
-                _this.syncher.subscribe(_this.objectDescURL, reply.body.publics_url, true, false, true, false, null).then(function (obj) {
-                  console.log('[Wallet] subscription result public wallets :', result);
-                  let updateWallets = {
-                    field: 'wallets',
-                    data: obj.data.wallets
-                  };
-
-                  callback(updateWallets);
-
-                  obj.onChange('*', (event) => {
-                    console.log('[Wallet] New Change :', event);
-                    callback(event);
-                  });
-                });
-              }
+            }).catch(function (error) {
+              console.log('[Wallet] error', error);
+              reject();
 
             });
+          }
 
-          }).catch(function (error) {
+          if (! resumedPublic) {
+            console.log('[Wallet] subscribe public');
+            _this.syncher.subscribe(_this.objectDescURL, reply.body.publics_url, true, false, true, false, null).then(function (obj) {
+              console.log('[Wallet] subscription result public wallets :', obj);
+              let updateWallets = {
+                field: 'wallets',
+                data: obj.data.wallets
+              };
 
-          });
+              callback(updateWallets);
 
+              obj.onChange('*', (event) => {
+                console.log('[Wallet] New Change :', event);
+                callback(event);
+              });
+            });
+          }
+
+          resolve(reply);
 
         }
       });
+
+    });
+
+  }
+
+  update(source, value) {
+    let _this = this;
+
+    return new Promise((resolve, reject) => {
+
+      if (_this.identity != null ) {
+        let updateMessage = {
+          type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
+          identity: _this.identity,
+          body: {
+            type: 'update',
+            from: _this.hypertyURL,
+            resource: source,
+            value: value
+          }
+        };
+
+        console.log('[Wallet] update message', updateMessage);
+
+        _this.bus.postMessageWithRetries(updateMessage, _this.messageRetries, (reply) => {
+
+          console.log('[Wallet] update Reply', reply);
+          resolve(true);
+
+        });
+      } else {
+        resolve(false);
+      }
+
+
     });
 
   }
@@ -221,6 +263,7 @@ class Wallet {
 
   }
 
+
   _resumeObservers(walletURL) {
     let _this = this;
 
@@ -236,7 +279,7 @@ class Wallet {
           //debugger;
           observersList.forEach((dataObjectObserverURL) => {
             console.log('[VertxAppProtoStub].syncher.resumeObserver: ', dataObjectObserverURL);
-            if (walletURL == dataObjectObserverURL) {
+            if (walletURL == observers[dataObjectObserverURL]._name) {
               return resolve(observers[dataObjectObserverURL]);
             }
           });
