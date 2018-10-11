@@ -1,7 +1,10 @@
 {
   "language": "javascript",
   "signature": "",
-  "configuration": { },
+  "configuration": { 
+    "backup": true,
+    "heartBeat": 60
+    },
   "hypertyType": [
     "chat"
   ],
