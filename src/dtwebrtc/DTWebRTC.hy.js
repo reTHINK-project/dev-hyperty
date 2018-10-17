@@ -71,7 +71,12 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
 
         setTimeout( () => {
           // Subscribe to Object
-          this._syncher.subscribe(this._objectDescURL, event.url).then((objObserver) => {
+          let input = {
+            schema: this._objectDescURL,
+            resource: event.url
+          };
+
+          this._syncher.subscribe(input).then((objObserver) => {
             console.info("[DTWebRTC]: [_onNotification] objObserver ", objObserver);
             // if successful, we get an observer object back
             this.objObserver = objObserver

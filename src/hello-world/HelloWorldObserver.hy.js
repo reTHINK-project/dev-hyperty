@@ -64,8 +64,14 @@ class HelloWorldObserver extends EventEmitter {
     // Acknowledge reporter about the Invitation was received
     event.ack();
 
+    let input = {
+      schema: _this._objectDescURL,
+      resource: event.url,
+      store: true,
+      p2p: false
+    };
     // Subscribe Hello World Object
-    _this._syncher.subscribe(_this._objectDescURL, event.url, true, false).then(function(helloObjtObserver) {
+    _this._syncher.subscribe(input).then(function(helloObjtObserver) {
 
       // Hello World Object was subscribed
       console.info(helloObjtObserver);
