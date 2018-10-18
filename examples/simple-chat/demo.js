@@ -31,7 +31,7 @@ function hypertyLoaded(result) {
 
   // Prepare to discover email:
   //  var search = result.instance.search;
-  console.log('[TicketManagerDemo.hypertyLoaded] getting identity for hyperty ', result.instance);
+  console.log('[SimpleChatDemo.hypertyLoaded] getting identity for hyperty ', result.instance);
 
 
   result.instance.myIdentity().then(function (identity) {
@@ -69,7 +69,7 @@ function hypertyReady(result, identity) {
 
 
     getSectionTpl().then(() => {
-      console.log('[TicketManagerDemo - on Resume observers] - Section Template ready:', chatControllers);
+      console.log('[SimpleChatDemo - on Resume observers] - Section Template ready:', chatControllers);
 
       let groupChats = Object.values(chatControllers);
 
@@ -95,7 +95,7 @@ function hypertyReady(result, identity) {
   simpleChat.onResumeReporter((chatControllers) => {
 
     getSectionTpl().then(() => {
-      console.log('[TicketManagerDemo - on Resume reporters] - Section Template ready:', chatControllers);
+      console.log('[SimpleChatDemo - on Resume reporters] - Section Template ready:', chatControllers);
 
       let groupChats = Object.values(chatControllers);
 
@@ -133,7 +133,7 @@ function onInvitation(event) {
   console.log('On Invitation: ', event);
 
   getSectionTpl().then(() => {
-    console.log('[TicketManagerDemo - On Invitation] - Section Template ready', event);
+    console.log('[SimpleChatDemo - On Invitation] - Section Template ready', event);
     event.ack(200);
     return simpleChat.join(event.url)
   }).then((chatController) => {
@@ -261,7 +261,7 @@ function createRoomEvent(event) {
   console.log('Participants: ', participants);
 
   getSectionTpl().then(() => {
-    console.log('[TicketManagerDemo - Create Room] - Section Template ready:', name, participants);
+    console.log('[SimpleChatDemo - Create Room] - Section Template ready:', name, participants);
     const CRMaddressTickets = 'hyperty://sharing-cities-dsm/crm/tickets';
     return simpleChat.create(name, [{ user: CRMaddressTickets }]);
   }).then((chatController) => {
@@ -276,7 +276,7 @@ function createRoomEvent(event) {
     createBtn.addClass('hide');
     joinBtn.addClass('hide');
 
-    // simpleChat.newParticipant('hyperty://sharing-cities-dsm/crm');
+
 
   }).catch(function (reason) {
     console.error(reason);
@@ -298,7 +298,7 @@ function joinRoom(event) {
     let resource = joinModal.find('.input-name').val();
 
     getSectionTpl().then(() => {
-      console.log('[TicketManagerDemo - JoinRoom] - Section Template ready: ', resource);
+      console.log('[SimpleChatDemo - JoinRoom] - Section Template ready: ', resource);
       return simpleChat.join(resource)
     }).then(function (chatController) {
       chatManagerReady(chatController, false);
@@ -330,10 +330,10 @@ function getSectionTpl() {
 
 function prepareChat(chatController, isOwner, toReload = null) {
 
-  console.log('[TicketManagerDemo prepareChat] Chat Group Controller: ', chatController);
+  console.log('[SimpleChatDemo prepareChat] Chat Group Controller: ', chatController);
 
   let dataObject = chatController.dataObjectObserver || chatController.dataObjectReporter || {};
-  console.log('[TicketManagerDemo prepareChat] dataObject: ', dataObject);
+  console.log('[SimpleChatDemo prepareChat] dataObject: ', dataObject);
   let users = dataObject.data.participants || {};
   let msgs = chatController.messages || {};
 
@@ -350,36 +350,45 @@ function prepareChat(chatController, isOwner, toReload = null) {
 
     if (msgs[objectKey].resourceType) msg.resource = msgs[objectKey];
 
-    console.log('[TicketManagerDemo.prepareChat] for msg ', msg);
+    console.log('[SimpleChatDemo.prepareChat] for msg ', msg);
 
     processMessage(msg, toReload);
   });
 
   chatController.onInvitationResponse(function (response) {
-    console.info('[TicketManagerDemo ] onInvitationResponse: ', response);
+    console.info('[SimpleChatDemo ] onInvitationResponse: ', response);
   })
 
   chatController.onMessage(function (message) {
-    console.info('[TicketManagerDemo ] new message received: ', message);
+    console.info('[SimpleChatDemo ] new message received: ', message);
     processMessage(message);
   });
 
   chatController.onChange(function (event) {
-    console.log('[TicketManagerDemo ] OnChange Event:', event);
+    console.log('[SimpleChatDemo ] OnChange Event:', event);
   });
 
   chatController.onUserAdded(function (event) {
-    console.log('[TicketManagerDemo ] onUserAdded Event:', event);
+    console.log('[SimpleChatDemo ] onUserAdded Event:', event);
+    const participantHypertyURL = event.hypertyURL;
+    if (chatController._dataObjectReporter) {
+      debugger;
+      const objectUrl = chatController._dataObjectReporter._url;
+      simpleChat.newParticipant('hyperty://sharing-cities-dsm/crm', participantHypertyURL, objectUrl);
+
+    }
     processNewUser(event);
   });
 
   chatController.onUserRemoved(function (event) {
-    console.log('[TicketManagerDemo ] onUserRemoved Event:', event);
+    console.log('[SimpleChatDemo ] onUserRemoved Event:', event);
     removeParticipant(event.userURL);
   });
 
   chatController.onClose(function (event) {
-    console.log('[TicketManagerDemo ] onClose Event:', event);
+
+
+    console.log('[SimpleChatDemo ] onClose Event:', event);
     $('.chat-section').html('');
 
     $('.create-room-btn').show();
@@ -414,7 +423,7 @@ function inviteParticipants(chatController, isOwner) {
 
     let user = { user: userID, domain: domain };
 
-    console.log('[TicketManagerDemo.inviteParticipants]: ', user);
+    console.log('[SimpleChatDemo.inviteParticipants]: ', user);
 
     /*let usersIDsParsed = [];
     if (usersIDs.includes(',')) {
@@ -580,7 +589,7 @@ function processMessage(message, onResume = null) {
   if (message.hasOwnProperty('resource')) {
     toProcess = true;
   }
-  console.log('[TicketManagerDemo - processMessage] - msg ', message, toProcess);
+  console.log('[SimpleChatDemo - processMessage] - msg ', message, toProcess);
   if (toProcess || onResume != null) {
 
     let chatSection = $('.chat-section');
@@ -610,7 +619,7 @@ function processMessage(message, onResume = null) {
       list.appendChild(pictureEl);
       list.appendChild(nameSpan);
 
-      console.log('[TicketManagerDemo - processMessage] - ', messagesList, message, list);
+      console.log('[SimpleChatDemo - processMessage] - ', messagesList, message, list);
 
       let messageEl = document.createElement('p');
       let content;
@@ -721,14 +730,14 @@ function readFile(file) {
         let textContent = document.createTextNode('download ' + file.metadata.name);
         resourceEl.appendChild(textContent);
 
-        console.log('[TicketManagerDemo.readFile] saving file to ', url);
+        console.log('[SimpleChatDemo.readFile] saving file to ', url);
 
         resourceEl.download = '/sca/' + file.name;
 
         resourceEl.href = url;
 
         resourceEl.addEventListener('click', (event) => {
-          console.log('[TicketManagerDemo.readFile] saving file to disk ', file);
+          console.log('[SimpleChatDemo.readFile] saving file to disk ', file);
 
           //(window.URL || window.webkitURL).revokeObjectURL(resourceEl.href);
 
@@ -740,7 +749,7 @@ function readFile(file) {
     }
 
   }, (error) => {
-    console.log('[TicketManagerDemo.readFile] error reading file');
+    console.log('[SimpleChatDemo.readFile] error reading file');
   });
 }
 
@@ -850,6 +859,12 @@ function closeChat(chatController) {
 
   chatController.close().then(function (result) {
     console.log('Chat closed: ', result);
+    const participantHypertyURL = event.hypertyURL;
+    if (chatController._dataObjectReporter) {
+      debugger;
+      const objectUrl = chatController._dataObjectReporter._url;
+      simpleChat.closeTicket('hyperty://sharing-cities-dsm/crm', participantHypertyURL, objectUrl);
+    }
 
     let createRoomModal = $('.create-chat');
     let createRoomBtn = createRoomModal.find('.btn-create');

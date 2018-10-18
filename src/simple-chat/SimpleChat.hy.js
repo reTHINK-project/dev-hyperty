@@ -41,7 +41,7 @@ import { UserInfo } from './UserInfo';*/
 * @author Vitor Silva [vitor-t-silva@telecom.pt]
 * @version 0.1.0
 */
-class TicketManager {
+class SimpleChat {
 
   constructor(hypertyURL, bus, configuration, factory) {
     //    super(hypertyURL, bus, configuration, factory);
@@ -61,7 +61,7 @@ class TicketManager {
     _this._bus = bus;
 
     _this._syncher.onNotification(function (event) {
-      console.log('[TicketManager] onNotification:', event);
+      console.log('[SimpleChat] onNotification:', event);
       _this.processNotification(event);
     });
 
@@ -76,19 +76,25 @@ class TicketManager {
   /**
    * Register as agent.
    */
-  register(CRMaddress, code, identity) {
+  register(CRMaddress, code) {
     let _this = this;
-    const msgIdentity = { userProfile: { guid: identity.guid, userURL: identity.userURL, info: { code: code } } };
-    let createMessage = {
-      type: 'forward', to: CRMaddress, from: _this.hypertyURL,
-      identity: msgIdentity,
-      body: {
-        type: 'create',
-        from: _this.hypertyURL,
-        identity: msgIdentity
-      }
-    };
-    _this._bus.postMessage(createMessage);
+    _this._manager.identityManager.discoverUserRegistered().then((identity) => {
+      const msgIdentity = { userProfile: { guid: identity.guid, userURL: identity.userURL, info: { code: code } } };
+      let createMessage = {
+        type: 'forward', to: CRMaddress, from: _this.hypertyURL,
+        identity: msgIdentity,
+        body: {
+          type: 'create',
+          from: _this.hypertyURL,
+          identity: msgIdentity
+        }
+      };
+      _this._bus.postMessage(createMessage);
+    }).catch((error) => {
+      console.error('[SimpleChat] ERROR:', error);
+      reject(error);
+    });
+
   }
 
 
@@ -96,51 +102,55 @@ class TicketManager {
   /**
    * Add participant to ticket.
    */
-  newParticipant(CRMaddress) {
+  newParticipant(CRMaddress, participantHypertyURL, objectUrl) {
 
     let _this = this;
     _this._manager.identityManager.discoverUserRegistered().then((identity) => {
-      console.log('[TicketManager] GET MY IDENTITY:', identity);
+      console.log('[SimpleChat] GET MY IDENTITY:', identity);
       let newParticipantMessage = {
         type: 'forward',
         to: `${CRMaddress}/tickets`,
-        from: _this.hypertyURL,
+        from: objectUrl,
         identity: identity,
         body: {
           type: "update",
-          from: "object url",
+          from: objectUrl,
           identity: identity,
           status: "new-participant",
-          participant: _this.hypertyURL
+          participant: participantHypertyURL
         }
       };
       _this._bus.postMessage(newParticipantMessage);
     }).catch((error) => {
-      console.error('[TicketManager] ERROR:', error);
+      console.error('[SimpleChat] ERROR:', error);
       reject(error);
     });
 
   }
 
-  closeTicket(CRMaddress) {
+  /**
+  * Close ticket
+  */
+  closeTicket(CRMaddress, participantHypertyURL, objectUrl) {
+
     let _this = this;
     _this._manager.identityManager.discoverUserRegistered().then((identity) => {
       let newParticipantMessage = {
         type: 'forward',
         to: `${CRMaddress}/tickets`,
-        from: _this.hypertyURL,
+        from: objectUrl,
         identity: identity,
         body: {
           type: "update",
-          from: "object url",
+          from: objectUrl,
           identity: identity,
           status: "closed",
-          participant: _this.hypertyURL
+          participant: participantHypertyURL
         }
       };
       _this._bus.postMessage(newParticipantMessage);
     }).catch((error) => {
-      console.error('[TicketManager] ERROR:', error);
+      console.error('[SimpleChat] ERROR:', error);
       reject(error);
     });
 
@@ -156,10 +166,10 @@ class TicketManager {
       } else {
         // create a new chatController but first get identity
         _this._manager.identityManager.discoverUserRegistered().then((identity) => {
-          console.log('[TicketManager] GET MY IDENTITY:', identity);
+          console.log('[SimpleChat] GET MY IDENTITY:', identity);
           resolve(identity);
         }).catch((error) => {
-          console.error('[TicketManager] ERROR:', error);
+          console.error('[SimpleChat] ERROR:', error);
           reject(error);
         });
 
@@ -183,7 +193,7 @@ class TicketManager {
 
           reportersList.forEach((dataObjectReporterURL) => {
 
-            console.log('[TicketManager.resumeReporter]: ', dataObjectReporterURL);
+            console.log('[SimpleChat.resumeReporter]: ', dataObjectReporterURL);
 
             let chatController = _this._factory.createChatController(_this._syncher, _this.discovery, _this._domain, _this.search, identity, _this._manager);
             chatController.dataObjectReporter = reporters[dataObjectReporterURL];
@@ -193,7 +203,7 @@ class TicketManager {
 
             _this._resumeInterworking(chatController.dataObjectReporter);
 
-            console.log('[TicketManager] chatController invitationsHandler: ', chatController.invitationsHandler);
+            console.log('[SimpleChat] chatController invitationsHandler: ', chatController.invitationsHandler);
 
             chatController.invitationsHandler.resumeDiscoveries(_this._manager.discovery, chatController.dataObjectReporter);
 
@@ -206,7 +216,7 @@ class TicketManager {
       }
 
     }).catch((reason) => {
-      console.info('[TicketManager.resumeReporters] :', reason);
+      console.info('[SimpleChat.resumeReporters] :', reason);
     });
 
   }
@@ -216,7 +226,7 @@ class TicketManager {
 
     _this._syncher.resumeObservers({ store: true }).then((observers) => {
 
-      console.log('[TicketManager] resuming observers : ', observers, _this, _this._onResume);
+      console.log('[SimpleChat] resuming observers : ', observers, _this, _this._onResume);
 
       let observersList = Object.keys(observers);
       if (observersList.length > 0) {
@@ -225,7 +235,7 @@ class TicketManager {
 
           observersList.forEach((dataObjectObserverURL) => {
 
-            console.log('[TicketManager].syncher.resumeObserver: ', dataObjectObserverURL);
+            console.log('[SimpleChat].syncher.resumeObserver: ', dataObjectObserverURL);
 
             let chatObserver = observers[dataObjectObserverURL];
 
@@ -266,7 +276,7 @@ class TicketManager {
       }
 
     }).catch((reason) => {
-      console.info('[TicketManager] Resume Observer | ', reason);
+      console.info('[SimpleChat] Resume Observer | ', reason);
     });
   }
 
@@ -287,7 +297,7 @@ class TicketManager {
 
       // let name = communication.name;
 
-      console.log('[TicketManager._resumeInterworking for] ', participants);
+      console.log('[SimpleChat._resumeInterworking for] ', participants);
 
       Object.keys(participants).forEach((participant) => {
 
@@ -295,7 +305,7 @@ class TicketManager {
 
         if (user[0] !== 'user') {
 
-          console.log('[TicketManager._resumeInterworking for] ', participant);
+          console.log('[SimpleChat._resumeInterworking for] ', participant);
 
           user = user[0] + '://' + user[1].split('/')[1];
 
@@ -359,7 +369,7 @@ class TicketManager {
    * @return {<Promise>Identity}             It returns the Identity object as a Promise
    */
   myIdentity(identity) {
-    console.log('[TicketManager.myIdentity] ', identity);
+    console.log('[SimpleChat.myIdentity] ', identity);
     return this._manager.myIdentity(identity);
 
 
@@ -387,8 +397,8 @@ class TicketManager {
 export default function activate(hypertyURL, bus, configuration, factory) {
 
   return {
-    name: 'TicketManager',
-    instance: new TicketManager(hypertyURL, bus, configuration, factory)
+    name: 'SimpleChat',
+    instance: new SimpleChat(hypertyURL, bus, configuration, factory)
   };
 
 }
