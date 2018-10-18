@@ -98,6 +98,10 @@ export function hypertyDeployed(hyperty, runtimeLoader = null) {
       template = 'dtwebrtc/dtwebrtc';
       script = 'dtwebrtc/dtwebrtc.js';
       break;
+    case 'SimpleChat':
+      template = 'simple-chat/SimpleChat';
+      script = 'simple-chat/demo.js';
+      break;
   }
 
   if (!template) {
