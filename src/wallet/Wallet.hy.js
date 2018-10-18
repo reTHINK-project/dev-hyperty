@@ -189,7 +189,7 @@ class Wallet {
           if (! resumedPublic) {
             console.log('[Wallet] subscribe public');
             let input = {
-              schema: _this._objectDescURL,
+              schema: _this.objectDescURL,
               resource: reply.body.publics_url,
               store: true,
               p2p: false,
