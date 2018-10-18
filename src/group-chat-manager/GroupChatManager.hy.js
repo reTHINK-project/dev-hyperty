@@ -59,6 +59,8 @@ class GroupChatManager {
     _this.hypertyURL = hypertyURL;
     _this._runtimeURL = configuration.runtimeURL;
     _this._bus = bus;
+    _this._backup = configuration.hasOwnProperty('backup') ? configuration.backup : false;
+    _this._heartbeat = configuration.hasOwnProperty('heartbeat') ? configuration.heartbeat : undefined;
 
     _this._syncher.onNotification(function (event) {
       console.log('[GroupChatManager] onNotification:', event);
@@ -137,6 +139,8 @@ class GroupChatManager {
             _this._resumeInterworking(chatController.dataObjectReporter);
 
             console.log('[GroupChatManager] chatController invitationsHandler: ', chatController.invitationsHandler);
+
+//            chatController.dataObjectReporter.sync();
 
             chatController.invitationsHandler.resumeDiscoveries(_this._manager.discovery, chatController.dataObjectReporter);
 
@@ -262,10 +266,13 @@ class GroupChatManager {
    * @return {<Promise>ChatController}    A ChatController object as a Promise.
    */
   create(name, users, extra = {}) {
+
+    extra.backup = this._backup;
+    extra.heartbeat = this._heartbeat;
+
+    console.log('[GroupChatManager.create] extra: ', extra);
+
     return this._manager.create(name, users, extra);
-
-
-
   }
 
 
