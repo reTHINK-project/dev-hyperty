@@ -135,13 +135,13 @@ class Wallet {
           if (! resumedPrivate) {
             console.log('[Wallet] subscribe private');
             let input = {
-              schema: _this._objectDescURL,
+              schema: _this.objectDescURL,
               resource: reply.body.reporter_url,
               store: true,
               p2p: false,
               mutual: true,
-              domain_subscription: false,
-              identity: null
+              domain_subscription: false
+//              identity: null
             };
         
             _this.syncher.subscribe(input).then(function (obj) {
@@ -194,8 +194,8 @@ class Wallet {
               store: true,
               p2p: false,
               mutual: true,
-              domain_subscription: false,
-              identity: null
+              domain_subscription: false
+//              identity: null
             };
 
             _this.syncher.subscribe(input).then(function (obj) {
