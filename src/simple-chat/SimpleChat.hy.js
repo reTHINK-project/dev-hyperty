@@ -37,7 +37,7 @@ import Search from '../utils/Search';*/
 import { UserInfo } from './UserInfo';*/
 
 /**
-* Hyperty Group Chat Manager API (HypertyChat)
+* Hyperty Simple Chat API (HypertyChat)
 * @author Vitor Silva [vitor-t-silva@telecom.pt]
 * @version 0.1.0
 */
@@ -59,6 +59,7 @@ class SimpleChat {
     _this.hypertyURL = hypertyURL;
     _this._runtimeURL = configuration.runtimeURL;
     _this._bus = bus;
+    _this._manager.offline = configuration.offline ? configuration.offline : false;
 
     _this._syncher.onNotification(function (event) {
       console.log('[SimpleChat] onNotification:', event);
@@ -328,7 +329,7 @@ class SimpleChat {
    * @param  {array<URL.userURL>}         users Array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL, like this format user://<ipddomain>/<user-identifier>
    * @return {<Promise>ChatController}    A ChatController object as a Promise.
    */
-  create(name, users, extra = {}) {
+  create(name, users, extra = { mutual: false }) {
     return this._manager.create(name, users, extra);
 
 
@@ -360,7 +361,7 @@ class SimpleChat {
    * @return {<Promise>ChatController}             It returns the ChatController object as a Promise
    */
   join(invitationURL) {
-    return this._manager.join(invitationURL);
+    return this._manager.join(invitationURL, false, );
 
 
   }
