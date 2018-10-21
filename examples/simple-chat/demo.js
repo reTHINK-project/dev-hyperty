@@ -195,12 +195,12 @@ function addParticipantEvent(event) {
   let participantEl = '<div class="row">' +
     '<div class="input-field col s8">' +
     '  <input class="input-email" name="email" id="email-' + countParticipants + '" required aria-required="true" type="text" >' +
-    '  <label for="email-' + countParticipants + '">Participant Email</label>' +
+    '  <label for="email-' + countParticipants + '">Hyperty URL</label>' +
     '</div>' +
-    '<div class="input-field col s4">' +
+/*    '<div class="input-field col s4">' +
     '  <input class="input-domain" name="domain" id="domain-' + countParticipants + '" type="text"">' +
     '  <label for="domain-' + countParticipants + '">Participant domain</label>' +
-    '</div>' +
+    '</div>' +*/
     '</div>';
 
   participants.append(participantEl);
@@ -263,7 +263,8 @@ function createRoomEvent(event) {
   getSectionTpl().then(() => {
     console.log('[SimpleChatDemo - Create Room] - Section Template ready:', name, participants);
     const CRMaddressTickets = 'hyperty://sharing-cities-dsm/crm/tickets';
-    return simpleChat.create(name, [{ user: CRMaddressTickets }]);
+//    return simpleChat.create(name, [{ user: CRMaddressTickets }]);
+    return simpleChat.create(name, users);
   }).then((chatController) => {
 
     let isOwner = true;
@@ -372,9 +373,9 @@ function prepareChat(chatController, isOwner, toReload = null) {
     console.log('[SimpleChatDemo ] onUserAdded Event:', event);
     const participantHypertyURL = event.hypertyURL;
     if (chatController._dataObjectReporter) {
-      debugger;
-      const objectUrl = chatController._dataObjectReporter._url;
-      simpleChat.newParticipant('hyperty://sharing-cities-dsm/crm', participantHypertyURL, objectUrl);
+//      debugger;
+//      const objectUrl = chatController._dataObjectReporter._url;
+//      simpleChat.newParticipant('hyperty://sharing-cities-dsm/crm', participantHypertyURL, objectUrl);
 
     }
     processNewUser(event);
@@ -861,9 +862,8 @@ function closeChat(chatController) {
     console.log('Chat closed: ', result);
     const participantHypertyURL = event.hypertyURL;
     if (chatController._dataObjectReporter) {
-      debugger;
       const objectUrl = chatController._dataObjectReporter._url;
-      simpleChat.closeTicket('hyperty://sharing-cities-dsm/crm', participantHypertyURL, objectUrl);
+//      simpleChat.closeTicket('hyperty://sharing-cities-dsm/crm', participantHypertyURL, objectUrl);
     }
 
     let createRoomModal = $('.create-chat');

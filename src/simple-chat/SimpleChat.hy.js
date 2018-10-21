@@ -37,7 +37,7 @@ import Search from '../utils/Search';*/
 import { UserInfo } from './UserInfo';*/
 
 /**
-* Hyperty Simple Chat API (HypertyChat)
+* Hyperty Group Chat Manager API (HypertyChat)
 * @author Vitor Silva [vitor-t-silva@telecom.pt]
 * @version 0.1.0
 */
@@ -50,16 +50,15 @@ class SimpleChat {
     _this._factory = factory;
     _this._syncher = factory.createSyncher(hypertyURL, bus, configuration);
 
-    _this._manager = factory.createChatManager(hypertyURL, bus, configuration, _this._syncher);
+    _this._manager = factory.createSimpleChatManager(hypertyURL, bus, configuration, _this._syncher);
     _this.discovery = _this._manager.discovery;
     _this.identityManager = _this._manager.identityManager;
-    _this.search = _this._manager.search;
+//    _this.search = _this._manager.search;
     _this._domain = _this._manager._domain;
     _this._myUrl = hypertyURL;
     _this.hypertyURL = hypertyURL;
     _this._runtimeURL = configuration.runtimeURL;
     _this._bus = bus;
-    _this._manager.offline = configuration.offline ? configuration.offline : false;
 
     _this._syncher.onNotification(function (event) {
       console.log('[SimpleChat] onNotification:', event);
@@ -196,7 +195,7 @@ class SimpleChat {
 
             console.log('[SimpleChat.resumeReporter]: ', dataObjectReporterURL);
 
-            let chatController = _this._factory.createChatController(_this._syncher, _this.discovery, _this._domain, _this.search, identity, _this._manager);
+            let chatController = _this._factory.createChat(_this._syncher, _this._domain, identity, _this._manager);
             chatController.dataObjectReporter = reporters[dataObjectReporterURL];
 
             // Save the chat controllers by dataObjectReporterURL
@@ -206,7 +205,7 @@ class SimpleChat {
 
             console.log('[SimpleChat] chatController invitationsHandler: ', chatController.invitationsHandler);
 
-            chatController.invitationsHandler.resumeDiscoveries(_this._manager.discovery, chatController.dataObjectReporter);
+//            chatController.invitationsHandler.resumeDiscoveries(_this._manager.discovery, chatController.dataObjectReporter);
 
           });
 
@@ -240,17 +239,18 @@ class SimpleChat {
 
             let chatObserver = observers[dataObjectObserverURL];
 
-            let chatController = _this._factory.createChatController(_this._syncher, _this._manager.discovery, _this._domain, _this.search, identity, _this._manager);
+//            let chatController = _this._factory.createChatController(_this._syncher, _this._manager.discovery, _this._domain, _this.search, identity, _this._manager);
+            let chatController = _this._factory.createChat(_this._syncher, _this._domain, identity, _this._manager);
             chatController.dataObjectObserver = chatObserver;
 
             // Save the chat controllers by dataObjectReporterURL
             this._manager._observersControllers[dataObjectObserverURL] = chatController;
 
-            let reporterStatus = _this._factory.createRegistrationStatus(chatObserver.url, _this._runtimeURL, _this._myUrl, _this._bus);
+//            let reporterStatus = _this._factory.createRegistrationStatus(chatObserver.url, _this._runtimeURL, _this._myUrl, _this._bus);
 
             // recursive function to sync with chat reporter
 
-            let reporterSync = function (observer, subscriber, status) {
+/*            let reporterSync = function (observer, subscriber, status) {
               let statusOfReporter = status;
               observer.sync().then((synched) => {
 
@@ -266,7 +266,7 @@ class SimpleChat {
               });
             };
 
-            reporterSync(chatObserver, _this._myUrl, reporterStatus);
+            reporterSync(chatObserver, _this._myUrl, reporterStatus);*/
 
           });
 
@@ -326,14 +326,11 @@ class SimpleChat {
   /**
    * This function is used to create a new Group Chat providing the name and the identifiers of users to be invited.
    * @param  {string}                     name  Is a string to identify the Group Chat
-   * @param  {array<URL.userURL>}         users Array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL, like this format user://<ipddomain>/<user-identifier>
+   * @param  {array<URL.HypertyURL>}         users Array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL, like this format user://<ipddomain>/<user-identifier>
    * @return {<Promise>ChatController}    A ChatController object as a Promise.
    */
-  create(name, users, extra = { mutual: false }) {
-    return this._manager.create(name, users, extra);
-
-
-
+  create(name, hyperties, extra = {mutual: false, domain_registration: false}) {
+    return this._manager.create(name, hyperties, extra);
   }
 
 
@@ -361,7 +358,7 @@ class SimpleChat {
    * @return {<Promise>ChatController}             It returns the ChatController object as a Promise
    */
   join(invitationURL) {
-    return this._manager.join(invitationURL, false, );
+    return this._manager.join(invitationURL, false);
 
 
   }

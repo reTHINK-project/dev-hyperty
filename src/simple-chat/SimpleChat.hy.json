@@ -1,7 +1,7 @@
 {
   "language": "javascript",
   "signature": "",
-  "configuration": { },
+  "configuration": { "domain_registration": false },
   "hypertyType": [
     "chat"
   ],
