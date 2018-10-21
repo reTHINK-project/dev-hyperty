@@ -113,7 +113,15 @@ class ElearningPlayer {
 
       let _this = this;
       if (_this.reporter == null) {
-        _this.syncher.create(_this.objectDescURL, [], {}, true, false, 'elearning', {}, { resources: ['learning-context'], "domain_registration": false })
+
+      let input = { 
+          resources: ['learning-context'], 
+          "domain_registration": false,
+           "domain_routing": false 
+          };
+
+
+        _this.syncher.create(_this.objectDescURL, [], {}, true, false, 'elearning', {}, input)
           .then((reporter) => {
             _this.reporter = reporter;
             console.log('[ElearningPlayer]  DataObjectReporter', _this.reporter);
