@@ -1,7 +1,10 @@
 {
   "language": "javascript",
   "signature": "",
-  "configuration": { "domain_registration": false },
+  "configuration": { 
+    "domain_registration": false,
+    "offline": "hyperty://sharing-cities-dsm/offline-sub-mgr"
+     },
   "hypertyType": [
     "chat"
   ],

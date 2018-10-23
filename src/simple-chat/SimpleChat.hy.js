@@ -68,7 +68,7 @@ class SimpleChat {
     _this._resumeReporters();
     _this._resumeObservers();
 
-
+    _this._manager.offline = configuration.offline ? configuration.offline : false;
 
   }
 
@@ -329,7 +329,7 @@ class SimpleChat {
    * @param  {array<URL.HypertyURL>}         users Array of users to be invited to join the Group Chat. Users are identified with reTHINK User URL, like this format user://<ipddomain>/<user-identifier>
    * @return {<Promise>ChatController}    A ChatController object as a Promise.
    */
-  create(name, hyperties, extra = {mutual: false, domain_registration: false}) {
+  create(name, hyperties, extra = {mutual: false, domain_registration: false, reuseURL: true }) {
     return this._manager.create(name, hyperties, extra);
   }
 
