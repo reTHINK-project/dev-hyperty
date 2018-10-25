@@ -50,6 +50,7 @@ class SimpleChat {
     _this._factory = factory;
     _this._syncher = factory.createSyncher(hypertyURL, bus, configuration);
 
+//    _this._manager = factory.createSimpleChatManager(hypertyURL, bus, configuration, _this._syncher);
     _this._manager = factory.createSimpleChatManager(hypertyURL, bus, configuration, _this._syncher);
     _this.discovery = _this._manager.discovery;
     _this.identityManager = _this._manager.identityManager;
@@ -330,7 +331,8 @@ class SimpleChat {
    * @return {<Promise>ChatController}    A ChatController object as a Promise.
    */
   create(name, hyperties, extra = {mutual: false, domain_registration: false, reuseURL: true }) {
-    return this._manager.create(name, hyperties, extra);
+//  create(name, hyperties, extra = {mutual: false, reuseURL: true }) {
+      return this._manager.create(name, hyperties, extra);
   }
 
 

@@ -264,7 +264,8 @@ function createRoomEvent(event) {
     console.log('[SimpleChatDemo - Create Room] - Section Template ready:', name, participants);
     const CRMaddressTickets = 'hyperty://sharing-cities-dsm/crm/tickets';
 //    return simpleChat.create(name, [{ user: CRMaddressTickets }]);
-    return simpleChat.create(name, users);
+return simpleChat.create(name, users);
+//return simpleChat.create(name, participants);
   }).then((chatController) => {
 
     let isOwner = true;
