@@ -194,7 +194,7 @@ class Wallet {
             });
           }
 
-          resolve();
+          resolve(reply);
 
         }
       });

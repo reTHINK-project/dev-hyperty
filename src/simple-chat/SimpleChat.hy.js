@@ -41,7 +41,7 @@ import { UserInfo } from './UserInfo';*/
 * @author Vitor Silva [vitor-t-silva@telecom.pt]
 * @version 0.1.0
 */
-class GroupChatManager {
+class SimpleChat {
 
   constructor(hypertyURL, bus, configuration, factory) {
     //    super(hypertyURL, bus, configuration, factory);
@@ -59,11 +59,9 @@ class GroupChatManager {
     _this.hypertyURL = hypertyURL;
     _this._runtimeURL = configuration.runtimeURL;
     _this._bus = bus;
-    _this._backup = configuration.hasOwnProperty('backup') ? configuration.backup : false;
-    _this._heartbeat = configuration.hasOwnProperty('heartbeat') ? configuration.heartbeat : undefined;
 
     _this._syncher.onNotification(function (event) {
-      console.log('[GroupChatManager] onNotification:', event);
+      console.log('[SimpleChat] onNotification:', event);
       _this.processNotification(event);
     });
 
@@ -75,20 +73,87 @@ class GroupChatManager {
   }
 
 
-  register(CRMaddress, code, identity) {
+  /**
+   * Register as agent.
+   */
+  register(CRMaddress, code) {
     let _this = this;
-    debugger;
-    const msgIdentity = { userProfile: { guid: identity.guid, userURL: identity.userURL, info: { code: code } } };
-    let createMessage = {
-      type: 'forward', to: CRMaddress, from: _this.hypertyURL,
-      identity: msgIdentity,
-      body: {
-        type: 'create',
-        from: _this.hypertyURL,
-        identity: msgIdentity
-      }
-    };
-    _this._bus.postMessage(createMessage);
+    _this._manager.identityManager.discoverUserRegistered().then((identity) => {
+      const msgIdentity = { userProfile: { guid: identity.guid, userURL: identity.userURL, info: { code: code } } };
+      let createMessage = {
+        type: 'forward', to: CRMaddress, from: _this.hypertyURL,
+        identity: msgIdentity,
+        body: {
+          type: 'create',
+          from: _this.hypertyURL,
+          identity: msgIdentity
+        }
+      };
+      _this._bus.postMessage(createMessage);
+    }).catch((error) => {
+      console.error('[SimpleChat] ERROR:', error);
+      reject(error);
+    });
+
+  }
+
+
+
+  /**
+   * Add participant to ticket.
+   */
+  newParticipant(CRMaddress, participantHypertyURL, objectUrl) {
+
+    let _this = this;
+    _this._manager.identityManager.discoverUserRegistered().then((identity) => {
+      console.log('[SimpleChat] GET MY IDENTITY:', identity);
+      let newParticipantMessage = {
+        type: 'forward',
+        to: `${CRMaddress}/tickets`,
+        from: objectUrl,
+        identity: identity,
+        body: {
+          type: "update",
+          from: objectUrl,
+          identity: identity,
+          status: "new-participant",
+          participant: participantHypertyURL
+        }
+      };
+      _this._bus.postMessage(newParticipantMessage);
+    }).catch((error) => {
+      console.error('[SimpleChat] ERROR:', error);
+      reject(error);
+    });
+
+  }
+
+  /**
+  * Close ticket
+  */
+  closeTicket(CRMaddress, participantHypertyURL, objectUrl) {
+
+    let _this = this;
+    _this._manager.identityManager.discoverUserRegistered().then((identity) => {
+      let newParticipantMessage = {
+        type: 'forward',
+        to: `${CRMaddress}/tickets`,
+        from: objectUrl,
+        identity: identity,
+        body: {
+          type: "update",
+          from: objectUrl,
+          identity: identity,
+          status: "closed",
+          participant: participantHypertyURL
+        }
+      };
+      _this._bus.postMessage(newParticipantMessage);
+    }).catch((error) => {
+      console.error('[SimpleChat] ERROR:', error);
+      reject(error);
+    });
+
   }
 
   _getRegisteredUser() {
@@ -101,10 +166,10 @@ class GroupChatManager {
       } else {
         // create a new chatController but first get identity
         _this._manager.identityManager.discoverUserRegistered().then((identity) => {
-          console.log('[GroupChatManager] GET MY IDENTITY:', identity);
+          console.log('[SimpleChat] GET MY IDENTITY:', identity);
           resolve(identity);
         }).catch((error) => {
-          console.error('[GroupChatManager] ERROR:', error);
+          console.error('[SimpleChat] ERROR:', error);
           reject(error);
         });
 
@@ -128,7 +193,7 @@ class GroupChatManager {
 
           reportersList.forEach((dataObjectReporterURL) => {
 
-            console.log('[GroupChatManager.resumeReporter]: ', dataObjectReporterURL);
+            console.log('[SimpleChat.resumeReporter]: ', dataObjectReporterURL);
 
             let chatController = _this._factory.createChatController(_this._syncher, _this.discovery, _this._domain, _this.search, identity, _this._manager);
             chatController.dataObjectReporter = reporters[dataObjectReporterURL];
@@ -138,9 +203,7 @@ class GroupChatManager {
 
             _this._resumeInterworking(chatController.dataObjectReporter);
 
-            console.log('[GroupChatManager] chatController invitationsHandler: ', chatController.invitationsHandler);
-
-//            chatController.dataObjectReporter.sync();
+            console.log('[SimpleChat] chatController invitationsHandler: ', chatController.invitationsHandler);
 
             chatController.invitationsHandler.resumeDiscoveries(_this._manager.discovery, chatController.dataObjectReporter);
 
@@ -153,7 +216,7 @@ class GroupChatManager {
       }
 
     }).catch((reason) => {
-      console.info('[GroupChatManager.resumeReporters] :', reason);
+      console.info('[SimpleChat.resumeReporters] :', reason);
     });
 
   }
@@ -163,7 +226,7 @@ class GroupChatManager {
 
     _this._syncher.resumeObservers({ store: true }).then((observers) => {
 
-      console.log('[GroupChatManager] resuming observers : ', observers, _this, _this._onResume);
+      console.log('[SimpleChat] resuming observers : ', observers, _this, _this._onResume);
 
       let observersList = Object.keys(observers);
       if (observersList.length > 0) {
@@ -172,7 +235,7 @@ class GroupChatManager {
 
           observersList.forEach((dataObjectObserverURL) => {
 
-            console.log('[GroupChatManager].syncher.resumeObserver: ', dataObjectObserverURL);
+            console.log('[SimpleChat].syncher.resumeObserver: ', dataObjectObserverURL);
 
             let chatObserver = observers[dataObjectObserverURL];
 
@@ -213,7 +276,7 @@ class GroupChatManager {
       }
 
     }).catch((reason) => {
-      console.info('[GroupChatManager] Resume Observer | ', reason);
+      console.info('[SimpleChat] Resume Observer | ', reason);
     });
   }
 
@@ -234,7 +297,7 @@ class GroupChatManager {
 
       // let name = communication.name;
 
-      console.log('[GroupChatManager._resumeInterworking for] ', participants);
+      console.log('[SimpleChat._resumeInterworking for] ', participants);
 
       Object.keys(participants).forEach((participant) => {
 
@@ -242,7 +305,7 @@ class GroupChatManager {
 
         if (user[0] !== 'user') {
 
-          console.log('[GroupChatManager._resumeInterworking for] ', participant);
+          console.log('[SimpleChat._resumeInterworking for] ', participant);
 
           user = user[0] + '://' + user[1].split('/')[1];
 
@@ -266,13 +329,10 @@ class GroupChatManager {
    * @return {<Promise>ChatController}    A ChatController object as a Promise.
    */
   create(name, users, extra = {}) {
-
-    extra.backup = this._backup;
-    extra.heartbeat = this._heartbeat;
-
-    console.log('[GroupChatManager.create] extra: ', extra);
-
     return this._manager.create(name, users, extra);
+
+
+
   }
 
 
@@ -309,7 +369,7 @@ class GroupChatManager {
    * @return {<Promise>Identity}             It returns the Identity object as a Promise
    */
   myIdentity(identity) {
-    console.log('[GroupChatManager.myIdentity] ', identity);
+    console.log('[SimpleChat.myIdentity] ', identity);
     return this._manager.myIdentity(identity);
 
 
@@ -337,8 +397,8 @@ class GroupChatManager {
 export default function activate(hypertyURL, bus, configuration, factory) {
 
   return {
-    name: 'GroupChatManager',
-    instance: new GroupChatManager(hypertyURL, bus, configuration, factory)
+    name: 'SimpleChat',
+    instance: new SimpleChat(hypertyURL, bus, configuration, factory)
   };
 
 }
