@@ -87,7 +87,7 @@ class ElearningPlayer {
 
     return new Promise((resolve) => {
 
-      function keepTrying() {
+/*      function keepTrying() {
         _this.reporter.invitations = [];
         _this.reporter.inviteObservers([observer]);
 
@@ -100,26 +100,38 @@ class ElearningPlayer {
             keepTrying();
           }, 100);
         });
+      }*/
+
+      if (_this.reporter) {
+        console.log('[ElearningPlayer.invite] reporter ', _this.reporter)
+        _this.reporter.inviteObservers([observer])
+           console.info('[ElearningPlayer] invited: ', observer);
+
+          resolve();
+
+      } else {
+        reject('[ElearningPlayer.invite] Reporter not created yet');
       }
-      keepTrying();
     });
 
   }
 
 
   initQuizSubmission() {
+    let _this = this;
+
     return new Promise((resolve) => {
 
+      _this._resumeReporters().then((result) => {
 
-      let _this = this;
-      if (_this.reporter == null) {
+      console.log('[ElearningPlayer] resume ', result);
 
-      let input = { 
+      if (!result) {
+        let input = { 
           resources: ['learning-context'], 
           "domain_registration": false,
            "domain_routing": false 
           };
-
 
         _this.syncher.create(_this.objectDescURL, [], {}, true, false, 'elearning', {}, input)
           .then((reporter) => {
@@ -135,7 +147,8 @@ class ElearningPlayer {
         resolve(true);
       }
     });
-  }
+  });
+}
 
 
   answer(id, answers) {
