@@ -17,7 +17,7 @@ function hypertyLoaded(result) {
 
       console.log('[LearningPlayerDemo] resume ', result);
 
-      if (result.length === 0 ) {
+      if (!result ) {
         elearningPlayer.invite('hyperty://sharing-cities-dsm/elearning').then(() => {
           console.log('[LearningPlayerDemo] invited "hyperty://sharing-cities-dsm/elearning"');
         });
