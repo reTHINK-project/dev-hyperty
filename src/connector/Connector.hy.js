@@ -145,7 +145,12 @@ class Connector {
 
     console.info('---------------- Syncher Subscribe (Auto Subscribe) ---------------- \n');
     console.info('Subscribe URL Object ', event);
-    syncher.subscribe(_this._objectDescURL, event.url).then(function(dataObjectObserver) {
+    let input = {
+      schema: _this._objectDescURL,
+      resource: event.url
+    };
+
+    syncher.subscribe(input).then(function(dataObjectObserver) {
       console.info('1. Return Subscribe Data Object Observer', dataObjectObserver);
       _this._controllers[event.from].dataObjectObserver = dataObjectObserver;
     }).catch(function(reason) {
@@ -159,7 +164,12 @@ class Connector {
 
     console.info('---------------- Syncher Subscribe (Auto Accept) ---------------- \n');
     console.info('Subscribe URL Object ', event);
-    syncher.subscribe(_this._objectDescURL, event.url ).then(function(dataObjectObserver) {
+    let input = {
+      schema: _this._objectDescURL,
+      resource: event.url
+    };
+
+    syncher.subscribe(input).then(function(dataObjectObserver) {
       console.info('1. Return Subscribe Data Object Observer', dataObjectObserver);
 
       let connectionController = new ConnectionController(syncher, _this._domain, _this._configuration,  _this._removeController, _this, event.from);

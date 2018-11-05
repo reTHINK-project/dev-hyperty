@@ -134,7 +134,17 @@ class Wallet {
         if (reply.body.code == 200) {
           if (! resumedPrivate) {
             console.log('[Wallet] subscribe private');
-            _this.syncher.subscribe(_this.objectDescURL, reply.body.reporter_url, true, false, true, false, null).then(function (obj) {
+            let input = {
+              schema: _this.objectDescURL,
+              resource: reply.body.reporter_url,
+              store: true,
+              p2p: false,
+              mutual: true,
+              domain_subscription: false
+//              identity: null
+            };
+        
+            _this.syncher.subscribe(input).then(function (obj) {
               console.log('[Wallet] subscribe result :', obj);
 
               let updateBalance = {
@@ -178,7 +188,17 @@ class Wallet {
 
           if (! resumedPublic) {
             console.log('[Wallet] subscribe public');
-            _this.syncher.subscribe(_this.objectDescURL, reply.body.publics_url, true, false, true, false, null).then(function (obj) {
+            let input = {
+              schema: _this.objectDescURL,
+              resource: reply.body.publics_url,
+              store: true,
+              p2p: false,
+              mutual: true,
+              domain_subscription: false
+//              identity: null
+            };
+
+            _this.syncher.subscribe(input).then(function (obj) {
               console.log('[Wallet] subscription result public wallets :', obj);
               let updateWallets = {
                 field: 'wallets',
