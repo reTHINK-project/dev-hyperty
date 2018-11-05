@@ -69,7 +69,11 @@ class SimpleChat {
     _this._resumeReporters();
     _this._resumeObservers();
 
+    console.log('[SimpleChat] configuration ', configuration);
+
     _this._manager.offline = configuration.offline ? configuration.offline : false;
+
+    _this._manager.backup = configuration.backup ? configuration.backup : false;
 
   }
 
