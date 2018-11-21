@@ -32,8 +32,6 @@ class Wallet {
       _this._resumeObservers(user).then(function (result) {
         console.log('[Wallet] private Resume result :', result);
       if (result) {
-        resumedPrivate = true;
-
 
         let updateBalance = {
           field: 'balance',
