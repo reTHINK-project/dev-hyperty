@@ -136,7 +136,9 @@ class Wallet {
         body: {
           type: 'create',
           from: _this.hypertyURL,
-          resource: 'wallet'
+          resource: 'wallet',
+          body: { mutual: false },
+          mutual: false
         }
       };
       let  resumedPrivate = false;
@@ -254,7 +256,7 @@ class Wallet {
 
     return new Promise((resolve, reject) => {
 
-      if (_this.identity != null ) {
+/*      if (_this.identity != null ) {
         let updateMessage = {
           type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
           identity: _this.identity,
@@ -270,13 +272,13 @@ class Wallet {
 
         _this.bus.postMessageWithRetries(updateMessage, _this.messageRetries, (reply) => {
 
-          console.log('[Wallet] update Reply', reply);
+          console.log('[Wallet] update Reply', reply);*/
           resolve(true);
-
+/*
         });
       } else {
         resolve(false);
-      }
+      }*/
 
 
     });
