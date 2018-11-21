@@ -60,7 +60,7 @@ class Wallet {
 
 
         result.onChange('*', (event) => {
-          console.log('[Wallet] New Change :', event);
+          console.log('[Wallet] New Change on Private: ', event);
           callback(event);
         });
 
@@ -94,7 +94,7 @@ class Wallet {
           callback(updateWallets);
   
           result.onChange('*', (event) => {
-            console.log('[Wallet] New Change :', event);
+            console.log('[Wallet] New Change on Public :', event);
             callback(event);
           });
           resolve(true);
@@ -168,7 +168,7 @@ class Wallet {
                 };
             
                 _this.syncher.subscribe(input).then(function (obj) {
-                  console.log('[Wallet] subscribe result :', obj);
+                  console.log('[Wallet] subscribe private result :', obj);
     
                   let updateBalance = {
                     field: 'balance',
@@ -196,14 +196,14 @@ class Wallet {
                   callback(updateBonusCredit);
     
                   obj.onChange('*', (event) => {
-                    console.log('[Wallet] New Change :', event);
+                    console.log('[Wallet] Private New Change :', event);
                     callback(event);
                   });
     
     
     
                 }).catch(function (error) {
-                  console.log('[Wallet] error', error);
+                  console.log('[Wallet] Private error', error);
                   reject();
     
                 });
@@ -231,7 +231,7 @@ class Wallet {
                   callback(updateWallets);
     
                   obj.onChange('*', (event) => {
-                    console.log('[Wallet] New Change :', event);
+                    console.log('[Wallet] Public New Change :', event);
                     callback(event);
                   });
                 });
