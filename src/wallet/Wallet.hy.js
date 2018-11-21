@@ -53,10 +53,16 @@ class Wallet {
           data: result.data['bonus-credit']
         };
 
+        let updateAccounts = {
+          field: 'accounts',
+          data: result.data.accounts
+        };
+
         callback(updateBalance);
         callback(updateTransactions);
         callback(updateRanking);
         callback(updateBonusCredit);
+        callback(updateAccounts);
 
 
         result.onChange('*', (event) => {
@@ -189,11 +195,17 @@ class Wallet {
                     field: 'bonus-credit',
                     data: obj.data['bonus-credit']
                   };
+
+                  let updateAccounts = {
+                    field: 'accounts',
+                    data: obj.data.accounts
+                  };
     
                   callback(updateBalance);
                   callback(updateTransactions);
                   callback(updateRanking);
                   callback(updateBonusCredit);
+                  callback(updateAccounts);
     
                   obj.onChange('*', (event) => {
                     console.log('[Wallet] Private New Change :', event);
