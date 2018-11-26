@@ -335,13 +335,13 @@ class Wallet {
         body: {
           type: 'read',
           from: _this.hypertyURL,
-          to: _this.walletAddress + '/subscription',
+          to: _this.walletAddress,
           body: {
             resource: 'wallet',
             value: _this.walletAddress,
             from: _this.hypertyURL
           },
-          identity: {},
+          identity: { userProfile: { guid: 'user-guid://' + _this.walletAddress } },
           resource: 'wallet',
           value: _this.walletAddress
         }
@@ -353,7 +353,7 @@ class Wallet {
       _this.bus.postMessageWithRetries(readMessage, _this.messageRetries, (reply) => {
 
         console.log('[Wallet] read message Reply', reply.body.value);
-        resolve(reply.body.value);
+        resolve(reply.body.value.body.wallet);
 
       });
 
