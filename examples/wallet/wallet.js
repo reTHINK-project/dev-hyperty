@@ -21,10 +21,12 @@ function hypertyReady(result, identity) {
     console.log('Wallet new update', event);
     if (event.field == 'balance') {
       $('.token-value').text(event.data);
-
     }
     else if (event.field == 'ranking') {
       $('.wallet-ranking').text(event.data);
+    }
+    else if (event.field == 'accounts') {
+      $('.accounts').text(event.data.length);
     }
     else if (event.field == 'bonus-credit') {
       $('.bonus-credit').text(event.data);
@@ -39,6 +41,13 @@ function hypertyReady(result, identity) {
   $('.wallet-delete').click(function () {
     result.instance.removeWallet().then(function (result) {
       console.log('Wallet removed from DB');
+    });
+  });
+
+
+  $('.wallet-read').click(function () {
+    result.instance.readWallet().then(function (result) {
+      console.log('Wallet read from DB: ', result);
     });
   });
 
