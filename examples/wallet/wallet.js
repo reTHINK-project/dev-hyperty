@@ -45,6 +45,13 @@ function hypertyReady(result, identity) {
   });
 
 
+  $('.wallet-read').click(function () {
+    result.instance.readWallet().then(function (result) {
+      console.log('Wallet read from DB: ', result);
+    });
+  });
+
+
   // get public wallets
   /*
   console.log('Wallet hyperty Ready', result, identity);
