@@ -268,7 +268,8 @@ class Wallet {
 
     return new Promise((resolve, reject) => {
 
-      if (_this.identity != null) {
+      if (_this.identity != null ) {
+
         let updateMessage = {
           type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
           identity: _this.identity,
@@ -284,13 +285,13 @@ class Wallet {
 
         _this.bus.postMessageWithRetries(updateMessage, _this.messageRetries, (reply) => {
 
-          console.log('[Wallet] update Reply', reply);*/
+          console.log('[Wallet] update Reply', reply);
           resolve(true);
-/*
+
         });
       } else {
         resolve(false);
-      }*/
+      }
 
 
     });
@@ -337,13 +338,13 @@ class Wallet {
         body: {
           type: 'read',
           from: _this.hypertyURL,
-          to: _this.walletAddress + '/subscription',
+          to: _this.walletAddress,
           body: {
             resource: 'wallet',
             value: _this.walletAddress,
             from: _this.hypertyURL
           },
-          identity: {},
+          identity: { userProfile: { guid: 'user-guid://' + _this.walletAddress } },
           resource: 'wallet',
           value: _this.walletAddress
         }
@@ -355,7 +356,7 @@ class Wallet {
       _this.bus.postMessageWithRetries(readMessage, _this.messageRetries, (reply) => {
 
         console.log('[Wallet] read message Reply', reply.body.value);
-        resolve(reply.body.value);
+        resolve(reply.body.value.body.wallet);
 
       });
 
