@@ -5,29 +5,26 @@ let elearningPlayer;
 
 function hypertyLoaded(result) {
 
-  console.log('LearningPlayer hyperty loaded!! ', result);
+  console.log('ElearningPlayer hyperty loaded!! ', result);
 
   elearningPlayer = result.instance;
 
   elearningPlayer.retrieveQuizzes('data://sharing-cities-dsm/elearning').then((result) => {
 
-    console.info('[LearningPlayerDemo] quizzes: ', result);
+    console.info('[ElearningPlayerDemo] quizzes: ', result);
 
+    elearningPlayer.initQuizSubmission().then(()=>{
+      elearningPlayer.invite('hyperty://sharing-cities-dsm/elearning').then(() => {
+        console.log('[ElearningPlayerDemo] invited "hyperty://sharing-cities-dsm/elearning"');
+      });
 
+    })
+
+  
   }).catch((reason) => {
     console.info('[LearningPlayerDemo] start failed | ', reason);
   });
 
-  elearningPlayer._resumeReporters().then((result) => {
-
-    elearningPlayer.initQuizSubmission();
-
-    
-    
-
-  }).catch((reason) => {
-    console.info('[LearningPlayerDemo] start failed | ', reason);
-  });
 }
 
 

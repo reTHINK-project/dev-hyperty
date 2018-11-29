@@ -21,17 +21,19 @@ function hypertyReady(result, identity) {
     console.log('Wallet new update', event);
     if (event.field == 'balance') {
       $('.token-value').text(event.data);
-
     }
     else if (event.field == 'ranking') {
       $('.wallet-ranking').text(event.data);
+    }
+    else if (event.field == 'accounts') {
+      $('.accounts').text(event.data.length);
     }
     else if (event.field == 'bonus-credit') {
       $('.bonus-credit').text(event.data);
     }
   }
 
-  const profileInfo = { ageRange: '18-25', workplace: 'Lisbon', cause: '0', balance: 10 };
+  const profileInfo = { ageRange: '18-25', workplace: 'Lisbon', cause: 'user-guid://school-0', balance: 10 };
   identity.profile = profileInfo;
   result.instance.start(afterUpdate, identity);
 

@@ -26,7 +26,7 @@ function hypertyLoaded(result, runtimeLoader = null) {
 
     runtimeLoader.authorise('google.com', 'user_activity_context').then(function(value) {
     }).catch(function(err) {
-      log.log(err);
+      console.log(err);
 
     });
 
