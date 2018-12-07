@@ -101,7 +101,8 @@ class HelloWorldObserver extends EventEmitter {
       schema: _this._objectDescURL,
       resource: event.url,
       store: true,
-      p2p: false
+      p2p: false,
+      mutual: false
     };
     // Subscribe Hello World Object
     _this._syncher.subscribe(input).then(function(helloObjtObserver) {
