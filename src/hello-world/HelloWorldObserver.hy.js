@@ -17,14 +17,14 @@ class HelloWorldObserver extends EventEmitter {
   */
   constructor(hypertyURL, bus, configuration, factory) {
 
-    if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
+/*    if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
     if (!bus) throw new Error('The MiniBus is a needed parameter');
     if (!configuration) throw new Error('The configuration is a needed parameter');
-    if (!factory) throw new Error('The factory is a needed parameter');
+    if (!factory) throw new Error('The factory is a needed parameter');*/
 
     super();
 
-    let _this = this;
+/*    let _this = this;
     let domain = factory.divideURL(hypertyURL).domain;
     _this._domain = domain;
 
@@ -50,7 +50,11 @@ class HelloWorldObserver extends EventEmitter {
       console.log('[hyperty syncher resume] - ', reason);
     });
 
-    _this._syncher = syncher;
+    _this._syncher = syncher;*/
+  }
+
+  hello(){
+    console.log('Hello World !');
   }
 
   _onNotification(event) {
@@ -108,12 +112,3 @@ class HelloWorldObserver extends EventEmitter {
 
 }
 export default HelloWorldObserver;
-
-export default function activate(hypertyURL, bus, configuration, factory) {
-
-  return {
-    name: 'HelloWorldObserver',
-    instance: new HelloWorldObserver(hypertyURL, bus, configuration, factory)
-  };
-
-}
