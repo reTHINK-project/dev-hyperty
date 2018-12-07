@@ -3,6 +3,7 @@
 // import {Syncher} from 'service-framework/dist/Syncher';
 // import {divideURL} from '../utils/utils';
 import EventEmitter from '../utils/EventEmitter';
+import helloWorldObserverDescriptor from './HelloWorldObserverDesc'
 
 /**
 * Hello World Observer
@@ -55,6 +56,10 @@ class HelloWorldObserver extends EventEmitter {
 
   hello(){
     console.log('Hello World !');
+  }
+
+  get descriptor() {
+    return helloWorldObserverDescriptor;
   }
 
   _onNotification(event) {
@@ -112,3 +117,18 @@ class HelloWorldObserver extends EventEmitter {
 
 }
 export default HelloWorldObserver;
+
+let descriptor = {
+  "language": "javascript",
+  "signature": "",
+  "configuration": {},
+  "constraints": {
+    "browser": true
+  },
+  "hypertyType": [
+    "hello"
+  ],
+  "dataObjects": [
+    "https://%domain%/.well-known/dataschema/HelloWorldDataSchema"
+  ]
+}

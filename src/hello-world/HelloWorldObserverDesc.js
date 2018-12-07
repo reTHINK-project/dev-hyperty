@@ -1,4 +1,4 @@
-let HelloWorldObserverDescriptor = {
+let helloWorldObserverDescriptor = {
   "language": "javascript",
   "signature": "",
   "configuration": {},
@@ -13,4 +13,4 @@ let HelloWorldObserverDescriptor = {
   ]
 };
 
-export default HelloWorldObserverDescriptor;
+export default helloWorldObserverDescriptor;
