@@ -1,1 +1,119 @@
-!function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define("activate",[],t):"object"==typeof exports?exports.activate=t():e.activate=t()}("undefined"!=typeof self?self:this,function(){return function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{configurable:!1,enumerable:!0,get:r})},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e,t,n,r){return{name:"HelloWorldObserver",instance:new s(e,t,n,r)}};var r=n(1);function o(e){return(o="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e})(e)}function i(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}function c(e){return(c=Object.setPrototypeOf?Object.getPrototypeOf:function(e){return e.__proto__||Object.getPrototypeOf(e)})(e)}function a(e,t){return(a=Object.setPrototypeOf||function(e,t){return e.__proto__=t,e})(e,t)}function u(e){if(void 0===e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return e}var s=function(e){function t(e,n,r,i){var a;if(function(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}(this,t),!e)throw new Error("The hypertyURL is a needed parameter");if(!n)throw new Error("The MiniBus is a needed parameter");if(!r)throw new Error("The configuration is a needed parameter");if(!i)throw new Error("The factory is a needed parameter");var s=u(u(a=function(e,t){return!t||"object"!==o(t)&&"function"!=typeof t?u(e):t}(this,c(t).call(this)))),f=i.divideURL(e).domain;s._domain=f,s._objectDescURL="hyperty-catalogue://catalogue."+f+"/.well-known/dataschema/HelloWorldDataSchema";var l=i.createSyncher(e,n,r);return l.onNotification(function(e){s._onNotification(e)}),l.resumeObservers({}).then(function(e){e&&(console.log("[hyperty syncher resume] - dataObject",e),Object.values(e).forEach(function(e){s._changes(e),e.sync()}))}).catch(function(e){console.log("[hyperty syncher resume] - ",e)}),s._syncher=l,a}return function(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function");e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,writable:!0,configurable:!0}}),t&&a(e,t)}(t,r["a"]),function(e,t,n){t&&i(e.prototype,t),n&&i(e,n)}(t,[{key:"_onNotification",value:function(e){var t=this;console.info("Event Received: ",e),t.trigger("invitation",e.identity),e.ack();var n={schema:t._objectDescURL,resource:e.url,store:!0,p2p:!1};t._syncher.subscribe(n).then(function(e){console.info(e),console.log("[hyperty syncher subscribe] - dataObject",e),t._changes(e)}).catch(function(e){console.error(e)})}},{key:"_changes",value:function(e){var t=this;console.log("[hyperty syncher] - dataObject",e),this.trigger("hello",e.data),e.onChange("*",function(n){console.info("message received:",n),"hello"===n.field&&t.trigger("hello",e.data)})}}]),t}()},function(e,t,n){"use strict";function r(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}var o=function(){function e(){!function(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}(this,e),this.__eventListeners={}}return function(e,t,n){t&&r(e.prototype,t),n&&r(e,n)}(e,[{key:"addEventListener",value:function(e,t){void 0!=t&&(this.__eventListeners[e]?this.__eventListeners[e].push(t):this.__eventListeners[e]=[t])}},{key:"trigger",value:function(e,t){var n=this.__eventListeners[e];n&&n.forEach(function(n){try{n(t)}catch(r){console.warn("calling listener "+n.name+" for event type "+e+" with parameters '"+t+"' resulted in an error!",r)}})}}]),e}();t.a=o}]).default});
+/* jshint undef: true */
+
+// import {Syncher} from 'service-framework/dist/Syncher';
+// import {divideURL} from '../utils/utils';
+import EventEmitter from '../utils/EventEmitter';
+
+/**
+* Hello World Observer
+* @author Paulo Chainho [paulo-g-chainho@telecom.pt]
+* @version 0.1.0
+*/
+class HelloWorldObserver extends EventEmitter {
+
+  /**
+  * Create a new HelloWorldObserver
+  * @param  {Syncher} syncher - Syncher provided from the runtime core
+  */
+  constructor(hypertyURL, bus, configuration, factory) {
+
+    if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
+    if (!bus) throw new Error('The MiniBus is a needed parameter');
+    if (!configuration) throw new Error('The configuration is a needed parameter');
+    if (!factory) throw new Error('The factory is a needed parameter');
+
+    super();
+
+    let _this = this;
+    let domain = factory.divideURL(hypertyURL).domain;
+    _this._domain = domain;
+
+    _this._objectDescURL = 'hyperty-catalogue://catalogue.' + domain + '/.well-known/dataschema/HelloWorldDataSchema';
+
+    let syncher = factory.createSyncher(hypertyURL, bus, configuration);
+    syncher.onNotification(function(event) {
+      _this._onNotification(event);
+    });
+
+    syncher.resumeObservers({}).then((resumedObservers) => {
+
+      if (!resumedObservers) return;
+      // lets now observe any changes done in Hello World Object
+      console.log('[hyperty syncher resume] - dataObject', resumedObservers);
+
+      Object.values(resumedObservers).forEach((helloObjtObserver) => {
+        _this._changes(helloObjtObserver);
+        helloObjtObserver.sync();
+      })
+
+    }).catch((reason) => {
+      console.log('[hyperty syncher resume] - ', reason);
+    });
+
+    _this._syncher = syncher;
+  }
+
+  _onNotification(event) {
+
+    let _this = this;
+
+    console.info('Event Received: ', event);
+
+    _this.trigger('invitation', event.identity);
+
+    // Acknowledge reporter about the Invitation was received
+    event.ack();
+
+    let input = {
+      schema: _this._objectDescURL,
+      resource: event.url,
+      store: true,
+      p2p: false
+    };
+    // Subscribe Hello World Object
+    _this._syncher.subscribe(input).then(function(helloObjtObserver) {
+
+      // Hello World Object was subscribed
+      console.info(helloObjtObserver);
+
+      // lets now observe any changes done in Hello World Object
+      console.log('[hyperty syncher subscribe] - dataObject', helloObjtObserver);
+
+      _this._changes(helloObjtObserver);
+
+    }).catch(function(reason) {
+      console.error(reason);
+    });
+  }
+
+  _changes(dataObject) {
+
+    console.log('[hyperty syncher] - dataObject', dataObject);
+
+    // lets notify the App the subscription was accepted with the mnost updated version of Hello World Object
+    this.trigger('hello', dataObject.data);
+
+    dataObject.onChange('*', (event) => {
+
+      // Hello World Object was changed
+      console.info('message received:', event);
+
+      if (event.field === 'hello') {
+        // lets notify the App about the change
+        this.trigger('hello', dataObject.data);
+      }
+
+    });
+  }
+
+}
+export default HelloWorldObserver;
+
+export default function activate(hypertyURL, bus, configuration, factory) {
+
+  return {
+    name: 'HelloWorldObserver',
+    instance: new HelloWorldObserver(hypertyURL, bus, configuration, factory)
+  };
+
+}
