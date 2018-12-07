@@ -4,6 +4,22 @@
 //import {divideURL} from '../utils/utils';
 import hello from './hello';
 
+const hypertyDescriptor = {
+  "name": "HelloWorldReporter",
+  "language": "javascript",
+  "signature": "",
+  "configuration": {
+  },
+  "constraints": {
+    "browser": true
+  },
+  "hypertyType": [
+    "hello"
+  ],
+  "dataObjects": [
+    "https://%domain%/.well-known/dataschema/HelloWorldDataSchema"
+  ]
+};
 /**
 * Hyperty Connector;
 * @author Paulo Chainho [paulo-g-chainho@telecom.pt]
@@ -15,7 +31,12 @@ class HelloWorldReporter {
   * Create a new HelloWorldReporter
   * @param  {Syncher} syncher - Syncher provided from the runtime core
   */
-  constructor(hypertyURL, bus, configuration, factory) {
+
+  constructor() {
+
+ }
+
+  _start(hypertyURL, bus, configuration, factory) {
 
     if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
     if (!bus) throw new Error('The MiniBus is a needed parameter');
@@ -56,6 +77,14 @@ class HelloWorldReporter {
 
     });*/
 
+  }
+
+  get descriptor() {
+    return hypertyDescriptor;
+  }
+
+  get name() {
+    return hypertyDescriptor.name;
   }
 
   /**
@@ -133,17 +162,5 @@ class HelloWorldReporter {
 
 }
 
+export default HelloWorldReporter;
 
-
-export default function activate(hypertyURL, bus, configuration, factory) {
-
- // console.log('Hello World Activate', factory);
-//  debugger;
-
-
-  return {
-    name: 'HelloWorldReporter',
-    instance: new HelloWorldReporter(hypertyURL, bus, configuration, factory)
-  };
-
-}

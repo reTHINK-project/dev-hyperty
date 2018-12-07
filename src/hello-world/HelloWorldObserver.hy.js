@@ -3,7 +3,23 @@
 // import {Syncher} from 'service-framework/dist/Syncher';
 // import {divideURL} from '../utils/utils';
 import EventEmitter from '../utils/EventEmitter';
-import helloWorldObserverDescriptor from './HelloWorldObserverDesc'
+//import helloWorldObserverDescriptor from './HelloWorldObserverDesc'
+
+const hypertyDescriptor = {
+  "name": "HelloWorldObserver",
+  "language": "javascript",
+  "signature": "",
+  "configuration": {},
+  "constraints": {
+    "browser": true
+  },
+  "hypertyType": [
+    "hello"
+  ],
+  "dataObjects": [
+    "https://%domain%/.well-known/dataschema/HelloWorldDataSchema"
+  ]
+};
 
 /**
 * Hello World Observer
@@ -16,16 +32,20 @@ class HelloWorldObserver extends EventEmitter {
   * Create a new HelloWorldObserver
   * @param  {Syncher} syncher - Syncher provided from the runtime core
   */
-  constructor(hypertyURL, bus, configuration, factory) {
+ constructor() {
+  super();
 
-/*    if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
+ }
+
+  _start(hypertyURL, bus, configuration, factory) {
+
+    if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
     if (!bus) throw new Error('The MiniBus is a needed parameter');
     if (!configuration) throw new Error('The configuration is a needed parameter');
-    if (!factory) throw new Error('The factory is a needed parameter');*/
+    if (!factory) throw new Error('The factory is a needed parameter');
 
-    super();
 
-/*    let _this = this;
+    let _this = this;
     let domain = factory.divideURL(hypertyURL).domain;
     _this._domain = domain;
 
@@ -51,7 +71,7 @@ class HelloWorldObserver extends EventEmitter {
       console.log('[hyperty syncher resume] - ', reason);
     });
 
-    _this._syncher = syncher;*/
+    _this._syncher = syncher;
   }
 
   hello(){
@@ -59,7 +79,11 @@ class HelloWorldObserver extends EventEmitter {
   }
 
   get descriptor() {
-    return helloWorldObserverDescriptor;
+    return hypertyDescriptor;
+  }
+
+  get name(){
+    return hypertyDescriptor.name;
   }
 
   _onNotification(event) {
@@ -118,17 +142,3 @@ class HelloWorldObserver extends EventEmitter {
 }
 export default HelloWorldObserver;
 
-let descriptor = {
-  "language": "javascript",
-  "signature": "",
-  "configuration": {},
-  "constraints": {
-    "browser": true
-  },
-  "hypertyType": [
-    "hello"
-  ],
-  "dataObjects": [
-    "https://%domain%/.well-known/dataschema/HelloWorldDataSchema"
-  ]
-}
