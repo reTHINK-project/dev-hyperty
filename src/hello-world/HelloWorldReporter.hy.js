@@ -57,6 +57,8 @@ class HelloWorldReporter {
 
     _this._syncher = syncher;
 
+    _this._runtimeHypertyURL = hypertyURL;
+
     /*_this._syncher.resumeReporters({}).then((resumeReporters) => {
 
       if (!resumeReporters) return;
@@ -85,6 +87,10 @@ class HelloWorldReporter {
 
   get name() {
     return hypertyDescriptor.name;
+  }
+
+  get runtimeHypertyURL(){
+    return this._runtimeHypertyURL;
   }
 
   /**

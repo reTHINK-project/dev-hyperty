@@ -72,11 +72,9 @@ class HelloWorldObserver extends EventEmitter {
     });
 
     _this._syncher = syncher;
+    _this._runtimeHypertyURL = hypertyURL;
   }
 
-  hello(){
-    console.log('Hello World !');
-  }
 
   get descriptor() {
     return hypertyDescriptor;
@@ -84,6 +82,10 @@ class HelloWorldObserver extends EventEmitter {
 
   get name(){
     return hypertyDescriptor.name;
+  }
+
+  get runtimeHypertyURL(){
+    return this._runtimeHypertyURL;
   }
 
   _onNotification(event) {
