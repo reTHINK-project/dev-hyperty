@@ -48,7 +48,6 @@ class Connector  {
   * Create a new Hyperty Connector
   */
   constructor() {
-    super();
   }
 
   get name(){
