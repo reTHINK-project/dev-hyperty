@@ -32,8 +32,8 @@
 //import {divideURL} from '../utils/utils.js';
 //import URI from 'urijs';
 
-import availability from './availability.js';
 import { hypertyDescriptor } from './ReporterHypertyDescriptor';
+import availability from './availability.js';
 
 /**
 * Hyperty User Availability;
@@ -42,12 +42,15 @@ import { hypertyDescriptor } from './ReporterHypertyDescriptor';
 */
 class UserAvailabilityReporter {
 
-  constructor() {}
+  constructor() {
+
+  }
   get name(){
     return hypertyDescriptor.name;
   }
 
   get descriptor() {
+
     return hypertyDescriptor;
   }
 
@@ -186,11 +189,4 @@ onResumeReporter(callback) {
 
 }
 
-export default function activate(hypertyURL, bus, configuration, factory) {
-
-  return {
-    name: 'UserAvailabilityReporter',
-    instance: new UserAvailabilityReporter(hypertyURL, bus, configuration, factory)
-  };
-
-}
+export default UserAvailabilityReporter;
