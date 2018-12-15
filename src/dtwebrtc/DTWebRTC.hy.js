@@ -12,7 +12,10 @@ import { hypertyDescriptor } from './HypertyDescriptor';
 import 'webrtc-adapter-test';
 
 class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to recieve events
-  constructor() {}
+  constructor() {
+    super(); // call event emitter constructor to be able to receive things
+
+  }
   get name(){
     return hypertyDescriptor.name;
   }
@@ -29,7 +32,6 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
     if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
     if (!bus) throw new Error('The MiniBus is a needed parameter');
     if (!configuration) throw new Error('The configuration is a needed parameter');
-    super(); // call event emitter constructor to be able to receive things
 
     this._domain = factory.divideURL(hypertyURL).domain;
     this._objectDescURL = 'hyperty-catalogue://catalogue.' + this._domain + '/.well-known/dataschema/Connection';
