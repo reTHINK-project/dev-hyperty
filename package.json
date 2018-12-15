@@ -1,6 +1,9 @@
 {
   "name": "dev-hyperty",
   "version": "0.6.0",
+  "files": [
+    "dist"
+  ],
   "description": "Source code of hyperties",
   "main": ".eslintrc.js",
   "directories": {
@@ -14,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/reTHINK-project/dev-hyperty.git"
+    "url": "git+ssh://git@github.com:reTHINK-project/dev-runtime-core.git"
   },
   "author": "Rethink Project",
   "license": "ISC",
