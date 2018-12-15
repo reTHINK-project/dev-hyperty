@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:reTHINK-project/dev-runtime-core.git"
+    "url": "git+ssh://git@github.com:reTHINK-project/dev-hyperty.git"
   },
   "author": "Rethink Project",
   "license": "ISC",
