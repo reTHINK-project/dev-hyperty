@@ -21,17 +21,17 @@ function hypertyLoaded(result) {
     }
   });
 
-  chatGroupManager = result.instance;
+  chatGroupManager = result;
   chatGroupManager.onInvitation((event) => {
     onInvitation(event);
   });
 
   // Prepare to discover email:
-//  var search = result.instance.search;
-  console.log('[GroupChatManagerDemo.hypertyLoaded] getting identity for hyperty ', result.instance);
+//  var search = result.search;
+  console.log('[GroupChatManagerDemo.hypertyLoaded] getting identity for hyperty ', result);
 
 
-  result.instance.myIdentity().then(function(identity) {
+  result.myIdentity().then(function(identity) {
     hypertyReady(result, identity);
   });
 }

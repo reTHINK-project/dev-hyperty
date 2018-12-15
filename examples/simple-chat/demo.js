@@ -23,18 +23,18 @@ function hypertyLoaded(result) {
     }
   });
 
-  simpleChat = result.instance;
+  simpleChat = result;
   window.simpleChat = simpleChat;
   simpleChat.onInvitation((event) => {
     onInvitation(event);
   });
 
   // Prepare to discover email:
-  //  var search = result.instance.search;
-  console.log('[SimpleChatDemo.hypertyLoaded] getting identity for hyperty ', result.instance);
+  //  var search = result.search;
+  console.log('[SimpleChatDemo.hypertyLoaded] getting identity for hyperty ', result);
 
 
-  result.instance.myIdentity().then(function (identity) {
+  result.myIdentity().then(function (identity) {
     hypertyReady(result, identity);
     _this.identity = identity;
   });

@@ -1,5 +1,4 @@
 {
-  "name": "Connector",
   "configuration": {
       "iceServers": [
            {

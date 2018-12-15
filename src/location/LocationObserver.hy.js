@@ -2,13 +2,28 @@
 //import {Discovery} from 'service-framework/dist/Discovery';
 //import URI from 'urijs'
 //import {ContextObserver} from 'service-framework/dist/ContextManager';
+import { hypertyDescriptor } from './ObserverHypertyDescriptor';
 
 
 class LocationObserverHyperty {
 
-  constructor(hypertyURL, bus, config, factory) {
-    //    this._domain = divideURL(hypertyURL).domain;
-    
+    constructor() {}
+
+  get name(){
+    return hypertyDescriptor.name;
+  }
+
+  get descriptor() {
+    return hypertyDescriptor;
+  }
+
+  get runtimeHypertyURL(){
+    return this.hypertyURL;
+  }
+
+  _start(hypertyURL, bus, config, factory) {
+            //    this._domain = divideURL(hypertyURL).domain;
+    this.hypertyURL = hypertyURL;
     this._context = factory.createContextObserver(hypertyURL, bus, config,['location-context']);
 
     /*    let uri = new URI(hypertyURL);
@@ -90,10 +105,4 @@ class LocationObserverHyperty {
 
 }
 
-export default function activate(hypertyURL, bus, config, factory){
-
-    return {
-        name: 'LocationObserver',
-        instance: new LocationObserverHyperty(hypertyURL, bus, config, factory)
-    };
-}
+export default LocationObserverHyperty;

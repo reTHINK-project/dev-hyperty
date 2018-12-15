@@ -1,12 +1,12 @@
 
 function hypertyLoaded(result, runtimeLoader = null) {
 
-  console.log('Wallet hyperty loaded', result.instance);
+  console.log('Wallet hyperty loaded', result);
   if (runtimeLoader != null) {
     runtimeLoader.requireProtostub('sharing-cities-dsm');
   }
 
-  result.instance.identityManager.discoverUserRegistered().then(function (identity) {
+  result.identityManager.discoverUserRegistered().then(function (identity) {
     hypertyReady(result, identity);
   });
 
@@ -35,18 +35,18 @@ function hypertyReady(result, identity) {
 
   const profileInfo = { ageRange: '18-25', workplace: 'Lisbon', cause: 'user-guid://school-0', balance: 10 };
   identity.profile = profileInfo;
-  result.instance.start(afterUpdate, identity);
+  result.start(afterUpdate, identity);
 
 
   $('.wallet-delete').click(function () {
-    result.instance.removeWallet().then(function (result) {
+    result.removeWallet().then(function (result) {
       console.log('Wallet removed from DB');
     });
   });
 
 
   $('.wallet-read').click(function () {
-    result.instance.readWallet().then(function (result) {
+    result.readWallet().then(function (result) {
       console.log('Wallet read from DB: ', result);
     });
   });
@@ -70,5 +70,5 @@ function hypertyReady(result, identity) {
     }
   };
 
-  result.instance.start(afterUpdate, identity);*/
+  result.start(afterUpdate, identity);*/
 }

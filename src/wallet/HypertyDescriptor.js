@@ -1,0 +1,19 @@
+export let hypertyDescriptor = {
+  "name": "Wallet",
+  "configuration": {
+    "domain_registration": false,
+    "domain_routing": false,
+    "retries": 10
+  },
+  "hypertyType": [
+    "location-context"
+  ],
+  "constraints": {
+    "browser": true
+  },
+  "language": "javascript",
+  "signature": "",
+  "dataObjects": [
+    "https://catalogue.%domain%/.well-known/dataschema/WalletData"
+  ]
+}

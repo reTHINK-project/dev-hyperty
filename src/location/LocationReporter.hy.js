@@ -1,6 +1,7 @@
 //import { Syncher } from 'service-framework/dist/Syncher';
 import URI from 'urijs';
 import position from './position';
+import { hypertyDescriptor } from './ReporterHypertyDescriptor';
 //import Search from '../utils/Search';
 //import IdentityManager from 'service-framework/dist/IdentityManager';
 //import { Discovery } from 'service-framework/dist/Discovery';
@@ -9,8 +10,21 @@ import position from './position';
 class LocationHypertyFactory {
 
 
-  constructor(hypertyURL, bus, config, factory) {
-    let uri = new URI(hypertyURL);
+  constructor() {}
+  get name(){
+    return hypertyDescriptor.name;
+  }
+
+  get descriptor() {
+    return hypertyDescriptor;
+  }
+
+  get runtimeHypertyURL(){
+    return this.hypertyURL;
+  }
+
+  _start(hypertyURL, bus, config, factory) {
+      let uri = new URI(hypertyURL);
     this.objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Context`;
     this.syncher = factory.createSyncher(hypertyURL, bus, config);
     this.identityManager = factory.createIdentityManager(hypertyURL, config.runtimeURL, bus);
@@ -288,9 +302,4 @@ class LocationHypertyFactory {
 
 }
 
-export default function activate(hypertyURL, bus, config, factory) {
-  return {
-    name: 'LocationReporter',
-    instance: new LocationHypertyFactory(hypertyURL, bus, config, factory)
-  };
-}
+export default LocationHypertyFactory;

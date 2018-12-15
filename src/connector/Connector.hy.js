@@ -55,8 +55,6 @@ class Connector  {
   }
 
   get descriptor() {
-    console.log('[Connector.getDescripto]');
-//    debugger;
     return hypertyDescriptor;
   }
 
