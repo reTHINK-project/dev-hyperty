@@ -3,6 +3,23 @@
 // import {Syncher} from 'service-framework/dist/Syncher';
 // import {divideURL} from '../utils/utils';
 import EventEmitter from '../utils/EventEmitter';
+//import helloWorldObserverDescriptor from './HelloWorldObserverDesc'
+
+const hypertyDescriptor = {
+  "name": "HelloWorldObserver",
+  "language": "javascript",
+  "signature": "",
+  "configuration": {},
+  "constraints": {
+    "browser": true
+  },
+  "hypertyType": [
+    "hello"
+  ],
+  "dataObjects": [
+    "https://%domain%/.well-known/dataschema/HelloWorldDataSchema"
+  ]
+};
 
 /**
 * Hello World Observer
@@ -15,14 +32,18 @@ class HelloWorldObserver extends EventEmitter {
   * Create a new HelloWorldObserver
   * @param  {Syncher} syncher - Syncher provided from the runtime core
   */
-  constructor(hypertyURL, bus, configuration, factory) {
+ constructor() {
+  super();
+
+ }
+
+  _start(hypertyURL, bus, configuration, factory) {
 
     if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
     if (!bus) throw new Error('The MiniBus is a needed parameter');
     if (!configuration) throw new Error('The configuration is a needed parameter');
     if (!factory) throw new Error('The factory is a needed parameter');
 
-    super();
 
     let _this = this;
     let domain = factory.divideURL(hypertyURL).domain;
@@ -51,6 +72,20 @@ class HelloWorldObserver extends EventEmitter {
     });
 
     _this._syncher = syncher;
+    _this._runtimeHypertyURL = hypertyURL;
+  }
+
+
+  get descriptor() {
+    return hypertyDescriptor;
+  }
+
+  get name(){
+    return hypertyDescriptor.name;
+  }
+
+  get runtimeHypertyURL(){
+    return this._runtimeHypertyURL;
   }
 
   _onNotification(event) {
@@ -68,7 +103,8 @@ class HelloWorldObserver extends EventEmitter {
       schema: _this._objectDescURL,
       resource: event.url,
       store: true,
-      p2p: false
+      p2p: false,
+      mutual: false
     };
     // Subscribe Hello World Object
     _this._syncher.subscribe(input).then(function(helloObjtObserver) {
@@ -107,12 +143,5 @@ class HelloWorldObserver extends EventEmitter {
   }
 
 }
+export default HelloWorldObserver;
 
-export default function activate(hypertyURL, bus, configuration, factory) {
-
-  return {
-    name: 'HelloWorldObserver',
-    instance: new HelloWorldObserver(hypertyURL, bus, configuration, factory)
-  };
-
-}

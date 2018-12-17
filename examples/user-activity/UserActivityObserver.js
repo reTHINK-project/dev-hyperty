@@ -1,10 +1,10 @@
 
 function hypertyLoaded(result, runtimeLoader = null) {
 
-  console.log('UserActivityObserver hyperty loaded', result.instance);
+  console.log('UserActivityObserver hyperty loaded', result);
 
   $('.stop-hyperty').click(function() {
-    result.instance.stop();
+    result.stop();
   }); 
 
   $('.restart-hyperty').click(function () {
@@ -15,7 +15,7 @@ function hypertyLoaded(result, runtimeLoader = null) {
 
       }
     }
-    result.instance.start(afterUpdate, null);
+    result.start(afterUpdate, null);
   }); 
 
 
@@ -30,11 +30,13 @@ function hypertyLoaded(result, runtimeLoader = null) {
 
     });
 
-    const walletUrl = 'hyperty-catalogue://catalogue.localhost/.well-known/hyperty/Wallet';
-    runtimeLoader.requireHyperty(walletUrl).then(function(res) {
+    const walletName = 'Wallet';
+    import( '../../dev-hyperty/dist/' + walletName +'.hy')
+    .then((hypertyModule) => {
+      runtimeLoader.requireHyperty(walletUrl).then(function(res) {
       // your code
       console.log('loaded wallet ', res);
-      const wallet = res.instance;
+      const wallet = res;
 
       function getDistance(activities) {
         let distance = 0;
@@ -80,11 +82,9 @@ function hypertyLoaded(result, runtimeLoader = null) {
           // TODO - parse and show info on sessions
           $('.token-amount').text(event.data.balance);
         }
-
-
       }
 
-      res.instance.identityManager
+      res.identityManager
         .discoverUserRegistered()
         .then(function(identity) {
           let profileInfo = {};
@@ -95,10 +95,11 @@ function hypertyLoaded(result, runtimeLoader = null) {
       .catch(function(reason) {
         console.error(reason);
       });
+    });
 
   }
 
-  result.instance.identityManager.discoverUserRegistered().then(function(identity) {
+  result.identityManager.discoverUserRegistered().then(function(identity) {
     hypertyReady(result, identity);
   });
 
@@ -115,5 +116,5 @@ function hypertyReady(result, identity) {
 
     }
   }
-  result.instance.start(afterUpdate, identity);
+  result.start(afterUpdate, identity);
 }

@@ -5,10 +5,10 @@
 
 
 function hypertyLoaded(result) {
-    console.log('hyperty loaded', result.instance);
-    let locationHyperty = result.instance;
+    console.log('hyperty loaded', result);
+    let locationHyperty = result;
 
-    /*  result.instance.getCurrentPosition().then((position)=> {
+    /*  result.getCurrentPosition().then((position)=> {
   
         console.log("[LocationReporter.demo] current position: ", position)
          setTimeout(()=>{

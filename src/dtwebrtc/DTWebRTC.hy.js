@@ -3,6 +3,7 @@
 //import {Syncher} from 'service-framework/dist/Syncher';
 //import {divideURL} from '../utils/utils';
 import EventEmitter from '../utils/EventEmitter'; // for receiving
+import { hypertyDescriptor } from './HypertyDescriptor';
 //import Search from '../utils/Search';
 //import iceconfig from './stunTurnserverConfig';
 //import IdentityManager from 'service-framework/dist/IdentityManager';
@@ -11,12 +12,26 @@ import EventEmitter from '../utils/EventEmitter'; // for receiving
 import 'webrtc-adapter-test';
 
 class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to recieve events
+  constructor() {
+    super(); // call event emitter constructor to be able to receive things
 
-  constructor(hypertyURL, bus, configuration, factory) {
+  }
+  get name(){
+    return hypertyDescriptor.name;
+  }
+
+  get descriptor() {
+    return hypertyDescriptor;
+  }
+
+  get runtimeHypertyURL(){
+    return this.myUrl;
+  }
+
+  _start(hypertyURL, bus, configuration, factory) {
     if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
     if (!bus) throw new Error('The MiniBus is a needed parameter');
     if (!configuration) throw new Error('The configuration is a needed parameter');
-    super(); // call event emitter constructor to be able to receive things
 
     this._domain = factory.divideURL(hypertyURL).domain;
     this._objectDescURL = 'hyperty-catalogue://catalogue.' + this._domain + '/.well-known/dataschema/Connection';
@@ -369,9 +384,4 @@ class DTWebRTC extends EventEmitter { // extends EventEmitter because we need to
 }
 
 
-export default function activate(hypertyURL, bus, configuration, factory) {
-  return {
-    name: 'DTWebRTC',
-    instance: new DTWebRTC(hypertyURL, bus, configuration, factory)
-  };
-}
+export default DTWebRTC;

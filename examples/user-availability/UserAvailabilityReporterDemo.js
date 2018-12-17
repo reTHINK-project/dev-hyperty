@@ -7,9 +7,9 @@ function hypertyLoaded(result) {
   console.log('hypertyLoaded', result);
 
     // Prepare to discover email:
-    var search = result.instance.search;
+    var search = result.search;
 
-    result.instance.identityManager.discoverUserRegistered().then(function(identity) {
+    result.identityManager.discoverUserRegistered().then(function(identity) {
       hypertyReady(result, identity);
     });
   }
@@ -33,7 +33,7 @@ function hypertyReady(result, identity) {
   $cardPanel.append(userInfo);
   $cardPanel.append(hypertyInfo);
 
-  userAvailabilityHy = result.instance;
+  userAvailabilityHy = result;
   let $myAvailability = $('.my_availability');
 
   Handlebars.getTemplate('user-availability/user-card').then(function(template) {

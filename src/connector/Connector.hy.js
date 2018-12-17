@@ -32,20 +32,37 @@
 //import {divideURL} from '../utils/utils';
 
 // Internals
+import { hypertyDescriptor } from './ConnectorDescriptor';
 import ConnectionController from './ConnectionController';
 import { connection } from './connection';
-import Search from '../utils/Search';
+//import AbstractHyperty from '../AbstractHyperty';
+
+
 
 /**
  *
  */
-class Connector {
+class Connector  {
 
   /**
   * Create a new Hyperty Connector
-  * @param  {Syncher} syncher - Syncher provided from the runtime core
   */
-  constructor(hypertyURL, bus, configuration, factory) {
+  constructor() {
+  }
+
+  get name(){
+    return hypertyDescriptor.name;
+  }
+
+  get descriptor() {
+    return hypertyDescriptor;
+  }
+
+  get runtimeHypertyURL(){
+    return this._hypertyURL;
+  }
+
+  _start(hypertyURL, bus, configuration, factory) {
 
     if (!hypertyURL) throw new Error('The hypertyURL is a needed parameter');
     if (!bus) throw new Error('The MiniBus is a needed parameter');
@@ -118,8 +135,8 @@ class Connector {
     _this._syncher = syncher;
 
     let msgToInit = {
-        type: 'init', from: hypertyURL, to: 'sip://test@rethink-project.eu',
-        body: {source: hypertyURL, schema: _this._objectDescURL}
+      type: 'init', from: hypertyURL, to: 'sip://test@rethink-project.eu',
+      body: { source: hypertyURL, schema: _this._objectDescURL }
     };
 
     // bus.postMessage(msgToInit, (reply) => {
@@ -133,10 +150,10 @@ class Connector {
     let _this = this;
 
     if (controllers) {
-        delete controllers[controller];
+      delete controllers[controller];
 
-        console.log('[Connector] removed controller for ', controller);
-      }
+      console.log('[Connector] removed controller for ', controller);
+    }
   }
 
   _autoSubscribe(event) {
@@ -150,10 +167,10 @@ class Connector {
       resource: event.url
     };
 
-    syncher.subscribe(input).then(function(dataObjectObserver) {
+    syncher.subscribe(input).then(function (dataObjectObserver) {
       console.info('1. Return Subscribe Data Object Observer', dataObjectObserver);
       _this._controllers[event.from].dataObjectObserver = dataObjectObserver;
-    }).catch(function(reason) {
+    }).catch(function (reason) {
       console.error(reason);
     });
   }
@@ -169,10 +186,10 @@ class Connector {
       resource: event.url
     };
 
-    syncher.subscribe(input).then(function(dataObjectObserver) {
+    syncher.subscribe(input).then(function (dataObjectObserver) {
       console.info('1. Return Subscribe Data Object Observer', dataObjectObserver);
 
-      let connectionController = new ConnectionController(syncher, _this._domain, _this._configuration,  _this._removeController, _this, event.from);
+      let connectionController = new ConnectionController(syncher, _this._domain, _this._configuration, _this._removeController, _this, event.from);
       connectionController.connectionEvent = event;
       connectionController.dataObjectObserver = dataObjectObserver;
 
@@ -196,19 +213,19 @@ class Connector {
           name: 'anonymous',
           userURL: 'anonymous',
           preferred_username: "anonymous"
-            };
-          }
+        };
+      }
 
       if (ongoingCall) {
         // ongoing call lets decline we busy
         connectionController.decline(486, 'Busy Here');
       } else if (_this._onInvitation) {
         // TODO: user object with {identity: event.identity, assertedIdentity: assertedIdentity}
-       _this._onInvitation(connectionController, identity.userProfile);
+        _this._onInvitation(connectionController, identity.userProfile);
       }
 
       console.info('------------------------ END ---------------------- \n');
-    }).catch(function(reason) {
+    }).catch(function (reason) {
       console.error(reason);
     });
   }
@@ -230,59 +247,59 @@ class Connector {
 
     console.log('connecting: ', userURL);
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
       let connectionController;
       let selectedHyperty;
       console.info('------------------------ Syncher Create ----------------------  \n');
 
-      _this.search.myIdentity().then(function(identity) {
+      _this.search.myIdentity().then(function (identity) {
 
         console.log('connector searching: ', [userURL], `at domain `, [domain]);
         console.log('identity: ', identity, _this.connectionObject);
 
         return _this.search.users([userURL], [domain], scheme, resource);
       })
-      .then(function(hypertiesIDs) {
+        .then(function (hypertiesIDs) {
 
-        // Only support one to one connection;*/
-        selectedHyperty = hypertiesIDs[0].hypertyID;
-        console.info('Only support communication one to one, selected hyperty: ', selectedHyperty);
+          // Only support one to one connection;*/
+          selectedHyperty = hypertiesIDs[0].hypertyID;
+          console.info('Only support communication one to one, selected hyperty: ', selectedHyperty);
 
-        let connectionName = 'Connection';
-        if (name) {
-          connectionName = name;
-        }
+          let connectionName = 'Connection';
+          if (name) {
+            connectionName = name;
+          }
 
-        // Initial data
-        _this.connectionObject.name = connectionName;
-        _this.connectionObject.scheme = 'connection';
-        _this.connectionObject.owner = _this._hypertyURL;
-        _this.connectionObject.peer = selectedHyperty;
-        _this.connectionObject.status = '';
+          // Initial data
+          _this.connectionObject.name = connectionName;
+          _this.connectionObject.scheme = 'connection';
+          _this.connectionObject.owner = _this._hypertyURL;
+          _this.connectionObject.peer = selectedHyperty;
+          _this.connectionObject.status = '';
 
-        return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject, false, false, name, {}, {resources: ['audio', 'video']});
-      })
-      .catch(function(reason) {
-        console.error(reason);
-        reject(reason);
-      })
-      .then(function(dataObjectReporter) {
-        console.info('1. Return Create Data Object Reporter', dataObjectReporter);
+          return syncher.create(_this._objectDescURL, [selectedHyperty], _this.connectionObject, false, false, name, {}, { resources: ['audio', 'video'] });
+        })
+        .catch(function (reason) {
+          console.error(reason);
+          reject(reason);
+        })
+        .then(function (dataObjectReporter) {
+          console.info('1. Return Create Data Object Reporter', dataObjectReporter);
 
-        connectionController = new ConnectionController(syncher, _this._domain, _this._configuration, _this._removeController, _this, selectedHyperty);
-        connectionController.mediaStream = stream;
-        connectionController.dataObjectReporter = dataObjectReporter;
+          connectionController = new ConnectionController(syncher, _this._domain, _this._configuration, _this._removeController, _this, selectedHyperty);
+          connectionController.mediaStream = stream;
+          connectionController.dataObjectReporter = dataObjectReporter;
 
-        _this._controllers[selectedHyperty] = connectionController;
+          _this._controllers[selectedHyperty] = connectionController;
 
-        resolve(connectionController);
-        console.info('--------------------------- END --------------------------- \n');
-      })
-      .catch(function(reason) {
-        console.error(reason);
-        reject(reason);
-      });
+          resolve(connectionController);
+          console.info('--------------------------- END --------------------------- \n');
+        })
+        .catch(function (reason) {
+          console.error(reason);
+          reject(reason);
+        });
 
     });
   }
@@ -299,17 +316,4 @@ class Connector {
 
 }
 
-/**
- * Function will activate the hyperty on the runtime
- * @param  {URL.URL} hypertyURL   url which identifies the hyperty
- * @param  {MiniBus} bus          Minibus used to make the communication between hyperty and runtime;
- * @param  {object} configuration configuration
- */
-export default function activate(hypertyURL, bus, configuration, factory) {
-
-  return {
-    name: 'Connector',
-    instance: new Connector(hypertyURL, bus, configuration, factory)
-  };
-
-}
+export default Connector;

@@ -7,7 +7,7 @@ function hypertyLoaded(result) {
 
   let hypertyObserver;
 
-  hypertyObserver = result.instance;
+  hypertyObserver = result;
 
   console.log(hypertyObserver);
 

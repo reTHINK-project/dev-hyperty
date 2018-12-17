@@ -5,10 +5,26 @@
 //import {divideURL} from '../utils/utils';
 //import Search from '../utils/Search';
 //import EventEmitter from '../utils/EventEmitter';
+import { hypertyDescriptor } from './HypertyDescriptor';
 
 class UserKwhObserver  {
 
-  constructor(hypertyURL, bus, configuration, factory) {
+  constructor() {}
+
+  get name(){
+    return hypertyDescriptor.name;
+  }
+
+  get descriptor() {
+    return hypertyDescriptor;
+  }
+
+  get runtimeHypertyURL(){
+    return this.hypertyURL;
+  }
+
+  _start(hypertyURL, bus, configuration, factory) {
+    this.hypertyURL = hypertyURL;
 
     this._context = factory.createContextObserver(hypertyURL, bus, configuration,['availability_context']);
 
@@ -71,9 +87,4 @@ resumeDiscoveries() {
 
 }
 
-export default function activate(hypertyURL, bus, configuration, factory) {
-  return {
-    name: 'UserKwhObserver',
-    instance: new UserKwhObserver(hypertyURL, bus, configuration, factory)
-  };
-}
+export default UserKwhObserver;
