@@ -1,13 +1,15 @@
 //import { Syncher } from 'service-framework/dist/Syncher';
 import URI from 'urijs';
+import { hypertyDescriptor } from './HypertyDescriptor';
 //import Search from '../utils/Search';
 //import IdentityManager from 'service-framework/dist/IdentityManager';
 //import { Discovery } from 'service-framework/dist/Discovery';
 
 class Wallet {
 
-  constructor(hypertyURL, bus, config, factory) {
-    let uri = new URI(hypertyURL);
+  constructor() {}
+    _start(hypertyURL, bus, config, factory) {
+      let uri = new URI(hypertyURL);
     this.objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/WalletData`;
     this.syncher = factory.createSyncher(hypertyURL, bus, config);
     this.identityManager = factory.createIdentityManager(hypertyURL, config.runtimeURL, bus);
@@ -23,6 +25,19 @@ class Wallet {
     });
     this.messageRetries = config.retries;
   }
+
+  get name(){
+    return hypertyDescriptor.name;
+  }
+
+  get descriptor() {
+    return hypertyDescriptor;
+  }
+
+  get runtimeHypertyURL(){
+    return this.hypertyURL;
+  }
+
 
   _resumePrivateWallet(user, callback) {
 
@@ -269,7 +284,7 @@ class Wallet {
     return new Promise((resolve, reject) => {
 
 
-/*      if (_this.identity != null ) {
+      if (_this.identity != null ) {
 
         let updateMessage = {
           type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
@@ -286,13 +301,13 @@ class Wallet {
 
         _this.bus.postMessageWithRetries(updateMessage, _this.messageRetries, (reply) => {
 
-          console.log('[Wallet] update Reply', reply);*/
+          console.log('[Wallet] update Reply', reply);
           resolve(true);
-/*
+
         });
       } else {
         resolve(false);
-      }*/
+      }
 
 
     });
@@ -400,9 +415,4 @@ class Wallet {
   }
 
 }
-export default function activate(hypertyURL, bus, config, factory) {
-  return {
-    name: 'Wallet',
-    instance: new Wallet(hypertyURL, bus, config, factory)
-  };
-}
+export default Wallet;

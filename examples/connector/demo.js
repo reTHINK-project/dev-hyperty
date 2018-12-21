@@ -25,7 +25,7 @@ function hypertyLoaded(result) {
   $('.modal').modal();
 
   // Prepare to discover email:
-  var search = result.instance.search;
+  var search = result.search;
   discoverEmail(search);
 
   search.myIdentity().then(function(identity) {
@@ -53,7 +53,7 @@ function hypertyReady(result, identity) {
   $cardPanel.append(userInfo);
   $cardPanel.append(hypertyInfo);
 
-  connector = result.instance;
+  connector = result;
 
   connector.onInvitation(function(controller, identity) {
     console.log('On Invitation: ', controller, identity);

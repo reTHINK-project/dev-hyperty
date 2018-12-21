@@ -1,12 +1,28 @@
 //import { Syncher } from 'service-framework/dist/Syncher';
 import URI from 'urijs';
+import { hypertyDescriptor } from './HypertyDescriptor';
 //import Search from '../utils/Search';
 //import IdentityManager from 'service-framework/dist/IdentityManager';
 //import { Discovery } from 'service-framework/dist/Discovery';
 
 class DeviceManager {
+  constructor() {}
 
-  constructor(hypertyURL, bus, config, factory) {
+  get name(){
+    return hypertyDescriptor.name;
+  }
+
+  get descriptor() {
+    console.log('[Connector.getDescripto]');
+//    debugger;
+    return hypertyDescriptor;
+  }
+
+  get runtimeHypertyURL(){
+    return this.hypertyURL;
+  }
+
+  _start(hypertyURL, bus, config, factory) {
     let uri = new URI(hypertyURL);
     this.objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Context`;
     this.syncher = factory.createSyncher(hypertyURL, bus, config);
@@ -139,9 +155,4 @@ class DeviceManager {
 
 
 }
-export default function activate(hypertyURL, bus, config, factory) {
-  return {
-    name: 'DeviceManager',
-    instance: new DeviceManager(hypertyURL, bus, config, factory)
-  };
-}
+export default DeviceManager;

@@ -1,5 +1,6 @@
 //import { Syncher } from 'service-framework/dist/Syncher';
 import URI from 'urijs';
+import { hypertyDescriptor } from './HypertyDescriptor';
 //import Search from '../utils/Search';
 //import IdentityManager from 'service-framework/dist/IdentityManager';
 //import { Discovery } from 'service-framework/dist/Discovery';
@@ -13,8 +14,22 @@ import URI from 'urijs';
  */
 class UserActivityObserver {
 
-  constructor(hypertyURL, bus, config, factory) {
-//    super(hypertyURL, bus, config, ['availability_context'], factory);
+  constructor() {}
+  
+  get name(){
+    return hypertyDescriptor.name;
+  }
+
+  get descriptor() {
+    return hypertyDescriptor;
+  }
+
+  get runtimeHypertyURL(){
+    return this.hypertyURL;
+  }
+
+  _start(hypertyURL, bus, config, factory) {
+      //    super(hypertyURL, bus, config, ['availability_context'], factory);
     this._context = factory.createContextObserver(hypertyURL, bus, config,['availability_context']);
 
     let uri = new URI(hypertyURL);
@@ -151,9 +166,4 @@ class UserActivityObserver {
   }
 
 }
-export default function activate(hypertyURL, bus, config, factory) {
-  return {
-    name: 'UserActivityObserver',
-    instance: new UserActivityObserver(hypertyURL, bus, config, factory)
-  };
-}
+export default UserActivityObserver;

@@ -7,7 +7,7 @@ function hypertyLoaded(result) {
 
   console.log('ElearningPlayer hyperty loaded!! ', result);
 
-  elearningPlayer = result.instance;
+  elearningPlayer = result;
 
   elearningPlayer.retrieveQuizzes('data://sharing-cities-dsm/elearning').then((result) => {
 

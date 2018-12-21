@@ -23,7 +23,7 @@ function hypertyLoaded(result) {
 
   console.log('ContextObserverDemo Waiting!! ');
 
-    observer = result.instance;
+    observer = result;
 
   observer.start().then((usersContext)=>{
 
