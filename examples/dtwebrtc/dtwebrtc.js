@@ -24,7 +24,7 @@ function hypertyLoaded(result) {
   STATUS_CONNECTED = 1;
   status = STATUS_DISCONNECTED;
 
-  hyperty = result.instance;
+  hyperty = result;
   hyperty.myUrl = result.runtimeHypertyURL;
   // init some click handlers
   $('#gosearch').on('click', discoverEmail);

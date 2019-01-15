@@ -35,6 +35,7 @@ import Search from '../utils/Search';*/
 // Internals
 /*import { communicationObject, CommunicationStatus, communicationChildren } from './communication';
 import { UserInfo } from './UserInfo';*/
+import { hypertyDescriptor } from './HypertyDescriptor';
 
 /**
 * Hyperty Group Chat Manager API (HypertyChat)
@@ -43,8 +44,22 @@ import { UserInfo } from './UserInfo';*/
 */
 class SimpleChat {
 
-  constructor(hypertyURL, bus, configuration, factory) {
-    //    super(hypertyURL, bus, configuration, factory);
+  constructor() {}
+
+  get name(){
+    return hypertyDescriptor.name;
+  }
+
+  get descriptor() {
+    return hypertyDescriptor;
+  }
+
+  get runtimeHypertyURL(){
+    return this._myUrl;
+  }
+
+    _start(hypertyURL, bus, configuration, factory) {
+      //    super(hypertyURL, bus, configuration, factory);
 
     let _this = this;
     _this._factory = factory;
@@ -398,11 +413,4 @@ class SimpleChat {
 
 }
 
-export default function activate(hypertyURL, bus, configuration, factory) {
-
-  return {
-    name: 'SimpleChat',
-    instance: new SimpleChat(hypertyURL, bus, configuration, factory)
-  };
-
-}
+export default SimpleChat;

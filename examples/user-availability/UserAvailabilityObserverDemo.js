@@ -21,7 +21,7 @@ function hypertyLoaded(result) {
 
   console.log('UserAvailabilityObserverDemo Waiting!! ');
 
-    observer = result.instance;
+    observer = result;
 
     console.log('[UserAvailabilityObserverDemo] observer Dataobject', observer);
 

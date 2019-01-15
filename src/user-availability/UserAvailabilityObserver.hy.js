@@ -5,13 +5,27 @@
 //import {divideURL} from '../utils/utils';
 //import Search from '../utils/Search';
 //import EventEmitter from '../utils/EventEmitter';
+import { hypertyDescriptor } from './ObserverHypertyDescriptor';
 
 class UserAvailabilityObserver {
 
-  constructor(hypertyURL, bus, configuration, factory) {
-
+  constructor() {}
+    _start(hypertyURL, bus, configuration, factory) {
+    this.hypertyURL = hypertyURL;
 //    super(hypertyURL, bus, configuration, ['availability_context'], factory);
     this._context = factory.createContextObserver(hypertyURL, bus, configuration,['availability_context']);
+  }
+
+  get name(){
+    return hypertyDescriptor.name;
+  }
+
+  get descriptor() {
+    return hypertyDescriptor;
+  }
+
+  get runtimeHypertyURL(){
+    return this.hypertyURL;
   }
 
 
@@ -71,9 +85,4 @@ resumeDiscoveries() {
 
 }
 
-export default function activate(hypertyURL, bus, configuration, factory) {
-  return {
-    name: 'UserAvailabilityObserver',
-    instance: new UserAvailabilityObserver(hypertyURL, bus, configuration, factory)
-  };
-}
+export default UserAvailabilityObserver;

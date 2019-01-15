@@ -21,7 +21,7 @@ function hypertyLoaded(result) {
 
   console.log('UserKwhObserverDemo Waiting!! ');
 
-    observer = result.instance;
+    observer = result;
 
     console.log('[UserKwhObserverDemo] observer Dataobject', observer);
 

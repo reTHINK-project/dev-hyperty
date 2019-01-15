@@ -1,7 +1,8 @@
-{
+let HelloWorldReporterDescriptor = {
   "language": "javascript",
   "signature": "",
-  "configuration": {},
+  "configuration": {
+  },
   "constraints": {
     "browser": true
   },
@@ -11,4 +12,6 @@
   "dataObjects": [
     "https://%domain%/.well-known/dataschema/HelloWorldDataSchema"
   ]
-}
+};
+
+export default HelloWorldReporterDescriptor;

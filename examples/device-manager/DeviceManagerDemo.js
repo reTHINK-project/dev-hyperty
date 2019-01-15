@@ -1,12 +1,12 @@
 
 function hypertyLoaded(result, runtimeLoader = null) {
 
-  console.log('[DeviceManager] hyperty loaded', result.instance);
+  console.log('[DeviceManager] hyperty loaded', result);
   if (runtimeLoader != null) {
     runtimeLoader.requireProtostub('sharing-cities-dsm');
   }
 
-  result.instance.identityManager.discoverUserRegistered().then(function(identity) {
+  result.identityManager.discoverUserRegistered().then(function(identity) {
     hypertyReady(result, identity);
   });
 
@@ -16,7 +16,7 @@ function hypertyLoaded(result, runtimeLoader = null) {
 function hypertyReady(result, identity) {
 
   console.log('[DeviceManager] hyperty Ready', result, identity);
-  result.instance.start(identity);
+  result.start(identity);
 
   var creating = $('.device-details');
   var createDeviceBtn = creating.find('.create-device-btn');
@@ -32,7 +32,7 @@ function hypertyReady(result, identity) {
 
   createDeviceBtn.on('click', function(e) {
 
-    result.instance.createDevice().then(function(result) {
+    result.createDevice().then(function(result) {
       console.log('[DeviceManager] createDevice result', result);
 
       var name;
@@ -80,7 +80,7 @@ function hypertyReady(result, identity) {
     var platformUID = inputPlatformUID.val();
 
     console.log('CREATing for: ', platformID, ' with id: ', platformUID);
-    result.instance.createEndpoint(platformID,platformUID).then(function(result) {
+    result.createEndpoint(platformID,platformUID).then(function(result) {
 
       var text = 'name: ' + result.body.stream.name + '  platform: ' + result.body.stream.platform;
       var $userAvailability = $('<li/>')
@@ -98,7 +98,7 @@ createForm.on('submit', function(event) {
   var platformUID = inputPlatformUID.val();
 
   console.log('CREATing for: ', platformID, ' with id: ', platformUID);
-  result.instance.createEndpoint(platformID,platformUID).then(function(result) {
+  result.createEndpoint(platformID,platformUID).then(function(result) {
 
     var text = 'name: ' + result.body.stream.name + '  platform: ' + result.body.stream.platform;
     var $userAvailability = $('<li/>')

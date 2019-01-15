@@ -32,6 +32,7 @@
 //import {divideURL} from '../utils/utils.js';
 //import URI from 'urijs';
 
+import { hypertyDescriptor } from './ReporterHypertyDescriptor';
 import availability from './availability.js';
 
 /**
@@ -41,7 +42,24 @@ import availability from './availability.js';
 */
 class UserAvailabilityReporter {
 
-  constructor(hypertyURL, bus, configuration, factory) {
+  constructor() {
+
+  }
+  get name(){
+    return hypertyDescriptor.name;
+  }
+
+  get descriptor() {
+
+    return hypertyDescriptor;
+  }
+
+  get runtimeHypertyURL(){
+    return this.hypertyURL;
+  }
+
+    _start(hypertyURL, bus, configuration, factory) {
+      this.hypertyURL = hypertyURL;
 
     this._context = factory.createContextReporter(hypertyURL, bus, configuration);
     let _this = this;
@@ -171,11 +189,4 @@ onResumeReporter(callback) {
 
 }
 
-export default function activate(hypertyURL, bus, configuration, factory) {
-
-  return {
-    name: 'UserAvailabilityReporter',
-    instance: new UserAvailabilityReporter(hypertyURL, bus, configuration, factory)
-  };
-
-}
+export default UserAvailabilityReporter;
