@@ -21,7 +21,13 @@ function hypertyLoaded(result, runtimeLoader = null) {
 
   if (runtimeLoader != null) {
     runtimeLoader.requireProtostub('sharing-cities-dsm');
-    runtimeLoader.requireProtostub('fitness.google.com');
+    // load stub according to OS
+    if (navigator.userAgent.indexOf('Mac') > -1) {
+      runtimeLoader.requireProtostub('fitness.strava.com');
+    }
+    else {
+      runtimeLoader.requireProtostub('fitness.google.com');
+    }
 
 
     runtimeLoader.authorise('google.com', 'user_activity_context').then(function(value) {

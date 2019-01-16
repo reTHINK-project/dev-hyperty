@@ -9,7 +9,7 @@
   "author": "",
   "license": "Apache 2.0",
   "dependencies": {
-    "bootstrap": "^4.1.1"
+    "bootstrap": "^4.2.1"
   },
   "devDependencies": {
     "urijs": "^1.19.0"
