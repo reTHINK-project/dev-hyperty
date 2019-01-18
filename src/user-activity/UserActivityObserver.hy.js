@@ -14,9 +14,9 @@ import { hypertyDescriptor } from './HypertyDescriptor';
  */
 class UserActivityObserver {
 
-  constructor() {}
-  
-  get name(){
+  constructor() { }
+
+  get name() {
     return hypertyDescriptor.name;
   }
 
@@ -24,18 +24,18 @@ class UserActivityObserver {
     return hypertyDescriptor;
   }
 
-  get runtimeHypertyURL(){
+  get runtimeHypertyURL() {
     return this.hypertyURL;
   }
 
   _start(hypertyURL, bus, config, factory) {
-      //    super(hypertyURL, bus, config, ['availability_context'], factory);
-    this._context = factory.createContextObserver(hypertyURL, bus, config,['availability_context']);
+    //    super(hypertyURL, bus, config, ['availability_context'], factory);
+    this._context = factory.createContextObserver(hypertyURL, bus, config, ['availability_context']);
 
     let uri = new URI(hypertyURL);
 
     this.objectDescURL = `hyperty-catalogue://catalogue.${uri.hostname()}/.well-known/dataschema/Context`;
-//    this.syncher = factory.createSyncher(hypertyURL, bus, config);
+    //    this.syncher = factory.createSyncher(hypertyURL, bus, config);
     this.identityManager = factory.createIdentityManager(hypertyURL, config.runtimeURL, bus);
     this.discovery = factory.createDiscovery(hypertyURL, config.runtimeURL, bus);
     this.search = factory.createSearch(this.discovery, this.identityManager);
@@ -92,12 +92,14 @@ class UserActivityObserver {
 
   start(callback, identity) {
     let _this = this;
+    const domain = navigator.userAgent.indexOf('Mac') > -1 ? 'strava.com' : 'google.com';
+
     _this.callback = callback;
     // get GFit access token (token received by protostub)
     _this.bus.postMessage({
       type: 'create',
       from: _this.hypertyURL,
-      to: 'fitness://sharinglisboa@google.com',
+      to: `fitness://sharinglisboa@${domain}`,
       body: {
 
         value: {
@@ -105,6 +107,8 @@ class UserActivityObserver {
         }
       }
     }, (reply) => {
+      console.log('HERE ', reply);
+      
       if (reply.body.code === 200) {
         console.log('[UserActivityObserver] GFit auth granted');
         console.log(_this);
@@ -112,7 +116,7 @@ class UserActivityObserver {
         console.log('[UserActivityObserver] listener added on ', googleStubUrlStatus);
         _this.bus.addListener(googleStubUrlStatus, newMsg => {
           console.log('[UserActivityObserver] googleStatusChanged', newMsg);
-          if (newMsg.hasOwnProperty('body') && newMsg.body.hasOwnProperty('desc') && newMsg.body.desc.hasOwnProperty('error') ){
+          if (newMsg.hasOwnProperty('body') && newMsg.body.hasOwnProperty('desc') && newMsg.body.desc.hasOwnProperty('error')) {
             callback(newMsg.body.desc.error);
           }
 
@@ -149,10 +153,12 @@ class UserActivityObserver {
   stop() {
     let _this = this;
 
+    const domain = navigator.userAgent.indexOf('Mac') > -1 ? 'strava.com' : 'google.com';
+
     _this.bus.postMessage({
       type: 'delete',
       from: _this.hypertyURL,
-      to: 'fitness://sharinglisboa@google.com',
+      to: `fitness://sharinglisboa@${domain}`,
       body: {
         value: {
           resources: ['user_activity_context']
