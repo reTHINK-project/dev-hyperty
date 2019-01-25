@@ -32,6 +32,7 @@ class DeviceManager {
     this.currentPosition;
     this.bus = bus;
     this.hypertyURL = hypertyURL;
+    console.log('[DeviceManager._start] config: ', config);
     bus.addListener(hypertyURL, (msg) => {
       console.log('[DeviceManager] new msg', msg);
     });
