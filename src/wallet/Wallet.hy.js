@@ -106,21 +106,21 @@ class Wallet {
 
         console.log('[Wallet] public resume wallets :', result);
         if (result) {
-  
+
           let updateWallets = {
             field: 'wallets',
             data: result.data.wallets
           };
-  
+
           callback(updateWallets);
-  
+
           result.onChange('*', (event) => {
             console.log('[Wallet] New Change on Public :', event);
             callback(event);
           });
           resolve(true);
         } else resolve(false);
-  
+
       }).catch(function (error) {
         console.log('[Wallet] ', error);
         resolve(false);
@@ -169,13 +169,25 @@ class Wallet {
         resumedPrivate = resumed;
         _this._resumePublicWallet(_this.pubsUrl, callback).then((resumed)=>{
           resumedPublic = resumed;
-          console.log('[Wallet] create message', createMessage);
+          console.log('[Wallet] create private message', createMessage);
+          let toCreatePub = {
+            type: 'forward', to: 'hyperty://sharing-cities-dsm/wallet-manager', from: _this.hypertyURL,
+            identity: { userProfile: userProfile },
+            body: {
+              type: 'create',
+              from: _this.hypertyURL,
+              resource: 'public-wallet',
+              body: { mutual: false },
+              mutual: false
+            }
+          };
+          console.log('[Wallet] create public message', toCreatePub);
 
           _this.bus.postMessageWithRetries(createMessage, _this.messageRetries, (reply) => {
-    
+
             // store address
             _this.walletAddress = reply.body.wallet.address;
-    
+
             console.log('[Wallet] create Reply', reply);
             if (reply.body.code == 200) {
               if (! resumedPrivate) {
@@ -189,25 +201,25 @@ class Wallet {
                   domain_subscription: false
     //              identity: null
                 };
-            
+
                 _this.syncher.subscribe(input).then(function (obj) {
                   console.log('[Wallet] subscribe private result :', obj);
-    
+
                   let updateBalance = {
                     field: 'balance',
                     data: obj.data.balance
                   };
-    
+
                   let updateTransactions = {
                     field: 'transactions',
                     data: obj.data.transactions
                   };
-    
+
                   let updateRanking = {
                     field: 'ranking',
                     data: obj.data.ranking
                   };
-    
+
                   let updateBonusCredit = {
                     field: 'bonus-credit',
                     data: obj.data['bonus-credit']
@@ -217,29 +229,38 @@ class Wallet {
                     field: 'accounts',
                     data: obj.data.accounts
                   };
-    
+
                   callback(updateBalance);
                   callback(updateTransactions);
                   callback(updateRanking);
                   callback(updateBonusCredit);
                   callback(updateAccounts);
-    
+
                   obj.onChange('*', (event) => {
                     console.log('[Wallet] Private New Change :', event);
                     callback(event);
                   });
-    
-    
-    
+
+
+
                 }).catch(function (error) {
                   console.log('[Wallet] Private error', error);
                   reject();
-    
+
                 });
               }
-    
+              //resolve(reply);
+
+            }
+          });
+
+          console.log('[Wallet] create public message2', toCreatePub);
+          _this.bus.postMessageWithRetries(toCreatePub, _this.messageRetries, (reply) => {
+
+            console.log('[Wallet] create pub Reply', reply);
+            if (reply.body.code == 200) {
               if (! resumedPublic) {
-                console.log('[Wallet] subscribe public');
+
                 let input = {
                   schema: _this.objectDescURL,
                   resource: reply.body.publics_url,
@@ -249,28 +270,27 @@ class Wallet {
                   domain_subscription: false
     //              identity: null
                 };
-    
+                console.log('[Wallet] subscribe public:', input);
                 _this.syncher.subscribe(input).then(function (obj) {
                   console.log('[Wallet] subscription result public wallets :', obj);
                   let updateWallets = {
                     field: 'wallets',
                     data: obj.data.wallets
                   };
-    
+
                   callback(updateWallets);
-    
+
                   obj.onChange('*', (event) => {
                     console.log('[Wallet] Public New Change :', event);
                     callback(event);
                   });
                 });
               }
-    
-              resolve(reply);
-    
             }
           });
-    
+
+
+
         });
       });
 
