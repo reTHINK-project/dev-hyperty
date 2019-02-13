@@ -77,18 +77,23 @@ class SimpleChat {
     _this._bus = bus;
 
     _this._syncher.onNotification(function (event) {
-      console.log('[SimpleChat] onNotification:', event);
+      console.log('[SimpleChat] onNotification: ', event);
       _this.processNotification(event);
     });
-
-    _this._resumeReporters();
-    _this._resumeObservers();
 
     console.log('[SimpleChat] configuration ', configuration);
 
     _this._manager.offline = configuration.offline ? configuration.offline : false;
 
     _this._manager.backup = configuration.backup ? configuration.backup : false;
+
+  }
+
+  resume(){
+    console.log('[SimpleChat.resume] ');
+
+    this._resumeReporters();
+    this._resumeObservers();
 
   }
 

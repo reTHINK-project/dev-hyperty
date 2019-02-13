@@ -3,7 +3,7 @@ export let hypertyDescriptor = {
   "language": "javascript",
   "signature": "",
   "configuration": { 
-    "backup": true,
+    "backup": false,
     "heartBeat": 60,
     "offline": "hyperty://sharing-cities-dsm/offline-sub-mgr"
      },
