@@ -249,8 +249,8 @@ class Wallet {
 
                 });
               }
-              //resolve(reply);
-
+              console.log('[Wallet] create Reply resolve');
+              resolve(reply);
             }
           });
 
