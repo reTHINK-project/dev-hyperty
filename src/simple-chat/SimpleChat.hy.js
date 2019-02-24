@@ -231,6 +231,9 @@ class SimpleChat {
             console.log('[SimpleChat] chatController invitationsHandler: ', chatController.invitationsHandler);
 
 //            chatController.invitationsHandler.resumeDiscoveries(_this._manager.discovery, chatController.dataObjectReporter);
+            _this._syncher.read(dataObjectReporterURL).then((updatedDo) => {
+              chatController.dataObjectReporter = updatedDo;
+            });
 
           });
 
@@ -270,6 +273,11 @@ class SimpleChat {
 
             // Save the chat controllers by dataObjectReporterURL
             this._manager._observersControllers[dataObjectObserverURL] = chatController;
+
+            _this._syncher.read(dataObjectObserverURL).then((updatedDo) => {
+              chatController.dataObjectObserver = updatedDo;
+            });
+
 
 //            let reporterStatus = _this._factory.createRegistrationStatus(chatObserver.url, _this._runtimeURL, _this._myUrl, _this._bus);
 
