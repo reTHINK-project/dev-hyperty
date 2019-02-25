@@ -216,28 +216,36 @@ class SimpleChat {
 
         _this._getRegisteredUser().then((identity) => {
 
+          let resumingPromises = [];
+          let resumingPromise;
+
           reportersList.forEach((dataObjectReporterURL) => {
 
             console.log('[SimpleChat.resumeReporter]: ', dataObjectReporterURL);
 
-            let chatController = _this._factory.createChat(_this._syncher, _this._domain, identity, _this._manager);
-            chatController.dataObjectReporter = reporters[dataObjectReporterURL];
-
-            // Save the chat controllers by dataObjectReporterURL
-            this._manager._reportersControllers[dataObjectReporterURL] = chatController;
-
-            _this._resumeInterworking(chatController.dataObjectReporter);
-
-            console.log('[SimpleChat] chatController invitationsHandler: ', chatController.invitationsHandler);
+//            console.log('[SimpleChat] chatController invitationsHandler: ', chatController.invitationsHandler);
 
 //            chatController.invitationsHandler.resumeDiscoveries(_this._manager.discovery, chatController.dataObjectReporter);
-            _this._syncher.read(dataObjectReporterURL).then((updatedDo) => {
-              chatController.dataObjectReporter = updatedDo;
+             resumingPromise = reporters[dataObjectReporterURL].sync().then(() => {
+              console.log('[SimpleChat.resumeReporter] updated Chat ', reporters[dataObjectReporterURL]);
+//              reporters[dataObjectReporterURL] = updatedDo;
+              let chatController = _this._factory.createChat(_this._syncher, _this._domain, identity, _this._manager);
+              chatController.dataObjectReporter = reporters[dataObjectReporterURL];
+  
+              // Save the chat controllers by dataObjectReporterURL
+              this._manager._reportersControllers[dataObjectReporterURL] = chatController;
+  
+              _this._resumeInterworking(chatController.dataObjectReporter);
             });
+
+            resumingPromises.push(resumingPromise);
 
           });
 
-          if (_this._onResumeReporter) _this._onResumeReporter(this._manager._reportersControllers);
+          Promise.all(resumingPromises).then(()=> {
+            if (_this._onResumeReporter) _this._onResumeReporter(this._manager._reportersControllers);
+          });
+
 
         });
 
@@ -260,12 +268,18 @@ class SimpleChat {
       if (observersList.length > 0) {
 
         _this._getRegisteredUser().then((identity) => {
+          let resumingPromises = [];
+          let resumingPromise;
 
           observersList.forEach((dataObjectObserverURL) => {
 
             console.log('[SimpleChat].syncher.resumeObserver: ', dataObjectObserverURL);
 
-            let chatObserver = observers[dataObjectObserverURL];
+            resumingPromise = observers[dataObjectObserverURL].sync().then(() => {
+
+//              observers[dataObjectObserverURL] = updatedDo;
+
+              let chatObserver = observers[dataObjectObserverURL];
 
 //            let chatController = _this._factory.createChatController(_this._syncher, _this._manager.discovery, _this._domain, _this.search, identity, _this._manager);
             let chatController = _this._factory.createChat(_this._syncher, _this._domain, identity, _this._manager);
@@ -274,8 +288,6 @@ class SimpleChat {
             // Save the chat controllers by dataObjectReporterURL
             this._manager._observersControllers[dataObjectObserverURL] = chatController;
 
-            _this._syncher.read(dataObjectObserverURL).then((updatedDo) => {
-              chatController.dataObjectObserver = updatedDo;
             });
 
 
@@ -300,10 +312,14 @@ class SimpleChat {
             };
 
             reporterSync(chatObserver, _this._myUrl, reporterStatus);*/
+            resumingPromises.push(resumingPromise);
 
           });
 
+          Promise.all(resumingPromises).then(()=> {
+
           if (_this._onResumeObserver) _this._onResumeObserver(this._manager._observersControllers);
+          });
 
         });
 
