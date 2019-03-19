@@ -1,10 +1,10 @@
 {
   "language": "javascript",
   "signature": "",
-  "configuration": { 
+  "configuration": {
     "backup": true,
     "heartBeat": 60,
-    "offline": "hyperty://sharing-cities-dsm/offline-sub-mgr"
+    "offline": "hyperty://sharing-cities-dsm/offline-sub-mgr/subscription"
      },
   "hypertyType": [
     "chat"

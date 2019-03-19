@@ -131,7 +131,7 @@ class SimpleChat {
 
     let _this = this;
     _this._manager.identityManager.discoverUserRegistered().then((identity) => {
-      console.log('[SimpleChat] GET MY IDENTITY:', identity);
+      console.log('[SimpleChat] GET MY IDENTITY :', identity);
       let newParticipantMessage = {
         type: 'forward',
         to: `${CRMaddress}/tickets`,
@@ -231,10 +231,10 @@ class SimpleChat {
 //              reporters[dataObjectReporterURL] = updatedDo;
               let chatController = _this._factory.createChat(_this._syncher, _this._domain, identity, _this._manager);
               chatController.dataObjectReporter = reporters[dataObjectReporterURL];
-  
+
               // Save the chat controllers by dataObjectReporterURL
               this._manager._reportersControllers[dataObjectReporterURL] = chatController;
-  
+
               _this._resumeInterworking(chatController.dataObjectReporter);
             });
 
