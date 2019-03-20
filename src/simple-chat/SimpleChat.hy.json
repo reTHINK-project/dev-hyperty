@@ -4,7 +4,7 @@
   "configuration": {
     "backup": true,
     "heartBeat": 60,
-    "offline": "hyperty://sharing-cities-dsm/offline-sub-mgr/subscription"
+    "offline": "hyperty://sharing-cities-dsm/offline-sub-mgr"
      },
   "hypertyType": [
     "chat"
