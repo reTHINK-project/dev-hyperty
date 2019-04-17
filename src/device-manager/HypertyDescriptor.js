@@ -2,7 +2,7 @@ export let hypertyDescriptor = {
   "name": "DeviceManager",
   "configuration": {},
   "hypertyType": [
-    "location-context"
+    "device"
   ],
   "constraints": {
     "browser": true

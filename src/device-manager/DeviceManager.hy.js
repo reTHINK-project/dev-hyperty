@@ -32,6 +32,7 @@ class DeviceManager {
     this.currentPosition;
     this.bus = bus;
     this.hypertyURL = hypertyURL;
+    console.log('[DeviceManager._start] config: ', config);
     bus.addListener(hypertyURL, (msg) => {
       console.log('[DeviceManager] new msg', msg);
     });
@@ -70,7 +71,7 @@ class DeviceManager {
   }
 
   //'edp', 'luisuserID'
-  createEndpoint(platformID, platformUID) {
+  createEndpoint(platformID) {
     let _this = this;
 
     return new Promise(function(resolve, reject) {
@@ -83,7 +84,6 @@ class DeviceManager {
           from: _this.hypertyURL,
           resource: 'stream',
           platformID: platformID,
-          platformUID: platformUID,
           ratingType: 'private'
         }
       };

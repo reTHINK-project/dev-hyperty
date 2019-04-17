@@ -70,48 +70,32 @@ function hypertyReady(result, identity) {
 
 
   var inputPlatformID = searchForm.find('.platformID');
-  var inputPlatformUID = searchForm.find('.platformUID');
+
 
 
   searchForm.on('submit', function(event) {
     event.preventDefault();
 
     var platformID = inputPlatformID.val();
-    var platformUID = inputPlatformUID.val();
 
-    console.log('CREATing for: ', platformID, ' with id: ', platformUID);
-    result.createEndpoint(platformID,platformUID).then(function(result) {
 
-      var text = 'name: ' + result.body.stream.name + '  platform: ' + result.body.stream.platform;
-      var $userAvailability = $('<li/>')
-           .attr('url', 'test')
-           .text(text);
+    console.log('CREATing for: ', platformID);
+    result.createEndpoint(platformID).then(function(result) {
 
-      var streams_list = creating.find('.streams-list');
-      streams_list.append($userAvailability);
-      searchForm.addClass("hide");
-/*
-createForm.on('submit', function(event) {
-  //event.preventDefault();
+      if (result.body.description != 'stream already exist') {
+        var text = 'name: ' + result.body.stream.name + '  platform: ' + result.body.stream.platform;
+        var $userAvailability = $('<li/>').attr('url', 'test').text(text);
+        var streams_list = creating.find('.streams-list');
+        streams_list.append($userAvailability);
+        searchForm.addClass("hide");
+      } else {
+        var text = 'name: ' + platformID + ' already exist';
+        var $userAvailability = $('<li/>').attr('url', 'test').text(text);
+        var streams_list = creating.find('.streams-list');
+        streams_list.append($userAvailability);
+        searchForm.addClass("hide");
+      }
 
-  var platformID = inputPlatformID.val();
-  var platformUID = inputPlatformUID.val();
-
-  console.log('CREATing for: ', platformID, ' with id: ', platformUID);
-  result.createEndpoint(platformID,platformUID).then(function(result) {
-
-    var text = 'name: ' + result.body.stream.name + '  platform: ' + result.body.stream.platform;
-    var $userAvailability = $('<li/>')
-         .text(text);
-
-    var streams_list = creating.find('.streams-list');
-    streams_list.append($userAvailability);
-
-    createStreamBtn.addClass("hide");
-    debugger;
-  });
-});
-*/
 
     });
   });

@@ -31,16 +31,17 @@ function hypertyLoaded(result) {
 
   // Prepare to discover email:
   //  var search = result.search;
-  console.log('[SimpleChatDemo.hypertyLoaded] getting identity for hyperty ', result);
 
 
   result.myIdentity().then(function (identity) {
+    console.log('[SimpleChatDemo.hypertyLoaded] getting identity for hyperty ', identity);
     hypertyReady(result, identity);
     _this.identity = identity;
   });
 }
 
 function hypertyReady(result, identity) {
+  console.log('[SimpleChatDemo.hypertyReady] result ', result, ' identity ', identity);
 
   let $cardPanel = $('.card-panel');
   let hypertyInfo = '<div class="row"><span class="white-text">' +
@@ -114,6 +115,9 @@ function hypertyReady(result, identity) {
     });
 
   });
+
+  simpleChat.resume();
+  
   let messageChat = $('.chat');
   messageChat.removeClass('hide');
 
