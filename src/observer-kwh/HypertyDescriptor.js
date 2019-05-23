@@ -1,6 +1,8 @@
 export let hypertyDescriptor = {
   "name": "UserKwhObserver",
- "configuration": {},
+ "configuration": {
+   "domain_registration": false
+  },
   "hypertyType": [
     "availability_context"
   ],

@@ -374,6 +374,11 @@ function prepareChat(chatController, isOwner, toReload = null) {
     console.log('[SimpleChatDemo ] OnChange Event:', event);
   });
 
+  chatController.onTyping(function (event) {
+    console.log('[SimpleChatDemo ] onTyping Event:', event);
+  });
+
+
   chatController.onUserAdded(function (event) {
     console.log('[SimpleChatDemo ] onUserAdded Event:', event);
     const participantHypertyURL = event.hypertyURL;
@@ -410,6 +415,8 @@ function prepareChat(chatController, isOwner, toReload = null) {
 
     inviteParticipants(chatController, isOwner);
   });
+
+  document.addEventListener('keydown', event => { chatController.typing() } )  
 
 }
 

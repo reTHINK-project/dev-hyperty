@@ -1,6 +1,8 @@
 export let hypertyDescriptor = {
   "name": "DeviceManager",
-  "configuration": {},
+  "configuration": {
+    "domain_registration": false
+  },
   "hypertyType": [
     "device"
   ],
